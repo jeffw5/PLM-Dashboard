@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PLM Assessment Platform — Solution Architecture</title>
+<style>
+:root{
+  --navy:#0B1F3A;--navy2:#12305A;--navy-soft:#1C3A63;
+  --gold:#C8A951;--gold-hi:#E4C572;
+  --ice:#EDF2F8;--ice2:#F6F9FC;--surface:#FFFFFF;
+  --ink:#20344B;--muted:#5E7188;--hair:#D8E1EC;
+  --a:#2E6E8E;--a-bg:#E4EFF4;/* pipeline A */
+  --b:#7A5AA6;--b-bg:#EDE7F4;/* pipeline B */
+  --x:#8A6D1F;--x-bg:#F6EFDA;/* cross-cutting */
+  --bi:#2E7D5B;--bi-bg:#E6F1EC;/* business impact */
+  --nogo:#B23A3A;--rev:#B8842B;--go:#2E7D5B;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,monospace;
+  --radius:10px;
+}
+*{box-sizing:border-box}html,body{margin:0}
+body{font-family:var(--sans);color:var(--ink);background:var(--ice);line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{margin:0;font-weight:600}
+.wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+a{color:var(--navy2)}
+header.top{background:var(--navy);color:#fff;border-bottom:3px solid var(--gold)}
+.top .wrap{display:flex;align-items:center;gap:16px;padding:16px 22px;flex-wrap:wrap}
+.brandmark{width:34px;height:34px;flex:0 0 auto}
+.brandtext .k{font-family:var(--serif);font-size:20px}
+.brandtext .s{font-size:12px;color:#9db4d4;letter-spacing:.06em;text-transform:uppercase}
+.top .spacer{flex:1}
+.doctag{font-size:12px;color:var(--gold-hi);border:1px solid rgba(200,169,81,.5);border-radius:999px;padding:6px 12px}
+/* section nav */
+.secnav{position:sticky;top:0;z-index:30;background:var(--ice2);border-bottom:1px solid var(--hair)}
+.secnav .wrap{display:flex;gap:6px;overflow-x:auto;padding:9px 22px}
+.secnav button{flex:0 0 auto;border:1px solid var(--hair);background:#fff;border-radius:999px;padding:6px 13px;font:inherit;font-size:13px;color:var(--ink);cursor:pointer}
+.secnav button:hover{border-color:var(--navy-soft)}
+.secnav button.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+/* hero */
+.hero{background:linear-gradient(180deg,var(--navy2),var(--navy));color:#fff;padding:30px 0 34px}
+.hero .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-hi)}
+.hero h1{font-family:var(--serif);font-size:32px;margin:8px 0 10px;line-height:1.12}
+.hero p{color:#c9d7ea;max-width:82ch;margin:0 0 6px}
+.hero .legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:16px;font-size:12px;color:#c9d7ea}
+.hero .legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+main{padding:26px 0 70px}
+section.doc{margin-bottom:40px;scroll-margin-top:64px}
+.sec-h{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+.sec-h .no{font-family:var(--mono);font-size:13px;color:var(--gold);background:var(--navy);padding:3px 8px;border-radius:5px}
+.sec-h h2{font-family:var(--serif);font-size:24px}
+.lead{color:var(--muted);max-width:88ch;margin:2px 0 18px}
+.card{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);padding:18px 20px;margin-bottom:16px}
+.card h3{font-family:var(--serif);font-size:17px;margin-bottom:6px}
+.card h4{font-size:13px;letter-spacing:.05em;text-transform:uppercase;color:var(--navy2);margin:14px 0 6px}
+p.tight{margin:6px 0}
+ul.tick{margin:6px 0;padding-left:20px}ul.tick li{margin:4px 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.pill{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.03em;padding:2px 8px;border-radius:5px;margin:2px 4px 2px 0}
+.pA{background:var(--a-bg);color:var(--a)}.pB{background:var(--b-bg);color:var(--b)}.pX{background:var(--x-bg);color:var(--x)}.pBI{background:var(--bi-bg);color:var(--bi)}
+/* flow diagrams (CSS) */
+.flow{display:flex;align-items:stretch;gap:0;overflow-x:auto;padding:6px 2px}
+.fnode{flex:0 0 auto;background:#fff;border:1px solid var(--hair);border-radius:9px;padding:11px 13px;min-width:120px;display:flex;flex-direction:column;gap:3px}
+.fnode .ft{font-weight:600;font-size:13px}
+.fnode .fs{font-size:11px;color:var(--muted)}
+.farrow{flex:0 0 auto;display:flex;align-items:center;color:var(--gold);font-size:20px;padding:0 8px}
+.lane{border:1px solid var(--hair);border-radius:var(--radius);overflow:hidden;margin-bottom:12px}
+.lane-h{display:flex;align-items:center;gap:8px;padding:8px 14px;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:#fff}
+.lane-h.A{background:var(--a)}.lane-h.B{background:var(--b)}
+.lane-body{padding:12px 14px;background:var(--ice2)}
+.band{background:var(--navy);color:#fff;border-radius:9px;padding:12px 16px;margin:10px 0;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.band .bt{font-family:var(--serif);font-size:15px;color:var(--gold-hi)}
+.band .bs{font-size:13px;color:#c9d7ea;max-width:70ch}
+.govrail{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.govrail .g{font-size:12px;background:var(--x-bg);color:var(--x);border:1px solid #E6D2A6;border-radius:6px;padding:5px 9px}
+.stagestrip{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.stage{background:#fff;border:1px solid var(--hair);border-top:3px solid var(--navy2);border-radius:8px;padding:10px 11px}
+.stage .sn{font-family:var(--mono);font-size:11px;color:var(--gold)}
+.stage .st{font-weight:600;font-size:13px;margin:2px 0}
+.stage .sd{font-size:11px;color:var(--muted)}
+/* tables */
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--hair);vertical-align:top}
+th{background:var(--ice2);font-size:12px;letter-spacing:.03em;color:var(--navy2);position:sticky}
+td .mono{font-family:var(--mono);font-size:12px}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--hair);border-radius:var(--radius)}
+/* agent catalog */
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.filters select,.filters input{font:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--hair);border-radius:8px;background:#fff;color:var(--ink)}
+.filters .count{font-size:12px;color:var(--muted);margin-left:auto}
+.tagchip{font-size:10px;background:var(--ice);border:1px solid var(--hair);border-radius:4px;padding:1px 6px;margin:1px 3px 1px 0;display:inline-block;color:var(--muted)}
+.stagetag{font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:1px 7px;border-radius:4px;background:var(--navy);color:var(--gold-hi)}
+/* dashboards */
+.dash{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);overflow:hidden;margin-bottom:14px}
+.dash-h{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--hair);background:var(--ice2)}
+.dash-h .dn{font-family:var(--mono);font-size:12px;color:var(--gold);background:var(--navy);padding:3px 8px;border-radius:5px}
+.dash-h .dt{font-family:var(--serif);font-size:17px}
+.dash-b{padding:14px 16px;display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.dash-b h4{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--navy2);margin-bottom:5px}
+.dash-b .full{grid-column:1/-1}
+.chip-src{font-size:11px;color:var(--muted)}
+.callout{border-left:3px solid var(--gold);background:var(--ice2);border-radius:0 8px 8px 0;padding:10px 14px;margin:12px 0;font-size:13px}
+.footnote{font-size:12px;color:var(--muted)}
+footer{border-top:1px solid var(--hair);color:var(--muted);font-size:12px;padding:22px 0 60px}
+@media (max-width:900px){.grid2,.grid3,.dash-b{grid-template-columns:1fr}.stagestrip{grid-template-columns:repeat(2,1fr)}}
+@media print{.secnav{display:none}.applinks{display:none}body{background:#fff}}
+/* companion app launch buttons (header) */
+.applinks{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.applink{font-size:12.5px;font-weight:600;text-decoration:none;color:var(--navy);background:var(--gold);border:1px solid var(--gold);border-radius:999px;padding:6px 13px;display:inline-flex;align-items:center;gap:6px;transition:background .15s,box-shadow .15s,transform .1s}
+.applink::before{content:"\2197";font-size:12px;opacity:.7}
+.applink:hover{background:var(--gold-hi);box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.applink:focus-visible{outline:2px solid #fff;outline-offset:2px}
+/* clickable flow / stage / governance affordances */
+.clickable{cursor:pointer;transition:border-color .15s,box-shadow .15s,transform .12s,background .15s,filter .15s}
+.fnode.clickable,.stage.clickable{position:relative}
+.fnode.clickable:hover,.stage.clickable:hover{border-color:var(--navy);box-shadow:0 3px 10px rgba(11,31,58,.16);transform:translateY(-1px)}
+.fnode.clickable::after,.stage.clickable::after{content:"\203A";position:absolute;top:5px;right:9px;font-size:13px;font-weight:700;color:var(--gold);opacity:.6;line-height:1}
+.g.clickable:hover{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.band.clickable:hover{box-shadow:0 3px 14px rgba(11,31,58,.3);outline:1px solid var(--gold-hi)}
+.lane-h.clickable:hover{filter:brightness(1.12)}
+.clickable:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.lane-h.clickable:focus-visible,.band.clickable:focus-visible{outline-offset:-2px}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <svg class="brandmark" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="none" stroke="#C8A951" stroke-width="1.5"/><path d="M20 7 L31 26 H9 Z" fill="none" stroke="#C8A951" stroke-width="1.5"/><circle cx="20" cy="21" r="3.5" fill="#C8A951"/></svg>
+  <div class="brandtext"><div class="k">PLM Assessment Platform</div><div class="s">Solution Architecture · Agentic Ingestion &amp; Scoring</div></div>
+  <div class="spacer"></div>
+  <nav class="applinks" aria-label="Companion tools">
+    <a class="applink" href="PLM%20Dashboard.html" target="_blank" rel="noopener">PLM Dashboard</a>
+    <a class="applink" href="PLM%20Skills%20Catalog.html" target="_blank" rel="noopener">Skills Catalog</a>
+    <a class="applink" href="PLM%20Traceability%20Matrix.html" target="_blank" rel="noopener">Traceability Matrix</a>
+  </nav>
+  <div class="doctag">v1.0 · reference architecture</div>
+</div></header>
+
+<nav class="secnav"><div class="wrap" id="secnav"></div></nav>
+
+<section class="hero"><div class="wrap">
+  <div class="eyebrow">Context</div>
+  <h1>Two agentic pipelines, one semantic core, one scoring model</h1>
+  <p>Project &amp; program data (from many inconsistently-configured Jira projects) and lifecycle artifact documents (from many libraries) are each ingested by a chain of specialised agents, enriched against the Holonic Semantic Layer, evaluated by discipline / standard / governance <em>skills</em>, and converged into a single PLM ingestion model that feeds the assessment console. Operational dashboards monitor both pipelines and the defect burndown; a business-impact dashboard projects value uplift and ROI by mapping realised maturity onto the enterprise value fabric.</p>
+  <div class="legend">
+    <span><span class="sw" style="background:var(--a)"></span>Pipeline A — Project &amp; Program (Jira)</span>
+    <span><span class="sw" style="background:var(--b)"></span>Pipeline B — Artifact Documents</span>
+    <span><span class="sw" style="background:var(--x)"></span>Cross-cutting / governance</span>
+    <span><span class="sw" style="background:var(--bi)"></span>Business impact</span>
+  </div>
+</div></section>
+
+<main><div class="wrap">
+
+<!-- 1. END TO END -->
+<section class="doc" id="s-flow">
+  <div class="sec-h"><span class="no">1</span><h2>End-to-end flow</h2></div>
+  <p class="lead">Sources feed two agentic lanes that share a canonical six-stage pattern. The Holonic Semantic Layer sits beneath enrichment, mapping, and skill evaluation; a governance rail spans every stage. Both lanes converge on the PLM ingestion model, which the console and dashboards consume.</p>
+
+  <div class="card">
+    <h4>Sources</h4>
+    <div class="flow">
+      <div class="fnode clickable" role="button" tabindex="0" data-act="agents" data-pipe="A" data-stage="Extract" title="View Pipeline A extraction agents (Jira)"><span class="ft">Jira — multiple projects</span><span class="fs">inconsistent workflows, custom fields</span></div>
+      <div class="fnode clickable" role="button" tabindex="0" data-act="agents" data-pipe="B" data-stage="Extract" title="View Pipeline B extraction agents (documents)"><span class="ft">Document libraries</span><span class="fs">Confluence · SharePoint · Git · file shares</span></div>
+      <div class="fnode clickable" role="button" tabindex="0" data-act="agents" data-pipe="BI" data-stage="" title="View business-impact agents (strategy artifacts)"><span class="ft">Business architecture</span><span class="fs">strategy &amp; capability artifacts (BIZBOK)</span></div>
+    </div>
+
+    <div class="lane"><div class="lane-h A clickable" role="button" tabindex="0" data-act="agents" data-pipe="A" data-stage="" title="View all Pipeline A agents">Pipeline A · Project &amp; Program data</div><div class="lane-body">
+      <div class="flow">
+        <div class="fnode clickable" role="button" tabindex="0" data-act="agents" data-pipe="A" data-stage="Extract" title="Pipeline A · Extract agents"><span class="ft">Extract</span><span class="fs">connectors per Jira instance</span></div><div class="farrow">→</div>
+        <div class="fnode clickable" role="button" tabindex="0" data-act="agents" data-pipe="A" data-stage="Profile" title="Pipeline A · Profile agents"><span class="ft">Profile</span><span class="fs">identify source · transform · DQ</span></div><div class="farrow">→</div>
+        <div class="fnode clickable" role="button" tabindex="0" data-act="agents" data-pipe="A" data-stage="Enrich" title="Pipeline A · Enrich agents"><span class="ft">Enrich</span><span class="fs">attribute via HSGA</span></div><div class="farrow">→</div>
+        <div class="fnode clickable" role="button" tabindex="0" data-act="agents" data-pipe="A" data-stage="Map" title="Pipeline A · Map agents"><span class="ft">Map</span><span class="fs">→ PLM model slots</span></div><div class="farrow">→</div>
+        <div class="fnode clickable" role="button" tabindex="0" data-act="agents" data-pipe="A" data-stage="Evaluate" title="Pipeline A · Evaluate agents"><span class="ft">Evaluate</span><span class="fs">PMI discipline skills</span></div><div class="farrow">→</div>
+        <div class="fnode clickable" role="button" tabindex="0" data-act="agents" data-pipe="A" data-stage="Load" title="Pipeline A · Load agents"><span class="ft">Load</span><span class="fs">→ PLM model</span></div>
+      </div></div></div>
+
+    <div class="lane"><div class="lane-h B clickable" role="button" tabindex="0" data-act="agents" data-pipe="B" data-stage="" title="View all Pipeline B agents">Pipeline B · Lifecycle artifact documents</div><div class="lane-body">
+      <div class="flow">
+        <div class="fnode clickable" role="button" tabindex="0" data-act="agents" data-pipe="B" data-stage="Extract" title="Pipeline B · Extract agents"><span class="ft">Extract</span><span class="fs">library connectors · parse · OCR</span></div><div class="farrow">→</div>
+        <div class="fnode clickable" role="button" tabindex="0" data-act="agents" data-pipe="B" data-stage="Profile" title="Pipeline B · Profile agents"><span class="ft">Profile</span><span class="fs">classify type · template · DQ</span></div><div class="farrow">→</div>
+        <div class="fnode clickable" role="button" tabindex="0" data-act="agents" data-pipe="B" data-stage="Enrich" title="Pipeline B · Enrich agents"><span class="ft">Enrich</span><span class="fs">attribute · extract · trace via HSGA</span></div><div class="farrow">→</div>
+        <div class="fnode clickable" role="button" tabindex="0" data-act="agents" data-pipe="B" data-stage="Map" title="Pipeline B · Map agents"><span class="ft">Map</span><span class="fs">→ PLM model slots</span></div><div class="farrow">→</div>
+        <div class="fnode clickable" role="button" tabindex="0" data-act="agents" data-pipe="B" data-stage="Evaluate" title="Pipeline B · Evaluate agents"><span class="ft">Evaluate</span><span class="fs">discipline · standard · governance skills</span></div><div class="farrow">→</div>
+        <div class="fnode clickable" role="button" tabindex="0" data-act="agents" data-pipe="B" data-stage="Load" title="Pipeline B · Load agents"><span class="ft">Load</span><span class="fs">→ PLM model + registers</span></div>
+      </div></div></div>
+
+    <div class="band clickable" role="button" tabindex="0" data-act="section" data-target="s-hsga" title="Go to §4 · Holonic Semantic Layer"><span class="bt">Holonic Semantic Layer</span><span class="bs">GraphDB <span class="mono">value-kb</span> · RDSG / HSGA ontologies (OWL / SHACL) · Pinecone RAG. Provides attribution inference, ontology alignment, holon assignment, traceability, and the causal graph for business impact.</span></div>
+    <div class="govrail">
+      <span class="g clickable" role="button" tabindex="0" data-act="agents" data-pipe="X" data-stage="" data-text="Orchestrator" title="View Orchestrator agent">Orchestrator (DAG)</span><span class="g clickable" role="button" tabindex="0" data-act="agents" data-pipe="X" data-stage="" data-text="Circuit" title="View Circuit-Breaker / MTBH agent">Circuit-breaker / MTBH confidence</span><span class="g clickable" role="button" tabindex="0" data-act="agents" data-pipe="X" data-stage="" data-text="Lineage" title="View Lineage &amp; Provenance agent">Lineage &amp; provenance</span><span class="g clickable" role="button" tabindex="0" data-act="agents" data-pipe="X" data-stage="" data-text="Reconciliation" title="View Reconciliation agent">Reconciliation</span><span class="g clickable" role="button" tabindex="0" data-act="agents" data-pipe="X" data-stage="" data-text="Human-in-the-Loop" title="View Human-in-the-Loop router">Human-in-the-loop router</span><span class="g clickable" role="button" tabindex="0" data-act="agents" data-pipe="X" data-stage="" data-text="Telemetry" title="View Telemetry &amp; Alerting agent">Telemetry</span>
+    </div>
+
+    <div style="margin-top:12px" class="flow">
+      <div class="fnode clickable" style="border-color:var(--navy)" role="button" tabindex="0" data-act="section" data-target="s-model" title="Go to §5 · PLM ingestion model &amp; mappings"><span class="ft">PLM ingestion model</span><span class="fs">canonical project×phase×artifact scores</span></div><div class="farrow">→</div>
+      <div class="fnode clickable" role="button" tabindex="0" data-act="section" data-target="s-dash" title="Go to §7 · PLM Assessment Console (D0)"><span class="ft">PLM Assessment Console</span><span class="fs">portfolio · gate · risk</span></div>
+      <div class="farrow">→</div>
+      <div class="fnode clickable" role="button" tabindex="0" data-act="section" data-target="s-dash" title="Go to §7 · Operational / analytic dashboards"><span class="ft">4 operational / analytic dashboards</span><span class="fs">ingestion ×2 · defect burndown · business impact</span></div>
+    </div>
+  </div>
+
+  <div class="callout">Lineage to what we already built: the six-stage pipelines emit records into the <b>PLM ingestion model</b>; that model serialises to the console's <span class="mono">console_import.json</span> contract; the sample <span class="mono">PLM_Ingestion_Sample.xlsx</span> is one concrete instance of that contract. This document explains the machinery that produces it.</div>
+</section>
+
+<!-- 2. CANONICAL PIPELINE -->
+<section class="doc" id="s-canon">
+  <div class="sec-h"><span class="no">2</span><h2>Canonical agent stages</h2></div>
+  <p class="lead">Both pipelines follow one pattern so agents, telemetry, and governance are reusable. Stages differ only in their connectors and their skill set.</p>
+  <div class="card">
+    <div class="stagestrip">
+      <div class="stage clickable" role="button" tabindex="0" data-act="agents" data-pipe="" data-stage="Extract" title="View all Extract agents"><div class="sn">01</div><div class="st">Extract</div><div class="sd">Pull raw records/documents from heterogeneous sources; preserve everything.</div></div>
+      <div class="stage clickable" role="button" tabindex="0" data-act="agents" data-pipe="" data-stage="Profile" title="View all Profile agents"><div class="sn">02</div><div class="st">Profile</div><div class="sd">Identify each source, infer field/section semantics, canonicalise, run data-quality checks (source defects).</div></div>
+      <div class="stage clickable" role="button" tabindex="0" data-act="agents" data-pipe="" data-stage="Enrich" title="View all Enrich agents"><div class="sn">03</div><div class="st">Enrich</div><div class="sd">Attribute phase / discipline / artifact and align to ontology via the semantic layer; score confidence.</div></div>
+      <div class="stage clickable" role="button" tabindex="0" data-act="agents" data-pipe="" data-stage="Map" title="View all Map agents"><div class="sn">04</div><div class="st">Map</div><div class="sd">Bind enriched records to PLM model slots and shared targets.</div></div>
+      <div class="stage clickable" role="button" tabindex="0" data-act="agents" data-pipe="" data-stage="Evaluate" title="View all Evaluate agents"><div class="sn">05</div><div class="st">Evaluate</div><div class="sd">Run discipline / standard / governance skills → conformance, defects (major/minor), risk.</div></div>
+      <div class="stage clickable" role="button" tabindex="0" data-act="agents" data-pipe="" data-stage="Load" title="View all Load agents"><div class="sn">06</div><div class="st">Load</div><div class="sd">Write scores to the PLM model and registers; emit lineage and telemetry.</div></div>
+    </div>
+    <h4 style="margin-top:14px">Cross-cutting governance (every stage)</h4>
+    <div class="govrail">
+      <span class="g clickable" role="button" tabindex="0" data-act="agents" data-pipe="X" data-stage="" data-text="Orchestrator" title="View Orchestrator agent">Orchestrator — DAG scheduling &amp; retries</span>
+      <span class="g clickable" role="button" tabindex="0" data-act="agents" data-pipe="X" data-stage="" data-text="Circuit" title="View Circuit-Breaker / MTBH agent">Circuit-breaker (MTBH) — routes low-confidence output to review</span>
+      <span class="g clickable" role="button" tabindex="0" data-act="agents" data-pipe="X" data-stage="" data-text="Lineage" title="View Lineage &amp; Provenance agent">Lineage — source→transform→score provenance</span>
+      <span class="g clickable" role="button" tabindex="0" data-act="agents" data-pipe="X" data-stage="" data-text="Reconciliation" title="View Reconciliation agent">Reconciliation — multi-source conflict resolution</span>
+      <span class="g clickable" role="button" tabindex="0" data-act="agents" data-pipe="X" data-stage="" data-text="Human-in-the-Loop" title="View Human-in-the-Loop router">HITL router — reviewer assignment</span>
+      <span class="g clickable" role="button" tabindex="0" data-act="agents" data-pipe="X" data-stage="" data-text="Telemetry" title="View Telemetry &amp; Alerting agent">Telemetry — metrics to ops dashboards</span>
+    </div>
+  </div>
+</section>
+
+<!-- 3. AGENT CATALOG -->
+<section class="doc" id="s-agents">
+  <div class="sec-h"><span class="no">3</span><h2>Agent catalog</h2></div>
+  <p class="lead">Exhaustive inventory. Each agent lists its stage, purpose, the input source it draws lineage from, its output, and the disciplines / standards it aligns to. Filter by pipeline, stage, or discipline.</p>
+  <div class="filters">
+    <select id="fPipe"><option value="">All pipelines</option><option value="A">Pipeline A · Project</option><option value="B">Pipeline B · Documents</option><option value="X">Cross-cutting</option><option value="BI">Business impact</option></select>
+    <select id="fStage"><option value="">All stages</option><option>Extract</option><option>Profile</option><option>Enrich</option><option>Map</option><option>Evaluate</option><option>Load</option><option>Govern</option><option>Impact</option></select>
+    <select id="fDisc"><option value="">All disciplines</option></select>
+    <input id="fText" placeholder="search agents…" style="min-width:180px">
+    <span class="count" id="agCount"></span>
+  </div>
+  <div class="tbl-wrap"><table id="agTable"><thead><tr>
+    <th>Agent</th><th>Pipe</th><th>Stage</th><th>Purpose</th><th>Input source (lineage)</th><th>Output</th><th>Discipline / standard alignment</th>
+  </tr></thead><tbody id="agBody"></tbody></table></div>
+  <p class="footnote" style="margin-top:8px">Skill-runner agents (Evaluate) each execute a set of individual skills — enumerated in §6. A single Evaluate agent may run dozens of skills per artifact.</p>
+</section>
+
+<!-- 4. SEMANTIC LAYER -->
+<section class="doc" id="s-hsga">
+  <div class="sec-h"><span class="no">4</span><h2>Holonic Semantic Layer</h2></div>
+  <p class="lead">The shared reasoning substrate. Every enrichment, mapping, traceability, and causal-projection decision resolves against it, which is what lets inconsistent sources land in one coherent model.</p>
+  <div class="grid2">
+    <div class="card"><h3>What it holds</h3>
+      <ul class="tick">
+        <li><b>Ontologies</b> — RDSG and HSGA v3.0 (OWL), constraints in SHACL, held in GraphDB <span class="mono">value-kb</span>.</li>
+        <li><b>Taxonomies &amp; vocabularies</b> — lifecycle phases, disciplines, artifact types, defect classes.</li>
+        <li><b>Holarchy</b> — task → story → epic → initiative → project → program → portfolio holons.</li>
+        <li><b>Traceability graph</b> — requirements ↔ Jira items ↔ artifacts ↔ tests ↔ decisions.</li>
+        <li><b>Causal graph</b> — capabilities → processes → services → domains → value streams (for business impact).</li>
+        <li><b>RAG index</b> — Pinecone embeddings (Avatar 2.0) for retrieval during attribution and skill evaluation.</li>
+      </ul>
+    </div>
+    <div class="card"><h3>What it does for the pipelines</h3>
+      <ul class="tick">
+        <li><b>Attribution</b> — infers phase / discipline / artifact for records whose source doesn't say so.</li>
+        <li><b>Alignment</b> — maps arbitrary source terms to canonical classes (the RDSG gateway).</li>
+        <li><b>Holon assignment</b> — situates each record in the program holarchy for correct roll-up.</li>
+        <li><b>Traceability</b> — links Pipeline A items to Pipeline B artifacts so a phase-artifact slot draws on both.</li>
+        <li><b>Causal reasoning</b> — projects how a project's realised maturity propagates to business value.</li>
+        <li><b>Confidence</b> — every inference is scored; low confidence trips the circuit-breaker (MTBH).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 5. PLM MODEL & MAPPINGS -->
+<section class="doc" id="s-model">
+  <div class="sec-h"><span class="no">5</span><h2>PLM ingestion model &amp; mappings</h2></div>
+  <p class="lead">The convergence point. Both pipelines write to one canonical record per project × phase × artifact slot; project-data signals and document-conformance signals are reconciled into a single assessment. The model serialises to the console's import contract.</p>
+  <div class="card"><h3>Canonical record</h3>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Field</th><th>Meaning</th><th>Fed by</th><th>Console field</th></tr></thead><tbody>
+      <tr><td class="mono">portfolio / program / project</td><td>Holarchy placement</td><td>Holon Assignment (A)</td><td class="mono">projects[]</td></tr>
+      <tr><td class="mono">phase · discipline · artifactSlot</td><td>Taxonomy coordinates</td><td>Semantic Attribution (A/B)</td><td class="mono">artifact id (phase.g.a)</td></tr>
+      <tr><td class="mono">target (0–3)</td><td>Shared expected maturity</td><td>Target &amp; Baseline Alignment</td><td class="mono">targets[]</td></tr>
+      <tr><td class="mono">assessment (0–3)</td><td>Reconciled observed maturity</td><td>Score Aggregation (A+B)</td><td class="mono">scores{id:value}</td></tr>
+      <tr><td class="mono">defects[]</td><td>Major/minor, per skill/standard</td><td>Defect Detection (B) · DQ (A)</td><td>→ defect dashboard</td></tr>
+      <tr><td class="mono">risk{L,I,E}</td><td>Likelihood × impact exposure</td><td>Risk Evaluation (A/B)</td><td class="mono">Risk screen</td></tr>
+      <tr><td class="mono">confidence</td><td>MTBH inference confidence</td><td>Attribution Confidence</td><td>→ circuit-breaker</td></tr>
+      <tr><td class="mono">lineage[]</td><td>source→agent→timestamp chain</td><td>Lineage &amp; Provenance</td><td>→ audit</td></tr>
+      </tbody></table></div>
+    <h4>Reconciliation rule</h4>
+    <p class="tight">A slot's <span class="mono">assessment</span> blends the Pipeline-A signal (Jira execution evidence) and the Pipeline-B signal (artifact conformance). Where they disagree beyond tolerance, the Reconciliation Agent lowers confidence and the circuit-breaker routes the slot to human review rather than silently averaging — the same MTBH posture the console's gate enforces downstream.</p>
+  </div>
+</section>
+
+<!-- 6. SKILLS & GOVERNANCE MATRIX -->
+<section class="doc" id="s-skills">
+  <div class="sec-h"><span class="no">6</span><h2>Skills &amp; governance matrix</h2></div>
+  <p class="lead">Pipeline B is skill-heavy: every artifact is evaluated against many disciplines, standards, and governance regimes. Each skill returns a conformance score, defects (major / minor), and a risk rating; these aggregate to the slot's maturity.</p>
+
+  <div class="card"><h3>Disciplines</h3>
+    <div class="tbl-wrap"><table><thead><tr><th>Skill</th><th>Body of knowledge</th><th>Evaluates</th><th>Applies to</th></tr></thead><tbody>
+      <tr><td>Systems Engineering</td><td>INCOSE HB · ISO/IEC/IEEE 15288</td><td>Lifecycle process coverage, V&amp;V, traceability, MoEs</td><td>ConOps, req specs, V&amp;V plans, arch</td></tr>
+      <tr><td>Requirements Engineering</td><td>IEEE 29148 · INCOSE GtWR</td><td>Necessary, unambiguous, verifiable, traceable, singular</td><td>Stakeholder/system requirements</td></tr>
+      <tr><td>Business Architecture</td><td>BIZBOK</td><td>Capability, value-stream, and process coherence</td><td>Strategy maps, capability models</td></tr>
+      <tr><td>Enterprise Architecture</td><td>TOGAF · ISO 42010</td><td>Viewpoints, correspondence, rationale</td><td>Architecture descriptions</td></tr>
+      <tr><td>Data Engineering</td><td>DCAM</td><td>Warehousing, transforms, access, policy enforcement</td><td>Data specs, pipelines</td></tr>
+      <tr><td>Knowledge Engineering</td><td>OWL/SHACL practice</td><td>Vocabulary, taxonomy, ontology, mapping quality</td><td>Semantic models</td></tr>
+      <tr><td>Quality Engineering</td><td>Quality-by-Design</td><td>Design controls, inspections, defect discipline</td><td>All artifacts</td></tr>
+    </tbody></table></div></div>
+
+  <div class="card"><h3>Standards</h3>
+    <div class="tbl-wrap"><table><thead><tr><th>Standard</th><th>Scope</th><th>Defect focus</th></tr></thead><tbody>
+      <tr><td>ISO/IEC/IEEE 15288</td><td>System life-cycle processes</td><td>Missing process outputs, unverified requirements</td></tr>
+      <tr><td>ISO/IEC/IEEE 42010</td><td>Architecture description</td><td>Unidentified stakeholders/concerns, missing views</td></tr>
+      <tr><td>IEEE 29148</td><td>Requirements engineering</td><td>Ambiguous, untraceable, unverifiable requirements</td></tr>
+      <tr><td>ISO 9001</td><td>Quality management</td><td>Uncontrolled documents, missing records</td></tr>
+      <tr><td>ISO/IEC 27001</td><td>Information security</td><td>Unassessed controls, missing risk treatment</td></tr>
+      <tr><td>IEC 62304</td><td>Medical device software</td><td>Missing safety classification / V&amp;V evidence</td></tr>
+      <tr><td>ICH Q8–Q12 (Quality by Design)</td><td>Pharma design space</td><td>Undefined CQAs / control strategy</td></tr>
+      <tr><td>CMMI</td><td>Process maturity</td><td>Practice gaps by maturity level</td></tr>
+    </tbody></table></div></div>
+
+  <div class="card"><h3>Governance</h3>
+    <div class="tbl-wrap"><table><thead><tr><th>Regime</th><th>Basis</th><th>Defect focus</th></tr></thead><tbody>
+      <tr><td>Regulatory</td><td>FDA GxP · 21 CFR Part 11 · GDPR</td><td>Records integrity, consent, audit trail</td></tr>
+      <tr><td>Data governance</td><td>DAMA-DMBOK · DCAM</td><td>Ownership, lineage, quality SLAs</td></tr>
+      <tr><td>Semantic governance</td><td>HSGA · OWL / SHACL</td><td>Ontology conformance, constraint violations</td></tr>
+      <tr><td>Analytic governance</td><td>Model/metric governance</td><td>Unvalidated metrics, undocumented method</td></tr>
+      <tr><td>AI governance</td><td>NIST AI RMF · ISO/IEC 42001 · EU AI Act</td><td>Unmanaged model risk, missing HITL, no provenance</td></tr>
+    </tbody></table></div></div>
+
+  <div class="card"><h3>Defect &amp; risk scoring model</h3>
+    <div class="grid3">
+      <div><h4>Defect severity</h4><p class="tight"><b>Major</b> — a standard-mandated element is missing or wrong; gate-tripping. <b>Minor</b> — a quality/style shortfall; advisory, accrues as debt.</p></div>
+      <div><h4>Risk</h4><p class="tight">Each defect gets likelihood × impact (1–5). Impact rises with criticality, phase (release-facing), and governance regime. Exposure bands: Low / Moderate / High / Critical.</p></div>
+      <div><h4>Aggregation</h4><p class="tight">Per artifact: conformance across skills − weighted defects → maturity (0–3) for the slot. Majors cap the achievable score; a major on a critical artifact is a hard gate in the console.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 7. DASHBOARDS -->
+<section class="doc" id="s-dash">
+  <div class="sec-h"><span class="no">7</span><h2>Dashboards</h2></div>
+  <p class="lead">One assessment console (built) plus four operational / analytic dashboards. Each lists its consumers, key panels, and the agents / pipeline it draws from.</p>
+
+  <div class="dash"><div class="dash-h"><span class="dn">D0</span><span class="dt">PLM Assessment Console</span><span class="pill pA">A</span><span class="pill pB">B</span></div>
+    <div class="dash-b">
+      <div><h4>Purpose</h4><p class="tight">Portfolio maturity, per-phase gates, per-phase appetite, multi-agent risk, and the Go/No-Go determination.</p></div>
+      <div><h4>Consumers</h4><p class="tight">OPR &amp; Release management, architects, program leadership.</p></div>
+      <div class="full"><h4>Data lineage</h4><p class="chip-src">PLM ingestion model (both pipelines) → <span class="mono">console_import.json</span>. <b>Status: built.</b></p></div>
+    </div></div>
+
+  <div class="dash"><div class="dash-h"><span class="dn">D1</span><span class="dt">Project &amp; Program Ingestion Ops</span><span class="pill pA">A</span></div>
+    <div class="dash-b">
+      <div><h4>Key panels</h4><ul class="tick"><li>Per-Jira-source coverage &amp; extraction throughput</li><li>Profiling pass/fail, canonicalisation coverage</li><li>Attribution confidence distribution (MTBH)</li><li>HITL queue depth, error/retry rates</li></ul></div>
+      <div><h4>Consumers</h4><p class="tight">Ingestion / platform ops, data governance.</p><h4>Data lineage</h4><p class="chip-src">Pipeline A extraction→enrich telemetry &amp; lineage store.</p></div>
+    </div></div>
+
+  <div class="dash"><div class="dash-h"><span class="dn">D2</span><span class="dt">Document Ingestion Ops</span><span class="pill pB">B</span></div>
+    <div class="dash-b">
+      <div><h4>Key panels</h4><ul class="tick"><li>Library coverage, parse / OCR success</li><li>Artifact-type classification confidence</li><li>Template conformance rates</li><li>Skill-evaluation throughput per standard / discipline</li></ul></div>
+      <div><h4>Consumers</h4><p class="tight">Document ops, quality, discipline leads.</p><h4>Data lineage</h4><p class="chip-src">Pipeline B extraction→evaluate telemetry.</p></div>
+    </div></div>
+
+  <div class="dash"><div class="dash-h"><span class="dn">D3</span><span class="dt">Defect Burndown · Risk · Score-Impact</span><span class="pill pA">A</span><span class="pill pB">B</span></div>
+    <div class="dash-b">
+      <div><h4>Key panels</h4><ul class="tick"><li>Defects (major/minor) by phase, discipline, standard, governance</li><li>Burndown across review cycles; open vs closed</li><li>Risk exposure heat (L×I)</li><li><b>Score-impact</b> — defect closure → PLM score movement</li></ul></div>
+      <div><h4>Sources</h4><p class="tight">Inspections &amp; quality checkpoints across the whole lifecycle, both pipelines.</p><h4>Data lineage</h4><p class="chip-src">Defect &amp; Risk Register (Load stage) + PLM model deltas.</p></div>
+      <div class="full callout">This is the connective tissue between quality work and the gate: closing a major defect is shown to lift a specific phase-artifact score, so remediation is prioritised by score movement, not just count.</div>
+    </div></div>
+
+  <div class="dash"><div class="dash-h"><span class="dn">D4</span><span class="dt">Business Impact Assessment</span><span class="pill pBI">BI</span></div>
+    <div class="dash-b">
+      <div><h4>Key panels</h4><ul class="tick"><li>Value uplift by business process, service, domain, value stream</li><li>Causal projection of project / initiative outcomes</li><li>ROI — refined once strategy artifacts are in the semantic layer</li></ul></div>
+      <div><h4>Consumers</h4><p class="tight">Business architecture, portfolio investment, executive.</p><h4>Data lineage</h4><p class="chip-src">Business-impact agents on the HSGA causal graph + realised PLM maturity.</p></div>
+    </div></div>
+</section>
+
+<!-- 8. INTEGRATIONS -->
+<section class="doc" id="s-int">
+  <div class="sec-h"><span class="no">8</span><h2>Integration topology</h2></div>
+  <p class="lead">Six integration domains. Sources flow in through connectors; the semantic substrate and canonical store sit in the middle; consumption and the governance plane wrap the whole.</p>
+  <div class="grid3">
+    <div class="card"><h3>Sources</h3><ul class="tick"><li>Jira Cloud / DC — REST &amp; GraphQL, per instance</li><li>Confluence / SharePoint — content APIs</li><li>Git repositories — file &amp; commit APIs</li><li>File shares — batch connectors</li><li>Business architecture — BIZBOK exports</li></ul></div>
+    <div class="card"><h3>Semantic substrate</h3><ul class="tick"><li>GraphDB <span class="mono">value-kb</span> — SPARQL endpoint</li><li>HSGA / RDSG ontologies — OWL + SHACL</li><li>Pinecone — RAG embeddings (Avatar 2.0)</li></ul></div>
+    <div class="card"><h3>Agent runtime</h3><ul class="tick"><li>Skill agents — Claude skills library</li><li>DSPy adaptive modules</li><li>Orchestrator — DAG scheduler</li><li>Circuit-breaker (MTBH) service</li></ul></div>
+    <div class="card"><h3>Canonical store</h3><ul class="tick"><li>PLM ingestion model</li><li>Defect &amp; risk registers</li><li>Lineage / provenance store</li></ul></div>
+    <div class="card"><h3>Consumption / BI</h3><ul class="tick"><li>PLM console — <span class="mono">import JSON</span> contract</li><li>Operational dashboards D1–D3</li><li>Business impact D4 / BI layer</li></ul></div>
+    <div class="card"><h3>Governance plane</h3><ul class="tick"><li>MTBH circuit-breaker</li><li>Provenance &amp; audit</li><li>Human-in-the-loop review</li><li>AI-governance controls (NIST / ISO 42001)</li></ul></div>
+  </div>
+</section>
+
+<!-- 9. BUSINESS IMPACT -->
+<section class="doc" id="s-impact">
+  <div class="sec-h"><span class="no">9</span><h2>Business impact &amp; ROI</h2></div>
+  <p class="lead">Realised maturity is only worth what it moves in the business. Mapping project data onto the semantic layer's causal graph projects value uplift; ingesting strategy artifacts sharpens the ROI projection.</p>
+  <div class="card">
+    <div class="flow">
+      <div class="fnode"><span class="ft">Project / initiative</span><span class="fs">realised maturity (PLM)</span></div><div class="farrow">→</div>
+      <div class="fnode"><span class="ft">Capabilities</span><span class="fs">enabled / uplifted</span></div><div class="farrow">→</div>
+      <div class="fnode"><span class="ft">Business processes</span><span class="fs">cycle time · quality</span></div><div class="farrow">→</div>
+      <div class="fnode"><span class="ft">Business services</span><span class="fs">SLA · cost-to-serve</span></div><div class="farrow">→</div>
+      <div class="fnode"><span class="ft">Business domains</span><span class="fs">cross-domain effects</span></div><div class="farrow">→</div>
+      <div class="fnode"><span class="ft">Value streams</span><span class="fs">value uplift</span></div><div class="farrow">→</div>
+      <div class="fnode" style="border-color:var(--bi)"><span class="ft">ROI projection</span><span class="fs">refined by strategy artifacts</span></div>
+    </div>
+    <div class="band" style="margin-top:10px"><span class="bt">Causal engine</span><span class="bs">The Causal Mapping Agent traverses the HSGA causal graph from realised maturity to value streams; the ROI Projection Agent weights each path by strategic alignment once the Strategy Artifact Ingestion Agent has loaded business-architecture (BIZBOK) maps into the semantic layer. Until then, projections are directional; after, they are strategy-weighted.</span></div>
+  </div>
+</section>
+
+</div></main>
+
+<footer><div class="wrap">PLM Assessment Platform · Solution Architecture v1.0 · agentic ingestion, semantic enrichment, skill-based scoring, business-impact projection. Companion artifacts: PLM Assessment Console, PLM_Ingestion_Sample.xlsx, console_import.json.</div></footer>
+
+<script>
+const AGENTS=[
+ // Cross-cutting
+ {n:"Orchestrator Agent",p:"X",s:"Govern",pur:"Schedules the agent DAG across both pipelines; handles retries and back-pressure.",src:"Pipeline run manifests",out:"Stage execution plan",d:["Analytic Governance","Ops"]},
+ {n:"Circuit-Breaker / Confidence Governor (MTBH)",p:"X",s:"Govern",pur:"Gates low-confidence agent output to human review instead of letting it flow downstream.",src:"Agent confidence signals",out:"Pass / hold decisions",d:["AI Governance","Semantic Governance"]},
+ {n:"Lineage & Provenance Agent",p:"X",s:"Govern",pur:"Records the source→transform→score chain for every record for audit and reproducibility.",src:"All agent I/O",out:"Provenance graph",d:["Data Governance"]},
+ {n:"Reconciliation & Conflict Agent",p:"X",s:"Govern",pur:"Resolves conflicts when multiple sources describe the same entity or slot.",src:"Enriched records (A+B)",out:"Reconciled record / conflict flag",d:["Data Governance"]},
+ {n:"Human-in-the-Loop Router",p:"X",s:"Govern",pur:"Assigns breaker-flagged items to the right reviewer by discipline.",src:"Circuit-breaker flags",out:"Review tasks",d:["AI Governance"]},
+ {n:"Telemetry & Alerting Agent",p:"X",s:"Govern",pur:"Emits pipeline metrics and alerts to the operational dashboards.",src:"Agent runtime events",out:"Metrics / alerts",d:["Ops"]},
+ // Pipeline A — Extract
+ {n:"Jira Connector Agent (per instance)",p:"A",s:"Extract",pur:"Pulls issues, custom fields, workflows and links from each Jira project via REST/GraphQL.",src:"Jira Cloud / DC instances",out:"Raw issue records",d:["PMI"]},
+ {n:"Custom-Field Discovery Agent",p:"A",s:"Extract",pur:"Catalogues each project's non-standard custom fields — the key to inconsistent setups.",src:"Jira field metadata",out:"Field catalogue",d:["Data Governance"]},
+ {n:"Workflow & Status Extraction Agent",p:"A",s:"Extract",pur:"Captures each project's bespoke workflow and status model.",src:"Jira workflow schemes",out:"Workflow map",d:["PMI"]},
+ {n:"Link & Hierarchy Extraction Agent",p:"A",s:"Extract",pur:"Extracts epic/story/subtask hierarchy and issue links / dependencies.",src:"Jira issue links",out:"Hierarchy graph",d:["Requirements"]},
+ {n:"Comment & Attachment Extraction Agent",p:"A",s:"Extract",pur:"Pulls acceptance criteria, decisions and attachments as scoring evidence.",src:"Jira comments / attachments",out:"Evidence blobs",d:["Requirements"]},
+ // Pipeline A — Profile
+ {n:"Source Fingerprint / Profiling Agent",p:"A",s:"Profile",pur:"Identifies each project's configuration fingerprint and setup maturity.",src:"Field / workflow catalogues",out:"Source profile",d:["Data Governance"]},
+ {n:"Field Semantics Inference Agent",p:"A",s:"Profile",pur:"Infers the meaning of arbitrary fields (maps e.g. 'Sev1', 'P0' to canonical severity).",src:"Field values + HSGA hints",out:"Field→concept map",d:["Semantic Governance"]},
+ {n:"Canonicalisation / Transform Agent",p:"A",s:"Profile",pur:"Normalises statuses, types, dates and points to the canonical model.",src:"Profiled fields",out:"Canonical records",d:["Data Engineering"]},
+ {n:"Data Quality Agent (project)",p:"A",s:"Profile",pur:"Runs completeness / validity / consistency / timeliness checks; raises source defects.",src:"Canonical records",out:"DQ findings",d:["Quality","Data Governance"]},
+ {n:"Entity Resolution / Dedup Agent",p:"A",s:"Profile",pur:"Resolves duplicate epics / initiatives across projects.",src:"Canonical records",out:"Resolved entities",d:["Data Governance"]},
+ // Pipeline A — Enrich
+ {n:"Semantic Attribution Agent (project)",p:"A",s:"Enrich",pur:"Infers lifecycle phase, discipline and artifact-type for records that don't declare them.",src:"Canonical records ⇄ HSGA",out:"Attributed records",d:["Knowledge/Semantic"]},
+ {n:"Holon Assignment Agent",p:"A",s:"Enrich",pur:"Places records in the task→…→portfolio holarchy for correct roll-up.",src:"HSGA holon model",out:"Holon-placed records",d:["Semantic Governance"]},
+ {n:"Ontology Alignment Agent (RDSG)",p:"A",s:"Enrich",pur:"Maps records to RDSG / HSGA classes and relations.",src:"value-kb GraphDB",out:"Ontology-aligned records",d:["Knowledge/Semantic"]},
+ {n:"Attribution Confidence Agent",p:"A",s:"Enrich",pur:"Scores inference confidence; low scores feed the circuit-breaker (MTBH).",src:"Attribution outputs",out:"Confidence scores",d:["AI Governance"]},
+ // Pipeline A — Map
+ {n:"PLM Model Mapping Agent (project)",p:"A",s:"Map",pur:"Maps enriched records to project×phase×artifact slots.",src:"Enriched / attributed records",out:"Slot bindings",d:["Systems Engineering"]},
+ {n:"Target & Baseline Alignment Agent",p:"A",s:"Map",pur:"Binds shared maturity targets and appetite to each slot.",src:"PLM target model",out:"Targeted slots",d:["Systems Engineering"]},
+ // Pipeline A — Evaluate
+ {n:"PMI Knowledge-Area Skill Agents (×10)",p:"A",s:"Evaluate",pur:"Evaluate project-data compliance across Integration, Scope, Schedule, Cost, Quality, Resource, Communications, Risk, Procurement, Stakeholder management.",src:"Mapped project records",out:"Compliance scores",d:["PMI"]},
+ {n:"PMBOK Performance-Domain Skill Agent",p:"A",s:"Evaluate",pur:"Evaluates against PMBOK 7 performance domains and principles.",src:"Mapped records",out:"Domain scores",d:["PMI"]},
+ {n:"Project Defect & Risk Scoring Agent",p:"A",s:"Evaluate",pur:"Classifies project-data defects (major/minor) and computes risk.",src:"Skill outputs + DQ findings",out:"Defects / risk",d:["Quality","Risk"]},
+ // Pipeline A — Load
+ {n:"PLM Ingestion / Load Agent (project)",p:"A",s:"Load",pur:"Writes project×phase×artifact scores to the PLM model and console contract.",src:"Evaluated scores",out:"PLM records",d:["Systems Engineering"]},
+ // Pipeline B — Extract
+ {n:"Library Connector Agents",p:"B",s:"Extract",pur:"Pull documents from Confluence, SharePoint, Git and file shares.",src:"Document libraries",out:"Raw documents",d:["Data Governance"]},
+ {n:"Document Parser & OCR Agent",p:"B",s:"Extract",pur:"Extracts text, structure and diagrams, including scanned content.",src:"Raw documents",out:"Parsed content",d:["Data Engineering"]},
+ {n:"Structure & Section Extraction Agent",p:"B",s:"Extract",pur:"Detects headings, tables, figures and requirement blocks.",src:"Parsed content",out:"Structured document",d:["Requirements"]},
+ {n:"Document Metadata Agent",p:"B",s:"Extract",pur:"Captures author, version, status and dates.",src:"Library metadata",out:"Artifact metadata",d:["Data Governance"]},
+ // Pipeline B — Profile
+ {n:"Artifact Type Classifier Agent",p:"B",s:"Profile",pur:"Classifies the artifact (req spec, architecture description, ConOps, test plan, DDD…).",src:"Parsed content + HSGA",out:"Artifact type",d:["Systems Engineering"]},
+ {n:"Template & Completeness Profiling Agent",p:"B",s:"Profile",pur:"Checks the artifact against its expected template / sections.",src:"Classified artifact",out:"Completeness profile",d:["Quality"]},
+ {n:"Currency & Version Agent",p:"B",s:"Profile",pur:"Flags staleness and version-control issues.",src:"Metadata",out:"Currency flags",d:["Data Governance"]},
+ {n:"Document Quality Agent",p:"B",s:"Profile",pur:"Detects broken links, orphan sections and internal inconsistency; raises defects.",src:"Structured document",out:"DQ findings",d:["Quality"]},
+ // Pipeline B — Enrich
+ {n:"Semantic Attribution Agent (document)",p:"B",s:"Enrich",pur:"Maps the artifact to phase / discipline / artifact-slot via the semantic layer.",src:"Content ⇄ HSGA",out:"Attributed artifact",d:["Knowledge/Semantic"]},
+ {n:"Entity & Concept Extraction Agent",p:"B",s:"Enrich",pur:"Extracts requirements, hazards, decisions and KPIs into the graph.",src:"Content + value-kb",out:"Concept graph",d:["Knowledge/Semantic"]},
+ {n:"Traceability Linking Agent",p:"B",s:"Enrich",pur:"Links artifacts to Jira items and to each other (RDSG traceability).",src:"Pipeline A records + doc entities",out:"Trace links",d:["Requirements"]},
+ // Pipeline B — Map
+ {n:"PLM Model Mapping Agent (document)",p:"B",s:"Map",pur:"Maps the artifact to its project×phase×artifact slot.",src:"Attributed artifact",out:"Slot binding",d:["Systems Engineering"]},
+ // Pipeline B — Evaluate
+ {n:"Discipline Skill Agents",p:"B",s:"Evaluate",pur:"Evaluate each artifact against discipline bodies of knowledge (SE, Business Arch, Requirements, EA, Data Eng, Quality, Knowledge Eng).",src:"Mapped artifact",out:"Conformance scores",d:["Systems Engineering","Business Architecture","Requirements","Enterprise Architecture","Data Engineering","Quality","Knowledge/Semantic"]},
+ {n:"Standards Conformance Skill Agents",p:"B",s:"Evaluate",pur:"Evaluate against 15288, 42010, 29148, 9001, 27001, 62304, ICH Q8–Q12, CMMI.",src:"Mapped artifact",out:"Conformance / defects",d:["Standards","Quality"]},
+ {n:"Governance Skill Agents",p:"B",s:"Evaluate",pur:"Evaluate regulatory, data, semantic, analytic and AI governance conformance.",src:"Mapped artifact + HSGA",out:"Governance findings",d:["Regulatory","Data Governance","Semantic Governance","Analytic Governance","AI Governance"]},
+ {n:"Defect Detection & Classification Agent",p:"B",s:"Evaluate",pur:"Per skill, detects defects and classifies them major / minor per rubric.",src:"Skill findings",out:"Classified defects",d:["Quality"]},
+ {n:"Risk Evaluation Agent (document)",p:"B",s:"Evaluate",pur:"Computes likelihood × impact per defect and per artifact.",src:"Classified defects",out:"Risk ratings",d:["Risk"]},
+ {n:"Conformance Score Aggregation Agent",p:"B",s:"Evaluate",pur:"Rolls skill conformance, defects and risk into a 0–3 maturity for the PLM slot.",src:"Skill + defect + risk",out:"Slot assessment",d:["Systems Engineering","Quality"]},
+ // Pipeline B — Load
+ {n:"PLM Ingestion / Load Agent (document)",p:"B",s:"Load",pur:"Writes artifact-derived scores to the PLM model and console contract.",src:"Aggregated scores",out:"PLM records",d:["Systems Engineering"]},
+ {n:"Defect & Risk Register Writer",p:"B",s:"Load",pur:"Persists defects and risks to the burndown store for the defect dashboard.",src:"Defects / risk",out:"Register entries",d:["Quality","Risk"]},
+ // Business impact
+ {n:"Strategy Artifact Ingestion Agent",p:"BI",s:"Impact",pur:"Loads business-architecture strategy and capability maps into the semantic layer.",src:"BIZBOK artifacts",out:"Strategy graph",d:["Business Architecture"]},
+ {n:"Causal Mapping Agent",p:"BI",s:"Impact",pur:"Maps project / initiative outcomes to processes, services, domains and value streams via the HSGA causal graph.",src:"PLM records + HSGA",out:"Impact paths",d:["Business Architecture","Analytic Governance"]},
+ {n:"Value Uplift Projection Agent",p:"BI",s:"Impact",pur:"Projects value uplift per process / service / domain / value stream.",src:"Impact paths",out:"Uplift projections",d:["Business Architecture"]},
+ {n:"ROI Projection Agent",p:"BI",s:"Impact",pur:"Computes and refines ROI weighted by strategic alignment and realised maturity.",src:"Uplift + strategy graph",out:"ROI projections",d:["Business Architecture","Analytic Governance"]},
+];
+const PN={A:["Pipeline A","pA"],B:["Pipeline B","pB"],X:["Cross-cut","pX"],BI:["Bus. impact","pBI"]};
+// discipline filter options
+const discs=[...new Set(AGENTS.flatMap(a=>a.d))].sort();
+const fDisc=document.getElementById("fDisc");discs.forEach(d=>{const o=document.createElement("option");o.value=d;o.textContent=d;fDisc.appendChild(o);});
+function renderAgents(){
+  const fp=document.getElementById("fPipe").value,fs=document.getElementById("fStage").value,fd=document.getElementById("fDisc").value,ft=document.getElementById("fText").value.toLowerCase();
+  const rows=AGENTS.filter(a=>(!fp||a.p===fp)&&(!fs||a.s===fs)&&(!fd||a.d.includes(fd))&&(!ft||(a.n+a.pur+a.src).toLowerCase().includes(ft)));
+  document.getElementById("agBody").innerHTML=rows.map(a=>`<tr>
+    <td><b>${a.n}</b></td>
+    <td><span class="pill ${PN[a.p][1]}">${PN[a.p][0]}</span></td>
+    <td><span class="stagetag">${a.s}</span></td>
+    <td>${a.pur}</td>
+    <td class="chip-src">${a.src}</td>
+    <td class="chip-src">${a.out}</td>
+    <td>${a.d.map(x=>`<span class="tagchip">${x}</span>`).join("")}</td></tr>`).join("");
+  document.getElementById("agCount").textContent=rows.length+" of "+AGENTS.length+" agents";
+}
+["fPipe","fStage","fDisc","fText"].forEach(id=>document.getElementById(id).addEventListener("input",renderAgents));
+renderAgents();
+
+// section nav
+const SECS=[["s-flow","1 · Flow"],["s-canon","2 · Stages"],["s-agents","3 · Agents"],["s-hsga","4 · Semantic layer"],["s-model","5 · PLM model"],["s-skills","6 · Skills & governance"],["s-dash","7 · Dashboards"],["s-int","8 · Integrations"],["s-impact","9 · Business impact"]];
+const nav=document.getElementById("secnav");
+SECS.forEach(([id,lbl])=>{const b=document.createElement("button");b.textContent=lbl;b.onclick=()=>document.getElementById(id).scrollIntoView({behavior:"smooth",block:"start"});nav.appendChild(b);});
+const btns=[...nav.children];
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const i=SECS.findIndex(s=>s[0]===e.target.id);btns.forEach((b,j)=>b.classList.toggle("active",j===i));}});},{rootMargin:"-45% 0px -50% 0px"});
+SECS.forEach(([id])=>obs.observe(document.getElementById(id)));
+
+// interactive flow / stage navigation
+function _scrollTo(id){const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:"smooth",block:"start"});}
+function goAgents(pipe,stage,text){
+  const p=document.getElementById("fPipe");if(p)p.value=pipe||"";
+  const s=document.getElementById("fStage");if(s)s.value=stage||"";
+  const d=document.getElementById("fDisc");if(d)d.value="";
+  const t=document.getElementById("fText");if(t)t.value=text||"";
+  renderAgents();
+  _scrollTo("s-agents");
+}
+function _act(el){
+  const a=el.dataset.act;
+  if(a==="section"){_scrollTo(el.dataset.target);}
+  else if(a==="agents"){goAgents(el.dataset.pipe,el.dataset.stage,el.dataset.text);}
+}
+document.addEventListener("click",e=>{const el=e.target.closest("[data-act]");if(el)_act(el);});
+document.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){const el=e.target.closest("[data-act]");if(el){e.preventDefault();_act(el);}}});
+</script>
+</body>
+</html>

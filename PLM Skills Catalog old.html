@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PLM Skills Catalog — Build Specification</title>
+<style>
+:root{
+  --navy:#0B1F3A;--navy2:#12305A;--navy-soft:#1C3A63;
+  --gold:#C8A951;--gold-hi:#E4C572;
+  --ice:#EDF2F8;--ice2:#F6F9FC;--surface:#FFFFFF;
+  --ink:#20344B;--muted:#5E7188;--hair:#D8E1EC;
+  --nogo:#B23A3A;--rev:#B8842B;--go:#2E7D5B;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,monospace;
+  --radius:10px;
+}
+*{box-sizing:border-box}html,body{margin:0}
+body{font-family:var(--sans);color:var(--ink);background:var(--ice);line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{margin:0;font-weight:600}
+.wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+header.top{background:var(--navy);color:#fff;border-bottom:3px solid var(--gold)}
+.top .wrap{display:flex;align-items:center;gap:16px;padding:16px 22px;flex-wrap:wrap}
+.brandmark{width:34px;height:34px;flex:0 0 auto}
+.brandtext .k{font-family:var(--serif);font-size:20px}
+.brandtext .s{font-size:12px;color:#9db4d4;letter-spacing:.06em;text-transform:uppercase}
+.top .spacer{flex:1}
+.doctag{font-size:12px;color:var(--gold-hi);border:1px solid rgba(200,169,81,.5);border-radius:999px;padding:6px 12px}
+.secnav{position:sticky;top:0;z-index:30;background:var(--ice2);border-bottom:1px solid var(--hair)}
+.secnav .wrap{display:flex;gap:6px;overflow-x:auto;padding:9px 22px}
+.secnav button{flex:0 0 auto;border:1px solid var(--hair);background:#fff;border-radius:999px;padding:6px 13px;font:inherit;font-size:13px;color:var(--ink);cursor:pointer}
+.secnav button:hover{border-color:var(--navy-soft)}
+.secnav button.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.hero{background:linear-gradient(180deg,var(--navy2),var(--navy));color:#fff;padding:30px 0 32px}
+.hero .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-hi)}
+.hero h1{font-family:var(--serif);font-size:31px;margin:8px 0 10px;line-height:1.14}
+.hero p{color:#c9d7ea;max-width:84ch;margin:0}
+.hero .stat{display:flex;gap:26px;margin-top:16px;flex-wrap:wrap}
+.hero .stat .v{font-family:var(--mono);font-size:22px;font-weight:600}
+.hero .stat .l{font-size:12px;color:#9db4d4;text-transform:uppercase;letter-spacing:.04em}
+main{padding:26px 0 70px}
+section.doc{margin-bottom:40px;scroll-margin-top:64px}
+.sec-h{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+.sec-h .no{font-family:var(--mono);font-size:13px;color:var(--gold);background:var(--navy);padding:3px 8px;border-radius:5px}
+.sec-h h2{font-family:var(--serif);font-size:24px}
+.lead{color:var(--muted);max-width:90ch;margin:2px 0 18px}
+.card{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);padding:18px 20px;margin-bottom:16px}
+.card h3{font-family:var(--serif);font-size:17px;margin-bottom:8px}
+.card h4{font-size:13px;letter-spacing:.05em;text-transform:uppercase;color:var(--navy2);margin:14px 0 6px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--hair);vertical-align:top}
+th{background:var(--ice2);font-size:12px;color:var(--navy2)}
+td .mono,.mono{font-family:var(--mono);font-size:12px}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--hair);border-radius:var(--radius)}
+pre{background:var(--navy);color:#E7EEF6;border-radius:var(--radius);padding:16px 18px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.5;margin:0}
+pre .k{color:var(--gold-hi)}pre .c{color:#8FB4D6}pre .s{color:#B9D8B0}
+.copybar{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.btn{font:inherit;font-size:13px;border:1px solid var(--hair);background:#fff;color:var(--ink);padding:7px 12px;border-radius:8px;cursor:pointer}
+.btn:hover{border-color:var(--navy-soft);background:var(--ice2)}
+ul.tick{margin:6px 0;padding-left:20px}ul.tick li{margin:4px 0}
+/* worked example */
+.wex h4{margin-top:16px}
+.anchors{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:6px 0}
+.anchor{border:1px solid var(--hair);border-radius:8px;padding:8px 10px;font-size:12px}
+.anchor b{font-family:var(--mono);color:var(--navy2)}
+/* catalog */
+.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.filters select,.filters input{font:inherit;font-size:13px;padding:8px 10px;border:1px solid var(--hair);border-radius:8px;background:#fff;color:var(--ink)}
+.filters .count{font-size:12px;color:var(--muted);margin-left:auto}
+.catlegend{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.catlegend .lg{font-size:12px;padding:4px 10px;border-radius:999px;cursor:pointer;border:1px solid transparent}
+.skills{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.skill{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);padding:14px 16px;border-left:4px solid var(--hair)}
+.skill .stitle{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.skill h4{font-size:15px;font-family:var(--serif);font-weight:600}
+.catchip{font-size:10px;font-weight:700;letter-spacing:.03em;padding:2px 8px;border-radius:5px;white-space:nowrap}
+.lin{font-size:12px;color:var(--navy2);margin:6px 0}
+.lin .mono{color:var(--muted)}
+.skill .ev{font-size:13px;margin:4px 0}
+.dl{display:grid;grid-template-columns:auto 1fr;gap:2px 8px;font-size:12px;margin-top:6px}
+.dl dt{color:var(--muted);white-space:nowrap}
+.dl dd{margin:0}
+.maj{color:var(--nogo)}.min{color:var(--rev)}
+.footnote{font-size:12px;color:var(--muted)}
+.callout{border-left:3px solid var(--gold);background:var(--ice2);border-radius:0 8px 8px 0;padding:10px 14px;margin:12px 0;font-size:13px}
+footer{border-top:1px solid var(--hair);color:var(--muted);font-size:12px;padding:22px 0 60px}
+@media (max-width:900px){.skills,.anchors{grid-template-columns:1fr}}
+@media print{.secnav,.filters,.copybar .btn{display:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <svg class="brandmark" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="none" stroke="#C8A951" stroke-width="1.5"/><path d="M20 7 L31 26 H9 Z" fill="none" stroke="#C8A951" stroke-width="1.5"/><circle cx="20" cy="21" r="3.5" fill="#C8A951"/></svg>
+  <div class="brandtext"><div class="k">PLM Skills Catalog</div><div class="s">Build specification · Claude evaluation skills</div></div>
+  <div class="spacer"></div><div class="doctag">v1.0 · starting-point set</div>
+</div></header>
+
+<nav class="secnav"><div class="wrap" id="secnav"></div></nav>
+
+<section class="hero"><div class="wrap">
+  <div class="eyebrow">Purpose</div>
+  <h1>A categorized set of Claude skills, each to one template, each with source lineage</h1>
+  <p>Every skill in the Evaluate stage of the ingestion pipelines is a Claude Skill built to one consistent template and traceable to the authoritative body of knowledge it enforces. This document defines that template, shows one skill fully worked against it, and catalogs the starting-point set across eleven disciplines — so a team can build them without re-deciding structure or provenance each time.</p>
+  <div class="stat" id="heroStat"></div>
+</div></section>
+
+<main><div class="wrap">
+
+<!-- 1. TEMPLATE -->
+<section class="doc" id="s-template">
+  <div class="sec-h"><span class="no">1</span><h2>The consistent skill template</h2></div>
+  <p class="lead">Every skill is a folder with a <span class="mono">SKILL.md</span> (the same fields in the same order) plus bundled rubric and reference cards. The frontmatter carries identity and lineage; the body carries the evaluation contract. This is what makes 90 skills interoperable and auditable.</p>
+
+  <div class="card"><h3>Template fields</h3>
+    <div class="tbl-wrap"><table><thead><tr><th>Field</th><th>Purpose</th></tr></thead><tbody>
+      <tr><td class="mono">name</td><td>Stable skill id.</td></tr>
+      <tr><td class="mono">description</td><td>Pushy trigger — when Claude should invoke this skill (artifact types, keywords).</td></tr>
+      <tr><td class="mono">version</td><td>Semver; rubric changes bump the version for auditability.</td></tr>
+      <tr><td class="mono">category</td><td>One of the eleven disciplines.</td></tr>
+      <tr><td class="mono">source_lineage</td><td>Authoritative source(s) with edition and section/clause and URI — the provenance of every criterion.</td></tr>
+      <tr><td class="mono">maps_to</td><td>PLM discipline, the Evaluate agent that runs it, and the PLM artifact slots it scores.</td></tr>
+      <tr><td class="mono">scope</td><td>The inputs / artifact types this skill evaluates.</td></tr>
+      <tr><td class="mono">rubric</td><td>Anchored 0–3 dimensions with explicit anchor text (low variance).</td></tr>
+      <tr><td class="mono">defect_model</td><td>What is a major (gate-tripping) vs minor (advisory) non-conformance for this skill.</td></tr>
+      <tr><td class="mono">risk_model</td><td>How this skill's defects map to likelihood × impact.</td></tr>
+      <tr><td class="mono">output_contract</td><td>Uniform JSON returned to the PLM ingestion model.</td></tr>
+      <tr><td class="mono">governance</td><td>Confidence threshold below which the circuit-breaker routes to human review (MTBH).</td></tr>
+      <tr><td class="mono">references</td><td>Full citations — the section-level lineage behind each rubric line.</td></tr>
+    </tbody></table></div>
+
+    <h4>SKILL.md scaffold</h4>
+    <div class="copybar"><span class="footnote">Copy this to start any skill.</span><button class="btn" id="copyScaffold">Copy scaffold</button></div>
+<pre id="scaffold"><span class="c">---</span>
+<span class="k">name</span>: se-requirements-quality
+<span class="k">description</span>: <span class="s">Run when evaluating a stakeholder or system requirements artifact for quality and traceability. Triggers on requirement specs, req lists, SRS, needs statements.</span>
+<span class="k">version</span>: 1.0.0
+<span class="k">category</span>: Systems Engineering
+<span class="k">source_lineage</span>:
+  - <span class="k">title</span>: INCOSE Guide to Writing Requirements (GtWR)
+    <span class="k">edition</span>: v4, 2022
+    <span class="k">reference</span>: characteristics of individual requirements
+    <span class="k">uri</span>: ref://incose/gtwr
+  - <span class="k">title</span>: ISO/IEC/IEEE 15288
+    <span class="k">edition</span>: 2023
+    <span class="k">reference</span>: §6.4.3 System Requirements Definition
+    <span class="k">uri</span>: ref://iso/15288
+<span class="k">maps_to</span>:
+  <span class="k">discipline</span>: Requirements
+  <span class="k">evaluate_agent</span>: Discipline Skill Agents (Pipeline B)
+  <span class="k">plm_slots</span>: [define.*, discover.persona*]
+<span class="c">---</span>
+
+<span class="c"># System Requirements Quality</span>
+
+<span class="c">## Scope</span>
+Which artifacts/inputs this skill evaluates and what it ignores.
+
+<span class="c">## Evaluation criteria (rubric)</span>
+Anchored 0-3 dimensions. Each dimension: name, what 0/1/2/3 look like,
+and the evidence locator the score must cite.
+
+<span class="c">## Defect model</span>
+- <span class="k">major</span>: source-mandated element missing or wrong (gate-tripping)
+- <span class="k">minor</span>: quality/style shortfall (advisory; accrues as debt)
+
+<span class="c">## Risk model</span>
+likelihood x impact per defect; impact weighted by criticality and phase.
+
+<span class="c">## Output contract (returned to PLM model)</span>
+{ conformance: 0-3, defects: [{severity, ref, evidence}],
+  risk: {L, I, E}, confidence: 0-1, lineage: [...] }
+
+<span class="c">## Governance</span>
+If confidence &lt; 0.6 -> circuit-breaker routes to human review (MTBH).
+
+<span class="c">## References</span>
+Full citations with section-level lineage for every rubric line.</pre>
+  </div>
+  <div class="callout">The <span class="mono">output_contract</span> is identical for every skill, which is why heterogeneous evaluations converge cleanly into the PLM ingestion model and the console's scoring. The <span class="mono">source_lineage</span> block is mandatory — a skill with no traceable source is not accepted into the library.</div>
+</section>
+
+<!-- 2. WORKED EXAMPLE -->
+<section class="doc" id="s-example">
+  <div class="sec-h"><span class="no">2</span><h2>Worked example</h2></div>
+  <p class="lead">One skill instantiated fully against the template, so every other skill has a concrete pattern to copy.</p>
+  <div class="card wex">
+    <h3>stpa-unsafe-control-actions <span class="catchip" style="background:#F2E3E1;color:#8E1F1F">STPA</span></h3>
+    <p class="lin"><b>Source lineage:</b> STPA Handbook (Leveson &amp; Thomas, 2018), Step 3 — Identify Unsafe Control Actions · <span class="mono">Engineering a Safer World</span> (Leveson, 2011). <span class="mono">ref://stpa/handbook#step3</span></p>
+    <h4>Scope</h4>
+    <p class="tight">Evaluates hazard-analysis artifacts that model a control structure and enumerate control actions — safety cases, STPA worksheets, control-structure diagrams. Requires a defined loss/hazard set (from the losses-and-hazards skill) and a control structure (from the control-structure skill).</p>
+    <h4>Evaluation criteria (rubric)</h4>
+    <div class="anchors">
+      <div class="anchor"><b>0 Absent</b> — no UCAs identified for the control actions.</div>
+      <div class="anchor"><b>1 Deficient</b> — UCAs for some actions; the four UCA types not systematically applied.</div>
+      <div class="anchor"><b>2 Adequate</b> — all control actions assessed against the four UCA types; traced to hazards.</div>
+      <div class="anchor"><b>3 Strong</b> — complete UCA set, each traced to hazard and forward to a safety constraint, with context.</div>
+    </div>
+    <p class="footnote">The four UCA types: providing causes hazard · not providing causes hazard · wrong timing/order · wrong duration (stopped too soon / applied too long).</p>
+    <h4>Defect model</h4>
+    <ul class="tick"><li><span class="maj"><b>Major</b></span> — a control action with no UCA analysis, or a hazard with no covering UCA (safety gap). Gate-tripping.</li>
+      <li><span class="min"><b>Minor</b></span> — UCA present but missing context or not linked forward to a safety constraint. Advisory.</li></ul>
+    <h4>Risk model</h4>
+    <p class="tight">Each unmitigated UCA: likelihood from control-loop exposure, impact from the severity of the linked loss. A major on a safety-critical loss is Critical exposure and a hard gate in the console.</p>
+    <h4>Output contract</h4>
+    <pre style="font-size:12px"><span class="c">{</span> conformance: 2, defects: [{severity:"major", ref:"UCA-brake-not-provided", evidence:"CSD §3.2"}],
+  risk: {L:4, I:5, E:20}, confidence: 0.74, lineage: ["STPA Handbook §Step3","doc://safety-case-v2"] <span class="c">}</span></pre>
+    <h4>Governance</h4>
+    <p class="tight">Confidence below 0.6 (e.g., control structure incomplete) routes to a safety reviewer rather than scoring. STPA-Sec variant extends the same template to security losses.</p>
+  </div>
+</section>
+
+<!-- 3. CATALOG -->
+<section class="doc" id="s-catalog">
+  <div class="sec-h"><span class="no">3</span><h2>Skills catalog</h2></div>
+  <p class="lead">The starting-point set, by discipline. Each card names the skill, its source lineage (title + specific reference), what it evaluates, and its major / minor defect focus. Filter by category or search.</p>
+  <div class="catlegend" id="catLegend"></div>
+  <div class="filters">
+    <select id="fCat"><option value="">All categories</option></select>
+    <input id="fText" placeholder="search skills, sources…" style="min-width:200px">
+    <span class="count" id="skCount"></span>
+  </div>
+  <div class="skills" id="skGrid"></div>
+</section>
+
+</div></main>
+
+<footer><div class="wrap">PLM Skills Catalog v1.0 · one template, source-traceable, feeding the PLM ingestion model. Companion artifacts: Solution Architecture, PLM Assessment Console. Standards and bodies of knowledge are referenced by title, edition and section — not reproduced.</div></footer>
+
+<script>
+const CATS={
+ SE:["Systems Engineering","#E4EFF4","#2E6E8E"],
+ BA:["Business Architecture","#EDE7F4","#7A5AA6"],
+ PMI:["PMI (Waterfall & Agile)","#E4EAF4","#3E5C8A"],
+ PDMA:["PDMA / PLM","#E1F0EC","#2E8E7E"],
+ ISO:["ISO 9000 / 9001","#EEF1F5","#4A5A70"],
+ DG:["Data Governance","#EAF1F4","#2E7E8E"],
+ AG:["Analytic Governance","#F0EEE1","#8A7A2E"],
+ SG:["Semantic Governance","#F0E7EF","#8E2E7A"],
+ AIG:["AI Governance","#E7EEF4","#2E5A8E"],
+ RM:["Risk Management","#F6EDDD","#B8842B"],
+ STPA:["STPA","#F2E3E1","#8E1F1F"],
+};
+const S=(id,cat,name,src,ref,ev,maj,min,app)=>({id,cat,name,src,ref,ev,maj,min,app});
+const SKILLS=[
+ // Systems Engineering
+ S(1,"SE","Stakeholder Needs & Requirements","ISO/IEC/IEEE 15288 · SEBoK","§6.4.2 · SEBoK Concept Def.","Needs elicited, contexts, constraints, traced to stakeholders","No stakeholder needs / untraceable","Needs not prioritised","ConOps, needs statements"),
+ S(2,"SE","System Requirements Definition","ISO/IEC/IEEE 15288","§6.4.3","Requirements derived from needs, allocated, verifiable","Requirement with no source or verification","Weak measurability","SRS, system requirements"),
+ S(3,"SE","Requirements Quality (individual)","INCOSE GtWR","v4 · individual characteristics","Necessary, unambiguous, singular, feasible, verifiable, correct","Ambiguous or unverifiable requirement","Style / wording deviation","Any requirement statement"),
+ S(4,"SE","Requirements Set Quality","INCOSE GtWR","v4 · set characteristics","Complete, consistent, feasible, able to be validated","Conflicting requirements in set","Redundancy in set","Requirement sets"),
+ S(5,"SE","Architecture Definition","ISO/IEC/IEEE 15288","§6.4.4","Architecture addresses concerns; allocation to elements","Missing allocation to requirements","Sparse rationale","Architecture descriptions"),
+ S(6,"SE","Architecture Description Conformance","ISO/IEC/IEEE 42010","2022","Stakeholders, concerns, viewpoints, views, correspondence","Concern with no view","Missing correspondence rules","Architecture descriptions"),
+ S(7,"SE","Design Definition","ISO/IEC/IEEE 15288","§6.4.5","Design characteristics, enabling systems, interfaces","Interface undefined","Incomplete design rationale","Design docs"),
+ S(8,"SE","System Analysis / Trade Studies","ISO/IEC/IEEE 15288 · SEBoK","§6.4.6","Criteria, weights, alternatives, sensitivity, traceable choice","No sensitivity analysis / untraceable choice","Weights unjustified","Trade studies"),
+ S(9,"SE","Verification","ISO/IEC/IEEE 15288","§6.4.9","Method per requirement, criteria, environment, independence","Requirement with no verification method","Ambiguous pass/fail","V&V plans/reports"),
+ S(10,"SE","Validation","ISO/IEC/IEEE 15288","§6.4.11","Validated against needs in operational context","No validation against stakeholder needs","Limited scenario coverage","Validation plans"),
+ S(11,"SE","Integration","ISO/IEC/IEEE 15288","§6.4.8","Integration strategy, sequence, interface checks","No integration strategy","Sequence not risk-ordered","Integration plans"),
+ S(12,"SE","Transition / Operation / Maintenance","ISO/IEC/IEEE 15288","§6.4.10–6.4.13","Deployment, runbooks, sustainment defined","No transition/runbook plan","Thin maintenance provisions","Runbooks, transition plans"),
+ S(13,"SE","Enterprise SE Alignment","SEBoK Enterprise SE KA","v2.x (attachment)","Capability-based planning, EE&A, enterprise architecture linkage","No capability-gap linkage","Weak enterprise measures","Program/enterprise artifacts"),
+ S(14,"SE","Measurement (MoE / MoP / TPM)","SEBoK Measurement · ISO/IEC 15939","—","Measures defined, targets, tracked to decisions","No measures of effectiveness","Measures not tracked","Measurement plans"),
+ S(15,"SE","Traceability & Lifecycle Coverage","ISO/IEC/IEEE 15288 · SEBoK","—","Bidirectional trace, orphan detection, coverage %","Orphan requirements / broken trace","Coverage below target","Traceability matrices"),
+ // Business Architecture
+ S(16,"BA","Capability Map Conformance","BIZBOK Guide","Capability Mapping","Stable, MECE capabilities; levels; ownership","Overlapping / non-MECE capabilities","Inconsistent leveling","Capability maps"),
+ S(17,"BA","Value Stream Mapping","BIZBOK Guide","Value Streams","Stages, value items, entrance/exit criteria","Value stream with no stakeholder value","Missing stage criteria","Value stream maps"),
+ S(18,"BA","Strategy Map Alignment","BIZBOK Guide · Kaplan-Norton","Strategy / BSC","Objectives, cause-effect, capability linkage","Objective with no capability linkage","Weak measures on objectives","Strategy maps"),
+ S(19,"BA","Organization Map","BIZBOK Guide","Organization","Units mapped to capabilities & value streams","Capability with no owning unit","Ambiguous accountabilities","Org maps"),
+ S(20,"BA","Information Map","BIZBOK Guide","Information","Information concepts, ownership, lifecycle","Concept with no owning capability","Loose definitions","Information maps"),
+ S(21,"BA","Capability→Initiative Traceability","BIZBOK Guide","Blueprint linkage","Initiatives trace to target capabilities","Initiative with no capability target","Unclear target-state uplift","Investment / initiative lists"),
+ S(22,"BA","Value Stream × Capability Cross-Map","BIZBOK Guide","Cross-mapping","Enabling capabilities per stage identified","Stage with no enabling capability","Incomplete heat-mapping","Cross-mapping matrices"),
+ // PMI
+ S(23,"PMI","Integration Management","PMBOK Guide","6th · Integration KA","Charter, plan, change control, closure","No integrated change control","Weak lessons-learned","Project plans"),
+ S(24,"PMI","Scope Management","PMBOK Guide","6th · Scope KA","WBS, scope baseline, verification","No scope baseline / scope creep","Ambiguous acceptance","Scope docs, WBS"),
+ S(25,"PMI","Schedule Management","PMBOK Guide","6th · Schedule KA","Network, critical path, baseline","No schedule baseline","Missing dependencies","Schedules"),
+ S(26,"PMI","Cost Management","PMBOK Guide","6th · Cost KA","Estimates, budget, EVM","No cost baseline / no EVM","Coarse estimates","Budgets"),
+ S(27,"PMI","Quality Management","PMBOK Guide","6th · Quality KA","Quality plan, control, assurance","No quality plan","Weak metrics","Quality plans"),
+ S(28,"PMI","Resource Management","PMBOK Guide","6th · Resource KA","Resource plan, RACI, team dev","No responsibility assignment","Thin capacity plan","RACI, resource plans"),
+ S(29,"PMI","Communications Management","PMBOK Guide","6th · Comms KA","Comms plan, stakeholder cadence","No communications plan","Ad-hoc reporting","Comms plans"),
+ S(30,"PMI","Risk Management (PMI)","PMBOK Guide","6th · Risk KA","Risk register, response, reserves","No risk register","Unowned risks","Risk registers"),
+ S(31,"PMI","Procurement Management","PMBOK Guide","6th · Procurement KA","Procurement plan, contracts, SOW","No procurement plan where needed","Weak vendor criteria","Procurement docs"),
+ S(32,"PMI","Stakeholder Management","PMBOK Guide","6th · Stakeholder KA","Register, engagement assessment","No stakeholder register","Static engagement plan","Stakeholder registers"),
+ S(33,"PMI","Performance Domains","PMBOK Guide","7th · 8 performance domains","Principles & domains coverage & tailoring","Domain unaddressed for approach","Weak tailoring rationale","Delivery approach docs"),
+ S(34,"PMI","Agile Delivery Conformance","PMI Agile Practice Guide","2017","Value delivery, servant leadership, adaptive planning","No adaptive planning / value focus","Ceremony without outcome","Agile plans"),
+ S(35,"PMI","Backlog & Flow Management","Agile Practice Guide · Scrum Guide","2020","Backlog refined, prioritised, WIP limits, flow","Unrefined / unprioritised backlog","No WIP limits","Backlogs, boards"),
+ S(36,"PMI","Agile Metrics & DoD/DoR","Agile Practice Guide","2017","Velocity, burndown, Definition of Done/Ready","No Definition of Done","Vanity metrics only","Agile metrics, boards"),
+ // PDMA
+ S(37,"PDMA","Product Strategy & Portfolio","PDMA Body of Knowledge","Portfolio Mgmt","Portfolio balance, strategic buckets","No portfolio prioritisation","Unbalanced pipeline","Product strategy"),
+ S(38,"PDMA","Opportunity & Idea Management","PDMA BoK","Discovery","Idea capture, screening, opportunity fit","No screening criteria","Weak opportunity sizing","Idea backlogs"),
+ S(39,"PDMA","Stage-Gate Process","PDMA BoK · Cooper Stage-Gate","Process Mgmt","Gates, deliverables, go/kill criteria","Missing gate criteria","Gate evidence thin","Gate decks"),
+ S(40,"PDMA","Voice of Customer / Market Research","PDMA BoK","Market Research","VoC captured, needs prioritised, tested","No VoC evidence","Small/biased sample","Research reports"),
+ S(41,"PDMA","Product Design & Development","PDMA BoK","Design & Dev","Design controls, prototyping, DFx","No design controls","Limited DFx","Design docs"),
+ S(42,"PDMA","Commercialization / Launch","PDMA BoK","Launch","Launch plan, readiness, channels","No launch readiness gate","Weak channel plan","Launch plans"),
+ S(43,"PDMA","Lifecycle Management (launch→retire)","PDMA BoK","PLM","Growth, maturity, retirement plans","No end-of-life plan","Thin sustainment metrics","Lifecycle plans"),
+ S(44,"PDMA","NPD Governance & Metrics","PDMA BoK","Metrics","NPD metrics, success criteria, reviews","No success metrics","Lagging-only metrics","NPD dashboards"),
+ // ISO 9001
+ S(45,"ISO","Context of the Organization","ISO 9001:2015","Clause 4","Context, interested parties, QMS scope","No defined QMS scope","Weak context analysis","QMS manual"),
+ S(46,"ISO","Leadership","ISO 9001:2015","Clause 5","Policy, roles, customer focus","No quality policy","Roles loosely defined","QMS policy"),
+ S(47,"ISO","Planning (risk-based)","ISO 9001:2015","Clause 6","Risks/opportunities, quality objectives","No risk-based planning","Objectives not measurable","QMS planning"),
+ S(48,"ISO","Support","ISO 9001:2015","Clause 7","Resources, competence, documented information","Uncontrolled documents","Competence records thin","QMS support docs"),
+ S(49,"ISO","Operation","ISO 9001:2015","Clause 8","Operational planning & control, design control","No design & dev controls","Weak change control","Process docs"),
+ S(50,"ISO","Performance Evaluation","ISO 9001:2015","Clause 9","Monitoring, internal audit, mgmt review","No internal audit","Review cadence weak","Audit records"),
+ S(51,"ISO","Improvement","ISO 9001:2015","Clause 10","Nonconformity, corrective action, improvement","No CAPA process","Actions not verified","CAPA records"),
+ S(52,"ISO","Documented Information Control","ISO 9001:2015","§7.5","Creation, control, versioning of records","Records not controlled","Versioning inconsistent","Document registers"),
+ // Data Governance
+ S(53,"DG","Data Governance Framework","DAMA-DMBOK2","Ch.3","Roles, policies, stewardship, decision rights","No accountable data owner","Policy not operationalised","Governance charters"),
+ S(54,"DG","Data Quality Management","DAMA-DMBOK2 · DCAM","Ch.13","Dimensions, rules, monitoring, SLAs","No data quality rules","No DQ SLAs","DQ specs"),
+ S(55,"DG","Metadata Management","DAMA-DMBOK2","Ch.12","Business & technical metadata, catalog","No metadata capture","Catalog incomplete","Catalogs"),
+ S(56,"DG","Data Architecture & Modeling","DAMA-DMBOK2","Ch.4–5","Models, standards, conformance","No conformed model","Naming inconsistent","Data models"),
+ S(57,"DG","Master & Reference Data","DAMA-DMBOK2","Ch.10","MDM, golden record, reference sets","No golden record","Reference data unmanaged","MDM specs"),
+ S(58,"DG","Data Lineage & Provenance","DAMA-DMBOK2 · DCAM","Lineage","End-to-end lineage captured","No lineage capture","Partial lineage","Lineage docs"),
+ S(59,"DG","Data Security & Privacy","DAMA-DMBOK2","Ch.7","Classification, access, privacy controls","Sensitive data unclassified","Access review lapsed","Security specs"),
+ S(60,"DG","DCAM Capability Assessment","EDM Council DCAM","v2.x","Capability scoring across DCAM components","Component unassessed","Evidence thin","DCAM assessments"),
+ // Analytic Governance
+ S(61,"AG","Metric Definition & Validation","Analytics governance practice","—","Metric definitions, formulas, validation","Undefined / unvalidated metric","Definition drift","Metric catalogs"),
+ S(62,"AG","Model Documentation & Validation","SR 11-7 (Fed/OCC)","2011","Model purpose, assumptions, validation, limits","No independent validation","Limits undocumented","Model docs"),
+ S(63,"AG","Method Transparency & Reproducibility","Reproducible analytics practice","—","Method documented, reproducible, versioned","Non-reproducible method","Environment not pinned","Analysis packages"),
+ S(64,"AG","Analytic Lineage & Versioning","MLOps governance","—","Data/model/version lineage tracked","No model versioning","Lineage partial","Pipelines"),
+ S(65,"AG","KPI / OKR Governance","OKR / BSC practice","—","KPIs owned, targets, cadence, alignment","Unowned KPI","Targets arbitrary","KPI/OKR docs"),
+ // Semantic Governance
+ S(66,"SG","Ontology Conformance","W3C OWL 2","2012","Logical consistency, class/property discipline","Inconsistent ontology","Naming conventions off","OWL ontologies"),
+ S(67,"SG","Constraint Validation","W3C SHACL","2017","Shapes cover data; violations resolved","Data violates SHACL shapes","Shapes incomplete","SHACL shapes + data"),
+ S(68,"SG","Vocabulary & Taxonomy Governance","SKOS · ISO 25964","—","Concepts, relations, versioning","Broken concept hierarchy","Deprecated terms retained","Taxonomies"),
+ S(69,"SG","Semantic Mapping Quality (RDSG)","RDSG · HSGA","v3.0","Source→ontology mappings correct & complete","Wrong / missing mapping","Low mapping coverage","Mapping specs"),
+ S(70,"SG","FAIR Conformance","FAIR Principles","Wilkinson 2016","Findable, Accessible, Interoperable, Reusable","Not interoperable (no shared vocab)","Weak reuse metadata","Data products"),
+ S(71,"SG","Holonic Governance (HSGA)","HSGA","v3.0","Holon boundaries, governance across holarchy","Ungoverned holon boundary","Roll-up rules loose","Holonic models"),
+ // AI Governance
+ S(72,"AIG","AI Risk Management","NIST AI RMF","1.0, 2023","Govern / Map / Measure / Manage coverage","Function unaddressed","Weak measurement","AI system docs"),
+ S(73,"AIG","AI Management System","ISO/IEC 42001","2023","AIMS controls, lifecycle, roles","No AIMS controls","Roles loosely set","AI governance docs"),
+ S(74,"AIG","AI Risk Process","ISO/IEC 23894","2023","AI-specific risk identification & treatment","No AI risk assessment","Treatment not tracked","AI risk registers"),
+ S(75,"AIG","Transparency & Explainability","EU AI Act · model cards","2024","Explainability, disclosure, documentation","No model documentation","Explanations shallow","Model cards"),
+ S(76,"AIG","Human Oversight (HITL)","EU AI Act","Art. 14","Meaningful human oversight designed in","No human oversight for high-risk use","Oversight not tested","AI system design"),
+ S(77,"AIG","AI Provenance & Documentation","Model cards · datasheets","—","Data/model provenance, datasheets","No data provenance","Datasheet incomplete","Datasheets"),
+ S(78,"AIG","Confidence Governance (MTBH)","HSGA · AI Circuit Breaker","—","Confidence thresholds, breaker routing to HITL","No confidence gating","Thresholds untuned","Agent configs"),
+ // Risk Management
+ S(79,"RM","Risk Framework & Process","ISO 31000","2018","Principles, framework, process present","No risk process","Process not embedded","Risk mgmt plans"),
+ S(80,"RM","Risk Register Quality","ISO 31000 · PMI","—","Cause-condition-consequence, owner, status","Risk without owner","Vague statements","Risk registers"),
+ S(81,"RM","Risk Assessment (L×I)","ISO 31000","§6.4","Consistent likelihood/impact scales, exposure","Inconsistent scoring scales","Rationale thin","Assessments"),
+ S(82,"RM","Risk Treatment & Mitigation","ISO 31000","§6.5","Treatment options, triggers, residual risk","No treatment / trigger","Residual risk unstated","Treatment plans"),
+ S(83,"RM","Opportunity (Positive Risk)","PMI · Hillson","—","Opportunities identified & managed","Opportunities ignored","Under-exploited upside","Risk registers"),
+ // STPA
+ S(84,"STPA","Losses & Hazards Definition","STPA Handbook","Step 1","Losses, hazards, system-level constraints","No losses/hazards defined","Hazards too broad","Safety cases"),
+ S(85,"STPA","Control Structure Modeling","STPA Handbook","Step 2","Controllers, actions, feedback, process model","Incomplete control structure","Feedback loops missing","Control structure diagrams"),
+ S(86,"STPA","Unsafe Control Actions (UCA)","STPA Handbook","Step 3","Four UCA types per control action, traced","Control action with no UCA analysis","UCA context missing","STPA worksheets"),
+ S(87,"STPA","Loss Scenarios & Causal Factors","STPA Handbook","Step 4","Scenarios for each UCA; causal factors","UCA with no loss scenario","Causal factors shallow","Scenario analyses"),
+ S(88,"STPA","Safety Constraints & Requirements","STPA · Engineering a Safer World","—","Constraints derived, traced to design","UCA with no safety constraint","Constraints not traced to design","Safety requirements"),
+ S(89,"STPA","STPA-Sec (Security)","Young & Leveson","2014","Security losses, unsafe/unsecure control actions","No security losses considered","Threat context thin","Security-safety analyses"),
+];
+// legend + filter
+const legend=document.getElementById("catLegend");
+Object.entries(CATS).forEach(([k,[lbl,bg,fg]])=>{
+  const n=SKILLS.filter(s=>s.cat===k).length;
+  const el=document.createElement("span");el.className="lg";el.style.background=bg;el.style.color=fg;el.style.borderColor=fg;
+  el.textContent=`${lbl} · ${n}`;el.dataset.cat=k;
+  el.onclick=()=>{document.getElementById("fCat").value=(document.getElementById("fCat").value===k?"":k);render();};
+  legend.appendChild(el);
+});
+const fCat=document.getElementById("fCat");
+Object.entries(CATS).forEach(([k,[lbl]])=>{const o=document.createElement("option");o.value=k;o.textContent=lbl;fCat.appendChild(o);});
+function render(){
+  const c=fCat.value,t=document.getElementById("fText").value.toLowerCase();
+  const rows=SKILLS.filter(s=>(!c||s.cat===c)&&(!t||(s.name+s.src+s.ref+s.ev).toLowerCase().includes(t)));
+  document.getElementById("skGrid").innerHTML=rows.map(s=>{const[lbl,bg,fg]=CATS[s.cat];
+    return `<div class="skill" style="border-left-color:${fg}">
+      <div class="stitle"><h4>${s.name}</h4><span class="catchip" style="background:${bg};color:${fg}">${s.cat}</span></div>
+      <div class="lin"><b>${s.src}</b> · <span class="mono">${s.ref}</span></div>
+      <div class="ev">${s.ev}</div>
+      <dl class="dl">
+        <dt>Major</dt><dd class="maj">${s.maj}</dd>
+        <dt>Minor</dt><dd class="min">${s.min}</dd>
+        <dt>Applies</dt><dd>${s.app}</dd>
+      </dl></div>`;}).join("");
+  document.getElementById("skCount").textContent=rows.length+" of "+SKILLS.length+" skills";
+}
+fCat.addEventListener("change",render);document.getElementById("fText").addEventListener("input",render);
+render();
+document.getElementById("heroStat").innerHTML=
+  `<div><div class="v">${SKILLS.length}</div><div class="l">Skills</div></div>
+   <div><div class="v">${Object.keys(CATS).length}</div><div class="l">Disciplines</div></div>
+   <div><div class="v">1</div><div class="l">Template</div></div>`;
+// copy scaffold
+document.getElementById("copyScaffold").onclick=()=>{const t=document.getElementById("scaffold").innerText;navigator.clipboard&&navigator.clipboard.writeText(t);document.getElementById("copyScaffold").textContent="Copied";setTimeout(()=>document.getElementById("copyScaffold").textContent="Copy scaffold",1500);};
+// section nav
+const SECS=[["s-template","1 · Template"],["s-example","2 · Worked example"],["s-catalog","3 · Catalog"]];
+const nav=document.getElementById("secnav");
+SECS.forEach(([id,lbl])=>{const b=document.createElement("button");b.textContent=lbl;b.onclick=()=>document.getElementById(id).scrollIntoView({behavior:"smooth",block:"start"});nav.appendChild(b);});
+const btns=[...nav.children];
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){const i=SECS.findIndex(s=>s[0]===e.target.id);btns.forEach((b,j)=>b.classList.toggle("active",j===i));}});},{rootMargin:"-45% 0px -50% 0px"});
+SECS.forEach(([id])=>obs.observe(document.getElementById(id)));
+</script>
+</body>
+</html>
