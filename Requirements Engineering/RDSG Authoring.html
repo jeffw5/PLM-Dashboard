@@ -1,0 +1,532 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>RDSG - Requirements Elicitation and Authoring Suite</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap");
+:root{--ink:#0D1117;--ink2:#1E2733;--fog:#546374;--mist:#8A9BAD;--paper:#F0F3F6;--white:#FFFFFF;--navy:#0A2540;--cobalt:#1652A6;--sky:#D6E8FF;--teal:#086B6B;--lteal:#D1F0F0;--emerald:#0A6640;--ltemer:#D1F0E0;--amber:#994000;--ltamb:#FDECD6;--violet:#5B21B6;--ltviolet:#EDE9FE;--red:#9B1C1C;--ltred:#FEE2E2;--gold:#B45309;--ltgold:#FEF3C7;--bfo:#2D4A8A;--ltbfo:#E0E8FF;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"IBM Plex Sans",sans-serif;background:var(--paper);color:var(--ink);font-size:14px;min-height:100vh;}
+.chrome{display:grid;grid-template-columns:252px 1fr;height:100vh;overflow:hidden;}
+.sidebar{background:var(--navy);display:flex;flex-direction:column;overflow-y:auto;}
+.sb-brand{padding:18px 18px 14px;border-bottom:1px solid rgba(255,255,255,.08);}
+.sb-brand h1{font-size:12.5px;font-weight:600;color:#fff;}
+.sb-brand p{font-size:9.5px;color:#6B85A0;margin-top:2px;}
+.sb-steps{padding:12px 0;flex:1;}
+.sgl{font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#3D5870;padding:10px 18px 3px;}
+.si{display:flex;align-items:center;gap:9px;padding:7px 18px;cursor:pointer;transition:background .14s;border-left:2px solid transparent;}
+.si:hover{background:rgba(255,255,255,.05);}
+.si.active{background:rgba(22,82,166,.35);border-left-color:#4D9BF8;}
+.si.done{border-left-color:#2EA87A;}
+.sn{width:18px;height:18px;border-radius:50%;font-size:8.5px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.si.active .sn{background:#1652A6;color:#fff;}
+.si.done .sn{background:#2EA87A;color:#fff;}
+.si:not(.active):not(.done) .sn{background:rgba(255,255,255,.08);color:#6B85A0;}
+.sl{font-size:11px;color:#8AAECC;}
+.si.active .sl{color:#fff;font-weight:500;}
+.si.done .sl{color:#7ECFB0;}
+.sb-foot{padding:12px 18px;border-top:1px solid rgba(255,255,255,.08);}
+.sb-badge{font-size:8.5px;font-weight:600;padding:2px 7px;border-radius:9px;background:rgba(22,82,166,.4);color:#7BAADD;display:inline-block;}
+.main{display:flex;flex-direction:column;overflow:hidden;}
+.topbar{background:var(--white);border-bottom:1px solid #E2E8F0;padding:11px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.tt{font-size:14px;font-weight:600;color:var(--navy);}
+.ts{font-size:10px;color:var(--mist);margin-top:1px;}
+.tacts{display:flex;gap:7px;align-items:center;}
+.btn{font-family:"IBM Plex Sans",sans-serif;font-size:11px;font-weight:500;padding:5px 12px;border-radius:4px;cursor:pointer;transition:all .14s;border:none;}
+.bp{background:var(--cobalt);color:#fff;}
+.bp:hover{background:#1244C4;}
+.bp:disabled{background:#B0C4DE;cursor:not-allowed;}
+.bg{background:transparent;color:var(--cobalt);border:1px solid #CBD5E0;}
+.bg:hover{border-color:var(--cobalt);background:var(--sky);}
+.bsm{padding:4px 10px;font-size:10px;}
+.be{background:var(--emerald);color:#fff;}
+.be:hover{background:#085530;}
+.bt{background:var(--teal);color:#fff;}
+.bt:hover{background:#054F4F;}
+.content{flex:1;overflow-y:auto;padding:20px 24px;}
+.screen{display:none;}
+.screen.active{display:block;}
+.sh{margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #E2E8F0;}
+.sh h2{font-size:17px;font-weight:600;color:var(--navy);}
+.sh p{font-size:11px;color:var(--fog);margin-top:4px;line-height:1.6;}
+.stag{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--cobalt);background:var(--sky);padding:2px 7px;border-radius:9px;display:inline-block;margin-bottom:7px;}
+.fg{display:grid;gap:13px;}
+.fg2{grid-template-columns:1fr 1fr;}
+.fg3{grid-template-columns:1fr 1fr 1fr;}
+.fi-d{display:flex;flex-direction:column;gap:4px;}
+.fi-d label{font-size:10px;font-weight:600;color:var(--ink2);}
+.req{color:#E53E3E;margin-left:2px;}
+.hlp{font-size:9px;color:var(--mist);line-height:1.5;margin-top:2px;}
+input[type=text],textarea,select{font-family:"IBM Plex Sans",sans-serif;font-size:12px;color:var(--ink);border:1px solid #CBD5E0;border-radius:4px;padding:6px 9px;background:var(--white);width:100%;transition:border-color .14s,box-shadow .14s;outline:none;}
+input[type=text]:focus,textarea:focus,select:focus{border-color:var(--cobalt);box-shadow:0 0 0 3px rgba(22,82,166,.1);}
+textarea{resize:vertical;min-height:68px;line-height:1.5;}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23546374'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;padding-right:26px;}
+.card{background:var(--white);border:1px solid #E2E8F0;border-radius:6px;padding:13px 15px;margin-bottom:13px;}
+.card-t{font-size:12px;font-weight:600;color:var(--navy);margin-bottom:9px;}
+.dl{display:flex;align-items:center;gap:8px;margin:14px 0;}
+.dl span{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--mist);white-space:nowrap;}
+.dl::before,.dl::after{content:"";flex:1;height:1px;background:#E2E8F0;}
+.ug{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.uc{border:1px solid #E2E8F0;border-radius:5px;padding:9px 11px;background:var(--white);}
+.ut{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.um .ut{color:var(--red);}
+.uh .ut{color:var(--amber);}
+.utm .ut{color:var(--teal);}
+.ud .ut{color:var(--violet);}
+.up{font-size:10px;color:var(--fog);margin-bottom:6px;line-height:1.5;}
+.bp2{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+.bft{background:var(--white);border:1px solid #E2E8F0;border-radius:5px;overflow:hidden;}
+.bfh{background:var(--bfo);color:#fff;padding:7px 10px;font-size:10px;font-weight:600;}
+.bfi{padding:5px 10px;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:6px;border-bottom:1px solid #F1F5F9;transition:background .12s;}
+.bfi:hover{background:var(--ltbfo);}
+.bfi.sl2{background:var(--ltbfo);color:var(--bfo);font-weight:600;}
+.bfi.i1{padding-left:20px;}
+.bfi.i2{padding-left:32px;}
+.bdot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.bfi.sl2 .bdot{background:var(--bfo);}
+.bfi:not(.sl2) .bdot{background:#CBD5E0;}
+.pc{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:500;cursor:pointer;border:1px solid transparent;transition:all .12s;}
+.pc.on{background:var(--ltbfo);color:var(--bfo);border-color:#A0B4DC;}
+.pc:not(.on){background:#F1F5F9;color:var(--fog);border-color:#E2E8F0;}
+.pc:hover{border-color:var(--cobalt);}
+.rc{border:1px solid #E2E8F0;border-radius:6px;background:var(--white);overflow:hidden;margin-bottom:9px;transition:border-color .15s;}
+.rc.picked{border-color:var(--cobalt);box-shadow:0 0 0 2px rgba(22,82,166,.08);}
+.rc.nope{opacity:.35;border-style:dashed;}
+.rch{padding:8px 12px;background:#F8FAFC;border-bottom:1px solid #E2E8F0;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.rid{font-family:"IBM Plex Mono",monospace;font-size:9.5px;color:var(--cobalt);font-weight:600;}
+.rtb{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 6px;border-radius:7px;}
+.rcb{padding:10px 12px;}
+.rs{font-size:11.5px;color:var(--ink);line-height:1.6;margin-bottom:7px;font-weight:500;}
+.ra{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px;}
+.ap{font-size:8.5px;padding:2px 6px;border-radius:6px;font-weight:500;}
+.ap1{background:#FEF3C7;color:#92400E;}
+.ap2{background:#E0E8FF;color:var(--bfo);}
+.ap3{background:#E0F2FE;color:#0369A1;}
+.ap4{background:var(--lteal);color:var(--teal);}
+.rr{font-size:10px;color:var(--fog);line-height:1.5;border-left:2px solid #E2E8F0;padding-left:8px;margin-top:6px;font-style:italic;}
+.rca{display:flex;gap:5px;align-items:center;padding:6px 12px;border-top:1px solid #F1F5F9;background:#F8FAFC;}
+.fi{border-left:3px solid;padding:8px 10px;border-radius:0 4px 4px 0;background:var(--white);margin-bottom:6px;}
+.fv{border-left-color:var(--red);background:#FFF8F8;}
+.fw{border-left-color:var(--gold);background:#FFFDF5;}
+.fp{border-left-color:var(--emerald);background:#F6FFF9;}
+.ftop{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:3px;}
+.ftype{font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.fv .ftype{color:var(--red);}
+.fw .ftype{color:var(--gold);}
+.fp .ftype{color:var(--emerald);}
+.fsev{font-size:7.5px;font-weight:700;padding:1px 5px;border-radius:6px;}
+.fv .fsev{background:var(--ltred);color:var(--red);}
+.fw .fsev{background:var(--ltgold);color:var(--gold);}
+.fp .fsev{background:var(--ltemer);color:var(--emerald);}
+.ftxt{font-size:10.5px;color:var(--ink);margin-bottom:3px;}
+.fsug{font-size:10px;color:var(--fog);font-style:italic;line-height:1.5;}
+.finc{font-size:8.5px;color:var(--cobalt);margin-top:3px;font-weight:500;}
+.apr{display:flex;gap:9px;align-items:flex-start;padding:11px;border:1px solid #E2E8F0;border-radius:5px;background:var(--white);margin-bottom:7px;}
+.apn{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--cobalt);font-weight:600;white-space:nowrap;}
+.apt{font-size:11.5px;color:var(--ink);line-height:1.55;flex:1;}
+.apb{display:flex;gap:5px;flex-shrink:0;}
+.abn{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1.5px solid transparent;cursor:pointer;font-size:11px;transition:all .12s;}
+.abn.aok{border-color:var(--emerald);color:var(--emerald);background:var(--ltemer);}
+.abn.aej{border-color:var(--red);color:var(--red);background:var(--ltred);}
+.abn.arv{border-color:var(--gold);color:var(--gold);background:var(--ltgold);}
+.abn.act{opacity:1;}
+.abn:not(.act){opacity:.35;}
+.abn:hover{opacity:1;transform:scale(1.08);}
+@keyframes sp{to{transform:rotate(360deg);}}
+.spin{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;}
+.lbar{height:2px;background:linear-gradient(90deg,var(--cobalt) 0%,#4D9BF8 50%,var(--cobalt) 100%);background-size:200% 100%;animation:shim 1.2s ease infinite;}
+@keyframes shim{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+.ib{background:var(--ltbfo);border:1px solid #A0B4DC;border-radius:5px;padding:9px 12px;font-size:10.5px;color:var(--bfo);line-height:1.55;margin-bottom:11px;}
+.ctree{border-left:2px solid #CBD5E0;margin-left:13px;}
+.cnode{padding:7px 0 7px 13px;border-bottom:1px solid #F1F5F9;}
+.cnode:last-child{border-bottom:none;}
+.pbo{height:3px;background:#E2E8F0;border-radius:2px;overflow:hidden;}
+.pbi{height:100%;background:var(--cobalt);border-radius:2px;transition:width .4s;}
+.mono{font-family:"IBM Plex Mono",monospace;font-size:10px;}
+.chip{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:600;padding:2px 6px;border-radius:8px;}
+</style>
+</head><body><div class="chrome">
+<div class="sidebar"><div class="sb-brand"><h1>RDSG &middot; Authoring Suite</h1><p>Requirements Elicitation &amp; Generation</p></div><div class="sb-steps">
+<div class="sgl">Context</div>
+<div class="si active" onclick="goTo(0)" id="si-0"><div class="sn">1</div><div class="sl">Persona &amp; Domain</div></div>
+<div class="si" onclick="goTo(1)" id="si-1"><div class="sn">2</div><div class="sl">JTBD Elicitation</div></div>
+<div class="sgl">Generation</div>
+<div class="si" onclick="goTo(2)" id="si-2"><div class="sn">3</div><div class="sl">Needs Expression</div></div>
+<div class="si" onclick="goTo(3)" id="si-3"><div class="sn">4</div><div class="sl">Generate Requirements</div></div>
+<div class="sgl">Ontology Binding</div>
+<div class="si" onclick="goTo(4)" id="si-4"><div class="sn">5</div><div class="sl">BFO &amp; Domain Mapping</div></div>
+<div class="si" onclick="goTo(5)" id="si-5"><div class="sn">6</div><div class="sl">Attribute Assignment</div></div>
+<div class="sgl">Quality &amp; Decomposition</div>
+<div class="si" onclick="goTo(6)" id="si-6"><div class="sn">7</div><div class="sl">Child Decomposition</div></div>
+<div class="si" onclick="goTo(7)" id="si-7"><div class="sn">8</div><div class="sl">NLP Quality Gate</div></div>
+<div class="sgl">Approval</div>
+<div class="si" onclick="goTo(8)" id="si-8"><div class="sn">9</div><div class="sl">Review &amp; Approve</div></div>
+</div><div class="sb-foot"><div class="sb-badge">RDSG v2.0 + Addenda B &amp; C</div><div style="font-size:9px;color:#3D5870;margin-top:5px;">The Value Enablement Group, LLC</div></div></div>
+<div class="main">
+<div class="topbar"><div><div class="tt" id="tt">Step 1 &middot; Persona &amp; Domain Context</div><div class="ts" id="ts">Establish WHO, WHAT, WHEN, WHERE, and WHY before capturing requirements</div></div><div class="tacts"><div style="font-size:9px;color:var(--mist);margin-right:6px;">Progress</div><div style="width:100px;"><div class="pbo"><div class="pbi" id="prog" style="width:11%"></div></div></div><button class="btn bg bsm" onclick="goTo(cur-1)" id="bbk">&larr; Back</button><button class="btn bp bsm" onclick="goTo(cur+1)" id="bnx">Next &rarr;</button></div></div>
+<div id="ldr" style="height:2px;display:none;"><div class="lbar" style="height:100%"></div></div>
+<div class="content">
+<div class="screen active" id="screen-0">
+<div class="sh"><div class="stag">Context &middot; Step 1 of 9</div><h2>Persona &amp; Domain Context</h2><p>Select the persona, business domain, scenario, and LLM deployment mode. These fields populate the SPO and anchor the Requirement Context Bundle (RCB) used throughout the gateway pipeline. BFO upper ontology vocabulary is loaded according to the selected domain.</p></div>
+<div class="fg fg2" style="margin-bottom:13px;">
+<div class="fi-d"><label>Persona <span class="req">*</span></label><select id="persona"><option value="">-- select persona --</option><option value="FieldConsultant">Field Consultant</option><option value="SeniorConsultant" selected>Senior Consultant</option><option value="EngagementManager">Engagement Manager</option><option value="AccountManager">Account Manager</option><option value="PracticeLead">Practice Lead</option><option value="Executive">Executive</option><option value="MachineAgent">Machine Agent</option></select><div class="hlp">Maps to a PersonaHolon OWL individual with formal RBAC permission bindings and MTBH_WHO monitoring thresholds.</div></div>
+<div class="fi-d"><label>RBAC Scope (auto-derived)</label><div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:5px;"><span class="chip" style="background:#E0F2FE;color:#0369A1;">Risk IP Assets</span><span class="chip" style="background:#E0F2FE;color:#0369A1;">Compliance Library</span><span class="chip" style="background:#E0F2FE;color:#0369A1;">Domain: Risk Mgmt</span><span class="chip" style="background:#F1F5F9;color:#546374;">Zone 6: Read-only</span></div><div class="hlp">Controls requirement visibility and generation scope. Injected into Generation Governance Envelope.</div></div>
+</div>
+<div class="fg fg2" style="margin-bottom:13px;">
+<div class="fi-d"><label>Primary Domain <span class="req">*</span></label><select id="domain"><option value="RiskManagement" selected>Risk Management</option><option value="FinancialCompliance">Financial Compliance</option><option value="SupplyChain">Supply Chain</option><option value="ClinicalOperations">Clinical Operations</option><option value="ITGovernance">IT Governance</option></select></div>
+<div class="fi-d"><label>Sub-Domain</label><select id="subdomain"><option value="EnterpriseRisk" selected>Enterprise Risk Assessment</option><option value="Operational">Operational Risk</option><option value="Regulatory">Regulatory Risk</option><option value="BoardReporting">Board Reporting</option></select></div>
+</div>
+<div class="fg fg2" style="margin-bottom:13px;">
+<div class="fi-d"><label>Scenario Context</label><select id="scenario"><option value="none">-- no specific scenario --</option><option value="BoardCycle" selected>Q4 Board Reporting Cycle</option><option value="AnnualAudit">Annual Regulatory Audit</option><option value="IncidentResponse">Risk Incident Response</option></select><div class="hlp">When matched, REQ-006 fires and scenario-pinned knowledge chunks are retrieved as priority context in Zone 5.</div></div>
+<div class="fi-d"><label>LLM Deployment Mode</label><select id="llm-mode"><option value="cloud" selected>Cloud &middot; Anthropic Claude (Sonnet 4.6)</option><option value="azure">Azure OpenAI</option><option value="bedrock">AWS Bedrock</option><option value="local">Local &middot; Ollama / vLLM</option><option value="airgap">Air-Gap &middot; On-device only</option></select><div class="hlp">All RDSG governance (SHACL, SWRL, SPARQL, Simplex Gateway) operates identically regardless of LLM provider. Addendum C.</div></div>
+</div>
+<div class="dl"><span>ISO Standard &amp; Regulatory Bindings (enforced at SHACL Step 2)</span></div>
+<div class="fg fg3"><div class="fi-d"><label>ISO 31000 Conformance</label><select><option selected>Active -- enforced at Step 2</option><option>Active -- advisory only</option><option>Not applicable</option></select></div><div class="fi-d"><label>ISO/IEC 25010 Quality</label><select><option selected>Active -- enforced at Step 2</option><option>Advisory only</option><option>Not applicable</option></select></div><div class="fi-d"><label>Regulatory Overlay</label><select><option value="none">None</option><option value="nistai" selected>NIST AI RMF</option><option value="euai">EU AI Act Art. 9</option><option value="sox">SOX</option></select></div></div>
+</div>
+<div class="screen" id="screen-1">
+<div class="sh"><div class="stag">Context &middot; Step 2 of 9</div><h2>Jobs-to-Be-Done Elicitation</h2><p>Define the FunctionalJob this requirement set governs. Structure: <em>When [situation], I want to [job], so I can [outcome]</em>. Each job requires a 4-type Unsafe Control Action pre-analysis to seed the v2.0 UCA Profile loaded by Stage 0 of the gateway pipeline.</p></div>
+<div class="card"><div class="card-t">FunctionalJob Definition</div><div class="fg" style="gap:11px;">
+<div class="fi-d"><label>Job Name <span class="req">*</span></label><input type="text" id="job-name" value="Enterprise Risk Assessment"/></div>
+<div class="fg fg3"><div class="fi-d"><label>Situation (WHEN)</label><input type="text" id="jtbd-when" value="preparing the Q4 board risk report"/></div><div class="fi-d"><label>Job Intent (I WANT TO)</label><input type="text" id="jtbd-what" value="assess and rank all enterprise risks"/></div><div class="fi-d"><label>DesiredOutcome (SO I CAN)</label><input type="text" id="jtbd-why" value="present a board-ready risk view with ISO 31000 citations"/></div></div>
+<div class="fg fg2"><div class="fi-d"><label>Job Barriers (known obstacles)</label><textarea id="barriers">Inconsistent terminology between operational risk and enterprise risk frameworks; data freshness issues in sub-30-day risk registers; incomplete ISO 31000 clause mapping in legacy reports</textarea></div><div class="fi-d"><label>DesiredOutcome Metrics</label><textarea id="outcomes">All identified risks carry ISO 31000 clause reference; risk likelihood and impact scored on 5x5 matrix; board summary does not exceed 2 pages; no unresolved HIGH risks without mitigation rationale</textarea></div></div>
+</div></div>
+<div class="card"><div class="card-t">UCA Pre-Analysis &mdash; 4 Unsafe Control Action Types (RDSG v2.0)</div>
+<div class="ib"><strong>For each UCA type:</strong> describe what constitutes a hazardous control action for this FunctionalJob. These seed the UCA Profile at Stage 0 and activate TMP-001&ndash;006 and UCA-001&ndash;005 SWRL rules at Step 3.</div>
+<div class="ug">
+<div class="uc um"><div class="ut">Missing &mdash; Not Providing</div><div class="up">What hazard occurs if the AI agent fails to provide output (e.g. times out, returns nothing)?</div><textarea style="min-height:54px;">Board report delivered with no risk tier classification, no ISO 31000 references, and no recommended actions &mdash; fails board charter obligation</textarea><div class="fg fg2" style="margin-top:6px;gap:6px;"><div class="fi-d"><label>Timeout (req:timeout)</label><input type="text" value="PT4H"/></div><div class="fi-d"><label>Safe-State Action</label><input type="text" value="Deliver partial report with PARTIAL_RESPONSE marker"/></div></div></div>
+<div class="uc uh"><div class="ut">Hazardous &mdash; Providing When Should Not</div><div class="up">What hazard occurs if the AI provides output in a wrong or unauthorized context?</div><textarea style="min-height:54px;">Agent provides risk assessment output including unresolved terminology (TerminologyInconsistency barrier) or entities outside authorized domain scope</textarea><div class="fg fg2" style="margin-top:6px;gap:6px;"><div class="fi-d"><label>Context Condition</label><input type="text" value="Unresolved entity references present"/></div><div class="fi-d"><label>Safe-State Action</label><input type="text" value="Flag ONTOLOGY_RESOLUTION_FAILURE; route to steward"/></div></div></div>
+<div class="uc utm"><div class="ut">MisTimed &mdash; Too Early / Too Late / Wrong Order</div><div class="up">What hazard occurs if the AI provides output at the wrong time or out of the required sequence?</div><textarea style="min-height:54px;">Risk assessment published before mandatory legal review step; or risk ranking delivered after board package submission deadline</textarea><div class="fg fg2" style="margin-top:6px;gap:6px;"><div class="fi-d"><label>Sequence Constraint</label><input type="text" value="After: legal-review; Before: board-submission"/></div><div class="fi-d"><label>Safe-State Action</label><input type="text" value="Hold delivery; alert legal review queue"/></div></div></div>
+<div class="uc ud"><div class="ut">WrongDuration &mdash; Stopped Too Soon / Applied Too Long</div><div class="up">What hazard occurs if the AI stops output too early or continues beyond its authorized scope?</div><textarea style="min-height:54px;">Risk assessment covers only Tier 1 risks without marking as partial; or continues into regulatory recommendation territory outside authorized scope</textarea><div class="fg fg2" style="margin-top:6px;gap:6px;"><div class="fi-d"><label>Scope Boundary</label><input type="text" value="All identified risks; no regulatory recommendations"/></div><div class="fi-d"><label>Safe-State Action</label><input type="text" value="Append PARTIAL_RESPONSE marker; specify continuation path"/></div></div></div>
+</div></div></div>
+<div class="screen" id="screen-2">
+<div class="sh"><div class="stag">Generation &middot; Step 3 of 9</div><h2>Needs Expression</h2><p>Express the stakeholder needs underlying this requirement set in free text. The Generation Governance Envelope constrains LLM output to your Requirements Ontology class hierarchy, active domain vocabulary, persona RBAC scope, and active ScenarioRequirement exemplars.</p></div>
+<div class="card"><div class="card-t">Free-Text Needs Statement</div><textarea id="needs-text" style="min-height:110px;">The Senior Consultant needs to produce a quarterly enterprise risk assessment report for the board that is compliant with ISO 31000. The report must cover all identified enterprise risks with consistent taxonomy, score each risk on a 5x5 likelihood-impact matrix, provide ISO 31000 clause references for each finding, and include clear recommended actions for HIGH-rated risks. The report must be delivered before the board pack submission deadline and must not exceed 2 pages for the executive summary. Any unmitigated HIGH risks at submission time must be explicitly flagged to the Chief Risk Officer.</textarea></div>
+<div class="card"><div class="card-t">Generation Governance Envelope (GGE) &mdash; Stage 1A Constraints</div><div class="ib"><strong>These constraints are injected into the LLM system prompt.</strong> Generated requirements must conform to this envelope or will be filtered before presentation. Negative exemplar anti-patterns are drawn from the organisation's own NLP rejection history.</div><div style="display:flex;flex-wrap:wrap;gap:6px;"><span class="chip" style="background:var(--ltbfo);color:var(--bfo);">Requirements Ontology v2.0 class hierarchy</span><span class="chip" style="background:var(--lteal);color:var(--teal);">Risk Management domain vocabulary</span><span class="chip" style="background:#E0F2FE;color:#0369A1;">Senior Consultant RBAC scope</span><span class="chip" style="background:var(--ltamb);color:var(--amber);">Rejection anti-patterns from NLP history</span><span class="chip" style="background:var(--ltemer);color:var(--emerald);">Q4 Board Reporting scenario exemplars</span><span class="chip" style="background:var(--ltviolet);color:var(--violet);">ISO 31000 &middot; NIST AI RMF constraints</span></div></div>
+<div class="card"><div class="card-t">Generation Parameters</div><div class="fg fg3"><div class="fi-d"><label>Generation Mode</label><select id="gen-mode"><option value="draft" selected>Context-Aware Drafting</option><option value="child">Child Decomposition</option><option value="sibling">Sibling Generation</option></select></div><div class="fi-d"><label>Candidate Count</label><select id="gen-count"><option>3 candidates</option><option selected>5 candidates</option><option>7 candidates</option></select></div><div class="fi-d"><label>Type Bias</label><select id="req-type-bias"><option value="mixed" selected>Mixed (auto-classify)</option><option value="functional">Functional</option><option value="compliance">Compliance</option><option value="nonfunctional">Non-Functional</option></select></div></div></div>
+</div>
+<div class="screen" id="screen-3">
+<div class="sh"><div class="stag">Generation &middot; Step 4 of 9 &mdash; Stage 1A</div><h2>Generate Requirements</h2><p>The LLM generates requirement candidates within the Generation Governance Envelope. Each candidate is auto-populated with RDSG ontology attributes (class, priority, rationale, persona, domain, BFO classification, UCA suggestion, DesignParameter link). Select candidates to carry forward &mdash; rejected candidates are logged as GeneratedDraft(status=Rejected) individuals with GenerationRequest audit provenance.</p></div>
+<div style="display:flex;gap:8px;margin-bottom:13px;align-items:center;"><button class="btn bp" id="gen-btn" onclick="genReqs()">Generate Requirements</button><button class="btn bg bsm" onclick="genReqs()">Regenerate</button><span id="gen-st" style="font-size:10px;color:var(--mist);"></span></div>
+<div id="cands"><div style="text-align:center;padding:32px;color:var(--mist);font-size:12px;">Click <strong>Generate Requirements</strong> to produce LLM candidates within the governance envelope.</div></div>
+</div>
+<div class="screen" id="screen-4">
+<div class="sh"><div class="stag">Ontology Binding &middot; Step 5 of 9</div><h2>BFO Upper Ontology &amp; Domain Concept Mapping</h2><p>Map the requirement to its BFO 2.0 upper ontology classification and relevant domain concepts. BFO classification determines which ontology properties are available in Step 6. Domain concept mapping activates the corresponding SHACL shapes in the gateway pipeline. Selection here flows directly into req:satisfiedBy and sh:IndependenceAxiomShape evaluation (Addendum B).</p></div>
+<div class="card" style="background:#F8FAFC;border-color:var(--cobalt);padding:8px 12px;margin-bottom:11px;"><div style="font-size:9px;font-weight:600;color:var(--cobalt);margin-bottom:3px;">MAPPING TARGET &mdash; SELECTED REQUIREMENT</div><div style="font-size:12px;color:var(--ink);font-weight:500;line-height:1.5;">The risk assessment output shall include an ISO 31000 clause reference for each identified risk finding.</div></div>
+<div class="bp2">
+<div>
+<div class="bft"><div class="bfh">BFO 2.0 Upper Ontology &mdash; Core Classes</div>
+<div class="bfi" onclick="selBFO(this,'entity')"><div class="bdot"></div>Entity</div>
+<div class="bfi i1" onclick="selBFO(this,'continuant')"><div class="bdot"></div>Continuant</div>
+<div class="bfi i2" onclick="selBFO(this,'indep')"><div class="bdot"></div>Independent Continuant</div>
+<div class="bfi i2" onclick="selBFO(this,'spec-dep')"><div class="bdot"></div>Specifically Dependent Continuant</div>
+<div class="bfi i2 sl2" onclick="selBFO(this,'gen-dep')"><div class="bdot"></div>Generically Dependent Continuant</div>
+<div class="bfi i1" onclick="selBFO(this,'occurrent')"><div class="bdot"></div>Occurrent</div>
+<div class="bfi i2" onclick="selBFO(this,'process')"><div class="bdot"></div>Process</div>
+<div class="bfi i2" onclick="selBFO(this,'proc-bdry')"><div class="bdot"></div>Process Boundary</div>
+<div class="bfi i2" onclick="selBFO(this,'temporal')"><div class="bdot"></div>Temporal Region</div>
+<div class="bfi i2" onclick="selBFO(this,'spatial')"><div class="bdot"></div>Spatial Region</div>
+</div>
+<div class="bft" style="margin-top:10px;"><div class="bfh">BFO 2.0 &mdash; Realizable Entities</div>
+<div class="bfi" onclick="selBFO(this,'role')"><div class="bdot"></div>Role</div>
+<div class="bfi" onclick="selBFO(this,'disposition')"><div class="bdot"></div>Disposition</div>
+<div class="bfi" onclick="selBFO(this,'function')"><div class="bdot"></div>Function</div>
+<div class="bfi" onclick="selBFO(this,'quality')"><div class="bdot"></div>Quality</div>
+</div>
+<div style="margin-top:9px;padding:8px 11px;background:var(--ltbfo);border-radius:5px;border:1px solid #A0B4DC;"><div style="font-size:8.5px;font-weight:700;color:var(--bfo);margin-bottom:3px;">SELECTED BFO CLASS</div><div id="bsel-lbl" class="mono" style="color:var(--bfo);">bfo:GenericallyDependentContinuant</div><div id="bsel-desc" style="font-size:9.5px;color:#546374;margin-top:3px;line-height:1.5;">An entity that depends on one or more other distinct particulars for its existence and can be generically instantiated in multiple bearers. Requirement documents, standards, and information artifacts are examples.</div></div>
+</div>
+<div>
+<div class="card"><div class="card-t">Domain Concept Mapping</div><div class="fi-d" style="margin-bottom:9px;"><label>Primary Domain Concept</label><select id="domain-concept"><option>RiskAssessmentOutput</option><option>RiskFinding</option><option selected>ISO31000ComplianceItem</option><option>RiskLikelihoodScore</option><option>RiskImpactScore</option><option>MitigationAction</option><option>BoardReportSection</option></select></div><div class="fi-d"><label>Secondary Concept Links</label><div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;"><div class="pc on" onclick="this.classList.toggle('on')">ISO31000Clause</div><div class="pc on" onclick="this.classList.toggle('on')">RiskTier</div><div class="pc" onclick="this.classList.toggle('on')">LikelihoodScale</div><div class="pc" onclick="this.classList.toggle('on')">ImpactScale</div><div class="pc" onclick="this.classList.toggle('on')">MitigationStatus</div></div></div></div>
+<div class="card"><div class="card-t">Auto-Assigned SHACL Shapes</div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 8px;background:#F8FAFC;border-radius:4px;border:1px solid #E2E8F0;margin-bottom:5px;"><span class="mono" style="color:var(--bfo);">sh:RequirementCompleteness</span><span class="chip" style="background:var(--ltemer);color:var(--emerald);">Core</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 8px;background:#F8FAFC;border-radius:4px;border:1px solid #E2E8F0;margin-bottom:5px;"><span class="mono" style="color:var(--bfo);">sh:ISO31000Shape</span><span class="chip" style="background:var(--ltemer);color:var(--emerald);">Domain</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 8px;background:#F8FAFC;border-radius:4px;border:1px solid #E2E8F0;margin-bottom:5px;"><span class="mono" style="color:var(--bfo);">sh:INCOSEQualityShape</span><span class="chip" style="background:var(--ltviolet);color:var(--violet);">Add-C</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 8px;background:#F8FAFC;border-radius:4px;border:1px solid #E2E8F0;margin-bottom:5px;"><span class="mono" style="color:var(--bfo);">sh:IndependenceAxiomShape</span><span class="chip" style="background:var(--ltviolet);color:var(--violet);">Add-B AD/DSM</span></div>
+</div></div>
+</div></div>
+<div class="screen" id="screen-5">
+<div class="sh"><div class="stag">Ontology Binding &middot; Step 6 of 9</div><h2>Attribute &amp; Property Assignment</h2><p>Assign all governance-controlled attributes to the requirement. Properties available here derive from the BFO classification and domain mapping set in the previous step. All starred fields are required by sh:RequirementCompleteness for Must-priority requirements.</p></div>
+<div class="fg" style="gap:13px;">
+<div class="fg fg2"><div class="fi-d"><label>Requirement Statement <span class="req">*</span></label><textarea id="req-stmt" style="min-height:60px;">The risk assessment output shall include an ISO 31000 clause reference for each identified risk finding.</textarea></div><div class="fi-d"><label>Rationale <span class="req">*</span></label><textarea id="req-rat" style="min-height:60px;">Board-level risk reporting under ISO 31000 requires each finding to be traceable to a specific standard clause to satisfy the audit trail obligation and demonstrate regulatory alignment.</textarea></div></div>
+<div class="fg fg3">
+<div class="fi-d"><label>Priority (MoSCoW) <span class="req">*</span></label><select id="req-priority"><option value="Must" selected>Must &mdash; required for compliance</option><option value="Should">Should &mdash; strong preference</option><option value="Could">Could &mdash; nice to have</option><option value="Wont">Won't &mdash; explicitly excluded</option></select><div class="hlp">req:priority &mdash; activates Must-priority GOVERNANCE_GAP detection in REQ-004.</div></div>
+<div class="fi-d"><label>Requirement OWL Class <span class="req">*</span></label><select id="req-type"><option value="ComplianceRequirement" selected>ComplianceRequirement</option><option value="FunctionalRequirement">FunctionalRequirement</option><option value="NonFunctionalRequirement">NonFunctionalRequirement</option><option value="ControlRequirement">ControlRequirement</option><option value="ScenarioRequirement">ScenarioRequirement</option></select><div class="hlp">Maps to the Requirements Ontology OWL class hierarchy. Determines which SHACL shapes and SWRL rules are activated.</div></div>
+<div class="fi-d"><label>INCOSE Type Label</label><select id="incose-type"><option value="Functional">Functional</option><option value="Performance">Performance</option><option value="Safety">Safety</option><option value="Compliance" selected>Compliance / Regulatory</option><option value="Interface">Interface</option><option value="Verification">Verification</option><option value="DesignConstraint">Design Constraint</option></select></div>
+</div>
+<div class="fg fg3">
+<div class="fi-d"><label>Reversibility Class (Zone 6 &mdash; Simplex Gate)</label><select id="reversibility"><option value="Reversible" selected>Reversible</option><option value="CondReversible">Conditionally-Reversible</option><option value="Irreversible">Irreversible &mdash; triggers Simplex handshake</option></select><div class="hlp">req:reversibilityClass &mdash; governs the Simplex Action Gateway 5-step handshake protocol at Zone 6 for external system writes.</div></div>
+<div class="fi-d"><label>UCA Type Suggestion (Stage 1A output)</label><select id="uca-suggestion"><option value="none" selected>-- LLM suggested none --</option><option value="Missing">Missing &mdash; output not provided</option><option value="Hazardous">Hazardous &mdash; provided in wrong context</option><option value="MisTimed">MisTimed &mdash; provided at wrong time</option><option value="WrongDuration">WrongDuration &mdash; scope boundary violation</option></select><div class="hlp">req:ucaSuggestion &mdash; pre-populates UCA Elicitation Block. Human confirmation required before UCA activation.</div></div>
+<div class="fi-d"><label>DesignParameter Link (Add-B AD/DSM)</label><select id="dp-link"><option value="none">-- assign design parameter --</option><option value="dp-iso31000" selected>dp:ISO31000Shape (sh:ISO31000Shape)</option><option value="dp-completeness">dp:RequirementCompletenessShape</option><option value="dp-facade">dp:ServiceFacadeComplianceCriterion</option></select><div class="hlp">req:satisfiedBy &mdash; the [A] matrix cell linking this FR to its implementing DesignParameter. AD-001 (Independence Axiom) fires when one DP satisfies multiple FRs.</div></div>
+</div>
+<div class="dl"><span>BFO Property Bindings (from bfo:GenericallyDependentContinuant &mdash; click to toggle)</span></div>
+<div style="display:flex;flex-wrap:wrap;gap:7px;">
+<div class="pc on" onclick="this.classList.toggle('on')">bfo:has_part</div>
+<div class="pc on" onclick="this.classList.toggle('on')">bfo:is_about</div>
+<div class="pc" onclick="this.classList.toggle('on')">bfo:inheres_in</div>
+<div class="pc" onclick="this.classList.toggle('on')">bfo:is_carrier_of</div>
+<div class="pc on" onclick="this.classList.toggle('on')">bfo:concretizes</div>
+<div class="pc" onclick="this.classList.toggle('on')">bfo:participates_in</div>
+<div class="pc" onclick="this.classList.toggle('on')">bfo:has_realization</div>
+</div>
+<div class="fi-d"><label>AcceptanceCriterion (min. 1 for Must-priority requirements)</label><textarea id="req-ac" style="min-height:60px;">SPARQL ASK confirms each RiskFinding individual in the response has exactly one :ISO31000ClauseReference property whose value resolves to an active clause URI in the domain ontology. Response with zero clause references for any finding fails the Compliance Citation AcceptanceCriterion at the Service Facade.</textarea></div>
+</div></div>
+<div class="screen" id="screen-6">
+<div class="sh"><div class="stag">Quality &amp; Decomposition &middot; Step 7 of 9 &mdash; Stage 1A Child</div><h2>Child Requirement Decomposition</h2><p>Generate child requirements that decompose the selected parent into individually verifiable sub-requirements. Each child inherits the parent's domain and persona scope. req:dependsOn linkage to the parent is written automatically. Sibling deduplication check (cosine similarity &gt; 0.92) runs before children are presented.</p></div>
+<div class="card" style="background:#F8FAFC;border-color:var(--cobalt);padding:8px 12px;margin-bottom:12px;"><div style="font-size:9px;font-weight:600;color:var(--cobalt);margin-bottom:3px;">PARENT REQUIREMENT</div><div style="font-size:12px;color:var(--ink);font-weight:500;line-height:1.5;margin-bottom:6px;">The risk assessment output shall include an ISO 31000 clause reference for each identified risk finding.</div><div style="display:flex;gap:5px;flex-wrap:wrap;"><span class="ap ap1">Must</span><span class="ap ap2">ComplianceRequirement</span><span class="ap ap3">Senior Consultant</span><span class="ap ap4">Risk Management</span></div></div>
+<div style="display:flex;gap:8px;margin-bottom:12px;align-items:center;"><button class="btn bt" onclick="genChildren()">Generate Child Requirements</button><span id="child-st" style="font-size:10px;color:var(--mist);"></span></div>
+<div id="children-panel"><div style="text-align:center;padding:26px;color:var(--mist);font-size:12px;">Click <strong>Generate Child Requirements</strong> to decompose into verifiable sub-requirements.</div></div>
+</div>
+<div class="screen" id="screen-7">
+<div class="sh"><div class="stag">Quality &amp; Decomposition &middot; Step 8 of 9 &mdash; Stage 1B</div><h2>NLP Quality Gate</h2><p>All requirements are evaluated against INCOSE Guide v4 quality characteristics and 8 NLP anti-pattern detectors. <strong>Violation-severity findings block advancement to SHACL validation.</strong> Warning-severity findings are advisory with steward override capability. All findings are typed NLPFinding OWL individuals with affected text, INCOSE characteristic citation, and an LLM-generated rewrite suggestion. Runs entirely on-device in air-gap mode with no external API calls (Addendum C).</p></div>
+<div style="display:flex;gap:8px;margin-bottom:12px;align-items:center;"><button class="btn be" onclick="runNLP()">Run NLP Quality Gate</button><span id="nlp-st" style="font-size:10px;color:var(--mist);"></span></div>
+<div id="nlp-panel"><div style="text-align:center;padding:26px;color:var(--mist);font-size:12px;">Click <strong>Run NLP Quality Gate</strong> to evaluate requirements against INCOSE Guide v4 and NLP anti-pattern detectors.</div></div>
+</div>
+<div class="screen" id="screen-8">
+<div class="sh"><div class="stag">Approval &middot; Step 9 of 9</div><h2>Review &amp; Approve</h2><p>Review the complete requirement set. <strong>Approve</strong> to activate in the triplestore (status &rarr; Validated). <strong>Revise</strong> to return to Draft with revision notes. <strong>Reject</strong> to exclude from triplestore activation. Approved requirements seed the gateway pipeline RCB on the next interaction and become available to the DSM Materialization Service (Addendum B).</p></div>
+<div id="review-panel"><div style="text-align:center;padding:26px;color:var(--mist);font-size:12px;">Complete the generation and quality steps to populate the review panel.</div></div>
+<div id="aprv-sum" style="display:none;margin-top:16px;"><div class="dl"><span>Approval Actions</span></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;"><button class="btn be" onclick="approveAll()">Approve All Selected</button><button class="btn bg" onclick="exportORSD()">Export as ORSD Draft</button><button class="btn bg" onclick="activateRCB()">Activate in Triplestore</button></div></div>
+</div>
+</div></div></div>
+<script>
+
+let cur=0, genReqsData=[];
+const DONE=new Set();
+const STEPS=[
+  {t:'Step 1 &middot; Persona &amp; Domain Context',s:'Establish WHO, WHAT, WHEN, WHERE, and WHY before capturing requirements'},
+  {t:'Step 2 &middot; JTBD Elicitation',s:'Define the FunctionalJob and pre-analyse four Unsafe Control Action types'},
+  {t:'Step 3 &middot; Needs Expression',s:'Express stakeholder needs that seed the LLM Generation Governance Envelope'},
+  {t:'Step 4 &middot; Generate Requirements (Stage 1A)',s:'LLM produces ontology-grounded candidates within the governance envelope'},
+  {t:'Step 5 &middot; BFO &amp; Domain Mapping',s:'Map requirements to BFO 2.0 upper ontology and activate domain SHACL shapes'},
+  {t:'Step 6 &middot; Attribute Assignment',s:'Assign governance properties: priority, type, UCA suggestion, DesignParameter linkage'},
+  {t:'Step 7 &middot; Child Decomposition (Stage 1A)',s:'Decompose parent requirements into verifiable child sub-requirements'},
+  {t:'Step 8 &middot; NLP Quality Gate (Stage 1B)',s:'INCOSE Guide v4 compliance and 8-dimension NLP anti-pattern evaluation'},
+  {t:'Step 9 &middot; Review &amp; Approve',s:'Human-in-the-loop review, approval, and triplestore activation'},
+];
+
+function goTo(n){
+  if(n<0||n>=STEPS.length)return;
+  DONE.add(cur);
+  document.getElementById('screen-'+cur).classList.remove('active');
+  cur=n;
+  document.getElementById('screen-'+cur).classList.add('active');
+  document.getElementById('tt').innerHTML=STEPS[cur].t;
+  document.getElementById('ts').innerHTML=STEPS[cur].s;
+  document.getElementById('bbk').style.opacity=cur===0?'.35':'1';
+  document.getElementById('bnx').style.opacity=cur===STEPS.length-1?'.35':'1';
+  document.getElementById('prog').style.width=((cur+1)/STEPS.length*100)+'%';
+  for(let i=0;i<STEPS.length;i++){
+    const el=document.getElementById('si-'+i);
+    el.classList.remove('active','done');
+    if(i===cur)el.classList.add('active');
+    else if(DONE.has(i))el.classList.add('done');
+  }
+  if(cur===8)buildReview();
+}
+
+function showLoader(s){document.getElementById('ldr').style.display=s?'block':'none';}
+
+async function llmCall(prompt,max){
+  max=max||1600;
+  const r=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:max,messages:[{role:'user',content:prompt}]})
+  });
+  const d=await r.json();
+  return(d.content&&d.content[0]&&d.content[0].text)||'';
+}
+
+function parseJSON(raw){
+  let s=raw.trim();
+  if(s.startsWith('```'))s=s.replace(/^```json?\n?/,'').replace(/```$/,'').trim();
+  return JSON.parse(s);
+}
+
+const FALLBACK=[
+  {id:'FR-RISK-001',type:'ComplianceRequirement',statement:'The risk assessment output shall include an ISO 31000 clause reference for each identified risk finding.',rationale:'Board-level risk reporting under ISO 31000 requires each finding to be traceable to a specific standard clause.',priority:'Must',incose_type:'Compliance',bfo_class:'bfo:GenericallyDependentContinuant',uca_suggestion:'none',dp_link:'dp:ISO31000Shape'},
+  {id:'FR-RISK-002',type:'FunctionalRequirement',statement:'The risk assessment system shall score each identified enterprise risk on a 5x5 likelihood-impact matrix using the organisation approved risk scoring taxonomy.',rationale:'Consistent scoring methodology enables board-level comparison and trend analysis across reporting periods.',priority:'Must',incose_type:'Functional',bfo_class:'bfo:Process',uca_suggestion:'Hazardous',dp_link:'dp:RiskScoringShape'},
+  {id:'FR-RISK-003',type:'NonFunctionalRequirement',statement:'The complete risk assessment output shall be delivered within 4 hours of the Senior Consultant initiating the assessment request.',rationale:'Board pack submission deadlines require a deterministic delivery window to allow human review before submission.',priority:'Must',incose_type:'Performance',bfo_class:'bfo:TemporalRegion',uca_suggestion:'MisTimed',dp_link:'dp:TMP001TimeoutRule'},
+  {id:'FR-RISK-004',type:'ComplianceRequirement',statement:'The executive summary section of the risk assessment output shall not exceed 2 pages.',rationale:'Board charter limits the executive summary to 2 pages to ensure board members can review within their allocated time.',priority:'Must',incose_type:'Compliance',bfo_class:'bfo:GenericallyDependentContinuant',uca_suggestion:'WrongDuration',dp_link:'dp:ScopeBoundaryShape'},
+  {id:'FR-RISK-005',type:'ControlRequirement',statement:'The risk assessment system shall resolve all entity references against the corporate risk ontology before generating any risk tier classification.',rationale:'Terminology inconsistency between sub-frameworks produces misleading tier classifications that could result in under-reporting to the board.',priority:'Must',incose_type:'Safety',bfo_class:'bfo:Process',uca_suggestion:'Hazardous',dp_link:'dp:OntologyResolutionShape'},
+];
+
+const TC={ComplianceRequirement:{bg:'#FEF3C7',c:'#92400E'},FunctionalRequirement:{bg:'#E0F2FE',c:'#0369A1'},NonFunctionalRequirement:{bg:'#EDE9FE',c:'#5B21B6'},ControlRequirement:{bg:'#FEE2E2',c:'#9B1C1C'},ScenarioRequirement:{bg:'#D1FAE5',c:'#065F46'}};
+
+async function genReqs(){
+  const btn=document.getElementById('gen-btn'),st=document.getElementById('gen-st');
+  const needs=(document.getElementById('needs-text')||{}).value||'Risk assessment requirements';
+  const persona=(document.getElementById('persona')||{}).value||'SeniorConsultant';
+  const job=(document.getElementById('job-name')||{}).value||'Enterprise Risk Assessment';
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span> Generating&hellip;';
+  st.textContent='Calling LLM within Generation Governance Envelope&hellip;';
+  showLoader(true);
+  const prompt='You are an expert requirements engineer for the RDSG system.\nPERSONA: '+persona+', DOMAIN: Risk Management, JOB: '+job+'\nNEEDS: '+needs+'\nGenerate exactly 5 requirements as a JSON array. Return ONLY the array, no markdown, no code fences.\nFormat: [{"id":"FR-RISK-001","type":"ComplianceRequirement","statement":"The [actor] shall [action]...","rationale":"...","priority":"Must","incose_type":"Compliance","bfo_class":"bfo:GenericallyDependentContinuant","uca_suggestion":"none","dp_link":"dp:ISO31000Shape"},...]\nTypes: ComplianceRequirement|FunctionalRequirement|NonFunctionalRequirement|ControlRequirement\nCover: output structure, timing/SLA, compliance citation, scope/completeness, notification. Start each statement with "The [actor] shall". One condition per statement.';
+  try{
+    const raw=await llmCall(prompt,1600);
+    const reqs=parseJSON(raw);
+    genReqsData=reqs;renderCands(reqs);
+    st.textContent=reqs.length+' candidates generated.';
+  }catch(e){genReqsData=FALLBACK;renderCands(FALLBACK);st.textContent='Using demonstration requirements.';}
+  btn.disabled=false;btn.innerHTML='Generate Requirements';
+  showLoader(false);
+}
+
+function renderCands(reqs){
+  document.getElementById('cands').innerHTML=reqs.map((r,i)=>{
+    const tc=TC[r.type]||{bg:'#F1F5F9',c:'#546374'};const sel=i<3;
+    return'<div class="rc'+(sel?' picked':'')+('" id="rc-'+i+'">'+
+      '<div class="rch"><span class="rid">'+r.id+'</span>'+
+      '<span class="rtb" style="background:'+tc.bg+';color:'+tc.c+';">'+r.type+'</span>'+
+      '<div style="flex:1"></div>'+
+      '<label style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--fog);cursor:pointer;">'+
+      '<input type="checkbox"'+(sel?' checked':'')+' onchange="toggleC('+i+',this.checked)" style="width:13px;height:13px;cursor:pointer;"/>Include</label>'+
+      '</div><div class="rcb">'+
+      '<div class="rs">'+r.statement+'</div>'+
+      '<div class="ra"><span class="ap ap1">'+r.priority+'</span><span class="ap ap2">'+r.incose_type+'</span><span class="ap ap3">Senior Consultant</span><span class="ap ap4">Risk Management</span>'+
+      (r.bfo_class?'<span class="ap" style="background:var(--ltbfo);color:var(--bfo);">'+r.bfo_class+'</span>':'')+
+      (r.uca_suggestion&&r.uca_suggestion!='none'?'<span class="ap" style="background:#FEE2E2;color:#9B1C1C;">UCA: '+r.uca_suggestion+'</span>':'')+
+      '</div><div class="rr">'+r.rationale+'</div>'+
+      (r.dp_link?'<div style="margin-top:7px;"><span class="mono" style="color:var(--cobalt);">req:satisfiedBy &rarr; '+r.dp_link+'</span></div>':'')+
+      '</div>'+
+      '<div class="rca"><button class="btn bg bsm" onclick="editC('+i+')">Edit</button>'+
+      '<button class="btn bg bsm" style="color:var(--red);border-color:var(--red);" onclick="rejectC('+i+')">Reject</button></div>'+
+      '</div>');
+  }).join('');
+}
+
+function toggleC(i,c){const e=document.getElementById('rc-'+i);if(c)e.classList.add('picked');else e.classList.remove('picked');}
+function rejectC(i){const e=document.getElementById('rc-'+i);e.classList.add('nope');e.classList.remove('picked');e.querySelector('input[type=checkbox]').checked=false;}
+function editC(i){alert('Edit inline -- in a full implementation this opens an inline editor bound to the live triplestore individual.');}
+
+const FC=[
+  {id:'FR-RISK-001.1',statement:'The risk assessment output shall include the ISO 31000:2018 section number for each risk finding.',rationale:'Section reference enables auditors to verify alignment without access to the full standard.',priority:'Must',incose_type:'Compliance',verifiable_by:'SPARQL ASK: each RiskFinding has exactly one :ISO31000SectionRef property.'},
+  {id:'FR-RISK-001.2',statement:'The risk assessment output shall include the ISO 31000 principle or guideline title corresponding to the cited clause.',rationale:'Title citation enables board members without standard access to understand the compliance basis of each finding.',priority:'Should',incose_type:'Compliance',verifiable_by:'Inspection: clause title string present and non-empty for each finding.'},
+  {id:'FR-RISK-001.3',statement:'The risk assessment system shall verify that each cited ISO 31000 clause URI resolves to an active clause individual in the domain ontology before delivery.',rationale:'Prevents dangling clause references that would fail audit scrutiny.',priority:'Must',incose_type:'Verification',verifiable_by:'SPARQL ASK: each :ISO31000ClauseRef resolves to an active clause individual in the risk ontology.'},
+  {id:'FR-RISK-001.4',statement:'The risk assessment output shall flag any risk finding for which no applicable ISO 31000 clause can be identified as requiring manual steward classification before the report is finalised.',rationale:'Ensures no risk finding is published without a compliance basis, even if automated mapping fails.',priority:'Must',incose_type:'Safety',verifiable_by:'Service Facade: response containing unclassified findings triggers RequirementsReview before delivery.'},
+];
+
+async function genChildren(){
+  const st=document.getElementById('child-st');
+  st.textContent='Decomposing parent requirement&hellip;';showLoader(true);
+  const parent=genReqsData[0]||FALLBACK[0];
+  const prompt='You are an expert requirements engineer for the RDSG system.\nPARENT: "'+parent.statement+'" (type: '+parent.type+', domain: Risk Management)\nDecompose into exactly 4 child requirements. Each must be more specific and individually verifiable. Together they fully satisfy the parent.\nReturn ONLY a JSON array, no markdown:\n[{"id":"FR-RISK-001.1","statement":"The [actor] shall...","rationale":"...","priority":"Must","incose_type":"Compliance","verifiable_by":"..."},...]\nMake each child genuinely distinct. One condition each.';
+  try{
+    const raw=await llmCall(prompt,1000);
+    const ch=parseJSON(raw);
+    renderChildren(parent,ch);st.textContent=ch.length+' child requirements generated.';
+  }catch(e){renderChildren(parent,FC);st.textContent='Using demonstration children.';}
+  showLoader(false);
+}
+
+function renderChildren(parent,ch){
+  document.getElementById('children-panel').innerHTML=
+    '<div style="background:#F8FAFC;border:1px solid var(--cobalt);border-radius:5px;padding:8px 12px;margin-bottom:9px;">'+
+    '<div style="font-size:9px;font-weight:600;color:var(--cobalt);margin-bottom:2px;">PARENT &rarr; '+parent.id+'</div>'+
+    '<div style="font-size:11.5px;color:var(--ink);font-weight:500;">'+parent.statement+'</div></div>'+
+    '<div class="ctree">'+
+    ch.map(function(c,i){return(
+      '<div class="cnode"><div style="display:flex;align-items:flex-start;gap:8px;">'+
+      '<div style="flex:1;">'+
+      '<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;">'+
+      '<span class="mono" style="color:var(--cobalt);">'+c.id+'</span>'+
+      '<span class="ap ap1">'+c.priority+'</span>'+
+      '<span class="ap ap2">'+c.incose_type+'</span></div>'+
+      '<div style="font-size:11.5px;color:var(--ink);font-weight:500;line-height:1.55;margin-bottom:3px;">'+c.statement+'</div>'+
+      '<div style="font-size:10px;color:var(--fog);font-style:italic;margin-bottom:3px;">'+c.rationale+'</div>'+
+      '<div style="font-size:9.5px;color:var(--teal);">Verified by: '+c.verifiable_by+'</div>'+
+      '</div><label style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--fog);cursor:pointer;flex-shrink:0;">'+
+      '<input type="checkbox" checked style="width:13px;height:13px;cursor:pointer;"/>Include</label>'+
+      '</div></div>');}).join('')+
+    '</div>';
+}
+
+const FN=[
+  {req_id:'FR-RISK-001',dim:'Verifiability',sev:'Pass',aff:'ISO 31000 clause reference for each identified risk finding',sug:'Statement is fully verifiable by SPARQL ASK query against the domain ontology.',inc:'Verifiability'},
+  {req_id:'FR-RISK-002',dim:'Unambiguousness',sev:'Warning',aff:'approved risk scoring taxonomy',sug:"Replace 'approved' with explicit reference: 'the organisation's FY2026 Risk Scoring Taxonomy (RST-v3)' to prevent ambiguity about which taxonomy version applies.",inc:'Unambiguousness'},
+  {req_id:'FR-RISK-003',dim:'Singularity',sev:'Pass',aff:'delivered within 4 hours of the Senior Consultant initiating',sug:'Requirement states exactly one timing constraint with a clear trigger and measurable threshold.',inc:'Singularity'},
+  {req_id:'FR-RISK-004',dim:'Singularity',sev:'Violation',aff:'shall not exceed 2 pages for the executive summary section and shall flag all HIGH-rated unmitigated risks',sug:'Split into two separate requirements: FR-RISK-004a (page limit) and FR-RISK-004b (CRO notification). Each should state one verifiable condition.',inc:'Singularity'},
+  {req_id:'FR-RISK-005',dim:'Verifiability',sev:'Pass',aff:'resolve all entity references against the corporate risk ontology',sug:'Statement is fully verifiable by the UCA-002 Watch Record mechanism in Step 1 of the gateway pipeline.',inc:'Verifiability'},
+];
+
+async function runNLP(){
+  const st=document.getElementById('nlp-st');
+  st.textContent='Running INCOSE Guide v4 and NLP quality dimensions&hellip;';showLoader(true);
+  const reqs=genReqsData.length>0?genReqsData:FALLBACK;
+  const rtxt=reqs.slice(0,3).map(function(r){return r.id+': '+r.statement;}).join('\n');
+  const prompt='You are an INCOSE-certified requirements quality analyst using INCOSE Guide to Writing Requirements v4.\nEvaluate these requirements for quality issues. Return ONLY a JSON array, no markdown:\n'+rtxt+'\nFor each finding: {"req_id":"...","dim":"Singularity|Necessity|Verifiability|Unambiguousness|Completeness|PassiveVoice|VagueQuantifier|MultipleConditions","sev":"Violation|Warning|Pass","aff":"specific affected text","sug":"rewrite suggestion","inc":"INCOSE characteristic name"}\nInclude at least 1 Pass and 1 Violation. Be specific about affected text.';
+  try{
+    const raw=await llmCall(prompt,1000);
+    const findings=parseJSON(raw);
+    renderNLP(findings);st.textContent=findings.length+' quality check results.';
+  }catch(e){renderNLP(FN);st.textContent='Quality check complete (demonstration).';}
+  showLoader(false);
+}
+
+const SM={Violation:{cls:'fv',sv:'VIOLATION'},Warning:{cls:'fw',sv:'WARNING'},Pass:{cls:'fp',sv:'PASS'}};
+
+function renderNLP(findings){
+  const v=findings.filter(function(f){return f.sev==='Violation';}).length;
+  const w=findings.filter(function(f){return f.sev==='Warning';}).length;
+  const p=findings.filter(function(f){return f.sev==='Pass';}).length;
+  document.getElementById('nlp-panel').innerHTML=
+    '<div style="display:flex;gap:9px;margin-bottom:13px;flex-wrap:wrap;">'+
+    '<div style="background:var(--ltred);border:1px solid #FCA5A5;border-radius:5px;padding:7px 12px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--red);">'+v+'</div><div style="font-size:8px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.5px;">Violations</div><div style="font-size:8.5px;color:var(--fog);">Block advancement</div></div>'+
+    '<div style="background:var(--ltgold);border:1px solid #FCD34D;border-radius:5px;padding:7px 12px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--gold);">'+w+'</div><div style="font-size:8px;font-weight:600;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;">Warnings</div><div style="font-size:8.5px;color:var(--fog);">Advisory</div></div>'+
+    '<div style="background:var(--ltemer);border:1px solid #6EE7B7;border-radius:5px;padding:7px 12px;text-align:center;"><div style="font-size:18px;font-weight:700;color:var(--emerald);">'+p+'</div><div style="font-size:8px;font-weight:600;color:var(--emerald);text-transform:uppercase;letter-spacing:.5px;">Passed</div><div style="font-size:8.5px;color:var(--fog);">No action</div></div>'+
+    (v>0?'<div style="background:var(--ltred);border:1px solid #FCA5A5;border-radius:5px;padding:7px 12px;flex:1;display:flex;align-items:center;gap:7px;"><span style="font-size:12px;color:var(--red);">&#9940;</span><span style="font-size:10.5px;color:var(--red);font-weight:500;">'+v+' Violation(s) found &mdash; requirements cannot advance to SHACL validation until resolved.</span></div>':'')+
+    '</div>'+
+    findings.map(function(f){
+      var sv=SM[f.sev]||SM.Warning;
+      return '<div class="fi '+sv.cls+'"><div class="ftop"><span class="ftype">'+f.dim+' &middot; '+f.req_id+'</span><span class="fsev">'+sv.sv+'</span></div><div class="ftxt">'+f.aff+'</div>'+(f.sug?'<div class="fsug">'+f.sug+'</div>':'')+'<div class="finc">INCOSE Guide v4 &middot; '+f.inc+'</div></div>';
+    }).join('')+
+    (v===0?'<div style="background:var(--ltemer);border:1px solid #6EE7B7;border-radius:5px;padding:9px 13px;margin-top:9px;display:flex;align-items:center;gap:7px;"><span style="font-size:14px;color:var(--emerald);">&#10003;</span><div><div style="font-size:11.5px;font-weight:600;color:var(--emerald);">NLP Quality Gate: PASS</div><div style="font-size:10px;color:var(--fog);margin-top:2px;">No violations detected. nlp:qualityGateStatus=Passed will be set on all requirements. Ready to advance to Review &amp; Approve.</div></div></div>':'');
+}
+
+const AS={};
+function buildReview(){
+  const reqs=genReqsData.length>0?genReqsData:FALLBACK;
+  document.getElementById('review-panel').innerHTML=
+    '<div class="ib" style="margin-bottom:11px;"><strong>Review complete requirement set.</strong> &#10003; Approve &rarr; status:Validated &middot; &#9998; Revise &rarr; returns to Draft &middot; &#10005; Reject &rarr; status:Rejected</div>'+
+    reqs.map(function(r,i){
+      AS[i]='approve';
+      var tc=TC[r.type]||{bg:'#F1F5F9',c:'#546374'};
+      return '<div class="apr"><div class="apn">'+r.id+'</div>'+
+        '<div><div style="display:flex;gap:4px;flex-wrap:wrap;margin-bottom:3px;"><span class="ap ap1">'+r.priority+'</span><span class="ap ap2">'+r.type+'</span></div>'+
+        '<div class="apt">'+r.statement+'</div>'+
+        '<div style="font-size:9.5px;color:var(--fog);margin-top:3px;font-style:italic;">'+r.rationale+'</div></div>'+
+        '<div class="apb"><div class="abn aok act" onclick="setAS('+i+',\'approve\',this)" title="Approve">&#10003;</div>'+
+        '<div class="abn arv" onclick="setAS('+i+',\'revise\',this)" title="Request revision">&#9998;</div>'+
+        '<div class="abn aej" onclick="setAS('+i+',\'reject\',this)" title="Reject">&#10005;</div></div>'+
+        '</div>';
+    }).join('');
+  document.getElementById('aprv-sum').style.display='block';
+}
+
+function setAS(i,a,btn){AS[i]=a;btn.closest('.apr').querySelectorAll('.abn').forEach(function(b){b.classList.remove('act');});btn.classList.add('act');}
+function approveAll(){var n=Object.values(AS).filter(function(v){return v==='approve';}).length;alert(n+' requirement(s) approved and queued for triplestore activation.\n\nIn a full implementation: status -> Validated on all approved requirements; GenerationRequest audit record updated with approving persona and timestamp; requirements become available in the RCB for the next gateway interaction.');}
+function exportORSD(){alert('ORSD Export -- generates a structured ORSD document with all approved requirements mapped to gateway-visible sections (PEP scope declarations, 5D context surface, AcceptanceCriteria stubs). In a full implementation this produces a .docx via the RDSG Addendum A document pipeline.');}
+function activateRCB(){alert('Triplestore Activation -- executes a SPARQL UPDATE to transition approved requirements from status=Validated to status=Active, making them available in the RCB for the next gateway interaction. The change is logged in the KGCL change record for DSM-003 change propagation analysis (Addendum B).');}
+
+const BFO={
+  'entity':'The most general BFO category. Everything that exists is an entity.',
+  'continuant':'Entities that persist through time while potentially changing.',
+  'indep':'Continuants that do not depend on other particulars: material objects, spatial regions, immaterial entities.',
+  'spec-dep':'Continuants that depend on exactly one bearer: qualities, dispositions, roles, functions.',
+  'gen-dep':'Continuants that can be copied and concretized in multiple bearers: information content entities, requirement documents, standards, specifications. Most requirement statements are GenericallyDependentContinuants.',
+  'occurrent':'Entities that unfold through time: processes, events, temporal boundaries, histories.',
+  'process':'Occurrents that have proper temporal parts: assessment processes, review cycles, manufacturing operations.',
+  'proc-bdry':'The start or end point of a process: the moment a report is submitted, the instant a threshold is crossed.',
+  'temporal':'Regions of time: time intervals, instants. Use for timing and SLA requirements that reference a time window.',
+  'spatial':'Regions of space. Rarely used for requirements unless the requirement concerns physical location.',
+  'role':'Realizable entities that are relational and context-dependent: agent roles, document roles, stakeholder roles.',
+  'disposition':'Realizable entities grounded in intrinsic features: capabilities, tendencies, system behaviours not yet actualized.',
+  'function':'Dispositions selected for during design: the function of a safety system, the function of a governance gate.',
+  'quality':'Specifically dependent continuants that are not realizable: colours, shapes, measured scalar values.',
+};
+function selBFO(el,key){
+  document.querySelectorAll('.bfi').forEach(function(x){x.classList.remove('sl2');});
+  el.classList.add('sl2');
+  var label=el.textContent.trim();
+  document.getElementById('bsel-lbl').textContent='bfo:'+label.replace(/\s+/g,'');
+  document.getElementById('bsel-desc').textContent=BFO[key]||'Select an item to see its BFO definition.';
+}
+
+goTo(0);
+
+</script>
+</body></html>
