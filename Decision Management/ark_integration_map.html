@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Defense Innovation × Govini Ark — Integration Map</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1B2A4A;--steel:#2E5B8A;
+  --rdsg:#0e7490;--rdsg-l:#ecfeff;--rdsg-b:#67e8f9;
+  --sbd:#7c3aed;--sbd-l:#f5f3ff;--sbd-b:#c4b5fd;
+  --psm:#b45309;--psm-l:#fffbeb;--psm-b:#fcd34d;
+  --ark:#1B2A4A;--ark-l:#eef1f7;--ark-b:#93afd0;
+  --gov:#78350f;--gov-l:#fff7ed;--gov-b:#fdba74;
+  --green:#15803d;--red:#b91c1c;--blue:#1d4ed8;
+  --bg:#f3f2ee;--card:#ffffff;--bdr:#e2e0d5;--bdr2:#edece7;
+  --t1:#1a1916;--t2:#57564f;--t3:#8a8880;--t4:#b5b3aa;
+  --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --mono:'Courier New',monospace;
+}
+body{font-family:var(--sans);background:var(--bg);color:var(--t1);font-size:14px;line-height:1.5;min-height:100vh}
+#app{max-width:1200px;margin:0 auto;padding:24px 18px 60px}
+
+/* HEADER */
+.hdr{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid var(--navy)}
+.hdr-l .eyebrow{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);margin-bottom:3px}
+.hdr-l .title{font-size:18px;font-weight:700;color:var(--navy)}
+.hdr-l .sub{font-size:12px;color:var(--t3);margin-top:3px}
+.legend{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.leg-item{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--t2)}
+.leg-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:14px}
+.stat-card{background:var(--card);border:.5px solid var(--bdr);border-radius:7px;padding:12px;text-align:center}
+.stat-num{font-size:24px;font-weight:700;line-height:1;margin-bottom:3px}
+.stat-label{font-size:9px;color:var(--t3);letter-spacing:.06em;text-transform:uppercase}
+
+/* VIEW TOGGLE */
+.view-bar{display:flex;gap:0;background:var(--card);border:.5px solid var(--bdr);border-radius:6px;padding:3px;width:fit-content;margin-bottom:14px}
+.vbtn{background:none;border:none;padding:6px 14px;font-size:12px;cursor:pointer;color:var(--t3);border-radius:4px;font-family:var(--sans);transition:all .15s;font-weight:500}
+.vbtn.on{background:var(--navy);color:#fff}
+
+/* SHARED DETAIL PANEL */
+.detail-panel{background:var(--card);border:.5px solid var(--bdr);border-radius:10px;padding:18px;margin-bottom:14px;display:none;animation:fadeIn .2s ease}
+.detail-panel.on{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.dp-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.dp-title{font-size:15px;font-weight:700}
+.dp-close{background:none;border:.5px solid var(--bdr);border-radius:4px;padding:3px 8px;cursor:pointer;font-size:11px;color:var(--t3);font-family:var(--sans)}
+.dp-close:hover{background:var(--bg)}
+.dp-meta{display:flex;gap:5px;margin-bottom:12px;flex-wrap:wrap}
+.dp-badge{padding:2px 9px;border-radius:10px;font-size:10px;font-weight:600}
+.dp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+@media(max-width:600px){.dp-grid{grid-template-columns:1fr}}
+.dp-card{background:var(--bg);border:.5px solid var(--bdr);border-radius:6px;padding:10px}
+.dp-card-title{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:5px}
+.dp-card-body{font-size:11px;color:var(--t2);line-height:1.6}
+.dp-card-body strong{color:var(--t1);font-weight:600}
+.tp-title{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:7px}
+.tp-list{display:flex;flex-direction:column;gap:5px}
+.tp-item{display:flex;gap:8px;align-items:flex-start;background:var(--bg);border:.5px solid var(--bdr);border-radius:5px;padding:8px}
+.tp-icon{font-size:15px;flex-shrink:0}
+.tp-name{font-size:11px;font-weight:600;margin-bottom:1px}
+.tp-desc{font-size:10px;color:var(--t2);line-height:1.5}
+
+/* ── ARCHITECTURE VIEW ── */
+.arch-wrap{background:var(--card);border:.5px solid var(--bdr);border-radius:10px;padding:20px;margin-bottom:12px}
+.arch-hint{font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:10px}
+.layer{border-radius:7px;padding:12px 14px;margin-bottom:7px}
+.layer-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:9px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.layer-badge{padding:2px 7px;border-radius:9px;font-size:9px;font-weight:600}
+.layer-nodes{display:flex;gap:8px;flex-wrap:wrap}
+.node{border-radius:7px;border:1.5px solid;padding:9px 11px;cursor:pointer;transition:all .18s;min-width:110px;max-width:200px;flex:1;user-select:none}
+.node:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.node.selected{box-shadow:0 0 0 2.5px var(--blue),0 4px 12px rgba(0,0,0,.1);transform:translateY(-2px)}
+.node-icon{font-size:16px;margin-bottom:3px;display:block}
+.node-name{font-size:10px;font-weight:600;line-height:1.3;display:block;margin-bottom:2px}
+.node-tag{font-size:8px;font-family:var(--mono);opacity:.6;display:block}
+.node-pills{display:flex;gap:2px;flex-wrap:wrap;margin-top:5px}
+.pill{font-size:7px;padding:1px 4px;border-radius:7px;font-weight:600}
+
+.layer-gov{background:var(--gov-l);border:1.5px dashed var(--gov-b)}
+.node-gov{background:#fff;border-color:var(--gov-b);color:var(--gov)}
+.layer-ark{background:#eef1f7;border:1.5px solid #c5d2e0}
+.node-ark{background:#fff;border-color:#93afd0;color:var(--navy)}
+.layer-inn{background:#fafafa;border:1.5px dashed var(--bdr)}
+.node-rdsg{background:var(--rdsg-l);border-color:var(--rdsg);color:var(--rdsg)}
+.node-sbd{background:var(--sbd-l);border-color:var(--sbd);color:var(--sbd)}
+.node-psm{background:var(--psm-l);border-color:var(--psm);color:var(--psm)}
+.layer-ux{background:#f0fdf4;border:1.5px solid #bbf7d0}
+.node-ux{background:#fff;border-color:#86efac;color:var(--green)}
+
+/* ── FLOW VIEW ── */
+.flow-layout{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:14px}
+@media(min-width:760px){.flow-layout{grid-template-columns:3fr 2fr}}
+
+.flow-main{position:relative}
+.flow-header{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:10px;padding:0 2px}
+
+.fnc-wrap{display:flex;flex-direction:column;gap:0}
+.fnc-arrow-spacer{display:flex;align-items:center;padding:0 20px;height:22px;position:relative}
+.fnc-arrow-spacer::before{content:'';position:absolute;left:28px;top:0;bottom:0;width:2px;background:var(--bdr2)}
+.fnc-arrow-spacer::after{content:'▾';position:absolute;left:22px;bottom:2px;color:var(--t4);font-size:11px}
+.fnc-arrow-spacer.loop{border-left:none}
+.fnc-arrow-spacer.loop::before{background:none}
+.fnc-arrow-spacer.loop::after{content:''}
+
+.flow-node-card{background:var(--card);border:1.5px solid var(--bdr);border-radius:8px;padding:12px 14px;cursor:pointer;transition:all .18s;display:flex;align-items:flex-start;gap:10px;position:relative}
+.flow-node-card:hover{transform:translateX(3px);box-shadow:0 3px 10px rgba(0,0,0,.08)}
+.flow-node-card.selected{box-shadow:0 0 0 2px var(--blue);transform:translateX(3px)}
+.fnc-step{font-size:11px;font-weight:700;font-family:var(--mono);color:var(--t4);flex-shrink:0;width:18px;padding-top:2px}
+.fnc-icon{font-size:20px;flex-shrink:0}
+.fnc-body{flex:1;min-width:0}
+.fnc-title{font-size:12px;font-weight:600;margin-bottom:1px}
+.fnc-owner{font-size:9px;font-family:var(--mono);color:var(--t3);margin-bottom:4px}
+.fnc-desc{font-size:11px;color:var(--t2);line-height:1.5;margin-bottom:6px}
+.fnc-tags{display:flex;gap:3px;flex-wrap:wrap}
+.fc-tag{font-size:8px;padding:1px 5px;border-radius:6px;font-weight:600;cursor:pointer}
+.fc-tag:hover{opacity:.8}
+.fc-reg{background:#fff7ed;color:#92400e;border:.5px solid #fcd34d}
+.fc-iso{background:#f0fdf4;color:#166534;border:.5px solid #86efac}
+.fc-phy{background:#eff6ff;color:#1e40af;border:.5px solid #93c5fd}
+.fc-dig{background:#faf5ff;color:#6b21a8;border:.5px solid #d8b4fe}
+.fc-sys{background:#ecfeff;color:#155e75;border:.5px solid #67e8f9}
+.fc-aut{background:#fef2f2;color:#991b1b;border:.5px solid #fca5a5}
+
+/* feedback loop line on left of main flow */
+.flow-main-inner{position:relative;padding-left:14px}
+.flow-main-inner::before{content:'';position:absolute;left:0;top:30px;bottom:30px;width:2px;background:linear-gradient(to bottom,var(--rdsg-b),var(--rdsg-l));border-radius:2px}
+
+/* GOV RAIL */
+.gov-rail{display:flex;flex-direction:column;gap:7px}
+.gov-rail-header{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gov);margin-bottom:3px;display:flex;align-items:center;gap:6px}
+.gov-node-card{background:var(--gov-l);border:1.5px solid var(--gov-b);border-radius:8px;padding:10px 12px;cursor:pointer;transition:all .18s}
+.gov-node-card:hover{transform:translateX(-2px);box-shadow:0 3px 10px rgba(120,53,15,.12)}
+.gov-node-card.selected{box-shadow:0 0 0 2px var(--gov);transform:translateX(-2px)}
+.gnc-header{display:flex;align-items:center;gap:7px;margin-bottom:4px}
+.gnc-icon{font-size:16px}
+.gnc-title{font-size:11px;font-weight:600;color:var(--gov)}
+.gnc-sub{font-size:9px;font-family:var(--mono);color:var(--t3);margin-bottom:5px}
+.gnc-chips{display:flex;gap:3px;flex-wrap:wrap}
+.gnc-chip{font-size:8px;padding:1px 5px;border-radius:6px;background:#fff;border:.5px solid var(--gov-b);color:var(--gov);font-weight:500}
+
+/* feedback loop note */
+.feedback-note{display:flex;align-items:center;gap:8px;background:var(--rdsg-l);border:.5px solid var(--rdsg-b);border-radius:7px;padding:9px 12px;margin-top:8px;font-size:11px;color:var(--rdsg)}
+.feedback-note strong{font-weight:600}
+
+/* ── MATRIX VIEW ── */
+.matrix-wrap{background:var(--card);border:.5px solid var(--bdr);border-radius:10px;padding:18px;margin-bottom:12px;overflow-x:auto}
+.matrix-title{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);margin-bottom:12px}
+.matrix-table{width:100%;border-collapse:collapse;font-size:11px}
+.matrix-table th{background:var(--navy);color:#fff;padding:7px 10px;text-align:left;font-size:9px;letter-spacing:.07em;text-transform:uppercase;font-weight:600}
+.matrix-table td{padding:8px 10px;border-bottom:.5px solid var(--bdr);vertical-align:top}
+.matrix-table tr:hover td{background:var(--bg)}
+.matrix-table tr:last-child td{border-bottom:none}
+.mt-p{background:#dcfce7;color:#15803d;border-radius:8px;padding:1px 7px;font-size:8px;font-weight:700;display:inline-block;white-space:nowrap}
+.mt-s{background:#fef9c3;color:#854d0e;border-radius:8px;padding:1px 7px;font-size:8px;font-weight:700;display:inline-block;white-space:nowrap}
+.mt-n{color:var(--t4);font-size:10px}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-l">
+    <div class="eyebrow">Integrated Architecture · May 2026</div>
+    <div class="title">Defense Innovation ✕ Govini Ark</div>
+    <div class="sub">RDSG · Set-Based Design · Predictive Scoring — governed by regulations, ISO standards &amp; engineering disciplines</div>
+  </div>
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:var(--gov)"></div>Governance</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--ark)"></div>Govini Ark</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--rdsg)"></div>RDSG</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--sbd)"></div>SBD</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--psm)"></div>PSM</div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat-card"><div class="stat-num" style="color:var(--gov)">6</div><div class="stat-label">Governance Frameworks</div></div>
+  <div class="stat-card"><div class="stat-num" style="color:var(--navy)">3</div><div class="stat-label">Innovation Pillars</div></div>
+  <div class="stat-card"><div class="stat-num" style="color:var(--rdsg)">10</div><div class="stat-label">Flow Integration Points</div></div>
+  <div class="stat-card"><div class="stat-num" style="color:var(--green)">3</div><div class="stat-label">DoD Standards Realized</div></div>
+  <div class="stat-card"><div class="stat-num" style="color:var(--psm)">∞</div><div class="stat-label">Closed-Loop Feedback</div></div>
+</div>
+
+<!-- VIEW TOGGLE -->
+<div class="view-bar">
+  <button class="vbtn on" onclick="setView('arch',this)">Architecture Map</button>
+  <button class="vbtn" onclick="setView('flow',this)">Data Flow</button>
+  <button class="vbtn" onclick="setView('matrix',this)">Alignment Matrix</button>
+</div>
+
+<!-- ═══════════════ ARCHITECTURE VIEW ═══════════════ -->
+<div id="view-arch">
+<div class="arch-wrap">
+  <div class="arch-hint">Click any component to explore integration &amp; governance details</div>
+
+  <!-- GOVERNANCE LAYER -->
+  <div class="layer layer-gov">
+    <div class="layer-label" style="color:var(--gov)">
+      <span>Governance Framework</span>
+      <span class="layer-badge" style="background:#fee2e2;color:#991b1b">Constrains ↕ All Layers</span>
+      <span style="font-size:9px;color:var(--t4);font-weight:400;font-family:var(--mono);margin-left:auto">regulations · standards · engineering disciplines</span>
+    </div>
+    <div class="layer-nodes">
+      <div class="node node-gov" onclick="showNode('gov-regulatory',event)">
+        <span class="node-icon">📜</span>
+        <span class="node-name">DoD Regulatory Framework</span>
+        <span class="node-tag">DoDI 5000.02 · .85 · .88</span>
+        <div class="node-pills">
+          <span class="pill" style="background:#fff7ed;color:#92400e">Nunn-McCurdy</span>
+          <span class="pill" style="background:#fff7ed;color:#92400e">AAF</span>
+          <span class="pill" style="background:#fff7ed;color:#92400e">MCA</span>
+        </div>
+      </div>
+      <div class="node node-gov" onclick="showNode('gov-iso',event)">
+        <span class="node-icon">📐</span>
+        <span class="node-name">ISO &amp; Engineering Standards</span>
+        <span class="node-tag">ISO 42001 · 15288 · 25010</span>
+        <div class="node-pills">
+          <span class="pill" style="background:#fff7ed;color:#92400e">AI Mgmt</span>
+          <span class="pill" style="background:#fff7ed;color:#92400e">Lifecycle</span>
+          <span class="pill" style="background:#fff7ed;color:#92400e">Quality</span>
+        </div>
+      </div>
+      <div class="node node-gov" onclick="showNode('gov-physical',event)">
+        <span class="node-icon">🔩</span>
+        <span class="node-name">Physical Engineering</span>
+        <span class="node-tag">HiL · FMI · manufacturing</span>
+        <div class="node-pills">
+          <span class="pill" style="background:#fff7ed;color:#92400e">Hardware</span>
+          <span class="pill" style="background:#fff7ed;color:#92400e">Testing</span>
+          <span class="pill" style="background:#fff7ed;color:#92400e">Production</span>
+        </div>
+      </div>
+      <div class="node node-gov" onclick="showNode('gov-digital',event)">
+        <span class="node-icon">💻</span>
+        <span class="node-name">Digital Engineering</span>
+        <span class="node-tag">MBSE · SysML v2 · digital twin</span>
+        <div class="node-pills">
+          <span class="pill" style="background:#fff7ed;color:#92400e">Model-Based</span>
+          <span class="pill" style="background:#fff7ed;color:#92400e">KerML</span>
+          <span class="pill" style="background:#fff7ed;color:#92400e">REST API</span>
+        </div>
+      </div>
+      <div class="node node-gov" onclick="showNode('gov-systems',event)">
+        <span class="node-icon">🔬</span>
+        <span class="node-name">Systems Engineering</span>
+        <span class="node-tag">STPA · INCOSE · V-model</span>
+        <div class="node-pills">
+          <span class="pill" style="background:#fff7ed;color:#92400e">ITRA</span>
+          <span class="pill" style="background:#fff7ed;color:#92400e">TPMs</span>
+          <span class="pill" style="background:#fff7ed;color:#92400e">MOSA</span>
+        </div>
+      </div>
+      <div class="node node-gov" onclick="showNode('gov-automation',event)">
+        <span class="node-icon">🤖</span>
+        <span class="node-name">Automation Engineering</span>
+        <span class="node-tag">AI/ML · autonomous systems</span>
+        <div class="node-pills">
+          <span class="pill" style="background:#fff7ed;color:#92400e">Closed-Loop</span>
+          <span class="pill" style="background:#fff7ed;color:#92400e">Human-Machine</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UX LAYER -->
+  <div class="layer layer-ux">
+    <div class="layer-label" style="color:var(--green)">
+      <span>Operator Interface</span>
+      <span class="layer-badge" style="background:#dcfce7;color:#15803d">UX Layer</span>
+    </div>
+    <div class="layer-nodes">
+      <div class="node node-ux" onclick="showNode('hub',event)">
+        <span class="node-icon">🖥️</span>
+        <span class="node-name">Ark Application Hubs</span>
+        <span class="node-tag">Supply Chain · Production · Modernization</span>
+        <div class="node-pills">
+          <span class="pill" style="background:#dcfce7;color:#15803d">MOVOI Tradespace</span>
+          <span class="pill" style="background:#dcfce7;color:#15803d">PSM Display</span>
+        </div>
+      </div>
+      <div class="node node-rdsg" onclick="showNode('gap-detect',event)">
+        <span class="node-icon">🔍</span>
+        <span class="node-name">Ontology Gap Detection</span>
+        <span class="node-tag">RDSG · closed-loop evolution</span>
+        <div class="node-pills">
+          <span class="pill" style="background:var(--rdsg-l);color:var(--rdsg)">Active Monitoring</span>
+          <span class="pill" style="background:var(--rdsg-l);color:var(--rdsg)">Auto-Capture</span>
+        </div>
+      </div>
+      <div class="node node-ux" onclick="showNode('req-review',event)">
+        <span class="node-icon">📋</span>
+        <span class="node-name">Automated Requirements Review</span>
+        <span class="node-tag">hub-triggered · steward-facing</span>
+        <div class="node-pills">
+          <span class="pill" style="background:#dcfce7;color:#15803d">Failure Logging</span>
+          <span class="pill" style="background:#dcfce7;color:#15803d">Steward Alerts</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INNOVATION PILLARS -->
+  <div class="layer layer-inn">
+    <div class="layer-label" style="color:var(--steel)">
+      <span>Defense Innovation Solution</span>
+      <span class="layer-badge" style="background:#f0f4ff;color:var(--steel)">Three-Pillar Architecture</span>
+      <span style="font-size:9px;color:var(--t4);font-weight:400;font-family:var(--mono);margin-left:auto">integrates ↕ above &amp; below · governed ↑ by framework</span>
+    </div>
+    <div class="layer-nodes">
+      <div class="node node-rdsg" onclick="showNode('rdsg',event)">
+        <span class="node-icon">🛡️</span>
+        <span class="node-name">Requirements-Driven Semantic Gateway</span>
+        <span class="node-tag">RDSG · Pillar 1</span>
+        <div class="node-pills">
+          <span class="pill" style="background:var(--rdsg-l);color:var(--rdsg)">SHACL</span>
+          <span class="pill" style="background:var(--rdsg-l);color:var(--rdsg)">SWRL</span>
+          <span class="pill" style="background:var(--rdsg-l);color:var(--rdsg)">Circuit Breaker</span>
+        </div>
+      </div>
+      <div class="node node-sbd" onclick="showNode('sbd',event)">
+        <span class="node-icon">⚙️</span>
+        <span class="node-name">Set-Based Design</span>
+        <span class="node-tag">SBD · Pillar 2</span>
+        <div class="node-pills">
+          <span class="pill" style="background:var(--sbd-l);color:var(--sbd)">MOVOI</span>
+          <span class="pill" style="background:var(--sbd-l);color:var(--sbd)">Tradespace</span>
+          <span class="pill" style="background:var(--sbd-l);color:var(--sbd)">Decision Delay</span>
+        </div>
+      </div>
+      <div class="node node-psm" onclick="showNode('psm',event)">
+        <span class="node-icon">📊</span>
+        <span class="node-name">Predictive Scoring Metrics</span>
+        <span class="node-tag">PSM · Pillar 3</span>
+        <div class="node-pills">
+          <span class="pill" style="background:var(--psm-l);color:var(--psm)">Brier Score</span>
+          <span class="pill" style="background:var(--psm-l);color:var(--psm)">MTBH</span>
+          <span class="pill" style="background:var(--psm-l);color:var(--psm)">Logarithmic</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARK CORE -->
+  <div class="layer layer-ark">
+    <div class="layer-label" style="color:var(--navy)">
+      <span>Govini Ark Platform</span>
+      <span class="layer-badge" style="background:#dce6f0;color:var(--navy)">Data &amp; AI Core</span>
+    </div>
+    <div class="layer-nodes">
+      <div class="node node-ark" onclick="showNode('nskg',event)">
+        <span class="node-icon">🕸️</span>
+        <span class="node-name">National Security Knowledge Graph</span>
+        <span class="node-tag">NSKG · 33+ data sources</span>
+        <div class="node-pills">
+          <span class="pill" style="background:#dce6f0;color:var(--navy)">Commercial</span>
+          <span class="pill" style="background:#dce6f0;color:var(--navy)">Gov Data</span>
+          <span class="pill" style="background:#dce6f0;color:var(--navy)">Supply Chain</span>
+        </div>
+      </div>
+      <div class="node node-ark" onclick="showNode('llm',event)">
+        <span class="node-icon">🤖</span>
+        <span class="node-name">Govini LLMs</span>
+        <span class="node-tag">AI inference · RAG · acquisition</span>
+        <div class="node-pills">
+          <span class="pill" style="background:#dce6f0;color:var(--navy)">RAG</span>
+          <span class="pill" style="background:#dce6f0;color:var(--navy)">Contextual</span>
+          <span class="pill" style="background:#dce6f0;color:var(--navy)">Fine-tuned</span>
+        </div>
+      </div>
+      <div class="node node-ark" onclick="showNode('sysml',event)">
+        <span class="node-icon">🗄️</span>
+        <span class="node-name">SysML v2 / KerML Repository</span>
+        <span class="node-tag">federated REST API · digital twin</span>
+        <div class="node-pills">
+          <span class="pill" style="background:#dce6f0;color:var(--navy)">Authoritative</span>
+          <span class="pill" style="background:#dce6f0;color:var(--navy)">Machine-Verifiable</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div><!-- /arch-wrap -->
+
+<div class="detail-panel" id="arch-detail">
+  <div class="dp-header">
+    <div><div class="dp-title" id="arch-dp-title">—</div><div class="dp-meta" id="arch-dp-meta"></div></div>
+    <button class="dp-close" onclick="closePanel('arch-detail')">✕ Close</button>
+  </div>
+  <div class="dp-grid" id="arch-dp-grid"></div>
+  <div id="arch-dp-tp"></div>
+</div>
+</div><!-- /view-arch -->
+
+
+<!-- ═══════════════ FLOW VIEW ═══════════════ -->
+<div id="view-flow" style="display:none">
+
+<div class="flow-layout">
+  <!-- MAIN FLOW COLUMN -->
+  <div class="flow-main">
+    <div class="flow-header">Closed-Loop Governance Flow · Click any step to explore</div>
+    <div class="flow-main-inner">
+    <div class="fnc-wrap">
+
+      <div class="flow-node-card" id="fn-nskg" onclick="showFlowNode('fn-nskg')">
+        <div class="fnc-step">①</div>
+        <div class="fnc-icon">🕸️</div>
+        <div class="fnc-body">
+          <div class="fnc-title">NSKG Data Ingestion</div>
+          <div class="fnc-owner">Govini Ark · National Security Knowledge Graph</div>
+          <div class="fnc-desc">33+ commercial and government data sources — supply chain, industrial base, contracts, financial data — aggregated into a unified knowledge graph. The data foundation that powers all downstream AI and analysis.</div>
+          <div class="fnc-tags">
+            <span class="fc-tag fc-reg">📜 Regulatory</span>
+            <span class="fc-tag fc-phy">🔩 Physical Eng.</span>
+            <span class="fc-tag fc-dig">💻 Digital Eng.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="fnc-arrow-spacer"></div>
+
+      <div class="flow-node-card" id="fn-rdsg" onclick="showFlowNode('fn-rdsg')">
+        <div class="fnc-step">②</div>
+        <div class="fnc-icon">🛡️</div>
+        <div class="fnc-body">
+          <div class="fnc-title">RDSG Compliance Gate</div>
+          <div class="fnc-owner">RDSG Pillar 1 · SHACL/SWRL Validation</div>
+          <div class="fnc-desc">Mandatory Bias &amp; Compliance Fetches intercept every NSKG query. SHACL validates structural compliance; SWRL enforces behavioral inference rules. Only ontologically governed, regulation-compliant context passes through to the LLMs.</div>
+          <div class="fnc-tags">
+            <span class="fc-tag fc-reg">📜 Regulatory</span>
+            <span class="fc-tag fc-iso">📐 ISO Standards</span>
+            <span class="fc-tag fc-sys">🔬 Systems Eng.</span>
+            <span class="fc-tag fc-dig">💻 Digital Eng.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="fnc-arrow-spacer"></div>
+
+      <div class="flow-node-card" id="fn-llm" onclick="showFlowNode('fn-llm')">
+        <div class="fnc-step">③</div>
+        <div class="fnc-icon">🤖</div>
+        <div class="fnc-body">
+          <div class="fnc-title">Govini LLM Inference</div>
+          <div class="fnc-owner">Govini Ark · AI Engine (RAG + Fine-tuned)</div>
+          <div class="fnc-desc">Validated, compliant context reaches Govini's LLMs for acquisition analysis, alternative identification, supply chain assessment, and competitive intelligence. PSM loss functions have been applied during training so the model represents uncertainty accurately.</div>
+          <div class="fnc-tags">
+            <span class="fc-tag fc-reg">📜 Regulatory</span>
+            <span class="fc-tag fc-iso">📐 ISO 42001</span>
+            <span class="fc-tag fc-aut">🤖 Automation Eng.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="fnc-arrow-spacer"></div>
+
+      <div class="flow-node-card" id="fn-psm" onclick="showFlowNode('fn-psm')">
+        <div class="fnc-step">④</div>
+        <div class="fnc-icon">📊</div>
+        <div class="fnc-body">
+          <div class="fnc-title">PSM Reliability Scoring &amp; Circuit Breaker</div>
+          <div class="fnc-owner">PSM Pillar 3 · Brier Score · MTBH · Logarithmic</div>
+          <div class="fnc-desc">AI output is scored against strictly proper scoring rules (Brier, Logarithmic). If the hallucination rate exceeds the MTBH threshold, the circuit breaker fires — blocking the output from propagating to operators or into the SysML v2 repository. Compliant output advances.</div>
+          <div class="fnc-tags">
+            <span class="fc-tag fc-reg">📜 DoDI 5000.88 §3.6.e</span>
+            <span class="fc-tag fc-iso">📐 ISO 42001</span>
+            <span class="fc-tag fc-aut">🤖 Automation Eng.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="fnc-arrow-spacer"></div>
+
+      <div class="flow-node-card" id="fn-sbd" onclick="showFlowNode('fn-sbd')">
+        <div class="fnc-step">⑤</div>
+        <div class="fnc-icon">⚙️</div>
+        <div class="fnc-body">
+          <div class="fnc-title">SBD MOVOI Tradespace Analysis</div>
+          <div class="fnc-owner">SBD Pillar 2 · Multiobjective Value of Information</div>
+          <div class="fnc-desc">Scored AI context feeds SBD's MOVOI engine, which evaluates the full design tradespace across cost, schedule, performance, and risk. MOVOI answers "Is there enough information to commit to a design?" — if not, the tradespace is preserved and uncertainty-reduction activities are prioritized.</div>
+          <div class="fnc-tags">
+            <span class="fc-tag fc-reg">📜 DoDI 5000.85 (Nunn-McCurdy)</span>
+            <span class="fc-tag fc-sys">🔬 Systems Eng.</span>
+            <span class="fc-tag fc-phy">🔩 Physical Eng. (HiL)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="fnc-arrow-spacer"></div>
+
+      <div class="flow-node-card" id="fn-hubs" onclick="showFlowNode('fn-hubs')">
+        <div class="fnc-step">⑥</div>
+        <div class="fnc-icon">🖥️</div>
+        <div class="fnc-body">
+          <div class="fnc-title">Ark Application Hub Interaction</div>
+          <div class="fnc-owner">Govini Ark · Supply Chain · Production · Modernization</div>
+          <div class="fnc-desc">Operators interact with Ark Hubs that now surface a live MOVOI tradespace instead of static dashboards. PSM uncertainty scores appear alongside every recommendation. The Hub is no longer a viewer — it is an active governance tool.</div>
+          <div class="fnc-tags">
+            <span class="fc-tag fc-sys">🔬 Systems Eng.</span>
+            <span class="fc-tag fc-aut">🤖 Automation Eng.</span>
+            <span class="fc-tag fc-dig">💻 Digital Eng.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="fnc-arrow-spacer"></div>
+
+      <div class="flow-node-card" id="fn-gap" onclick="showFlowNode('fn-gap')">
+        <div class="fnc-step">⑦</div>
+        <div class="fnc-icon">🔍</div>
+        <div class="fnc-body">
+          <div class="fnc-title">Ontology Gap Detection</div>
+          <div class="fnc-owner">RDSG · Real-Time Session Monitoring</div>
+          <div class="fnc-desc">As operators work in Hubs, RDSG monitors for terms the AI fails to resolve. Unresolved concepts are automatically captured as OntologyGap individuals — tagged with the operator's persona, scenario, and program context — ready for steward remediation without interrupting workflow.</div>
+          <div class="fnc-tags">
+            <span class="fc-tag fc-sys">🔬 Systems Eng.</span>
+            <span class="fc-tag fc-dig">💻 Digital Eng.</span>
+            <span class="fc-tag fc-aut">🤖 Emergent Behavior Capture</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="fnc-arrow-spacer"></div>
+
+      <div class="flow-node-card" id="fn-review" onclick="showFlowNode('fn-review')">
+        <div class="fnc-step">⑧</div>
+        <div class="fnc-icon">📋</div>
+        <div class="fnc-body">
+          <div class="fnc-title">Automated Requirements Review</div>
+          <div class="fnc-owner">RDSG · Steward-Triggered Governance Calibration</div>
+          <div class="fnc-desc">When AI failures cross an Acceptance Criterion threshold, the Hub surfaces a RequirementsReview directly to domain stewards. Stewards assess whether the gap reflects a requirements deficiency, ontology error, or AI capability limit — then calibrate accordingly.</div>
+          <div class="fnc-tags">
+            <span class="fc-tag fc-reg">📜 DoDI 5000.02 (feedback loop)</span>
+            <span class="fc-tag fc-sys">🔬 Systems Eng. (V-model)</span>
+            <span class="fc-tag fc-iso">📐 ISO 15288</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="fnc-arrow-spacer"></div>
+
+      <div class="flow-node-card" id="fn-sysml" onclick="showFlowNode('fn-sysml')">
+        <div class="fnc-step">⑨</div>
+        <div class="fnc-icon">🗄️</div>
+        <div class="fnc-body">
+          <div class="fnc-title">SysML v2 / KerML Baseline Update</div>
+          <div class="fnc-owner">Govini Ark · Federated REST API · Digital Authoritative Truth</div>
+          <div class="fnc-desc">Steward-approved calibrations propagate back through RDSG into the SysML v2 federated repository — updating SHACL shapes and SWRL rules as machine-enforceable artifacts. The digital twin is updated. Multi-vendor teams immediately query the revised authoritative baseline.</div>
+          <div class="fnc-tags">
+            <span class="fc-tag fc-reg">📜 DoDI 5000.88 §3.4</span>
+            <span class="fc-tag fc-dig">💻 Digital Eng. (MBSE)</span>
+            <span class="fc-tag fc-sys">🔬 Systems Eng. (ITRA)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="fnc-arrow-spacer"></div>
+
+      <div class="flow-node-card" id="fn-loop" onclick="showFlowNode('fn-loop')" style="border-color:var(--rdsg-b);background:var(--rdsg-l)">
+        <div class="fnc-step" style="color:var(--rdsg)">↺</div>
+        <div class="fnc-icon">🔄</div>
+        <div class="fnc-body">
+          <div class="fnc-title" style="color:var(--rdsg)">Closed-Loop Update → Back to NSKG</div>
+          <div class="fnc-owner" style="color:var(--rdsg)">Continuous Evolution · No Manual Synchronization</div>
+          <div class="fnc-desc">OntologyGap individuals and calibrated requirements propagate back to the NSKG — the knowledge graph evolves continuously. Govini's AI improves with each operator session. The next query through step ② will reflect updated governance artifacts. The loop is self-reinforcing.</div>
+          <div class="fnc-tags">
+            <span class="fc-tag fc-reg">📜 DoDI 5000.02 (continuous adaptation)</span>
+            <span class="fc-tag fc-dig">💻 Digital Eng.</span>
+            <span class="fc-tag fc-sys">🔬 Systems Eng.</span>
+            <span class="fc-tag fc-aut">🤖 Automation Eng.</span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /fnc-wrap -->
+    </div><!-- /flow-main-inner -->
+
+    <div class="feedback-note">
+      <span>↺</span>
+      <span><strong>Closed-Loop:</strong> Step ⑩ feeds back into Step ① — the NSKG, RDSG governance artifacts, and SysML v2 baseline all update continuously without manual intervention, making each governance cycle more accurate than the last.</span>
+    </div>
+  </div><!-- /flow-main -->
+
+  <!-- GOVERNANCE RAIL -->
+  <div class="gov-rail">
+    <div class="gov-rail-header">📜 Governance Constraints <span style="font-size:8px;color:var(--t4);font-weight:400">click to explore</span></div>
+
+    <div class="gov-node-card" id="gn-regulatory" onclick="showFlowNode('gn-regulatory')">
+      <div class="gnc-header"><div class="gnc-icon">📜</div><div class="gnc-title">DoD Regulatory Framework</div></div>
+      <div class="gnc-sub">DoDI 5000.02 · 5000.85 · 5000.88 · Nunn-McCurdy</div>
+      <div class="gnc-chips"><span class="gnc-chip">AAF</span><span class="gnc-chip">MCA</span><span class="gnc-chip">Eng. of Systems</span><span class="gnc-chip">MOSA</span><span class="gnc-chip">DOD 8140</span></div>
+    </div>
+
+    <div class="gov-node-card" id="gn-iso" onclick="showFlowNode('gn-iso')">
+      <div class="gnc-header"><div class="gnc-icon">📐</div><div class="gnc-title">ISO &amp; Engineering Standards</div></div>
+      <div class="gnc-sub">ISO 42001 · ISO/IEC 15288 · ISO/IEC 25010</div>
+      <div class="gnc-chips"><span class="gnc-chip">AI Mgmt Systems</span><span class="gnc-chip">SE Lifecycle</span><span class="gnc-chip">Quality</span><span class="gnc-chip">INCOSE</span></div>
+    </div>
+
+    <div class="gov-node-card" id="gn-physical" onclick="showFlowNode('gn-physical')">
+      <div class="gnc-header"><div class="gnc-icon">🔩</div><div class="gnc-title">Physical Engineering</div></div>
+      <div class="gnc-sub">HiL · FMI co-simulation · manufacturing</div>
+      <div class="gnc-chips"><span class="gnc-chip">Hardware-in-Loop</span><span class="gnc-chip">MRL</span><span class="gnc-chip">PRR</span><span class="gnc-chip">FMI/FMU</span></div>
+    </div>
+
+    <div class="gov-node-card" id="gn-digital" onclick="showFlowNode('gn-digital')">
+      <div class="gnc-header"><div class="gnc-icon">💻</div><div class="gnc-title">Digital Engineering</div></div>
+      <div class="gnc-sub">MBSE · SysML v2 · KerML · digital twin</div>
+      <div class="gnc-chips"><span class="gnc-chip">Model-Based SE</span><span class="gnc-chip">REST API</span><span class="gnc-chip">CAD/CAE</span><span class="gnc-chip">Simulation</span></div>
+    </div>
+
+    <div class="gov-node-card" id="gn-systems" onclick="showFlowNode('gn-systems')">
+      <div class="gnc-header"><div class="gnc-icon">🔬</div><div class="gnc-title">Systems Engineering</div></div>
+      <div class="gnc-sub">STPA · INCOSE · V-model · ITRA</div>
+      <div class="gnc-chips"><span class="gnc-chip">Mission Eng.</span><span class="gnc-chip">TPMs</span><span class="gnc-chip">Trade Studies</span><span class="gnc-chip">Safety Analysis</span></div>
+    </div>
+
+    <div class="gov-node-card" id="gn-automation" onclick="showFlowNode('gn-automation')">
+      <div class="gnc-header"><div class="gnc-icon">🤖</div><div class="gnc-title">Automation Engineering</div></div>
+      <div class="gnc-sub">AI/ML systems · autonomous · closed-loop control</div>
+      <div class="gnc-chips"><span class="gnc-chip">Human-Machine Teaming</span><span class="gnc-chip">Autonomy</span><span class="gnc-chip">AI Explainability</span></div>
+    </div>
+
+    <div style="background:var(--gov-l);border:.5px dashed var(--gov-b);border-radius:7px;padding:10px;font-size:10px;color:var(--gov);line-height:1.5;margin-top:4px">
+      <strong>Physical ↔ Digital Boundary:</strong> All six governance disciplines cross this boundary. Physical systems (HiL hardware, sensors, actuators) are calibrated against and constrained by digital models (SysML v2, digital twin) — and vice versa. Automation decisions that execute in physical space must be governed by digital artifacts, and physical test data must update digital authoritative sources.
+    </div>
+  </div><!-- /gov-rail -->
+</div><!-- /flow-layout -->
+
+<div class="detail-panel" id="flow-detail">
+  <div class="dp-header">
+    <div><div class="dp-title" id="flow-dp-title">—</div><div class="dp-meta" id="flow-dp-meta"></div></div>
+    <button class="dp-close" onclick="closePanel('flow-detail')">✕ Close</button>
+  </div>
+  <div class="dp-grid" id="flow-dp-grid"></div>
+  <div id="flow-dp-tp"></div>
+</div>
+</div><!-- /view-flow -->
+
+
+<!-- ═══════════════ MATRIX VIEW ═══════════════ -->
+<div id="view-matrix" style="display:none">
+
+<div class="matrix-wrap">
+  <div class="matrix-title">Innovation Pillar × Ark Component Integration Matrix</div>
+  <table class="matrix-table">
+    <thead>
+      <tr>
+        <th>Ark Component</th>
+        <th style="color:#67e8f9">RDSG (Pillar 1)</th>
+        <th style="color:#c4b5fd">Set-Based Design (Pillar 2)</th>
+        <th style="color:#fcd34d">Predictive Scoring (Pillar 3)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>NSKG</strong><br><span style="font-size:9px;color:var(--t3)">National Security Knowledge Graph</span></td>
+        <td><span class="mt-p">PRIMARY</span><br><span style="font-size:10px;color:var(--t2)">Mandatory Bias &amp; Compliance Fetches filter all NSKG queries — only ontologically governed context reaches AI</span></td>
+        <td><span class="mt-s">SUPPORTING</span><br><span style="font-size:10px;color:var(--t2)">Alternative design data sourced from NSKG for MOVOI tradespace analysis</span></td>
+        <td><span class="mt-s">SUPPORTING</span><br><span style="font-size:10px;color:var(--t2)">Historical AI outputs used to calibrate Brier Score baselines and MTBH thresholds</span></td>
+      </tr>
+      <tr>
+        <td><strong>Govini LLMs</strong><br><span style="font-size:9px;color:var(--t3)">AI inference · RAG</span></td>
+        <td><span class="mt-p">PRIMARY</span><br><span style="font-size:10px;color:var(--t2)">SHACL/SWRL circuit breaker validates all AI outputs before propagating to program baselines</span></td>
+        <td><span class="mt-n">—</span></td>
+        <td><span class="mt-p">PRIMARY</span><br><span style="font-size:10px;color:var(--t2)">PSM scoring rules applied as LLM loss functions; MTBH circuit breaker blocks hallucination propagation</span></td>
+      </tr>
+      <tr>
+        <td><strong>Application Hubs</strong><br><span style="font-size:9px;color:var(--t3)">Supply Chain · Production · Modernization</span></td>
+        <td><span class="mt-p">PRIMARY</span><br><span style="font-size:10px;color:var(--t2)">Ontology Gap Detection monitors sessions; AI failures trigger RequirementsReview to stewards</span></td>
+        <td><span class="mt-p">PRIMARY</span><br><span style="font-size:10px;color:var(--t2)">MOVOI tradespace runs inside Hub workflows; replaces static dashboards with live decision support</span></td>
+        <td><span class="mt-p">PRIMARY</span><br><span style="font-size:10px;color:var(--t2)">Uncertainty scores surface to operators alongside every AI recommendation</span></td>
+      </tr>
+      <tr>
+        <td><strong>SysML v2 / KerML Repository</strong><br><span style="font-size:9px;color:var(--t3)">federated REST API · digital twin</span></td>
+        <td><span class="mt-p">PRIMARY</span><br><span style="font-size:10px;color:var(--t2)">Requirements encoded as live SHACL/SWRL artifacts — the digital authoritative source of truth</span></td>
+        <td><span class="mt-s">SUPPORTING</span><br><span style="font-size:10px;color:var(--t2)">SysML v2 serves as simulation substrate for HiL co-simulation generating PDR/CDR evidence</span></td>
+        <td><span class="mt-p">PRIMARY</span><br><span style="font-size:10px;color:var(--t2)">MTBH circuit breaker blocks AI output from corrupting the digital twin when threshold is exceeded</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="matrix-wrap">
+  <div class="matrix-title">Governance Framework × Innovation Pillar Constraint Matrix</div>
+  <table class="matrix-table">
+    <thead>
+      <tr>
+        <th>Governance Framework</th>
+        <th style="color:#67e8f9">RDSG</th>
+        <th style="color:#c4b5fd">SBD</th>
+        <th style="color:#fcd34d">PSM</th>
+        <th>Primary Constraint Mechanism</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>DoD Regulatory (DoDI 5000.02/.85/.88)</strong><br><span style="font-size:9px;color:var(--t3)">AAF · MCA · Engineering of Systems</span></td>
+        <td><span class="mt-p">PRIMARY</span></td>
+        <td><span class="mt-p">PRIMARY</span></td>
+        <td><span class="mt-p">PRIMARY</span></td>
+        <td style="font-size:10px;color:var(--t2)">RDSG operationalizes §3.4 digital truth mandate; SBD prevents Nunn-McCurdy; PSM answers §3.6.e AI/autonomy</td>
+      </tr>
+      <tr>
+        <td><strong>ISO 42001 (AI Management Systems)</strong><br><span style="font-size:9px;color:var(--t3)">AI governance · risk · transparency</span></td>
+        <td><span class="mt-s">SUPPORTING</span></td>
+        <td><span class="mt-n">—</span></td>
+        <td><span class="mt-p">PRIMARY</span></td>
+        <td style="font-size:10px;color:var(--t2)">PSM's Brier Score and MTBH implement ISO 42001's AI risk quantification requirements</td>
+      </tr>
+      <tr>
+        <td><strong>ISO/IEC 15288 (Systems Lifecycle)</strong><br><span style="font-size:9px;color:var(--t3)">INCOSE · SE lifecycle processes</span></td>
+        <td><span class="mt-p">PRIMARY</span></td>
+        <td><span class="mt-p">PRIMARY</span></td>
+        <td><span class="mt-s">SUPPORTING</span></td>
+        <td style="font-size:10px;color:var(--t2)">RDSG's closed-loop requirements evolution maps to 15288 requirements management processes</td>
+      </tr>
+      <tr>
+        <td><strong>Physical Engineering (HiL/FMI)</strong><br><span style="font-size:9px;color:var(--t3)">Hardware-in-Loop · co-simulation · MRL</span></td>
+        <td><span class="mt-s">SUPPORTING</span></td>
+        <td><span class="mt-p">PRIMARY</span></td>
+        <td><span class="mt-s">SUPPORTING</span></td>
+        <td style="font-size:10px;color:var(--t2)">SBD uses FMI co-simulation across physical/digital boundary; HiL generates PDR/CDR evidence</td>
+      </tr>
+      <tr>
+        <td><strong>Digital Engineering (MBSE/SysML v2)</strong><br><span style="font-size:9px;color:var(--t3)">Model-Based SE · digital twin · KerML</span></td>
+        <td><span class="mt-p">PRIMARY</span></td>
+        <td><span class="mt-s">SUPPORTING</span></td>
+        <td><span class="mt-p">PRIMARY</span></td>
+        <td style="font-size:10px;color:var(--t2)">RDSG encodes requirements as SysML v2 artifacts; PSM circuit breaker protects the digital twin baseline</td>
+      </tr>
+      <tr>
+        <td><strong>Systems Engineering (STPA/INCOSE/V-model)</strong><br><span style="font-size:9px;color:var(--t3)">STPA · ITRA · mission engineering · TPMs</span></td>
+        <td><span class="mt-p">PRIMARY</span></td>
+        <td><span class="mt-p">PRIMARY</span></td>
+        <td><span class="mt-s">SUPPORTING</span></td>
+        <td style="font-size:10px;color:var(--t2)">STPA loss scenarios integrate with RDSG continuous validation; ITRA data from SBD simulation evidence</td>
+      </tr>
+      <tr>
+        <td><strong>Automation Engineering (AI/ML/Autonomy)</strong><br><span style="font-size:9px;color:var(--t3)">autonomous systems · closed-loop · human-machine</span></td>
+        <td><span class="mt-s">SUPPORTING</span></td>
+        <td><span class="mt-s">SUPPORTING</span></td>
+        <td><span class="mt-p">PRIMARY</span></td>
+        <td style="font-size:10px;color:var(--t2)">PSM's MTBH frames AI hallucination as a reliability engineering problem — standard practice in autonomy</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="matrix-wrap">
+  <div class="matrix-title">DoD Standards Realization</div>
+  <table class="matrix-table">
+    <thead>
+      <tr>
+        <th>DoD Standard</th>
+        <th style="color:#67e8f9">RDSG</th>
+        <th style="color:#c4b5fd">SBD</th>
+        <th style="color:#fcd34d">PSM</th>
+        <th>Key Mechanism</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>DoDI 5000.02</strong><br><span style="font-size:9px;color:var(--t3)">Adaptive Acquisition Framework</span></td>
+        <td><span class="mt-p">PRIMARY</span></td><td><span class="mt-p">PRIMARY</span></td><td><span class="mt-n">—</span></td>
+        <td style="font-size:10px;color:var(--t2)">RDSG closed-loop + SBD modular design set operationalize continuous adaptation mandate</td>
+      </tr>
+      <tr>
+        <td><strong>DoDI 5000.85</strong><br><span style="font-size:9px;color:var(--t3)">Major Capability Acquisition</span></td>
+        <td><span class="mt-p">PRIMARY</span></td><td><span class="mt-p">PRIMARY</span></td><td><span class="mt-n">—</span></td>
+        <td style="font-size:10px;color:var(--t2)">MOVOI provides quantitative commitment criterion; prevents premature design lock-in causing Nunn-McCurdy</td>
+      </tr>
+      <tr>
+        <td><strong>DoDI 5000.88</strong><br><span style="font-size:9px;color:var(--t3)">Engineering of Defense Systems</span></td>
+        <td><span class="mt-p">PRIMARY</span></td><td><span class="mt-s">SUPPORTING</span></td><td><span class="mt-p">PRIMARY</span></td>
+        <td style="font-size:10px;color:var(--t2)">RDSG operationalizes §3.4 digital truth; MTBH/Brier answer §3.6.e AI/autonomy mandate with auditable metrics</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</div><!-- /view-matrix -->
+
+</div><!-- /app -->
+
+<script>
+// ═══ NODE DATA ═══════════════════════════════════════════════════════════════
+
+const nodeData = {
+  // ── Governance nodes (arch view) ──
+  'gov-regulatory': {
+    title: 'DoD Regulatory Framework',
+    badges: [{label:'Governance',bg:'var(--gov-l)',color:'var(--gov)'},{label:'Constrains All Layers',bg:'#fee2e2',color:'#991b1b'}],
+    cards: [
+      {title:'What It Mandates',body:'<strong>DoDI 5000.02</strong> (AAF) requires continuous feedback loops and modular upgrades. <strong>DoDI 5000.85</strong> governs MDAPs and enforces Nunn-McCurdy — programs must demonstrate cost-commitment justification. <strong>DoDI 5000.88</strong> mandates digital engineering ecosystems, ITRA, MOSA, and explicit AI/autonomy risk management (§3.6.e).'},
+      {title:'How Innovation Answers It',body:'RDSG operationalizes the §3.4 digital authoritative source of truth. SBD\'s MOVOI provides the quantitative Nunn-McCurdy prevention mechanism. PSM\'s MTBH and Brier Score deliver the §3.6.e AI reliability metrics that program managers can brief at milestone reviews — not just qualitative assurances.'},
+    ],
+    touchpoints: [
+      {icon:'🛡️',name:'RDSG → DoDI 5000.88 §3.4',desc:'Machine-enforceable SHACL/SWRL requirements in SysML v2 repo directly operationalize the "digital authoritative source of truth" mandate. Not documentation — live governance infrastructure.'},
+      {icon:'⚙️',name:'SBD → DoDI 5000.85 Nunn-McCurdy Prevention',desc:'MOVOI analysis provides the quantitative criterion for when design commitment is epistemically justified — preventing the premature lock-in that historically causes 15%/25% cost threshold breaches.'},
+      {icon:'📊',name:'PSM → DoDI 5000.88 §3.6.e AI/Autonomy',desc:'Brier Score and MTBH provide mathematically grounded, auditable AI reliability metrics — answering the mandate for systems engineering to address AI/autonomy hazards with specific, measurable mechanisms.'},
+    ]
+  },
+  'gov-iso': {
+    title: 'ISO & Engineering Standards',
+    badges: [{label:'Governance',bg:'var(--gov-l)',color:'var(--gov)'},{label:'AI · Lifecycle · Quality',bg:'#f0fdf4',color:'#166534'}],
+    cards: [
+      {title:'Key Standards',body:'<strong>ISO 42001:2023</strong> (AI Management Systems) — requires organizations to establish risk-based AI governance. <strong>ISO/IEC 15288:2023</strong> (Systems Engineering Lifecycle) — defines SE processes from conception through disposal. <strong>ISO/IEC 25010</strong> — systems quality characteristics including reliability, maintainability, and security. <strong>INCOSE Handbook</strong> — international SE best practices.'},
+      {title:'How Innovation Aligns',body:'PSM\'s Brier Score and MTBH directly implement ISO 42001\'s requirement for quantified AI risk monitoring. RDSG\'s closed-loop requirements evolution maps to ISO 15288\'s requirements management and validation processes. The SysML v2/KerML repository satisfies 15288\'s system baseline and traceability requirements.'},
+    ],
+    touchpoints: [
+      {icon:'📊',name:'PSM → ISO 42001 AI Risk Quantification',desc:'ISO 42001 requires documented AI risk assessment and monitoring. MTBH provides a computable, threshold-bounded reliability metric — directly implementing the standard\'s risk quantification intent.'},
+      {icon:'🛡️',name:'RDSG → ISO 15288 Requirements Management',desc:'RDSG\'s closed-loop architecture maps to ISO 15288 processes 6.4.3 (requirements definition) and 6.4.6 (requirements validation) — but executes them automatically rather than through document review cycles.'},
+    ]
+  },
+  'gov-physical': {
+    title: 'Physical Engineering Disciplines',
+    badges: [{label:'Governance',bg:'var(--gov-l)',color:'var(--gov)'},{label:'Physical ↔ Digital Boundary',bg:'#eff6ff',color:'#1e40af'}],
+    cards: [
+      {title:'What It Encompasses',body:'Physical engineering covers the design, test, and manufacturing of real hardware: <strong>Hardware-in-the-Loop (HiL)</strong> testing couples physical subsystems to digital simulation environments; <strong>FMI (Functional Mockup Interface)</strong> enables acausal-causal co-simulation across physical and digital models; <strong>Manufacturing Readiness Levels (MRL)</strong> and Production Readiness Reviews (PRR) gate physical production decisions.'},
+      {title:'Physical ↔ Digital Boundary',body:'This discipline explicitly crosses the physical/digital boundary. Physical test data from HiL must calibrate and validate digital twins. FMI co-simulation runs physical model mathematics within digital simulation — a hybrid artifact. SBD\'s deliberate decision delay is enabled by this boundary: physical prototypes reduce epistemic uncertainty that purely digital models cannot resolve.'},
+    ],
+    touchpoints: [
+      {icon:'⚙️',name:'SBD HiL Co-Simulation',desc:'SBD uses FMI/acausal-causal co-simulation against the SysML v2 substrate to generate PDR/CDR Certification Evidence — physical system behavior tested within digital governance infrastructure.'},
+      {icon:'🗄️',name:'Physical Test Data → SysML v2 Calibration',desc:'Physical test results update the digital authoritative baseline — physical reality constrains digital models, not the reverse. This bidirectional truth-checking is what makes the digital twin authoritative.'},
+    ]
+  },
+  'gov-digital': {
+    title: 'Digital Engineering Disciplines',
+    badges: [{label:'Governance',bg:'var(--gov-l)',color:'var(--gov)'},{label:'MBSE · SysML v2 · Digital Twin',bg:'#faf5ff',color:'#6b21a8'}],
+    cards: [
+      {title:'What It Encompasses',body:'<strong>Model-Based Systems Engineering (MBSE)</strong> replaces document-centric engineering with executable models. <strong>SysML v2/KerML</strong> provides the formal modeling language with a federated REST API (replacing brittle XMI exchange). The <strong>Digital Twin</strong> is a live virtual representation of the physical system that evolves with test data and operational feedback. CAD/CAE models and simulation environments are the digital substrate for analysis.'},
+      {title:'Physical ↔ Digital Boundary',body:'Digital Engineering defines how digital models govern physical design decisions — and how physical reality updates digital models. The REST API transition is critical: when multi-vendor teams query a single authoritative repository rather than local XMI copies, the physical/digital boundary becomes a governed interface rather than an uncontrolled gap. RDSG\'s requirements live in this digital space; they constrain physical design choices.'},
+    ],
+    touchpoints: [
+      {icon:'🛡️',name:'RDSG → SysML v2 Authoritative Requirements',desc:'Requirements encoded as SHACL/SWRL artifacts in the SysML v2 federated repo — these digital artifacts directly constrain physical design decisions by making non-compliant alternatives impossible to select without explicit governance override.'},
+      {icon:'📊',name:'PSM Circuit Breaker → Digital Twin Integrity',desc:'MTBH circuit breaker prevents AI-generated content from corrupting the SysML v2 digital twin — maintaining the integrity of the digital model that physical engineering teams depend on for production decisions.'},
+    ]
+  },
+  'gov-systems': {
+    title: 'Systems Engineering',
+    badges: [{label:'Governance',bg:'var(--gov-l)',color:'var(--gov)'},{label:'STPA · INCOSE · V-model · ITRA',bg:'var(--rdsg-l)',color:'var(--rdsg)'}],
+    cards: [
+      {title:'What It Encompasses',body:'<strong>STPA (System-Theoretic Process Analysis)</strong> identifies unsafe system behaviors emerging from component interactions — not just component failures. <strong>INCOSE Handbook</strong> and the <strong>V-model lifecycle</strong> structure requirements through verification. <strong>Mission Engineering</strong> establishes mission-context baselines. <strong>ITRA (Independent Technical Risk Assessment)</strong> provides external validation at milestone reviews. <strong>Technical Performance Measures (TPMs)</strong> track system state against acceptance thresholds continuously.'},
+      {title:'How Innovation Uses It',body:'RDSG\'s closed-loop requirements evolution is the operational implementation of the V-model\'s right side (integration, verification, validation) — but executed continuously rather than at discrete milestones. STPA loss scenarios should integrate with RDSG\'s continuous validation layer so that system-level unsafe behaviors propagate as Acceptance Criterion failures. SBD\'s MOVOI provides the quantitative evidence that ITRA reviewers need.'},
+    ],
+    touchpoints: [
+      {icon:'🛡️',name:'STPA Integration → RDSG Continuous Validation',desc:'STPA-identified loss scenarios encoded as SWRL inference rules — system-level unsafe behaviors surface as Acceptance Criterion failures in real time rather than being discovered at ITRA.'},
+      {icon:'⚙️',name:'SBD Evidence → ITRA Certification',desc:'HiL co-simulation generates PDR/CDR Certification Evidence satisfying ITRA criteria for production readiness (DoDI 5000.88 §3.5.a) — quantitative evidence replaces qualitative assurance.'},
+    ]
+  },
+  'gov-automation': {
+    title: 'Automation Engineering',
+    badges: [{label:'Governance',bg:'var(--gov-l)',color:'var(--gov)'},{label:'AI/ML · Autonomous Systems · Closed-Loop Control',bg:'#fef2f2',color:'#991b1b'}],
+    cards: [
+      {title:'What It Encompasses',body:'<strong>AI/ML systems engineering</strong> — design, training, validation, and deployment of machine learning models as engineered systems. <strong>Autonomous systems</strong> — vehicles, platforms, and agents that make and execute decisions without continuous human oversight. <strong>Closed-loop control engineering</strong> — feedback-driven system regulation. <strong>Human-machine teaming</strong> — authority allocation between human operators and automated systems. All of these cross the physical/digital boundary: AI decisions execute through physical actuators; physical sensor data trains digital models.'},
+      {title:'Physical ↔ Digital Boundary',body:'Automation Engineering is where the physical/digital boundary is most consequential. An autonomous system\'s digital decision propagates to physical actuators in the real world — errors are not merely data quality issues but potential mission failures. The RDSG circuit breaker and MTBH metric exist precisely to govern this boundary: they ensure that AI decisions reaching physical systems have been validated against requirements and calibrated for reliability.'},
+    ],
+    touchpoints: [
+      {icon:'📊',name:'PSM → AI/ML Reliability Governance',desc:'Brier Score and MTBH frame AI model reliability using standard reliability engineering methods — turning "AI was tested" into "AI has demonstrated MTBH of X hours under conditions Y and Z." This is the engineering discipline of autonomy applied to LLMs.'},
+      {icon:'🛡️',name:'RDSG Circuit Breaker → Autonomous Decision Governance',desc:'Before any AI-generated directive can influence physical systems or program baselines, SHACL/SWRL validation confirms it is ontologically compliant and requirements-consistent — the governance gate at the physical/digital boundary.'},
+    ]
+  },
+
+  // ── Innovation pillar nodes (arch view) ──
+  rdsg: {
+    title: 'Requirements-Driven Semantic Gateway (RDSG)',
+    badges: [{label:'Pillar 1',bg:'var(--rdsg-l)',color:'var(--rdsg)'},{label:'AI Governance',bg:'#eff6ff',color:'#1e40af'}],
+    cards: [
+      {title:'What It Does',body:'Transforms prose requirements into <strong>machine-enforceable semantic artifacts</strong>. SHACL provides structural compliance; SWRL provides behavioral inference rules. Together they form an automated "AI circuit breaker" that halts any AI directive violating operational requirements or ontology standards.'},
+      {title:'Ark Integration',body:'Sits between the NSKG and Govini\'s LLMs as a Mandatory Bias &amp; Compliance Fetch layer. Only ontologically governed, regulation-compliant context passes to the AI. Requirements reside in the SysML v2/KerML federated repository as live, queryable governance artifacts — not passive documents.'},
+    ],
+    touchpoints: [
+      {icon:'🛡️',name:'Circuit Breaker → Govini LLMs',desc:'SHACL/SWRL validation gates halt any AI directive if output violates operational requirements or ontology standards — preventing hallucinations from reaching operators or corrupting program baselines.'},
+      {icon:'🕸️',name:'Mandatory Compliance Fetch → NSKG',desc:'RDSG enforces that LLMs only receive context that is compliant with defense regulations and ontologically governed — filtering the NSKG at query time, not after the fact.'},
+      {icon:'🔍',name:'Ontology Gap Detection → Application Hubs',desc:'Monitors operator sessions in real time. Unresolved terms captured as OntologyGap individuals tagged with persona/scenario context — feeding back into the NSKG automatically.'},
+      {icon:'📜',name:'Governance Alignment → DoDI 5000.88 §3.4',desc:'RDSG operationalizes the "digital authoritative source of truth" mandate with machine-verifiable requirements, not documentary assertion.'},
+    ]
+  },
+  sbd: {
+    title: 'Set-Based Design (SBD)',
+    badges: [{label:'Pillar 2',bg:'var(--sbd-l)',color:'var(--sbd)'},{label:'Nunn-McCurdy Prevention',bg:'#fef2f2',color:'#b91c1c'}],
+    cards: [
+      {title:'What It Does',body:'Maintains a bounded set of viable design alternatives simultaneously. MOVOI (Multiobjective Value of Information) analysis determines <strong>when it is epistemically justified to narrow the set</strong> — preventing premature lock-in and the cascading cost overruns that trigger Nunn-McCurdy.'},
+      {title:'Ark Integration',body:'Runs inside Ark\'s Supply Chain, Production, and Modernization apps — transforming static dashboards into an active tradespace. MOVOI prioritizes which simulations are worth executing based on expected information yield. HiL co-simulation uses the SysML v2 repo as its simulation substrate.'},
+    ],
+    touchpoints: [
+      {icon:'⚙️',name:'MOVOI Tradespace → Application Hubs',desc:'Live multi-objective scoring of cost, schedule, performance, and risk. Operators see a scored tradespace of alternatives — not a single AI recommendation.'},
+      {icon:'🗄️',name:'HiL Co-Simulation → SysML v2 Repository',desc:'FMI/acausal-causal models use the SysML v2 repo as simulation substrate, generating PDR/CDR evidence satisfying ITRA criteria (DoDI 5000.88 §3.5.a).'},
+      {icon:'🔩',name:'Physical ↔ Digital Boundary',desc:'SBD explicitly spans physical and digital engineering: physical prototypes and HiL hardware reduce epistemic uncertainty that purely digital models cannot resolve — and those results update the digital twin.'},
+    ]
+  },
+  psm: {
+    title: 'Predictive Scoring Metrics (PSM)',
+    badges: [{label:'Pillar 3',bg:'var(--psm-l)',color:'var(--psm)'},{label:'AI Reliability Engineering',bg:'#f0fdf4',color:'#15803d'}],
+    cards: [
+      {title:'What It Does',body:'Introduces mathematically grounded AI reliability metrics: <strong>Brier Score</strong> (probabilistic calibration), <strong>Logarithmic Score</strong>, and <strong>MTBH</strong> (Mean Time Between Hallucinations). Frames AI hallucination risk as a standard reliability engineering problem — with defined metrics, thresholds, and circuit-breaker intervention.'},
+      {title:'Ark Integration',body:'Applied as loss functions during Govini LLM training so AI accurately represents its own uncertainty. MTBH circuit breaker blocks unverified AI output from corrupting the SysML v2 digital twin when threshold is exceeded. Uncertainty scores surface directly in Hub interfaces.'},
+    ],
+    touchpoints: [
+      {icon:'📊',name:'Loss Functions → Govini LLM Training',desc:'Brier Score and Logarithmic Score applied during fine-tuning — AI confidence scores calibrated to actual accuracy, enabling Program Managers to trust uncertainty estimates.'},
+      {icon:'🚨',name:'MTBH Circuit Breaker → SysML v2 Repository',desc:'Hallucination rate threshold breach blocks AI output from propagating to the digital twin — auditable, briefable metric for milestone reviews.'},
+      {icon:'🤖',name:'ISO 42001 Alignment',desc:'PSM\'s quantified AI risk metrics directly implement ISO 42001\'s AI management system requirements — turning policy into engineering practice.'},
+    ]
+  },
+  nskg: {
+    title: 'National Security Knowledge Graph (NSKG)',
+    badges: [{label:'Govini Ark',bg:'var(--ark-l)',color:'var(--navy)'},{label:'Data Foundation',bg:'#eff6ff',color:'#1e40af'}],
+    cards: [
+      {title:'What It Is',body:'Govini\'s core data asset: aggregates <strong>33+ commercial and government data sources</strong> into a unified knowledge graph covering supply chain, industrial base, production capacity, financial data, and government contracts.'},
+      {title:'How Innovation Enhances It',body:'RDSG adds semantic governance at query time — only regulation-compliant, ontologically validated data reaches AI. The closed-loop feedback from operator sessions automatically evolves the NSKG without manual synchronization.'},
+    ],
+    touchpoints: [
+      {icon:'🛡️',name:'RDSG Compliance Layer at Query Time',desc:'Mandatory Bias & Compliance Fetches filter NSKG queries — preventing regulatory violations from AI-generated acquisition guidance before they occur.'},
+      {icon:'🔄',name:'Ontology Gap Feedback Loop',desc:'OntologyGap individuals written back to NSKG automatically — the knowledge graph evolves continuously with each operator session.'},
+    ]
+  },
+  llm: {
+    title: 'Govini LLMs',
+    badges: [{label:'Govini Ark',bg:'var(--ark-l)',color:'var(--navy)'},{label:'AI Engine',bg:'#f0fdf4',color:'#15803d'}],
+    cards: [
+      {title:'What They Do',body:'Process defense acquisition data from the NSKG for alternative part identification, supply chain analysis, modernization recommendations, and competitive intelligence. RAG architecture grounds outputs in real data.'},
+      {title:'How Innovation Governs Them',body:'RDSG wraps LLMs with SHACL/SWRL circuit breakers. PSM applies scoring rules as training loss functions. Together they transform Govini\'s AI from a useful tool into a <strong>high-assurance, auditable system</strong> — with quantified reliability and machine-enforced compliance.'},
+    ],
+    touchpoints: [
+      {icon:'🛡️',name:'RDSG Circuit Breaker (Input + Output)',desc:'SHACL validates context fed to LLMs is ontologically compliant. SWRL validates behavioral outputs. Halts non-compliant AI directives before reaching operators.'},
+      {icon:'📊',name:'PSM Loss Function Training',desc:'Brier Score and Logarithmic scoring rules applied during fine-tuning — model confidence scores calibrated to actual accuracy rates.'},
+    ]
+  },
+  sysml: {
+    title: 'SysML v2 / KerML Repository',
+    badges: [{label:'Govini Ark',bg:'var(--ark-l)',color:'var(--navy)'},{label:'Digital Twin · Authoritative Baseline',bg:'var(--sbd-l)',color:'var(--sbd)'}],
+    cards: [
+      {title:'What It Is',body:'Federated REST API replacing brittle XMI file exchange. Multi-vendor teams query a <strong>single authoritative requirements repository</strong> rather than maintaining divergent local copies. Machine-verifiable baseline management rather than document assertion.'},
+      {title:'How Innovation Uses It',body:'RDSG stores requirements as live SHACL/SWRL artifacts here. PSM\'s MTBH circuit breaker prevents AI output from corrupting this baseline. SBD uses it as a simulation substrate for HiL co-simulation generating PDR/CDR evidence.'},
+    ],
+    touchpoints: [
+      {icon:'🛡️',name:'RDSG Semantic Artifacts → §3.4 Compliance',desc:'Requirements as SHACL shapes and SWRL rules — live governance infrastructure, not passive documents. DoDI 5000.88 §3.4 digital authoritative source of truth.'},
+      {icon:'📊',name:'MTBH Circuit Breaker Protection',desc:'When AI hallucination rate exceeds threshold, circuit breaker blocks output from writing to this repository — preserving baseline integrity across multi-vendor teams.'},
+      {icon:'⚙️',name:'SBD Simulation Substrate',desc:'FMI co-simulation uses SysML v2 artifacts for HiL integration. Generates ITRA Certification Evidence for production readiness (§3.5.a).'},
+    ]
+  },
+  hub: {
+    title: 'Ark Application Hubs',
+    badges: [{label:'Govini Ark',bg:'var(--ark-l)',color:'var(--navy)'},{label:'Active Governance Tool',bg:'#f0fdf4',color:'#15803d'}],
+    cards: [
+      {title:'What They Are',body:'Interactive interfaces and guided workflows spotlighting program-specific insights. Existing Hubs cover Supply Chain, Production, and Modernization apps — operators evaluate alternatives and identify vulnerabilities.'},
+      {title:'How Innovation Transforms Them',body:'Transforms static dashboards into <strong>active governance tools</strong>. MOVOI tradespace replaces static charts. PSM uncertainty scores accompany every recommendation. Ontology Gap Detection monitors sessions. RequirementsReview surfaces to stewards. The Hub becomes a closed-loop governance platform.'},
+    ],
+    touchpoints: [
+      {icon:'⚙️',name:'MOVOI Tradespace (SBD)',desc:'Live multi-objective analysis inside Hub workflows — operators see scored alternatives, not a single AI recommendation.'},
+      {icon:'📊',name:'Scoring Metrics Display (PSM)',desc:'AI uncertainty scores surface alongside every recommendation — supply chain analysts know reliability confidence before acting.'},
+      {icon:'🔍',name:'Ontology Gap Monitoring (RDSG)',desc:'Unresolved terms captured in real time during operator sessions, fed back into NSKG automatically.'},
+    ]
+  },
+  'gap-detect': {
+    title: 'Ontology Gap Detection',
+    badges: [{label:'RDSG',bg:'var(--rdsg-l)',color:'var(--rdsg)'},{label:'Emergent Behavior Capture',bg:'#f0fdf4',color:'#15803d'}],
+    cards: [
+      {title:'What It Does',body:'Actively monitors operator interactions in Ark Hubs for terms the AI fails to resolve. Unresolved concepts automatically captured as OntologyGap individuals tagged with user persona, scenario, and program context.'},
+      {title:'Why It Matters for Emergent Behaviors',body:'In complex defense AI systems, <strong>emergent behaviors</strong> — system states not anticipated during design — manifest as ontological gaps: the AI encounters a concept it cannot resolve because the knowledge model did not anticipate this context. Gap Detection captures these emergent states as structured, actionable signals rather than silent failures.'},
+    ],
+    touchpoints: [
+      {icon:'🕸️',name:'Auto-Write to NSKG',desc:'Gap individuals written back to NSKG automatically — knowledge graph accuracy improves with each operator session, without manual curation.'},
+      {icon:'📋',name:'Steward Notification',desc:'Tagged gaps routed to domain stewards for ontology remediation — closing the requirements-knowledge feedback loop.'},
+    ]
+  },
+  'req-review': {
+    title: 'Automated Requirements Review',
+    badges: [{label:'RDSG',bg:'var(--rdsg-l)',color:'var(--rdsg)'},{label:'Governance Calibration',bg:'var(--gov-l)',color:'var(--gov)'}],
+    cards: [
+      {title:'What It Does',body:'When AI fails a specified Acceptance Criterion, the Hub logs the failure. Once a threshold is reached, a RequirementsReview surfaces directly to domain stewards inside the Hub interface — no separate system, no manual monitoring.'},
+      {title:'Governance Significance',body:'AI behavioral failures become <strong>structured governance signals</strong> propagating back into the requirements baseline automatically — through the SHACL/SWRL layer rather than human review cycles. This is what closes the loop between DoDI 5000.02\'s continuous adaptation mandate and the RDSG\'s machine-enforceable governance infrastructure.'},
+    ],
+    touchpoints: [
+      {icon:'🤖',name:'LLM Failure Logging',desc:'Every AI output failing an Acceptance Criterion logged with full context — enabling pattern analysis across programs and time periods.'},
+      {icon:'🛡️',name:'RDSG Baseline Update',desc:'After steward calibration, updated requirements propagate through RDSG into the SysML v2 repository — machine-enforceable governance artifacts updated automatically.'},
+    ]
+  },
+};
+
+// ═══ FLOW NODE DATA ══════════════════════════════════════════════════════════
+
+const flowData = {
+  'fn-nskg': {
+    title: 'Step ①: NSKG Data Ingestion',
+    badges: [{label:'Govini Ark',bg:'var(--ark-l)',color:'var(--navy)'},{label:'Data Foundation',bg:'#eff6ff',color:'#1e40af'}],
+    cards: [
+      {title:'What Happens Here',body:'33+ commercial and government data sources stream into Govini\'s National Security Knowledge Graph — supply chain networks, industrial base assessments, government contracts, financial data, production capacity, and threat intelligence. This is Govini\'s core competitive advantage: the breadth and integration of this data.'},
+      {title:'Governance Constraints',body:'<strong>Regulatory:</strong> DFARS and FAR data requirements govern what acquisition data can be aggregated. <strong>Physical Engineering:</strong> hardware supplier and manufacturing data from physical industrial base. <strong>Digital Engineering:</strong> NSKG is itself a digital artifact that must conform to data governance standards and be queryable via structured APIs.'},
+    ],
+    touchpoints: [
+      {icon:'🛡️',name:'Next: RDSG Compliance Gate (Step ②)',desc:'Raw NSKG data does not reach AI directly. The RDSG applies Mandatory Bias & Compliance Fetches — only ontologically governed, regulation-compliant context passes through.'},
+      {icon:'🔄',name:'Receives: Closed-Loop Updates (Step ⑩)',desc:'OntologyGap individuals and calibrated ontology terms written back here by Step ⑩ — the NSKG evolves continuously with each operator session.'},
+    ]
+  },
+  'fn-rdsg': {
+    title: 'Step ②: RDSG Compliance Gate',
+    badges: [{label:'RDSG · Pillar 1',bg:'var(--rdsg-l)',color:'var(--rdsg)'},{label:'SHACL/SWRL Validation',bg:'#eff6ff',color:'#1e40af'}],
+    cards: [
+      {title:'What Happens Here',body:'Every NSKG query is intercepted by the RDSG before context reaches the LLMs. <strong>SHACL</strong> (Shapes Constraint Language) validates structural compliance — ensuring data conforms to ontology schemas and regulatory constraints. <strong>SWRL</strong> (Semantic Web Rule Language) applies behavioral inference rules — deriving additional governance facts and detecting rule violations. Only compliant context advances.'},
+      {title:'Governance Constraints',body:'<strong>DoDI 5000.88 §3.4:</strong> RDSG operationalizes the digital authoritative source of truth mandate. <strong>ISO 15288:</strong> Maps to requirements definition and validation processes. <strong>Systems Engineering:</strong> STPA loss scenarios encoded as SWRL rules — unsafe system-level behaviors surface as validation failures. <strong>Digital Engineering:</strong> SHACL shapes stored in SysML v2 federated repo as machine-verifiable artifacts.'},
+    ],
+    touchpoints: [
+      {icon:'✅',name:'Compliant Path → Step ③ (LLM Inference)',desc:'Context that passes SHACL and SWRL validation advances to Govini\'s LLMs for acquisition analysis.'},
+      {icon:'🚫',name:'Non-Compliant Path → Blocked + Logged',desc:'Outputs violating requirements are halted. The violation is logged as a structured failure signal — potentially triggering RequirementsReview (Step ⑧) if thresholds are crossed.'},
+      {icon:'🗄️',name:'Governance Artifacts → SysML v2 Repository',desc:'SHACL shapes and SWRL rules stored in the federated REST API repo — live governance infrastructure queryable by all program participants.'},
+    ]
+  },
+  'fn-llm': {
+    title: 'Step ③: Govini LLM Inference',
+    badges: [{label:'Govini Ark',bg:'var(--ark-l)',color:'var(--navy)'},{label:'Governed AI',bg:'#f0fdf4',color:'#15803d'}],
+    cards: [
+      {title:'What Happens Here',body:'Govini\'s LLMs receive only validated, compliant context from the RDSG gate. RAG (Retrieval-Augmented Generation) grounds outputs in NSKG data. PSM scoring rules have been applied as loss functions during training — the model\'s uncertainty representations are calibrated to its actual accuracy. The LLM generates acquisition analysis, alternatives identification, supply chain recommendations, and competitive intelligence.'},
+      {title:'Governance Constraints',body:'<strong>DoDI 5000.88 §3.6.e:</strong> Systems engineering must address AI/autonomy hazards. <strong>ISO 42001:</strong> AI management systems require documented risk assessment and monitoring. <strong>Automation Engineering:</strong> AI decisions that influence physical procurement and program baselines must be governed at the physical/digital boundary.'},
+    ],
+    touchpoints: [
+      {icon:'📊',name:'Next: PSM Scoring (Step ④)',desc:'All LLM outputs pass through PSM reliability scoring before reaching operators or program baselines. Brier Score measures calibration; MTBH circuit breaker monitors hallucination rate.'},
+      {icon:'🛡️',name:'Constrained By: RDSG (Step ②)',desc:'Context was pre-validated. If output violates requirements that SWRL can detect at generation time, the circuit breaker fires here before Step ④.'},
+    ]
+  },
+  'fn-psm': {
+    title: 'Step ④: PSM Reliability Scoring & Circuit Breaker',
+    badges: [{label:'PSM · Pillar 3',bg:'var(--psm-l)',color:'var(--psm)'},{label:'AI Reliability Engineering',bg:'#f0fdf4',color:'#15803d'}],
+    cards: [
+      {title:'What Happens Here',body:'AI outputs are scored against strictly proper scoring rules. The <strong>Brier Score</strong> measures probabilistic calibration — is the AI\'s expressed confidence aligned with its actual accuracy? The <strong>Logarithmic Score</strong> penalizes overconfident wrong answers. <strong>MTBH (Mean Time Between Hallucinations)</strong> tracks the reliability-theoretic hallucination rate against a defined threshold. If MTBH threshold is breached, the circuit breaker fires — blocking propagation to operators or the SysML v2 baseline.'},
+      {title:'Governance Constraints',body:'<strong>DoDI 5000.88 §3.6.e:</strong> PSM directly answers this mandate with quantitative, auditable metrics — not qualitative assurance. <strong>ISO 42001:</strong> Scoring rules implement the AI risk monitoring requirement. <strong>Automation Engineering:</strong> MTBH applies standard reliability engineering methods to LLMs — the same discipline used for autonomous system reliability.'},
+    ],
+    touchpoints: [
+      {icon:'✅',name:'Reliable Output → Step ⑤ (SBD MOVOI)',desc:'AI outputs meeting Brier and MTBH thresholds advance to SBD tradespace analysis, informing the MOVOI cost/schedule/performance/risk evaluation.'},
+      {icon:'🚨',name:'Circuit Breaker Fires → Blocked + Flagged',desc:'Output exceeding MTBH threshold is blocked. The failure is logged, contributing to the RequirementsReview signal (Step ⑧) and potentially triggering re-training or threshold calibration.'},
+      {icon:'🗄️',name:'Protects: SysML v2 Repository (Step ⑨)',desc:'MTBH circuit breaker is the last line of defense before AI output could corrupt the digital authoritative baseline — ensuring only verified content updates the digital twin.'},
+    ]
+  },
+  'fn-sbd': {
+    title: 'Step ⑤: SBD MOVOI Tradespace Analysis',
+    badges: [{label:'SBD · Pillar 2',bg:'var(--sbd-l)',color:'var(--sbd)'},{label:'Nunn-McCurdy Prevention',bg:'#fef2f2',color:'#b91c1c'}],
+    cards: [
+      {title:'What Happens Here',body:'Validated, scored AI context enters SBD\'s MOVOI engine. MOVOI simultaneously evaluates the full tradespace of viable design alternatives across cost, schedule, performance, and risk objectives. It computes the Expected Value of Perfect Information (EVPI) for each uncertain parameter — answering "Is there enough information to commit to a design?" If not, the tradespace is preserved. Uncertainty-reduction activities (analysis, simulation, HiL testing) are prioritized by information yield.'},
+      {title:'Physical ↔ Digital Boundary',body:'This step explicitly crosses the physical/digital boundary. <strong>Physical HiL testing</strong> reduces epistemic uncertainty that digital simulation cannot resolve — real hardware behavior in the loop. <strong>FMI co-simulation</strong> couples physical model mathematics to digital simulation environments. Results from physical tests update the digital tradespace model — the authoritative SysML v2 repo is updated accordingly.'},
+    ],
+    touchpoints: [
+      {icon:'🖥️',name:'Tradespace → Application Hubs (Step ⑥)',desc:'MOVOI results surface in Ark Hub workflows — operators see a live scored tradespace of alternatives rather than a single AI recommendation.'},
+      {icon:'🔩',name:'HiL Co-Simulation → SysML v2 (Step ⑨)',desc:'Physical test evidence generated during SBD cycles updates the digital authoritative baseline — satisfying ITRA evidence requirements (DoDI 5000.88 §3.5.a).'},
+      {icon:'⚙️',name:'Decision Gate',desc:'MOVOI\'s quantitative commitment criterion prevents the premature design lock-in that is the primary cause of Nunn-McCurdy cost threshold breaches.'},
+    ]
+  },
+  'fn-hubs': {
+    title: 'Step ⑥: Ark Application Hub Interaction',
+    badges: [{label:'Govini Ark',bg:'var(--ark-l)',color:'var(--navy)'},{label:'Active Governance Tool',bg:'#f0fdf4',color:'#15803d'}],
+    cards: [
+      {title:'What Happens Here',body:'Operators interact with transformed Ark Hubs — Supply Chain, Production, Modernization. Instead of static dashboards, they see: a live MOVOI tradespace with scored alternatives, PSM uncertainty scores alongside every recommendation, and interactive workflows for querying the NSKG through the RDSG governance layer. The Hub is now an active governance tool, not a passive viewer.'},
+      {title:'Governance Constraints',body:'<strong>Systems Engineering:</strong> Hub interactions are governed by the V-model\'s verification logic — operator queries test requirements validity in real time. <strong>Automation Engineering:</strong> Human-machine authority allocation is embedded in Hub workflows — operators make final decisions on AI recommendations, maintaining human-in-the-loop governance. <strong>Digital Engineering:</strong> Hub state is synchronized with the SysML v2 authoritative repo.'},
+    ],
+    touchpoints: [
+      {icon:'🔍',name:'Triggers: Ontology Gap Detection (Step ⑦)',desc:'Operator interactions that surface unresolved terms automatically trigger Gap Detection — the Hub session becomes a continuous governance monitoring event.'},
+      {icon:'⚙️',name:'Displays: MOVOI Tradespace (SBD)',desc:'Live multi-objective alternative scoring — operators can explore cost/schedule/performance tradeoffs interactively rather than accepting a single AI recommendation.'},
+      {icon:'📊',name:'Displays: PSM Uncertainty Scores',desc:'Every Hub recommendation includes AI reliability confidence — operators know what to trust before committing.'},
+    ]
+  },
+  'fn-gap': {
+    title: 'Step ⑦: Ontology Gap Detection',
+    badges: [{label:'RDSG',bg:'var(--rdsg-l)',color:'var(--rdsg)'},{label:'Emergent Behavior Capture',bg:'#f0fdf4',color:'#15803d'}],
+    cards: [
+      {title:'What Happens Here',body:'The RDSG monitors every operator Hub session in real time for terms, concepts, and queries that the AI cannot resolve against the current ontology. When a resolution failure occurs, an OntologyGap individual is automatically instantiated — capturing the unresolved term, the operator\'s persona, the scenario context, the program identifier, and the timestamp. No operator action required.'},
+      {title:'Why This Captures Emergent Behaviors',body:'In complex sociotechnical systems, <strong>emergent behaviors</strong> appear as ontological gaps: the AI encounters a concept that wasn\'t anticipated when the knowledge model was designed. A new operational concept, an unfamiliar supply chain entity, a novel threat combination — these manifest as resolution failures before they manifest as mission failures. Capturing them here converts emergent behavior into governed signal.'},
+    ],
+    touchpoints: [
+      {icon:'📋',name:'Triggers: Requirements Review (Step ⑧)',desc:'When gap frequency exceeds threshold, a RequirementsReview is surfaced to domain stewards — flagging systematic ontology deficiencies rather than one-off failures.'},
+      {icon:'🔄',name:'Feeds: Closed-Loop Update (Step ⑩)',desc:'OntologyGap individuals are queued for propagation back to the NSKG — the knowledge graph is updated continuously without manual curation.'},
+    ]
+  },
+  'fn-review': {
+    title: 'Step ⑧: Automated Requirements Review',
+    badges: [{label:'RDSG',bg:'var(--rdsg-l)',color:'var(--rdsg)'},{label:'Governance Calibration',bg:'var(--gov-l)',color:'var(--gov)'}],
+    cards: [
+      {title:'What Happens Here',body:'When AI failures or ontology gaps cross Acceptance Criterion thresholds, a RequirementsReview surfaces directly to domain stewards inside the Hub. Stewards assess whether the failure reflects: (1) a requirements deficiency — the requirement was wrong; (2) an ontology error — the knowledge model was incomplete; (3) an AI capability limit — the model needs retraining or threshold adjustment. The steward\'s determination drives the calibration action.'},
+      {title:'Governance Significance',body:'This step closes the loop between DoDI 5000.02\'s continuous adaptation mandate and the RDSG\'s machine-enforceable infrastructure. AI behavioral failures are not discarded — they become <strong>structured governance signals</strong> that propagate back into the requirements baseline, the ontology, and the AI training pipeline. The governance framework evolves continuously with operational reality.'},
+    ],
+    touchpoints: [
+      {icon:'🛡️',name:'Calibrates: RDSG Governance Artifacts',desc:'Steward-approved requirement updates propagate through RDSG into the SysML v2 repository — SHACL shapes and SWRL rules updated as machine-enforceable governance artifacts.'},
+      {icon:'🕸️',name:'Feeds: Closed-Loop Update (Step ⑩)',desc:'Calibrated ontology terms and corrected requirements flow into the closed-loop update that evolves the NSKG and digital twin.'},
+    ]
+  },
+  'fn-sysml': {
+    title: 'Step ⑨: SysML v2 / KerML Baseline Update',
+    badges: [{label:'Govini Ark',bg:'var(--ark-l)',color:'var(--navy)'},{label:'Digital Authoritative Truth',bg:'var(--sbd-l)',color:'var(--sbd)'}],
+    cards: [
+      {title:'What Happens Here',body:'Steward-approved calibrations and HiL co-simulation results converge here — updating the SysML v2 federated repository. SHACL shapes and SWRL rules are revised as machine-verifiable artifacts. The digital twin is updated. Multi-vendor program teams immediately query the revised authoritative baseline via the federated REST API — no file exchange, no synchronization latency, no divergent local copies.'},
+      {title:'Physical ↔ Digital Boundary at Step ⑨',body:'This step is where physical engineering results (HiL test data, manufacturing test outcomes, prototype results) become digital governance artifacts. Physical test evidence generated in SBD cycles (Step ⑤) is encoded here as PDR/CDR Certification Evidence in the SysML v2 format — satisfying DoDI 5000.88 §3.5.a ITRA requirements. The physical/digital boundary is governed, not bridged ad hoc.'},
+    ],
+    touchpoints: [
+      {icon:'🔄',name:'Enables: Closed-Loop Update (Step ⑩)',desc:'Updated governance artifacts in the SysML v2 repo enable the final step — propagating calibrated requirements and ontology terms back to the NSKG to complete the loop.'},
+      {icon:'📊',name:'Protected By: PSM Circuit Breaker (Step ④)',desc:'MTBH threshold enforcement ensures only verified AI content reaches this repository — maintaining digital twin integrity across multi-vendor teams.'},
+    ]
+  },
+  'fn-loop': {
+    title: 'Step ⑩: Closed-Loop Update → Back to NSKG',
+    badges: [{label:'Closed Loop',bg:'var(--rdsg-l)',color:'var(--rdsg)'},{label:'Self-Reinforcing Governance',bg:'#f0fdf4',color:'#15803d'}],
+    cards: [
+      {title:'What Happens Here',body:'OntologyGap individuals captured in Step ⑦ and calibrated requirements from Step ⑧ propagate back to the NSKG — updating the knowledge graph without manual intervention. The next query through Step ② will reflect updated ontology, revised SHACL constraints, and improved SWRL inference rules. Each cycle makes governance more accurate than the last.'},
+      {title:'Why This Matters Systemically',body:'This step converts the governance architecture from a static control system into a <strong>learning governance system</strong>. Regulatory requirements, operational realities, emergent AI behaviors, and physical test results all converge here and update the knowledge foundation. The Govini Ark platform does not need periodic human-initiated knowledge management — it self-updates through governed operational use. This is the operational definition of continuous adaptation that DoDI 5000.02 mandates.'},
+    ],
+    touchpoints: [
+      {icon:'🕸️',name:'Updates: NSKG (Step ①)',desc:'Calibrated ontology terms and new knowledge graph nodes update the NSKG foundation — future queries are more accurate and more complete.'},
+      {icon:'🛡️',name:'Updates: RDSG Governance Artifacts',desc:'SHACL shapes and SWRL rules revised in SysML v2 repo — governance becomes more precise with each operational cycle.'},
+      {icon:'📊',name:'Feeds: PSM Threshold Calibration',desc:'Hallucination patterns identified in Step ④ inform MTBH threshold updates — the circuit breaker becomes better calibrated to actual program risk profiles.'},
+    ]
+  },
+
+  // ── Governance rail nodes (flow view) ──
+  'gn-regulatory': {
+    title: 'DoD Regulatory Framework',
+    badges: [{label:'Governance Constraint',bg:'var(--gov-l)',color:'var(--gov)'},{label:'DoDI 5000.02 · 5000.85 · 5000.88',bg:'#fee2e2',color:'#991b1b'}],
+    cards: [
+      {title:'DoDI 5000.02 — Adaptive Acquisition Framework',body:'Requires <strong>continuous feedback loops</strong> and modular upgrade paths. RDSG\'s closed-loop requirements evolution (Steps ②→⑦→⑧→⑩→①) is the operational mechanism. SBD\'s maintained design set provides the modular insertion point for new technologies without program reset.'},
+      {title:'DoDI 5000.85 — Major Capability Acquisition',body:'Enforces the <strong>Nunn-McCurdy statute</strong> — 15% (significant) and 25% (critical) cost threshold breaches trigger mandatory review. SBD\'s MOVOI analysis (Step ⑤) provides the quantitative commitment criterion that prevents premature lock-in — the primary cause of Nunn-McCurdy breaches.'},
+    ],
+    touchpoints: [
+      {icon:'📜',name:'DoDI 5000.88 §3.4 → Step ②',desc:'RDSG operationalizes the digital authoritative source of truth mandate with machine-enforceable SHACL/SWRL artifacts — not documentary assertion.'},
+      {icon:'📜',name:'DoDI 5000.88 §3.6.e → Step ④',desc:'PSM\'s MTBH and Brier Score provide the mathematically grounded AI/autonomy risk metrics that §3.6.e requires — briefable at milestone reviews.'},
+      {icon:'📜',name:'Nunn-McCurdy Prevention → Step ⑤',desc:'MOVOI quantifies "Is there enough information to commit?" — preventing the premature design lock-in that historically triggers cost threshold breaches.'},
+    ]
+  },
+  'gn-iso': {
+    title: 'ISO & Engineering Standards',
+    badges: [{label:'Governance Constraint',bg:'var(--gov-l)',color:'var(--gov)'},{label:'ISO 42001 · 15288 · 25010 · INCOSE',bg:'#f0fdf4',color:'#166534'}],
+    cards: [
+      {title:'ISO 42001:2023 — AI Management Systems',body:'Requires organizations to establish risk-based AI governance with documented monitoring, incident management, and continuous improvement. PSM\'s Brier Score and MTBH directly implement the risk quantification requirement. The RequirementsReview loop (Steps ⑦→⑧) implements the incident management and continuous improvement processes.'},
+      {title:'ISO/IEC 15288:2023 — Systems Engineering Lifecycle',body:'Defines SE processes from conception through disposal, including requirements definition (6.4.3), requirements analysis (6.4.4), and requirements validation (6.4.6). RDSG\'s closed-loop architecture executes these processes automatically rather than through document review cycles — continuous validation rather than milestone validation.'},
+    ],
+    touchpoints: [
+      {icon:'📐',name:'ISO 42001 → Step ④ PSM Scoring',desc:'PSM\'s scoring rules directly implement ISO 42001\'s AI risk monitoring requirements — quantified, bounded, and auditable.'},
+      {icon:'📐',name:'ISO 15288 → Steps ②, ⑧',desc:'RDSG compliance gate and RequirementsReview implement 15288 requirements management and validation processes automatically.'},
+    ]
+  },
+  'gn-physical': {
+    title: 'Physical Engineering Disciplines',
+    badges: [{label:'Governance Constraint',bg:'var(--gov-l)',color:'var(--gov)'},{label:'Physical ↔ Digital Boundary',bg:'#eff6ff',color:'#1e40af'}],
+    cards: [
+      {title:'What It Constrains',body:'Physical Engineering constrains Steps ① (NSKG — physical industrial base data), ⑤ (SBD — HiL co-simulation of physical subsystems), and ⑨ (SysML v2 — physical test evidence updating digital baseline). Hardware-in-the-Loop testing couples real physical subsystems to digital simulation environments — generating ground truth that purely digital models cannot provide.'},
+      {title:'Physical ↔ Digital Boundary Role',body:'This discipline defines how physical reality constrains digital models. Physical HiL test data must update the SysML v2 digital twin — not the reverse. FMI co-simulation creates hybrid artifacts that span both domains. Manufacturing Readiness Levels (MRL) and Production Readiness Reviews (PRR) gate the transition from digital design to physical production — the most consequential physical/digital boundary crossing in defense acquisition.'},
+    ],
+    touchpoints: [
+      {icon:'🔩',name:'HiL Testing → Step ⑤ SBD',desc:'Physical hardware tests reduce epistemic uncertainty in SBD tradespace — real system behavior data that digital simulation cannot substitute.'},
+      {icon:'🔩',name:'Test Evidence → Step ⑨ SysML v2',desc:'Physical test results encoded as ITRA Certification Evidence in the federated repo — physical reality updating the digital authoritative source of truth.'},
+    ]
+  },
+  'gn-digital': {
+    title: 'Digital Engineering Disciplines',
+    badges: [{label:'Governance Constraint',bg:'var(--gov-l)',color:'var(--gov)'},{label:'MBSE · SysML v2 · KerML · Digital Twin',bg:'#faf5ff',color:'#6b21a8'}],
+    cards: [
+      {title:'What It Constrains',body:'Digital Engineering constrains Steps ① (NSKG as digital knowledge artifact), ② (RDSG — SHACL/SWRL as formal digital models), ③ (LLMs — governed by digital requirements artifacts), and ⑨ (SysML v2 repo as the digital authoritative baseline). The transition from XMI file exchange to federated REST API is the infrastructure decision that determines whether multi-vendor digital engineering actually works.'},
+      {title:'Physical ↔ Digital Boundary Role',body:'Digital Engineering defines the authoritative side of the physical/digital boundary. Digital models do not merely represent physical systems — they govern physical design decisions through RDSG requirements enforcement. When physical test results (Step ⑤ HiL) update digital artifacts (Step ⑨), Digital Engineering standards determine how that update is validated, versioned, and propagated.'},
+    ],
+    touchpoints: [
+      {icon:'💻',name:'MBSE → Steps ②, ⑨',desc:'RDSG requirements encoded as SysML v2 artifacts; federated REST API enables real-time multi-vendor baseline query — the operational implementation of MBSE.'},
+      {icon:'💻',name:'Digital Twin Integrity → Step ④',desc:'PSM circuit breaker protects the digital twin baseline at Step ④ — preventing AI hallucinations from corrupting the authoritative source of truth.'},
+    ]
+  },
+  'gn-systems': {
+    title: 'Systems Engineering',
+    badges: [{label:'Governance Constraint',bg:'var(--gov-l)',color:'var(--gov)'},{label:'STPA · INCOSE · V-model · ITRA · Mission Eng.',bg:'var(--rdsg-l)',color:'var(--rdsg)'}],
+    cards: [
+      {title:'What It Constrains',body:'Systems Engineering constrains Steps ② (RDSG — STPA loss scenarios encoded as SWRL rules), ⑤ (SBD — MOVOI provides ITRA quantitative evidence), ⑧ (RequirementsReview — SE V-model validation loop), and ⑨ (SysML v2 — ITRA certification evidence). Mission Engineering establishes the mission-context baseline against which all design alternatives are evaluated.'},
+      {title:'STPA Integration Significance',body:'STPA (System-Theoretic Process Analysis) identifies unsafe system behaviors emerging from component interactions — including AI components. When STPA loss scenarios are encoded as SWRL inference rules in the RDSG, they become continuous real-time validators rather than periodic analysis artifacts. An unsafe AI behavior that STPA predicted surfaces as a SHACL/SWRL validation failure at Step ② — before it reaches operators.'},
+    ],
+    touchpoints: [
+      {icon:'🔬',name:'STPA → Step ② RDSG SWRL Rules',desc:'STPA loss scenarios encoded as SWRL inference rules — system-level unsafe behaviors detected continuously, not discovered at incident review.'},
+      {icon:'🔬',name:'ITRA Evidence → Step ⑤ SBD',desc:'MOVOI analysis and HiL co-simulation results provide the quantitative ITRA evidence that milestone reviewers require — replacing qualitative assurance with demonstrated data.'},
+    ]
+  },
+  'gn-automation': {
+    title: 'Automation Engineering',
+    badges: [{label:'Governance Constraint',bg:'var(--gov-l)',color:'var(--gov)'},{label:'AI/ML · Autonomous · Closed-Loop · Human-Machine',bg:'#fef2f2',color:'#991b1b'}],
+    cards: [
+      {title:'What It Constrains',body:'Automation Engineering constrains Steps ③ (LLM Inference — AI as an engineered system with reliability requirements), ④ (PSM — MTBH applies reliability engineering to AI), and ⑥ (Hubs — human-machine authority allocation in operator interfaces). It defines how autonomous decisions at the physical/digital boundary must be governed.'},
+      {title:'Physical ↔ Digital Boundary Role',body:'Automation Engineering is where the physical/digital boundary is most consequential for defense programs. An AI recommendation that propagates through the flow and reaches a physical procurement decision or a mission system parameter is no longer a data quality issue — it is a potential mission failure. Every step in this flow from ② through ⑨ is, at its core, an application of Automation Engineering principles to defense acquisition AI.'},
+    ],
+    touchpoints: [
+      {icon:'🤖',name:'Reliability Engineering → Step ④ PSM',desc:'MTBH applies standard reliability engineering methods to LLMs — the same discipline used for autonomous vehicle reliability, applied to language model hallucination risk.'},
+      {icon:'🤖',name:'Human-Machine Authority → Step ⑥ Hubs',desc:'Hub workflow design determines human-machine authority allocation — operators maintain final authority over AI recommendations, with PSM scores and MOVOI tradespace enabling informed decision-making.'},
+    ]
+  },
+};
+
+// ═══ PANEL RENDERING ══════════════════════════════════════════════════════════
+
+function renderPanel(data, panelId, titleId, metaId, gridId, tpId) {
+  document.getElementById(titleId).textContent = data.title;
+  document.getElementById(metaId).innerHTML = data.badges.map(b =>
+    `<span class="dp-badge" style="background:${b.bg};color:${b.color}">${b.label}</span>`).join('');
+  document.getElementById(gridId).innerHTML = data.cards.map(c =>
+    `<div class="dp-card"><div class="dp-card-title">${c.title}</div><div class="dp-card-body">${c.body}</div></div>`).join('');
+  const tpEl = document.getElementById(tpId);
+  if (data.touchpoints && data.touchpoints.length) {
+    tpEl.innerHTML = `<div class="tp-title">Integration &amp; Governance Touch Points</div><div class="tp-list">${
+      data.touchpoints.map(t => `<div class="tp-item"><div class="tp-icon">${t.icon}</div><div><div class="tp-name">${t.name}</div><div class="tp-desc">${t.desc}</div></div></div>`).join('')
+    }</div>`;
+  } else { tpEl.innerHTML = ''; }
+  const panel = document.getElementById(panelId);
+  panel.classList.add('on');
+  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function showNode(id, ev) {
+  if (ev) ev.stopPropagation();
+  const data = nodeData[id];
+  if (!data) return;
+  document.querySelectorAll('#view-arch .node').forEach(n => n.classList.remove('selected'));
+  if (ev && ev.currentTarget) ev.currentTarget.classList.add('selected');
+  renderPanel(data, 'arch-detail', 'arch-dp-title', 'arch-dp-meta', 'arch-dp-grid', 'arch-dp-tp');
+}
+
+function showFlowNode(id) {
+  const data = flowData[id];
+  if (!data) return;
+  document.querySelectorAll('#view-flow .flow-node-card, #view-flow .gov-node-card').forEach(n => n.classList.remove('selected'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('selected');
+  renderPanel(data, 'flow-detail', 'flow-dp-title', 'flow-dp-meta', 'flow-dp-grid', 'flow-dp-tp');
+}
+
+function closePanel(id) {
+  document.getElementById(id).classList.remove('on');
+  document.querySelectorAll('.node, .flow-node-card, .gov-node-card').forEach(n => n.classList.remove('selected'));
+}
+
+function setView(v, btn) {
+  document.querySelectorAll('.vbtn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('view-arch').style.display = v === 'arch' ? '' : 'none';
+  document.getElementById('view-flow').style.display = v === 'flow' ? '' : 'none';
+  document.getElementById('view-matrix').style.display = v === 'matrix' ? '' : 'none';
+  ['arch-detail','flow-detail'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('on');
+  });
+}
+</script>
+</body>
+</html>
