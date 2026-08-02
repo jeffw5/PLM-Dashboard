@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Decision Graph of Graphs — Impact Assessment Framework</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --bg:#0e1520; --panel:#141d29; --panel2:#1a2532; --border:#2a3849;
+    --text:#e7edf5; --muted:#8fa0b3; --accent:#49b0ff; --accent2:#8b6bff;
+    --amber:#f5a623; --green:#2ecc71; --gray:#7f8c8d; --red:#e0483e;
+    --mono:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:14px;}
+  header{padding:14px 20px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,#111a26,#0e1520);}
+  header h1{margin:0 0 2px;font-size:18px;font-weight:650;letter-spacing:.2px;}
+  header .sub{color:var(--muted);font-size:12.5px;margin-bottom:12px;}
+  .steps{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+  .step-tab{display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid var(--border);color:var(--muted);
+    padding:7px 12px;border-radius:8px;cursor:pointer;font-size:12.5px;font-weight:600;transition:.15s;}
+  .step-tab .n{width:18px;height:18px;border-radius:50%;background:#26364a;color:var(--text);display:flex;align-items:center;justify-content:center;font-size:11px;flex:none;}
+  .step-tab.active{background:rgba(73,176,255,.12);border-color:var(--accent);color:var(--text);}
+  .step-tab.active .n{background:var(--accent);color:#03121f;}
+  .step-tab:hover{color:var(--text);}
+  .chev{color:var(--border);font-size:12px;}
+  .layout{display:grid;grid-template-columns:270px 1fr 320px;height:calc(100vh - 96px);}
+  aside{background:var(--panel);border-right:1px solid var(--border);overflow-y:auto;padding:14px;}
+  aside.right{border-right:none;border-left:1px solid var(--border);}
+  main.canvas{position:relative;overflow:hidden;background:
+      radial-gradient(circle at 20% 20%, rgba(73,176,255,.05), transparent 40%),
+      radial-gradient(circle at 80% 80%, rgba(139,107,255,.05), transparent 40%), var(--bg);}
+  h2.panel-title{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:2px 0 10px;font-weight:700;}
+  .card{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:12px;}
+  .card h3{margin:0 0 8px;font-size:12.5px;color:var(--text);}
+  select, .btn, button{font-family:inherit;}
+  select{width:100%;background:#101823;color:var(--text);border:1px solid var(--border);border-radius:7px;padding:7px 8px;font-size:12.5px;}
+  .btn{width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:8px 10px;
+    font-size:12.5px;cursor:pointer;margin-top:6px;font-weight:600;text-align:center;}
+  .btn.primary{background:linear-gradient(180deg,#2a8fe0,#1c6fbf);border-color:#1c6fbf;color:#fff;}
+  .btn.ghost:hover{background:#20304244;}
+  .btn:active{transform:translateY(1px);}
+  .toggle{display:flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
+  .toggle button{flex:1;background:var(--panel2);border:none;color:var(--muted);padding:7px 4px;font-size:11.5px;font-weight:700;cursor:pointer;}
+  .toggle button.on{background:var(--accent);color:#03121f;}
+  .legend-row{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:12px;color:var(--muted);}
+  .swatch{width:12px;height:12px;border-radius:3px;flex:none;}
+  .swatch.dot{border-radius:50%;}
+  .swatch.diamond{transform:rotate(45deg);border-radius:2px;}
+  details{margin-bottom:10px;}
+  details summary{cursor:pointer;font-size:12px;font-weight:700;color:var(--accent);padding:4px 0;}
+  details p, details li{color:var(--muted);font-size:12px;line-height:1.5;}
+  details ul{margin:4px 0 8px 16px;padding:0;}
+  .fault{border-left:3px solid var(--red);padding:6px 0 6px 10px;margin-bottom:8px;}
+  .fault b{color:var(--text);font-size:12px;}
+  .fault .impact{color:var(--muted);font-size:11.5px;}
+  .matrix{width:100%;border-collapse:collapse;font-size:10.5px;margin-top:6px;}
+  .matrix th,.matrix td{border:1px solid var(--border);padding:4px;text-align:center;color:var(--muted);}
+  .matrix th{color:var(--text);font-weight:600;}
+  .matrix td.strong{color:var(--green);font-weight:700;}
+  .matrix td.mid{color:var(--amber);font-weight:700;}
+  .matrix td.weak{color:var(--red);font-weight:700;}
+  .breadcrumb{position:absolute;top:10px;left:12px;right:12px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none;z-index:5;}
+  .breadcrumb .txt{background:rgba(20,29,41,.85);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--muted);max-width:560px;pointer-events:auto;}
+  .breadcrumb .txt b{color:var(--text);}
+  .canvas-tools{position:absolute;bottom:12px;right:12px;display:flex;gap:6px;z-index:5;}
+  .canvas-tools button{background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:14px;}
+  svg{display:block;width:100%;height:100%;cursor:grab;}
+  svg:active{cursor:grabbing;}
+  .dnode text{fill:#0b1220;font-size:10.5px;font-weight:700;pointer-events:none;}
+  .dnode text.light{fill:#eef4fb;}
+  .dnode .shape{stroke:#0b1220;stroke-width:1.5px;transition:filter .15s, stroke .15s;}
+  .dnode:hover .shape{filter:brightness(1.15);}
+  .dnode.selected .shape{stroke:#fff;stroke-width:3px;}
+  .dnode.dim{opacity:.28;}
+  .dnode.hit .shape{stroke:#fff;stroke-width:3px;filter:drop-shadow(0 0 6px rgba(73,176,255,.9));}
+  .edge{stroke:#3c4d61;stroke-width:1.6px;fill:none;marker-end:url(#arrow);}
+  .edge.influence{stroke:var(--accent2);stroke-dasharray:5 4;marker-end:url(#arrow-influence);}
+  .edge.dim{opacity:.15;}
+  .edge.hit{stroke:var(--accent);stroke-width:2.6px;opacity:1;}
+  .edge-label{font-size:9.5px;fill:var(--muted);pointer-events:none;}
+  .ghost .shape{fill:none;stroke:var(--muted);stroke-dasharray:4 3;}
+  .ghost text{fill:var(--muted);}
+  .ghost:hover .shape{stroke:var(--accent);}
+  .container-box{fill:rgba(73,176,255,.04);stroke:var(--border);stroke-dasharray:6 4;rx:14;}
+  .container-label{fill:var(--muted);font-size:11px;font-weight:700;letter-spacing:.3px;}
+  #detailPanel .qtext{font-size:12.5px;line-height:1.5;color:var(--text);margin:4px 0 10px;}
+  .badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10.5px;font-weight:700;margin-right:6px;}
+  .chain{display:flex;flex-direction:column;gap:2px;margin:8px 0;}
+  .chain .link{display:flex;align-items:center;gap:6px;font-size:11px;padding:4px 6px;border-radius:6px;background:#101823;border:1px solid var(--border);color:var(--muted);}
+  .chain .link.me{background:rgba(73,176,255,.12);border-color:var(--accent);color:var(--text);font-weight:700;}
+  .chain .arrow{text-align:center;color:var(--border);font-size:11px;}
+  .crit-list{list-style:none;margin:6px 0;padding:0;}
+  .crit-list li{font-size:11.5px;color:var(--muted);padding:3px 0;border-bottom:1px dashed var(--border);}
+  .status-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+  .status-pill{flex:1;min-width:70px;padding:6px 4px;border-radius:6px;border:1px solid var(--border);background:#101823;color:var(--muted);font-size:10.5px;font-weight:700;text-align:center;cursor:pointer;}
+  .status-pill.active{color:#03121f;}
+  .impact-list{list-style:none;margin:8px 0 0;padding:0;font-size:11.5px;}
+  .impact-list li{padding:4px 6px;border-radius:6px;background:#101823;margin-bottom:4px;color:var(--text);display:flex;justify-content:space-between;}
+  .impact-list li span{color:var(--muted);font-size:10.5px;}
+  .empty-hint{color:var(--muted);font-size:12px;line-height:1.6;padding:6px 2px;}
+  footer{border-top:1px solid var(--border);padding:8px 20px;color:var(--muted);font-size:10.5px;display:flex;justify-content:space-between;background:#0e1520;}
+  .concept-svg{width:100%;height:auto;display:block;margin-top:4px;}
+  .concept-svg text{fill:var(--muted);font-size:8.5px;}
+  .concept-svg .ring{fill:none;stroke:var(--border);}
+  .concept-svg .ring.active{stroke:var(--accent);}
+  ::-webkit-scrollbar{width:8px;height:8px;}
+  ::-webkit-scrollbar-thumb{background:#2a3849;border-radius:4px;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Decision Graph of Graphs</h1>
+  <div class="sub">Intra-domain &amp; inter-domain decision management — impact assessment across domain, company and 3rd-party strata. Each stratum is a bounded graph you can inspect in isolation; together they nest into an evolving graph of graphs.</div>
+  <div class="steps" id="stepTabs">
+    <div class="step-tab active" data-step="1"><span class="n">1</span> Intra-Domain</div>
+    <span class="chev">→</span>
+    <div class="step-tab" data-step="2"><span class="n">2</span> Inter-Domain</div>
+    <span class="chev">→</span>
+    <div class="step-tab" data-step="3"><span class="n">3</span> Value Chain (Companies)</div>
+    <span class="chev">→</span>
+    <div class="step-tab" data-step="4"><span class="n">4</span> Ecosystem (3rd Parties)</div>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- LEFT PANEL -->
+  <aside class="left">
+    <div id="step1-left">
+      <h2 class="panel-title">Domain / Asset Type</h2>
+      <div class="card">
+        <select id="patternSelect">
+          <option value="process">Process — Customer Onboarding</option>
+          <option value="service">Service — Claims Handling</option>
+          <option value="product">Product — Field Sensor Unit</option>
+          <option value="data">Data — Customer 360 Asset</option>
+          <option value="analytics">Analytics — Churn Model</option>
+        </select>
+        <div class="empty-hint" id="patternSource" style="padding-top:8px;"></div>
+      </div>
+      <div class="card">
+        <h3>Containment scope</h3>
+        <div class="toggle">
+          <button id="scopeIsolated" class="on">Isolated</button>
+          <button id="scopeAggregate">Aggregate</button>
+        </div>
+        <div class="empty-hint" style="padding-top:8px;">Isolated shows only this domain's decision network. Aggregate reveals where its decisions reach across the boundary into inter-domain, value-chain or ecosystem strata.</div>
+      </div>
+      <div class="card">
+        <h3>Legend — Decision class</h3>
+        <div class="legend-row"><span class="swatch dot" style="background:#49b0ff"></span> Single Answer (●)</div>
+        <div class="legend-row"><span class="swatch diamond" style="background:#8b6bff"></span> Multiple Answer (◆)</div>
+        <div class="legend-row"><span class="swatch" style="background:#49b0ff;border-radius:3px;"></span> Multi-part / Architecture (▭)</div>
+        <h3 style="margin-top:10px;">Legend — Status</h3>
+        <div class="legend-row"><span class="swatch dot" style="background:#7f8c8d"></span> Overlooked</div>
+        <div class="legend-row"><span class="swatch dot" style="background:#f5a623"></span> Open / in analysis</div>
+        <div class="legend-row"><span class="swatch dot" style="background:#e0483e"></span> At risk / poorly made</div>
+        <div class="legend-row"><span class="swatch dot" style="background:#2ecc71"></span> Closed / well-managed</div>
+      </div>
+    </div>
+
+    <div id="step2-left" style="display:none;">
+      <h2 class="panel-title">Inter-Domain Frame</h2>
+      <div class="card"><div class="empty-hint">Domains sense change both <b style="color:var(--text)">intra-domain</b> (within their own boundary) and <b style="color:var(--text)">inter-domain</b> (horizontal peers, vertical strategy/execution flow). Edges below represent dependency &amp; impact, not just data flow.</div></div>
+    </div>
+    <div id="step3-left" style="display:none;">
+      <h2 class="panel-title">Value Chain Frame</h2>
+      <div class="card"><div class="empty-hint">Once decisions cross a company boundary, the receiving company's own domain graph (Step 1) is opaque to you by default — you only see the interface: what was decided, what's expected in return.</div></div>
+    </div>
+    <div id="step4-left" style="display:none;">
+      <h2 class="panel-title">Ecosystem Frame</h2>
+      <div class="card"><div class="empty-hint">3rd parties are heterogeneous: individuals, automated agents, other companies, and institutions each decide under different authority and incentive structures. Model each as its own decision-capable node.</div></div>
+    </div>
+
+    <details>
+      <summary>Decision faults &amp; prevention</summary>
+      <div class="fault"><b>Decisions overlooked</b><div class="impact">Critical decision recognized too late — stuck with a mediocre solution once time/budget are spent.</div></div>
+      <div class="fault"><b>Decisions poorly made</b><div class="impact">Rework cascades into cost &amp; schedule; defects can reach end users.</div></div>
+      <div class="fault"><b>Decisions poorly implemented</b><div class="impact">Chosen alternative not realized as intended; risks materialize, delivery slips.</div></div>
+      <p>Preventive strength (adapted from Fitch, 2017):</p>
+      <table class="matrix">
+        <tr><th></th><th>Overlooked</th><th>Poorly made</th><th>Poorly impl.</th></tr>
+        <tr><td style="text-align:left;color:var(--text)">Traceability</td><td class="weak">low</td><td class="mid">mid</td><td class="strong">high</td></tr>
+        <tr><td style="text-align:left;color:var(--text)">Decision patterns</td><td class="strong">high</td><td class="mid">mid</td><td class="weak">low</td></tr>
+        <tr><td style="text-align:left;color:var(--text)">Mgmt methodology</td><td class="strong">high</td><td class="strong">high</td><td class="strong">high</td></tr>
+      </table>
+    </details>
+    <details>
+      <summary>Problem classification</summary>
+      <ul>
+        <li>Quality</li><li>Performance (productivity / financial)</li>
+        <li>Resource optimization / utilization</li>
+        <li>Opportunity &amp; investment planning</li>
+        <li>Risk management</li>
+      </ul>
+      <p>Tactical/operational problems aggregate horizontally &amp; vertically into these classes — this is what a decision, once traced, is ultimately in service of.</p>
+    </details>
+    <details>
+      <summary>Sense → Analyze → Respond → Learn</summary>
+      <p><b style="color:var(--text)">Sense</b> intra/inter-domain signals → <b style="color:var(--text)">Analyze</b> against catalog/models/analytics → <b style="color:var(--text)">Respond</b> with a decision (forward/backward chaining) → <b style="color:var(--text)">Learn</b> and harvest the pattern for reuse. This loop runs inside every stratum.</p>
+    </details>
+  </aside>
+
+  <!-- CENTER CANVAS -->
+  <main class="canvas">
+    <div class="breadcrumb">
+      <div class="txt" id="breadcrumbTxt"><b>Step 1 — Intra-Domain.</b> One domain's Decision Breakdown Structure (DBS). Click a decision to inspect it; click "Trace Downstream Impact" to ripple the consequence through dependent decisions.</div>
+    </div>
+    <div id="step1-canvas" class="step-canvas"></div>
+    <div id="step2-canvas" class="step-canvas" style="display:none;"></div>
+    <div id="step3-canvas" class="step-canvas" style="display:none;"></div>
+    <div id="step4-canvas" class="step-canvas" style="display:none;"></div>
+    <div class="canvas-tools">
+      <button id="zoomIn" title="Zoom in">+</button>
+      <button id="zoomOut" title="Zoom out">−</button>
+      <button id="zoomReset" title="Reset view">⤾</button>
+    </div>
+  </main>
+
+  <!-- RIGHT PANEL -->
+  <aside class="right">
+    <h2 class="panel-title">Node Detail</h2>
+    <div id="detailPanel">
+      <div class="empty-hint">Select any decision or domain node to see its framing question, decision class, criteria, and traceability. Then trace its downstream impact.</div>
+    </div>
+
+    <h2 class="panel-title" style="margin-top:16px;">Graph of Graphs</h2>
+    <div class="card">
+      <svg class="concept-svg" viewBox="0 0 220 160">
+        <circle class="ring active" cx="110" cy="85" r="18"/>
+        <circle class="ring" cx="110" cy="85" r="42"/>
+        <circle class="ring" cx="110" cy="85" r="66"/>
+        <circle class="ring" cx="110" cy="85" r="90" opacity="0.6"/>
+        <text x="110" y="88" text-anchor="middle" fill="#e7edf5" font-weight="700">Domain</text>
+        <text x="110" y="45" text-anchor="middle">Inter-Domain</text>
+        <text x="110" y="21" text-anchor="middle">Value Chain</text>
+        <text x="110" y="4" text-anchor="middle">Ecosystem</text>
+      </svg>
+      <div class="empty-hint">Each ring is itself a graph whose nodes are, one level in, graphs of their own — a containment hierarchy that still allows lateral edges within a ring (peer domains, peer companies, peer 3rd parties).</div>
+    </div>
+  </aside>
+</div>
+
+<footer>
+  <span>Framework synthesized from: Fitch — "All Faults are Decision Faults" (2017), "Exploiting Decision to Requirements Traceability" (2009), "Leveraging Decision Patterns to Tame Complexity" (2022), "Extending MBSE for Decision Patterns and Traceability" (2024), PPI SyEN #107 "Introduction to Decision Patterns" (2021); The Value Enablement Group — "Business Sensory Platform" v3.</span>
+  <span>Prototype — Step 1 fully modeled; Steps 2–4 are scaffolds to populate as decisions are traced outward.</span>
+</footer>
+
+<script>
+(function(){
+
+/* ---------------------------------------------------------------
+   DATA: Step 1 intra-domain decision patterns (one per asset type)
+   Sourced/condensed from Fitch decision-pattern documents.
+----------------------------------------------------------------*/
+var PATTERNS = {
+  process: {
+    label: "Process Capability Design pattern (14 decisions) — J. Fitch, condensed from PPI SyEN #107",
+    nodes: [
+      {id:"p1",   parent:null, label:"Capability Concept", cls:"Single", q:"What is the top-level architecture, design or implementation concept for this capability?", status:"closed"},
+      {id:"p1.1", parent:"p1", label:"Usage Scenarios", cls:"Multiple", q:"Where (in which situations, scenarios) will we apply this capability?", status:"open",
+        criteria:["Compliance","Number of users","Urgency","Differentiation","Unmet needs","Long term needs","Time to market","Low cost","Fit our strategy"]},
+      {id:"p1.1.1", parent:"p1.1", label:"Value Proposition", cls:"Single", q:"How will this capability offer unique value in this usage scenario?", status:"open"},
+      {id:"p1.2", parent:"p1", label:"Core Methods", cls:"Single", q:"What methods or combination of methods provide the engine for this capability?", status:"closed"},
+      {id:"p1.3", parent:"p1", label:"Process Architecture", cls:"Multi-part", q:"What process architecture, framework or flow will we use to deploy this capability?", status:"open"},
+      {id:"p1.3.1", parent:"p1.3", label:"Process Design", cls:"Single", q:"How will this part of our process operate?", status:"open"},
+      {id:"p1.3.1.1", parent:"p1.3.1", label:"Tools", cls:"Single", q:"What set of tools will we use to enable this part of our process?", status:"overlooked"},
+      {id:"p1.3.1.2", parent:"p1.3.1", label:"Work Products", cls:"Multiple", q:"What work products will this process create? How will these be delivered downstream?", status:"open"},
+      {id:"p1.4", parent:"p1", label:"Capability Interfaces", cls:"Multiple", q:"With what processes or other capabilities will this capability interact?", status:"atrisk"},
+      {id:"p1.4.1", parent:"p1.4", label:"Interface Concept", cls:"Single", q:"How will these capabilities interact with each other? How will the interface be implemented?", status:"open"},
+      {id:"p1.5", parent:"p1", label:"Organization Design", cls:"Multi-part", q:"How will we organize ourselves to effectively deliver this capability? Who staffs it, and in what role?", status:"open"},
+      {id:"p1.6", parent:"p1", label:"Platform", cls:"Multi-part", q:"What infrastructure (facilities, work centers, equipment, tools) combine to provide the platform for this capability?", status:"atrisk"},
+      {id:"p1.7", parent:"p1", label:"Metrics", cls:"Multiple", q:"What metrics will be monitored for this capability, and how will each be captured?", status:"open"},
+      {id:"p1.8", parent:"p1", label:"Growth Plan", cls:"Single", q:"How will we acquire or grow this capability over time?", status:"overlooked"}
+    ],
+    influences: [
+      {from:"p1.3", to:"p1.5", label:"shapes"},
+      {from:"p1.4", to:"p1.6", label:"drives infra need"},
+      {from:"p1.7", to:"p1.8", label:"informs"}
+    ]
+  },
+  service: {
+    label: "Service Design pattern (condensed; ~25 decisions) — Fitch",
+    nodes: [
+      {id:"s1", parent:null, label:"Service Concept", cls:"Multi-part", q:"What is the overall concept for this service?", status:"closed"},
+      {id:"s1.1", parent:"s1", label:"Application Scenarios", cls:"Multiple", q:"In which scenarios will this service be applied?", status:"open"},
+      {id:"s1.1.1", parent:"s1.1", label:"Scenario Value Prop.", cls:"Single", q:"What unique value does the service offer in this scenario?", status:"open"},
+      {id:"s1.2", parent:"s1", label:"Service Options", cls:"Multiple", q:"What service tiers or options will be offered?", status:"open"},
+      {id:"s1.2.1", parent:"s1.2", label:"Option Concept", cls:"Single", q:"What defines each service option?", status:"open"},
+      {id:"s1.3", parent:"s1", label:"Methods Engine", cls:"Multi-part", q:"What methods power the delivery of this service?", status:"open"},
+      {id:"s1.3.1", parent:"s1.3", label:"Behaviors to Exploit", cls:"Multiple", q:"Which behaviors should the service exploit?", status:"open"},
+      {id:"s1.3.1.1", parent:"s1.3.1", label:"Exploitation Method", cls:"Single", q:"How will the service exploit this behavior?", status:"open"},
+      {id:"s1.3.2", parent:"s1.3", label:"Behaviors to Control", cls:"Multiple", q:"Which behaviors must the service control?", status:"atrisk"},
+      {id:"s1.3.2.1", parent:"s1.3.2", label:"Control Method", cls:"Single", q:"How will the service control this behavior?", status:"open"},
+      {id:"s1.4", parent:"s1", label:"Service Flow", cls:"Multi-part", q:"What is the end-to-end flow of the service?", status:"open"},
+      {id:"s1.4.1", parent:"s1.4", label:"(Step) Method", cls:"Single", q:"How does each step of the flow operate?", status:"open"},
+      {id:"s1.4.1.1", parent:"s1.4.1", label:"Tools", cls:"Single", q:"What tools enable this step?", status:"overlooked"},
+      {id:"s1.4.1.2", parent:"s1.4.1", label:"Work Products", cls:"Multiple", q:"What does this step produce?", status:"open"},
+      {id:"s1.4.1.3", parent:"s1.4.1", label:"Metrics", cls:"Multiple", q:"What metrics monitor this step?", status:"open"},
+      {id:"s1.5", parent:"s1", label:"Service Delivery Platform", cls:"Multi-part", q:"What platform delivers this service?", status:"open"},
+      {id:"s1.5.1", parent:"s1.5", label:"Information Architecture", cls:"Single", q:"How is service information structured?", status:"open"},
+      {id:"s1.5.1.1", parent:"s1.5.1", label:"Data Stores Concept", cls:"Single", q:"Where and how is service data stored?", status:"open"},
+      {id:"s1.6", parent:"s1", label:"Service Interfaces", cls:"Multiple", q:"With what other services or capabilities does this service interact?", status:"atrisk"},
+      {id:"s1.6.1", parent:"s1.6", label:"Interface Concept", cls:"Single", q:"How is each interface implemented?", status:"open"},
+      {id:"s1.7", parent:"s1", label:"Service Lifecycle", cls:"Multi-part", q:"How does the service move through develop / test / deploy / deliver / support?", status:"open"},
+      {id:"s1.7.1", parent:"s1.7", label:"LC Phase Strategy", cls:"Single", q:"What is the strategy for each lifecycle phase?", status:"overlooked"}
+    ],
+    influences: [
+      {from:"s1.3", to:"s1.4", label:"shapes"},
+      {from:"s1.6", to:"s1.5", label:"constrains"},
+      {from:"s1.4.1.3", to:"s1.2", label:"informs"}
+    ]
+  },
+  product: {
+    label: "System/Product Design pattern (condensed; full pattern ~100 decisions) — Fitch",
+    nodes: [
+      {id:"pr1", parent:null, label:"Solution Concept", cls:"Multi-part", q:"What is the overall solution concept for this product/system?", status:"closed"},
+      {id:"pr1.1", parent:"pr1", label:"Use Cases to Support", cls:"Multiple", q:"Which use cases must this solution support?", status:"open"},
+      {id:"pr1.1.1", parent:"pr1.1", label:"UC Value Proposition", cls:"Single", q:"What unique value is delivered in this use case?", status:"open"},
+      {id:"pr1.2", parent:"pr1", label:"Feature Set", cls:"Multiple", q:"What features will the product offer?", status:"open"},
+      {id:"pr1.3", parent:"pr1", label:"Operating Regime", cls:"Multiple", q:"Under what conditions must the solution operate?", status:"open"},
+      {id:"pr1.3.1", parent:"pr1.3", label:"Behaviors to Exploit/Control", cls:"Multiple", q:"Which behaviors are exploited or controlled in this regime?", status:"atrisk"},
+      {id:"pr1.4", parent:"pr1", label:"Solution Architecture", cls:"Multi-part", q:"What is the logical & physical architecture of the solution?", status:"open"},
+      {id:"pr1.4.1", parent:"pr1.4", label:"Function X Technology", cls:"Single", q:"What technology realizes function X?", status:"open"},
+      {id:"pr1.4.2", parent:"pr1.4", label:"Hardware Platform", cls:"Multi-part", q:"What hardware architecture underlies the solution?", status:"open"},
+      {id:"pr1.4.3", parent:"pr1.4", label:"Software Platform", cls:"Multi-part", q:"What software architecture underlies the solution?", status:"overlooked"},
+      {id:"pr1.5", parent:"pr1", label:"External Interfaces", cls:"Multiple", q:"With what external systems must this solution interface?", status:"atrisk"},
+      {id:"pr1.5.1", parent:"pr1.5", label:"Interface Concept", cls:"Single", q:"How is each external interface implemented?", status:"open"},
+      {id:"pr1.6", parent:"pr1", label:"System Lifecycle", cls:"Multi-part", q:"How does the system move through dev/test/trial/mfg/deploy/support/end-of-life?", status:"open"}
+    ],
+    influences: [
+      {from:"pr1.4", to:"pr1.5", label:"defines"},
+      {from:"pr1.3", to:"pr1.4", label:"constrains"}
+    ]
+  },
+  data: {
+    label: "Data Asset decision pattern (extrapolated using the same pattern topology; not in source docs verbatim)",
+    nodes: [
+      {id:"d1", parent:null, label:"Data Asset Concept", cls:"Single", q:"What is the top-level scope/concept for this data asset?", status:"closed"},
+      {id:"d1.1", parent:"d1", label:"Sources & Acquisition", cls:"Multiple", q:"What sources feed this data asset, and how is it acquired?", status:"open"},
+      {id:"d1.1.1", parent:"d1.1", label:"Source Integration Method", cls:"Single", q:"How is each source integrated (batch/stream/API)?", status:"open"},
+      {id:"d1.2", parent:"d1", label:"Data Model / Schema", cls:"Multi-part", q:"What is the schema/structure of this data asset?", status:"atrisk"},
+      {id:"d1.3", parent:"d1", label:"Quality Rules", cls:"Multiple", q:"What quality/validation rules apply?", status:"open"},
+      {id:"d1.4", parent:"d1", label:"Governance & Stewardship", cls:"Multi-part", q:"Who classifies, owns and grants access to this data?", status:"overlooked"},
+      {id:"d1.5", parent:"d1", label:"Data Interfaces", cls:"Multiple", q:"How is this data asset exposed to consumers (API, extract, event)?", status:"open"},
+      {id:"d1.6", parent:"d1", label:"Data Lifecycle", cls:"Multi-part", q:"How does this asset move through ingest/store/use/archive/retire?", status:"open"}
+    ],
+    influences: [
+      {from:"d1.2", to:"d1.5", label:"constrains"},
+      {from:"d1.4", to:"d1.5", label:"governs access"}
+    ]
+  },
+  analytics: {
+    label: "Analytics decision pattern (extrapolated using the same pattern topology; not in source docs verbatim)",
+    nodes: [
+      {id:"a1", parent:null, label:"Analytics Concept", cls:"Single", q:"What is the top-level concept for this analytics capability?", status:"closed"},
+      {id:"a1.1", parent:"a1", label:"Questions to Answer", cls:"Multiple", q:"What business questions must this analytics capability answer?", status:"open"},
+      {id:"a1.1.1", parent:"a1.1", label:"Value Proposition", cls:"Single", q:"What decision does answering this question improve?", status:"open"},
+      {id:"a1.2", parent:"a1", label:"Model / Method Selection", cls:"Multi-part", q:"What modeling technique(s) will be used?", status:"atrisk"},
+      {id:"a1.3", parent:"a1", label:"Data Requirements", cls:"Multiple", q:"What data assets and features are required?", status:"open"},
+      {id:"a1.4", parent:"a1", label:"Analytics Platform", cls:"Multi-part", q:"What platform trains, serves and monitors the model?", status:"open"},
+      {id:"a1.5", parent:"a1", label:"Output & Visualization", cls:"Multiple", q:"How are outputs presented and consumed?", status:"overlooked"},
+      {id:"a1.6", parent:"a1", label:"Analytics Lifecycle", cls:"Multi-part", q:"How does the model move through develop/validate/deploy/monitor/retrain/retire?", status:"open"}
+    ],
+    influences: [
+      {from:"a1.3", to:"a1.2", label:"bounds"},
+      {from:"a1.2", to:"a1.6", label:"drives retrain cadence"}
+    ]
+  }
+};
+
+var GHOSTS = [
+  {id:"g2", label:"Inter-Domain: Product Mgmt", step:2, target:"prodmgmt"},
+  {id:"g3", label:"Value Chain: Supplier Co.", step:3, target:"supplier"},
+  {id:"g4", label:"Ecosystem: Regulator", step:4, target:"institutions"}
+];
+
+/* ---------------------------------------------------------------
+   DATA: Steps 2-4 — fixed-layout illustrative graphs
+----------------------------------------------------------------*/
+var STEP2 = {
+  nodes: [
+    {id:"strategic", x:600, y:55,  label:"Strategic Management", kind:"vertical", q:"Sets direction that constrains every domain's decisions below it."},
+    {id:"core",      x:600, y:300, label:"Marketing Mgmt (Step 1 domain)", kind:"core", q:"The domain currently open in Step 1 — shown here as it sits among its peers."},
+    {id:"proddev",   x:600, y:545, label:"Product Development", kind:"vertical", q:"Executes capability build-out implied by upstream decisions."},
+    {id:"prodmgmt",  x:255, y:175, label:"Product Management", kind:"horizontal", q:"Peer domain: portfolio & feature decisions."},
+    {id:"custmgmt",  x:255, y:425, label:"Customer Management", kind:"horizontal", q:"Peer domain: engagement & experience decisions."},
+    {id:"commmgmt",  x:945, y:175, label:"Commercial Management", kind:"horizontal", q:"Peer domain: pricing & channel decisions."},
+    {id:"finmgmt",   x:945, y:425, label:"Financial Management", kind:"horizontal", q:"Peer domain: budget & ROI decisions."}
+  ],
+  edges: [
+    {from:"strategic", to:"core", label:"direction", kind:"v"},
+    {from:"core", to:"proddev", label:"capability reqs", kind:"v"},
+    {from:"core", to:"prodmgmt", label:"positioning impact", kind:"h"},
+    {from:"core", to:"custmgmt", label:"experience impact", kind:"h"},
+    {from:"core", to:"commmgmt", label:"pricing impact", kind:"h"},
+    {from:"core", to:"finmgmt", label:"budget impact", kind:"h"}
+  ],
+  containers: [
+    {label:"Value Stream: Order-to-Cash", x:790, y:110, w:330, h:430},
+    {label:"Supply Chain: Supplier Network", x:80, y:110, w:330, h:430}
+  ]
+};
+
+var STEP3 = {
+  nodes: [
+    {id:"us",          x:600, y:300, label:"Our Company (Step 2 aggregate)", kind:"core", q:"The full inter-domain graph from Step 2, collapsed to a single node at this stratum."},
+    {id:"supplier",     x:200, y:130, label:"Supplier(s)", kind:"company", q:"Provides components/materials — their decisions on spec & capacity ripple into ours."},
+    {id:"partner",      x:200, y:470, label:"Channel Partner(s)", kind:"company", q:"Co-designs go-to-market decisions with us."},
+    {id:"distributor",  x:1000,y:130, label:"Distributor(s)", kind:"company", q:"Executes fulfillment decisions we hand off."},
+    {id:"market",       x:1000,y:470, label:"Consumer / Market", kind:"company", q:"Demand-side decisions (purchase, adoption) feed back upstream."}
+  ],
+  edges: [
+    {from:"supplier", to:"us", label:"component/spec decisions", kind:"h"},
+    {from:"us", to:"distributor", label:"fulfillment decisions", kind:"h"},
+    {from:"distributor", to:"market", label:"delivery decisions", kind:"h"},
+    {from:"us", to:"partner", label:"co-design decisions", kind:"v"},
+    {from:"market", to:"us", label:"demand signal", kind:"influence"}
+  ],
+  containers: []
+};
+
+var STEP4 = {
+  nodes: [
+    {id:"valuechain",   x:600, y:310, label:"Value Chain (Step 3 aggregate)", kind:"core", q:"The full cross-company graph from Step 3, collapsed to a single node at this stratum."},
+    {id:"individuals",  x:220, y:140, label:"Individuals (customers, employees, investors)", kind:"party", q:"Personal decisions: purchase, consent, employment, investment."},
+    {id:"agents",       x:980, y:140, label:"Agents (brokers, AI/automated agents)", kind:"party", q:"Delegated decision-makers acting on behalf of a principal — human or automated."},
+    {id:"institutions", x:220, y:500, label:"Institutions (regulators, standards bodies)", kind:"party", q:"Constrain the decision space itself via rules, standards and approvals."},
+    {id:"companies3rd", x:980, y:500, label:"3rd-Party Companies (outside the value chain)", kind:"party", q:"Competitors or coopetition partners whose decisions shift the landscape indirectly."}
+  ],
+  edges: [
+    {from:"institutions", to:"valuechain", label:"constrains via regulation", kind:"h"},
+    {from:"individuals", to:"valuechain", label:"purchase/consent decisions", kind:"h"},
+    {from:"valuechain", to:"agents", label:"delegated execution", kind:"h"},
+    {from:"agents", to:"valuechain", label:"recommendation/automation", kind:"influence"},
+    {from:"companies3rd", to:"valuechain", label:"competitive response", kind:"influence"}
+  ],
+  containers: []
+};
+
+/* ---------------------------------------------------------------
+   STATE
+----------------------------------------------------------------*/
+var state = { step:1, pattern:"process", scope:"isolated", selected:null, view:{} };
+var svgNS = "http://www.w3.org/2000/svg";
+
+function el(tag, attrs, parent){
+  var e = document.createElementNS(svgNS, tag);
+  for(var k in attrs){ e.setAttribute(k, attrs[k]); }
+  if(parent) parent.appendChild(e);
+  return e;
+}
+function textEl(x,y,str,cls,parent,anchor){
+  var t = el("text",{x:x,y:y,"text-anchor":anchor||"middle"},parent);
+  t.setAttribute("class",cls||"");
+  t.textContent = str;
+  return t;
+}
+function wrapLines(str, max){
+  var words = str.split(" "), lines=[], cur="";
+  for(var i=0;i<words.length;i++){
+    var test = cur ? cur+" "+words[i] : words[i];
+    if(test.length>max && cur){ lines.push(cur); cur=words[i]; } else { cur=test; }
+  }
+  if(cur) lines.push(cur);
+  return lines.slice(0,2);
+}
+
+var STATUS_COLOR = {open:"#f5a623", closed:"#2ecc71", overlooked:"#7f8c8d", atrisk:"#e0483e"};
+var CLASS_COLOR = {"Single":"#49b0ff","Multiple":"#8b6bff","Multi-part":"#49b0ff"};
+
+/* ---------------------------------------------------------------
+   STEP 1 RENDER — tidy tree layout of a decision pattern
+----------------------------------------------------------------*/
+function layoutTree(nodes){
+  var byId={}, children={}, root=null, depth={};
+  nodes.forEach(function(n){ byId[n.id]=n; children[n.id]=[]; });
+  nodes.forEach(function(n){ if(n.parent){ children[n.parent].push(n.id); } else { root=n.id; } });
+  var leafX=0, x={}, y={};
+  var leafGap=128, levelGap=104;
+  function assign(id, d){
+    depth[id]=d;
+    var kids = children[id];
+    if(kids.length===0){ x[id]=leafX*leafGap+70; leafX++; }
+    else {
+      kids.forEach(function(k){ assign(k,d+1); });
+      var xs = kids.map(function(k){return x[k];});
+      x[id] = (Math.min.apply(null,xs)+Math.max.apply(null,xs))/2;
+    }
+    y[id] = 70 + d*levelGap;
+  }
+  assign(root,0);
+  var maxDepth = Math.max.apply(null, Object.keys(depth).map(function(k){return depth[k];}));
+  var width = Math.max(1100, leafX*leafGap+140);
+  var height = 70 + (maxDepth+1)*levelGap + 60;
+  return {x:x,y:y,root:root,children:children,width:width,height:height};
+}
+
+function nodeShapeSize(cls){
+  if(cls==="Single") return {r:27};
+  if(cls==="Multiple") return {r:30};
+  return {w:96,h:44};
+}
+
+function renderStep1(){
+  var pat = PATTERNS[state.pattern];
+  document.getElementById("patternSource").textContent = pat.label;
+  var container = document.getElementById("step1-canvas");
+  container.innerHTML = "";
+  var layout = layoutTree(pat.nodes);
+  var svg = el("svg",{viewBox:"0 0 "+layout.width+" "+layout.height, id:"svg-step1"});
+  container.appendChild(svg);
+  addDefs(svg);
+  var gEdges = el("g",{},svg), gGhosts = el("g",{},svg), gNodes = el("g",{},svg);
+
+  // hierarchy edges
+  pat.nodes.forEach(function(n){
+    if(!n.parent) return;
+    drawEdge(gEdges, layout.x[n.parent], layout.y[n.parent]+22, layout.x[n.id], layout.y[n.id]-22, false, null, n.parent, n.id, 1);
+  });
+  // influence edges
+  (pat.influences||[]).forEach(function(inf){
+    var a = layout, fx=a.x[inf.from], fy=a.y[inf.from], tx=a.x[inf.to], ty=a.y[inf.to];
+    drawEdge(gEdges, fx, fy, tx, ty, true, inf.label, inf.from, inf.to, 1);
+  });
+
+  // ghost aggregate stubs off the root
+  if(state.scope==="aggregate"){
+    var rx = layout.x[layout.root], ry = layout.y[layout.root];
+    var positions = [{dx:-260,dy:-40},{dx:0,dy:-70},{dx:260,dy:-40}];
+    GHOSTS.forEach(function(g,i){
+      var gx = rx+positions[i].dx, gy = Math.max(30, ry+positions[i].dy);
+      drawEdge(gGhosts, rx, ry-22, gx, gy+16, true, null, null, null, 0.6, true);
+      var grp = el("g",{class:"dnode ghost", "data-ghost":g.id},gGhosts);
+      el("rect",{class:"shape",x:gx-58,y:gy-16,width:116,height:32,rx:16},grp);
+      var lines = wrapLines(g.label,18);
+      lines.forEach(function(ln,li){ textEl(gx, gy-4+li*11, ln, "", grp); });
+      grp.addEventListener("click", (function(gg){ return function(){ jumpToGhost(gg); }; })(g));
+    });
+  }
+
+  // decision nodes
+  pat.nodes.forEach(function(n){
+    var cx=layout.x[n.id], cy=layout.y[n.id];
+    var grp = el("g",{class:"dnode", "data-id":n.id},gNodes);
+    var color = STATUS_COLOR[n.status] || "#49b0ff";
+    if(n.cls==="Single"){
+      el("circle",{class:"shape",cx:cx,cy:cy,r:27,fill:color},grp);
+    } else if(n.cls==="Multiple"){
+      el("polygon",{class:"shape",points:diamondPoints(cx,cy,30),fill:color},grp);
+    } else {
+      el("rect",{class:"shape",x:cx-48,y:cy-22,width:96,height:44,rx:8,fill:color},grp);
+    }
+    var lines = wrapLines(n.label, n.cls==="Single"?12:14);
+    var startY = cy - (lines.length-1)*6 + 3;
+    lines.forEach(function(ln,li){ textEl(cx, startY+li*12, ln, "light", grp); });
+    var title = el("title",{},grp); title.textContent = n.label+" — "+n.q;
+    grp.addEventListener("click", (function(id){ return function(){ selectNode("step1", id); }; })(n.id));
+  });
+
+  attachPanZoom(svg);
+  applySelectionVisual();
+}
+
+function diamondPoints(cx,cy,r){
+  return (cx)+","+(cy-r)+" "+(cx+r*1.25)+","+cy+" "+cx+","+(cy+r)+" "+(cx-r*1.25)+","+cy;
+}
+
+function drawEdge(parent, x1,y1,x2,y2, dashed, label, fromId, toId, opacity, ghostStyle){
+  var mx=(x1+x2)/2, my=(y1+y2)/2 - 18;
+  var d = "M"+x1+","+y1+" Q"+mx+","+my+" "+x2+","+y2;
+  var p = el("path",{d:d, "data-from":fromId||"", "data-to":toId||""}, parent);
+  p.setAttribute("class","edge"+(dashed?" influence":""));
+  if(ghostStyle){ p.setAttribute("stroke","#3c4d61"); p.setAttribute("stroke-dasharray","4 3"); p.setAttribute("marker-end",""); }
+  p.style.opacity = opacity!==undefined?opacity:1;
+  if(label){ textEl(mx, my-4, label, "edge-label", parent); }
+}
+
+function addDefs(svg){
+  var defs = el("defs",{},svg);
+  var m1 = el("marker",{id:"arrow",viewBox:"0 0 10 10",refX:9,refY:5,markerWidth:7,markerHeight:7,orient:"auto-start-reverse"},defs);
+  el("path",{d:"M0,0 L10,5 L0,10 z",fill:"#3c4d61"},m1);
+  var m2 = el("marker",{id:"arrow-influence",viewBox:"0 0 10 10",refX:9,refY:5,markerWidth:7,markerHeight:7,orient:"auto-start-reverse"},defs);
+  el("path",{d:"M0,0 L10,5 L0,10 z",fill:"#8b6bff"},m2);
+}
+
+/* ---------------------------------------------------------------
+   STEPS 2-4 RENDER — fixed illustrative graphs
+----------------------------------------------------------------*/
+function renderFixedStep(stepNum, data, canvasId){
+  var container = document.getElementById(canvasId);
+  container.innerHTML = "";
+  var svg = el("svg",{viewBox:"0 0 1200 650", id:"svg-"+canvasId});
+  container.appendChild(svg);
+  addDefs(svg);
+  var gBox = el("g",{},svg), gEdges = el("g",{},svg), gNodes = el("g",{},svg);
+
+  (data.containers||[]).forEach(function(c){
+    el("rect",{class:"container-box",x:c.x-c.w/2,y:c.y-c.h/2,width:c.w,height:c.h,rx:16},gBox);
+    textEl(c.x-c.w/2+10, c.y-c.h/2+18, c.label, "container-label", gBox, "start");
+  });
+
+  var byId={}; data.nodes.forEach(function(n){ byId[n.id]=n; });
+  data.edges.forEach(function(e){
+    var a=byId[e.from], b=byId[e.to];
+    drawEdge(gEdges, a.x, a.y, b.x, b.y, e.kind==="influence", e.label, e.from, e.to, 1);
+  });
+
+  data.nodes.forEach(function(n){
+    var grp = el("g",{class:"dnode", "data-id":n.id},gNodes);
+    var color = n.kind==="core" ? "#49b0ff" : (n.kind==="vertical" ? "#8b6bff" : (n.kind==="company"||n.kind==="party" ? "#2ecc71" : "#49b0ff"));
+    var w=150,h=54;
+    el("rect",{class:"shape",x:n.x-w/2,y:n.y-h/2,width:w,height:h,rx:10,fill:color},grp);
+    var lines = wrapLines(n.label, 18);
+    var startY = n.y - (lines.length-1)*6 + 3;
+    lines.forEach(function(ln,li){ textEl(n.x, startY+li*12, ln, "light", grp); });
+    var title = el("title",{},grp); title.textContent = n.label+" — "+n.q;
+    grp.addEventListener("click", (function(id){ return function(){ selectNode("fixed"+stepNum, id); }; })(n.id));
+  });
+
+  attachPanZoom(svg);
+  applySelectionVisual();
+}
+
+function renderStep2(){ renderFixedStep(2, STEP2, "step2-canvas"); }
+function renderStep3(){ renderFixedStep(3, STEP3, "step3-canvas"); }
+function renderStep4(){ renderFixedStep(4, STEP4, "step4-canvas"); }
+
+/* ---------------------------------------------------------------
+   SELECTION, DETAIL PANEL, IMPACT TRACE
+----------------------------------------------------------------*/
+function dataForStepKey(key){
+  if(key==="step1") return {nodes:PATTERNS[state.pattern].nodes, edges:edgesForPattern(state.pattern)};
+  if(key==="fixed2") return {nodes:STEP2.nodes, edges:STEP2.edges};
+  if(key==="fixed3") return {nodes:STEP3.nodes, edges:STEP3.edges};
+  if(key==="fixed4") return {nodes:STEP4.nodes, edges:STEP4.edges};
+}
+function edgesForPattern(patKey){
+  var pat = PATTERNS[patKey], edges=[];
+  pat.nodes.forEach(function(n){ if(n.parent) edges.push({from:n.parent,to:n.id}); });
+  (pat.influences||[]).forEach(function(inf){ edges.push({from:inf.from,to:inf.to}); });
+  return edges;
+}
+
+function selectNode(key, id){
+  state.selected = {key:key, id:id};
+  applySelectionVisual();
+  renderDetail();
+}
+
+function applySelectionVisual(){
+  document.querySelectorAll(".dnode").forEach(function(g){ g.classList.remove("selected","hit","dim"); });
+  document.querySelectorAll(".edge").forEach(function(g){ g.classList.remove("hit","dim"); });
+  if(!state.selected) return;
+  var g = document.querySelector('.dnode[data-id="'+cssEscape(state.selected.id)+'"]');
+  if(g) g.classList.add("selected");
+}
+function cssEscape(s){ return s; } // safe as-is: id sits inside a quoted attribute selector
+
+function renderDetail(){
+  var panel = document.getElementById("detailPanel");
+  if(!state.selected){ panel.innerHTML = '<div class="empty-hint">Select any decision or domain node.</div>'; return; }
+  var data = dataForStepKey(state.selected.key);
+  var node = data.nodes.filter(function(n){return n.id===state.selected.id;})[0];
+  if(!node){ panel.innerHTML = ""; return; }
+
+  var html = "";
+  if(node.cls){
+    var badgeColor = CLASS_COLOR[node.cls];
+    html += '<span class="badge" style="background:'+badgeColor+'22;color:'+badgeColor+';border:1px solid '+badgeColor+'55;">'+node.cls+' Answer</span>';
+  }
+  html += '<h3 style="margin:8px 0 2px;font-size:14px;">'+node.label+'</h3>';
+  html += '<div class="qtext">'+(node.q||"")+'</div>';
+
+  if(node.criteria){
+    html += '<div class="card" style="padding:8px;"><h3>Criteria pattern (example)</h3><ul class="crit-list">';
+    node.criteria.forEach(function(c){ html += '<li>'+c+'</li>'; });
+    html += '</ul></div>';
+  }
+
+  if(node.status){
+    html += '<div class="card" style="padding:8px;"><h3>Governance status</h3><div class="status-row" id="statusRow"></div></div>';
+  }
+
+  if(node.cls){
+    html += '<div class="card" style="padding:8px;"><h3>Decision-to-everything trace (R-D-R)</h3><div class="chain">';
+    html += '<div class="link">Requirement / Criterion</div><div class="arrow">↓ constrains</div>';
+    html += '<div class="link me">'+node.label+'</div><div class="arrow">↓ chooses</div>';
+    html += '<div class="link">Alternative (selected)</div><div class="arrow">↓ inherent consequence</div>';
+    html += '<div class="link">Derived Requirement</div><div class="arrow">↓ may introduce</div>';
+    html += '<div class="link">Risk → Mitigation</div>';
+    html += '</div></div>';
+  }
+
+  html += '<button class="btn primary" id="traceBtn">Trace Downstream Impact →</button>';
+  html += '<button class="btn ghost" id="clearBtn">Clear trace</button>';
+  html += '<div id="impactResults"></div>';
+
+  panel.innerHTML = html;
+
+  if(node.status){
+    var row = document.getElementById("statusRow");
+    ["overlooked","open","atrisk","closed"].forEach(function(st){
+      var pill = document.createElement("div");
+      pill.className = "status-pill"+(node.status===st?" active":"");
+      pill.style.background = node.status===st ? STATUS_COLOR[st] : "#101823";
+      pill.style.borderColor = STATUS_COLOR[st];
+      pill.textContent = st;
+      pill.addEventListener("click", (function(s){ return function(){
+        node.status = s;
+        panel.querySelectorAll(".status-pill").forEach(function(p2){p2.classList.remove("active"); p2.style.background="#101823";});
+        pill.classList.add("active"); pill.style.background = STATUS_COLOR[s];
+        refreshActiveCanvas();
+      };})(st));
+      row.appendChild(pill);
+    });
+  }
+
+  document.getElementById("traceBtn").addEventListener("click", function(){ traceImpact(state.selected.key, state.selected.id); });
+  document.getElementById("clearBtn").addEventListener("click", function(){ applySelectionVisual(); document.getElementById("impactResults").innerHTML=""; });
+}
+
+function traceImpact(key, id){
+  var data = dataForStepKey(key);
+  var adj = {};
+  data.edges.forEach(function(e){ if(!adj[e.from]) adj[e.from]=[]; adj[e.from].push(e.to); });
+  var visited = {}, queue=[id], order=[];
+  visited[id]=true;
+  while(queue.length){
+    var cur = queue.shift();
+    (adj[cur]||[]).forEach(function(nx){ if(!visited[nx]){ visited[nx]=true; queue.push(nx); order.push(nx); } });
+  }
+  document.querySelectorAll(".dnode").forEach(function(g){
+    var nid = g.getAttribute("data-id");
+    g.classList.remove("hit","selected","dim");
+    if(nid===id){ g.classList.add("hit"); }
+    else if(visited[nid]){ g.classList.add("hit"); }
+    else { g.classList.add("dim"); }
+  });
+  document.querySelectorAll(".edge").forEach(function(p){
+    var f=p.getAttribute("data-from"), t=p.getAttribute("data-to");
+    if(visited[f] && visited[t]){ p.classList.add("hit"); } else { p.classList.add("dim"); }
+  });
+  var results = document.getElementById("impactResults");
+  var byId = {}; data.nodes.forEach(function(n){byId[n.id]=n;});
+  var htmlr = '<div class="card" style="padding:8px;"><h3>Impact ripple ('+order.length+' node'+(order.length===1?"":"s")+')</h3><ul class="impact-list">';
+  if(order.length===0){ htmlr += '<li>No downstream dependents from this node in the current graph — contained locally.</li>'; }
+  order.forEach(function(nid){
+    var n = byId[nid];
+    htmlr += '<li>'+(n?n.label:nid)+' <span>'+(n&&n.status?n.status:"")+'</span></li>';
+  });
+  htmlr += '</ul></div>';
+  results.innerHTML = htmlr;
+}
+
+function jumpToGhost(g){
+  setActiveStep(g.step);
+  setTimeout(function(){ selectNode("fixed"+g.step, g.target); },80);
+}
+
+function refreshActiveCanvas(){
+  if(state.step===1) renderStep1();
+  if(state.step===2) renderStep2();
+  if(state.step===3) renderStep3();
+  if(state.step===4) renderStep4();
+}
+
+/* ---------------------------------------------------------------
+   PAN / ZOOM (simple viewBox manipulation)
+----------------------------------------------------------------*/
+function attachPanZoom(svg){
+  var vb = svg.getAttribute("viewBox").split(" ").map(Number);
+  var view = {x:vb[0],y:vb[1],w:vb[2],h:vb[3]};
+  var orig = {x:vb[0],y:vb[1],w:vb[2],h:vb[3]};
+  state.view[svg.id] = {svg:svg, view:view, orig:orig};
+  var dragging=false, last=null;
+  svg.addEventListener("mousedown", function(e){ dragging=true; last={x:e.clientX,y:e.clientY}; });
+  window.addEventListener("mouseup", function(){ dragging=false; });
+  window.addEventListener("mousemove", function(e){
+    if(!dragging) return;
+    var dx=(e.clientX-last.x)*(view.w/svg.clientWidth);
+    var dy=(e.clientY-last.y)*(view.h/svg.clientHeight);
+    view.x -= dx; view.y -= dy; last={x:e.clientX,y:e.clientY};
+    svg.setAttribute("viewBox", view.x+" "+view.y+" "+view.w+" "+view.h);
+  });
+  svg.addEventListener("wheel", function(e){
+    e.preventDefault();
+    var factor = e.deltaY>0 ? 1.1 : 0.9;
+    var mx = view.x + (e.offsetX/svg.clientWidth)*view.w;
+    var my = view.y + (e.offsetY/svg.clientHeight)*view.h;
+    view.w *= factor; view.h *= factor;
+    view.x = mx - (e.offsetX/svg.clientWidth)*view.w;
+    view.y = my - (e.offsetY/svg.clientHeight)*view.h;
+    svg.setAttribute("viewBox", view.x+" "+view.y+" "+view.w+" "+view.h);
+  }, {passive:false});
+}
+function zoomActive(factor){
+  var active = document.querySelector(".step-canvas:not([style*='display: none']) svg") || document.querySelector(".step-canvas svg");
+  if(!active) return;
+  var v = state.view[active.id]; if(!v) return;
+  var view = v.view;
+  var cx = view.x+view.w/2, cy = view.y+view.h/2;
+  view.w *= factor; view.h *= factor;
+  view.x = cx-view.w/2; view.y = cy-view.h/2;
+  active.setAttribute("viewBox", view.x+" "+view.y+" "+view.w+" "+view.h);
+}
+function resetActive(){
+  var active = document.querySelector(".step-canvas:not([style*='display: none']) svg") || document.querySelector(".step-canvas svg");
+  if(!active) return;
+  var v = state.view[active.id]; if(!v) return;
+  v.view = {x:v.orig.x,y:v.orig.y,w:v.orig.w,h:v.orig.h};
+  active.setAttribute("viewBox", v.view.x+" "+v.view.y+" "+v.view.w+" "+v.view.h);
+}
+
+/* ---------------------------------------------------------------
+   STEP TABS / SCOPE TOGGLE / WIRING
+----------------------------------------------------------------*/
+var BREADCRUMBS = {
+  1: '<b>Step 1 — Intra-Domain.</b> One domain’s Decision Breakdown Structure (DBS). Click a decision to inspect it; click "Trace Downstream Impact" to ripple the consequence through dependent decisions.',
+  2: '<b>Step 2 — Inter-Domain.</b> Domain → Inter-Domain (operations / value stream / supply chain). Peer domains connected horizontally; strategy/execution connected vertically. The core node is the domain you opened in Step 1.',
+  3: '<b>Step 3 — Value Chain.</b> Inter-Domain → Value Chain (companies). Each company is itself a full Step-1/Step-2 graph, collapsed to one node here — you see the interface, not their internals.',
+  4: '<b>Step 4 — Ecosystem.</b> Value Chain → Ecosystem (3rd parties: individuals, agents, institutions, outside companies). These actors decide under different authority and incentive structures than your own domains.'
+};
+
+function setActiveStep(n){
+  state.step = n;
+  document.querySelectorAll(".step-tab").forEach(function(t){ t.classList.toggle("active", Number(t.getAttribute("data-step"))===n); });
+  [1,2,3,4].forEach(function(i){
+    document.getElementById("step"+i+"-canvas").style.display = (i===n?"block":"none");
+    var lp = document.getElementById("step"+i+"-left"); if(lp) lp.style.display = (i===n?"block":"none");
+  });
+  document.getElementById("breadcrumbTxt").innerHTML = BREADCRUMBS[n];
+  if(n===1 && !document.getElementById("svg-step1")) renderStep1();
+  if(n===2 && !document.getElementById("svg-step2-canvas")) renderStep2();
+  if(n===3 && !document.getElementById("svg-step3-canvas")) renderStep3();
+  if(n===4 && !document.getElementById("svg-step4-canvas")) renderStep4();
+}
+
+document.getElementById("stepTabs").addEventListener("click", function(e){
+  var tab = e.target.closest(".step-tab");
+  if(!tab) return;
+  setActiveStep(Number(tab.getAttribute("data-step")));
+});
+
+document.getElementById("patternSelect").addEventListener("change", function(e){
+  state.pattern = e.target.value;
+  state.selected = null;
+  renderStep1();
+  renderDetail();
+});
+
+document.getElementById("scopeIsolated").addEventListener("click", function(){
+  state.scope="isolated";
+  this.classList.add("on"); document.getElementById("scopeAggregate").classList.remove("on");
+  renderStep1();
+});
+document.getElementById("scopeAggregate").addEventListener("click", function(){
+  state.scope="aggregate";
+  this.classList.add("on"); document.getElementById("scopeIsolated").classList.remove("on");
+  renderStep1();
+});
+
+document.getElementById("zoomIn").addEventListener("click", function(){ zoomActive(0.85); });
+document.getElementById("zoomOut").addEventListener("click", function(){ zoomActive(1.18); });
+document.getElementById("zoomReset").addEventListener("click", resetActive);
+
+/* init */
+renderStep1();
+})();
+</script>
+</body>
+</html>
