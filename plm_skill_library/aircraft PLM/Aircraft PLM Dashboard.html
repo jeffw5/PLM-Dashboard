@@ -1,0 +1,2188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aircraft PLM Dashboard · Portfolio Assessment</title>
+<style>
+:root{
+  --navy:#0B1F3A; --navy2:#12305A; --navy-soft:#1C3A63;
+  --gold:#C8A951; --gold-hi:#E4C572;
+  --ice:#EDF2F8; --ice2:#F6F9FC; --surface:#FFFFFF;
+  --ink:#20344B; --muted:#5E7188; --hair:#D8E1EC;
+  --go:#2E7D5B; --go-bg:#E6F1EC; --go-hair:#B7D8C6;
+  --rev:#B8842B; --rev-bg:#F7EEDD; --rev-hair:#E6D2A6;
+  --nogo:#B23A3A; --nogo-bg:#F7E7E6; --nogo-hair:#E6BDBD;
+  --crit:#8E1F1F; --crit-bg:#F3DCDB;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,monospace;
+  --radius:10px;
+}
+*{box-sizing:border-box}html,body{margin:0}
+body{font-family:var(--sans);color:var(--ink);background:var(--ice);line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;font-weight:600}
+.wrap{max-width:1200px;margin:0 auto;padding:0 20px}
+
+header.top{background:var(--navy);color:#fff;border-bottom:3px solid var(--gold)}
+.top .wrap{display:flex;align-items:center;gap:14px;padding:11px 20px;flex-wrap:wrap}
+.brandmark{width:30px;height:30px;flex:0 0 auto}
+.brandtext .k{font-family:var(--serif);font-size:17px}
+.brandtext .s{font-size:11px;color:#9db4d4;letter-spacing:.06em;text-transform:uppercase}
+.datasrc{font-size:11px;font-weight:600;letter-spacing:.03em;color:#9db4d4;border:1px solid rgba(200,169,81,.4);border-radius:999px;padding:4px 11px;white-space:nowrap;transition:background .2s,color .2s,border-color .2s}
+.datasrc.live{color:#0B1F3A;background:var(--gold);border-color:var(--gold)}
+.datasrc.loading{color:var(--gold-hi);border-color:rgba(200,169,81,.55)}
+.mainnav{display:flex;gap:2px;margin-left:6px;flex-wrap:wrap}
+.navbtn{border:0;background:transparent;color:#c3d3ea;font:inherit;font-size:13px;padding:7px 11px;border-radius:8px;cursor:pointer}
+.navbtn:hover{background:rgba(255,255,255,.08);color:#fff}
+.navbtn.active{background:var(--gold);color:var(--navy);font-weight:600}
+.top .spacer{flex:1}
+.projpick{display:flex;align-items:center;gap:6px}
+.projpick label{font-size:11px;color:#9db4d4;text-transform:uppercase;letter-spacing:.05em}
+.projpick select{font:inherit;font-size:13px;background:var(--navy2);color:#fff;border:1px solid var(--navy-soft);border-radius:8px;padding:6px 8px}
+.sebok-chip{background:rgba(255,255,255,.08);border:1px solid rgba(200,169,81,.5);color:var(--gold-hi);font-size:12px;padding:6px 11px;border-radius:999px;cursor:pointer;white-space:nowrap}
+.sebok-chip:hover{background:rgba(255,255,255,.14)}
+
+.band{background:linear-gradient(180deg,var(--navy2),var(--navy));color:#fff;padding:24px 0 28px}
+.det-grid{display:grid;grid-template-columns:200px 1fr;gap:28px;align-items:center}
+.seal-holder{display:flex;flex-direction:column;align-items:center;gap:10px}
+.appetite{display:flex;gap:4px;background:rgba(255,255,255,.06);padding:4px;border-radius:999px}
+.appetite button{border:0;background:transparent;color:#9db4d4;font:inherit;font-size:12px;padding:5px 10px;border-radius:999px;cursor:pointer}
+.appetite button[aria-pressed="true"]{background:var(--gold);color:var(--navy);font-weight:600}
+.det-copy .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-hi)}
+.det-copy h1{font-family:var(--serif);font-size:28px;font-weight:600;margin:6px 0 8px;line-height:1.15}
+.det-copy p.lede{color:#c3d3ea;max-width:64ch;margin:0 0 14px}
+.verdict-line{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.tag{font-size:13px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:6px}
+.verdict-reason{color:#c3d3ea;font-size:14px}
+.metrics{display:flex;gap:24px;margin-top:16px;flex-wrap:wrap}
+.metric .v{font-family:var(--mono);font-size:22px;font-weight:600}
+.metric .l{font-size:12px;color:#9db4d4;letter-spacing:.04em;text-transform:uppercase}
+
+.statusbar{background:var(--navy);color:#fff}
+.statusbar .wrap{display:flex;align-items:center;gap:14px;padding:12px 20px;flex-wrap:wrap}
+.backlink{border:0;background:rgba(255,255,255,.08);color:#fff;font:inherit;font-size:13px;padding:7px 12px;border-radius:8px;cursor:pointer}
+.backlink:hover{background:rgba(255,255,255,.16)}
+.sb-title{font-family:var(--serif);font-size:19px;display:flex;align-items:center;gap:10px}
+.sb-spacer{flex:1}
+.sb-chip{font-size:13px;font-family:var(--mono);padding:5px 12px;border-radius:999px;font-weight:600}
+.prevnext{display:flex;gap:6px}
+.prevnext button{border:1px solid rgba(255,255,255,.2);background:transparent;color:#fff;font:inherit;font-size:13px;padding:6px 11px;border-radius:8px;cursor:pointer}
+.prevnext button:hover{background:rgba(255,255,255,.1)}
+
+main{padding:22px 0 60px}
+.card{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);padding:16px}
+.card h3{font-family:var(--serif);font-size:16px;margin-bottom:4px}
+.card .hint{font-size:12px;color:var(--muted);margin-bottom:10px}
+.phase-id{font-family:var(--mono);font-size:12px;color:var(--gold);background:var(--navy);padding:3px 8px;border-radius:5px}
+.dot{width:11px;height:11px;border-radius:50%;background:var(--hair);display:inline-block}
+.aggbar{height:8px;background:var(--ice);border-radius:999px;overflow:hidden;border:1px solid var(--hair)}
+.aggbar>span{display:block;height:100%;width:0;background:var(--muted);transition:width .35s,background .35s}
+
+/* Portfolio */
+.pf-head{display:grid;grid-template-columns:200px 1fr;gap:28px;align-items:center}
+.heatwrap{overflow-x:auto}
+table.heat{border-collapse:separate;border-spacing:4px;width:100%;min-width:640px}
+table.heat th{font-size:12px;color:var(--muted);font-weight:600;text-align:center;padding:4px}
+table.heat th.proj{text-align:left}
+table.heat td{text-align:center}
+.pcell{width:100%;padding:9px 6px;border-radius:8px;font-family:var(--mono);font-size:13px;font-weight:600;border:1px solid transparent}
+.pcell.empty{background:var(--ice);color:var(--muted);font-family:var(--sans);font-weight:400}
+.projrow{display:flex;align-items:center;gap:8px;cursor:pointer;font:inherit;background:none;border:0;padding:6px 4px;text-align:left;color:var(--ink);width:100%}
+.projrow:hover .pname{text-decoration:underline}
+.pname{font-weight:600;font-size:14px}
+.pverd{font-size:11px;font-weight:600;padding:1px 7px;border-radius:5px}
+
+/* Guidance / steps */
+.guidance{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);padding:18px 20px;margin-bottom:22px}
+.guidance h2{font-family:var(--serif);font-size:18px;margin-bottom:12px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.step{display:flex;gap:12px}
+.step .num{font-family:var(--mono);font-size:13px;color:var(--gold);background:var(--navy);width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.step .st{font-weight:600;font-size:14px}.step .sd{font-size:13px;color:var(--muted)}
+
+.home-grid{display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start}
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.tile{text-align:left;background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);padding:16px;cursor:pointer;font:inherit;color:var(--ink);display:flex;flex-direction:column;gap:8px}
+.tile:hover{border-color:var(--navy-soft);box-shadow:0 3px 14px rgba(11,31,58,.07)}
+.tile-top{display:flex;align-items:center;justify-content:space-between}
+.tile-name{font-family:var(--serif);font-size:20px}
+.tile-meta{font-size:12px;color:var(--muted)}
+.tile-ratio{font-family:var(--mono);font-size:22px;font-weight:600;display:flex;align-items:baseline;gap:6px}
+.tile-ratio small{font-family:var(--sans);font-size:11px;color:var(--muted);font-weight:400}
+.appmini{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border:1px solid var(--hair);border-radius:5px;padding:1px 6px}
+.home-side{display:flex;flex-direction:column;gap:16px;position:sticky;top:16px}
+.radar-wrap{display:flex;justify-content:center}
+.packet-empty{font-size:13px;color:var(--go);background:var(--go-bg);border:1px solid var(--go-hair);border-radius:8px;padding:12px}
+.pk{border-left:3px solid var(--hair);padding:8px 0 8px 12px;margin:8px 0}
+.pk.hard{border-color:var(--nogo)}.pk.gap{border-color:var(--rev)}.pk.evi{border-color:var(--muted)}
+.pk .pk-t{font-size:13px;font-weight:600}.pk .pk-m{font-size:12px;color:var(--muted);margin-top:2px}
+.pk .own{color:var(--navy2)}.pk-mono{font-family:var(--mono)}
+.count-pill{font-family:var(--mono);font-size:12px;background:var(--ice);border:1px solid var(--hair);border-radius:999px;padding:1px 9px;margin-left:6px;color:var(--muted)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap}
+.btn{font:inherit;font-size:13px;border:1px solid var(--hair);background:#fff;color:var(--ink);padding:8px 13px;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--navy-soft);background:var(--ice2)}
+.btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)}.btn.primary:hover{background:var(--navy2)}
+
+/* Phase detail */
+.phasewrap{max-width:920px}
+.hardbanner{background:var(--nogo-bg);border:1px solid var(--nogo-hair);border-radius:var(--radius);padding:12px 16px;margin-bottom:18px;color:var(--nogo);font-size:13px}
+.appstrip{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);padding:14px 16px;margin-bottom:18px}
+.appstrip .lbl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.threshbar{position:relative;flex:1;min-width:220px;height:22px;background:var(--ice);border-radius:6px;overflow:hidden;border:1px solid var(--hair)}
+.threshbar .fill{position:absolute;left:0;top:0;bottom:0;background:var(--muted);opacity:.9}
+.threshbar .tick{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--navy)}
+.threshbar .tick.hi{background:var(--go)}.threshbar .tick.lo{background:var(--nogo)}
+.threshbar .tk-label{position:absolute;top:2px;font-size:10px;font-family:var(--mono);color:#fff;transform:translateX(4px)}
+.seg{display:inline-flex;border:1px solid var(--hair);border-radius:7px;overflow:hidden;background:#fff}
+.seg button{border:0;background:#fff;font-family:var(--mono);font-size:13px;width:30px;height:30px;cursor:pointer;color:var(--muted);border-left:1px solid var(--hair)}
+.seg button:first-child{border-left:0;font-family:var(--sans);font-size:15px}
+.seg button:hover{background:var(--ice)}
+.seg button[aria-pressed="true"]{background:var(--navy);color:#fff}
+.seg button[aria-pressed="true"].s0{background:var(--nogo)}
+.seg.target button[aria-pressed="true"]{background:var(--gold);color:var(--navy)}
+.seg.disabled{opacity:.45;pointer-events:none}
+.segapp{display:inline-flex;border:1px solid var(--hair);border-radius:7px;overflow:hidden}
+.segapp button{border:0;border-left:1px solid var(--hair);background:#fff;font:inherit;font-size:12px;padding:6px 12px;cursor:pointer;color:var(--muted)}
+.segapp button:first-child{border-left:0}
+.segapp button[aria-pressed="true"]{background:var(--navy);color:#fff}
+.panel{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);overflow:hidden;margin-bottom:18px}
+.group{padding:4px 18px 14px}
+.group-label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--navy2);font-weight:600;margin:16px 0 6px;display:flex;gap:8px;flex-wrap:wrap;align-items:baseline}
+.group-label .owner{font-weight:400;color:var(--muted);text-transform:none;letter-spacing:0}
+.art{display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;padding:9px 0;border-top:1px solid var(--ice)}
+.art:first-child{border-top:0}
+.art-name{font-size:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.crit{font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--nogo);border:1px solid var(--nogo-hair);background:var(--nogo-bg);padding:1px 6px;border-radius:4px}
+.nb{font-size:11px;color:var(--muted);font-style:italic}
+.baseline{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap}
+.baseline b{color:var(--navy2)}
+.gap-flag{font-family:var(--mono);font-size:12px;padding:2px 7px;border-radius:5px;min-width:58px;text-align:center}
+.rightcell{display:flex;align-items:center;gap:10px;justify-content:flex-end}
+.seg-cap{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-right:2px}
+
+/* Targets */
+.targets-intro{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);padding:18px 20px;margin-bottom:20px}
+.targets-intro h2{font-family:var(--serif);font-size:18px;margin-bottom:6px}
+.targets-intro p{font-size:14px;margin:6px 0;max-width:82ch}
+.wavebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--ice)}
+.wavebar .wl{font-size:13px;color:var(--muted)}
+.tphase{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);margin-bottom:16px;overflow:hidden}
+.tphase-head{display:flex;align-items:center;gap:12px;padding:13px 18px;background:var(--ice2);border-bottom:1px solid var(--hair);flex-wrap:wrap}
+.tphase-name{font-family:var(--serif);font-size:18px}
+.tphase-read{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.bulk{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap;align-items:center}
+.bulk button{border:1px solid var(--hair);background:#fff;font:inherit;font-size:12px;padding:5px 9px;border-radius:7px;cursor:pointer;color:var(--ink)}
+.bulk button:hover{border-color:var(--navy-soft);background:var(--ice)}
+.tart{display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;padding:8px 18px;border-top:1px solid var(--ice)}
+.tart .cur{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap}
+
+/* Risk */
+.riskhead{display:grid;grid-template-columns:1.2fr 1fr;gap:20px;margin-bottom:22px}
+.proceed{background:var(--surface);border:1px solid var(--hair);border-left:4px solid var(--nogo);border-radius:var(--radius);padding:16px 18px}
+.proceed h3{font-family:var(--serif);font-size:17px;margin-bottom:6px}
+.proceed .big{font-size:14px}
+.proceed ul{margin:8px 0 0;padding-left:18px}
+.proceed li{font-size:13px;margin:4px 0}
+.bandgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.bandbox{border-radius:8px;padding:12px;text-align:center;border:1px solid var(--hair)}
+.bandbox .n{font-family:var(--mono);font-size:24px;font-weight:600}
+.bandbox .l{font-size:11px;text-transform:uppercase;letter-spacing:.04em}
+.agentnote{background:var(--ice2);border:1px dashed var(--hair);border-radius:var(--radius);padding:12px 16px;margin-bottom:20px;font-size:13px;color:var(--muted)}
+.agentnote b{color:var(--navy2)}
+.agent{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);margin-bottom:16px;overflow:hidden}
+.agent-head{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--hair);flex-wrap:wrap}
+.agent-badge{width:34px;height:34px;border-radius:9px;background:var(--navy);color:var(--gold);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:16px;flex:0 0 auto}
+.agent-name{font-family:var(--serif);font-size:17px}
+.agent-lens{font-size:12px;color:var(--muted)}
+.agent-posture{margin-left:auto;display:flex;align-items:center;gap:10px;min-width:180px}
+.agent-body{padding:6px 18px 14px}
+.finding{border-top:1px solid var(--ice);padding:11px 0}
+.finding:first-child{border-top:0}
+.finding-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.eband{font-size:11px;font-weight:700;letter-spacing:.05em;padding:2px 8px;border-radius:5px;text-transform:uppercase}
+.finding-t{font-size:14px;font-weight:600}
+.finding-src{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.li-row{display:flex;gap:14px;flex-wrap:wrap;margin:6px 0 2px;font-size:12px;color:var(--muted)}
+.li-row .mono{font-family:var(--mono);color:var(--ink)}
+.impact{font-size:13px;margin:4px 0}
+.impact b{color:var(--nogo)}
+.explain{font-size:12px;color:var(--muted);background:var(--ice2);border-radius:8px;padding:8px 10px;margin-top:6px}
+.explain .own{color:var(--navy2)}
+.agent-guide{background:var(--ice2);border-top:1px solid var(--hair);padding:12px 18px;font-size:13px}
+.agent-guide b{color:var(--navy2)}
+.moretxt{font-size:12px;color:var(--muted);padding:8px 0 0}
+
+.field label{display:block;font-size:12px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin-bottom:4px}
+.field input{width:100%;font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--hair);border-radius:8px;background:#fff;color:var(--ink)}
+.field input:focus{outline:2px solid var(--gold);outline-offset:1px;border-color:var(--gold)}
+.field + .field{margin-top:10px}
+
+.drawer-bg{position:fixed;inset:0;background:rgba(11,31,58,.5);display:none;z-index:50}
+.drawer-bg.open{display:block}
+.drawer{position:absolute;right:0;top:0;height:100%;width:min(480px,92vw);background:#fff;padding:24px;overflow-y:auto;box-shadow:-8px 0 30px rgba(0,0,0,.2)}
+.drawer h2{font-family:var(--serif);font-size:20px;margin-bottom:6px}
+.drawer .x{position:absolute;right:16px;top:16px;border:0;background:var(--ice);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px;color:var(--ink)}
+.drawer h4{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--navy2);margin:18px 0 6px}
+.drawer p{font-size:14px;margin:6px 0}
+.drawer .cite{font-size:12px;color:var(--muted);border-left:2px solid var(--gold);padding-left:10px;font-style:italic}
+
+footer{border-top:1px solid var(--hair);color:var(--muted);font-size:12px;padding:20px 0 50px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+@media (max-width:900px){
+  .det-grid,.pf-head{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .det-copy{text-align:left}
+  .home-grid{grid-template-columns:1fr}.home-side{position:static}
+  .tiles{grid-template-columns:1fr}.steps{grid-template-columns:1fr}
+  .riskhead{grid-template-columns:1fr}.bandgrid{grid-template-columns:repeat(2,1fr)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media print{.mainnav,.sebok-chip,.appetite,.toolbar,.seg,.segapp,.bulk,.prevnext,.backlink,.wavebar,.projpick{display:none!important}body{background:#fff}}
+
+/* discipline compliance */
+.drow{display:grid;grid-template-columns:minmax(220px,1fr) 2fr 62px 156px;gap:14px;align-items:center;padding:10px 6px;border-bottom:1px solid var(--hair)}
+.drow:last-child{border-bottom:none}
+.dname{font-size:13px;color:var(--ink)}
+.dpre{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--navy2);background:var(--ice);border-radius:4px;padding:1px 6px;margin-right:8px}
+.darea{display:block;font-size:10.5px;color:var(--muted);margin-top:2px}
+.dbar{height:9px;border-radius:5px;background:var(--ice);overflow:hidden}
+.dbar span{display:block;height:100%;border-radius:5px;transition:width .4s}
+.dpct{font-family:var(--mono);font-size:15px;font-weight:600;text-align:right}
+.dmeta{font-size:11px;color:var(--muted);text-align:right}
+/* references */
+.refgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:12px}
+.refcard{display:flex;flex-direction:column;gap:6px;padding:14px;border:1px solid var(--hair);border-radius:10px;text-decoration:none;background:var(--surface);transition:border-color .15s,box-shadow .15s,transform .12s}
+.refcard:hover{border-color:var(--navy2);box-shadow:0 4px 14px rgba(11,31,58,.12);transform:translateY(-1px)}
+.rk{align-self:flex-start;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.05em;padding:2px 7px;border-radius:4px;color:#fff;background:var(--navy2)}
+.rk.pdf{background:#8a2b2b}
+.rt{font-family:var(--serif);font-size:14.5px;color:var(--navy);font-weight:600;line-height:1.3}
+.rd{font-size:12px;color:var(--muted);line-height:1.45}
+.stdtable{width:100%;border-collapse:collapse;margin-top:12px;font-size:12.5px}
+.stdtable th{text-align:left;background:var(--navy);color:#fff;padding:8px 12px;font-family:var(--serif);font-weight:600}
+.stdtable td{padding:8px 12px;border-bottom:1px solid var(--hair);vertical-align:top}
+.stdtable tr:last-child td{border-bottom:none}
+.stdtable td:first-child{font-weight:600;color:var(--navy);width:34%}
+.refnote{font-size:13px;color:var(--ink);line-height:1.6}
+@media (max-width:760px){.drow{grid-template-columns:1fr 1.2fr;grid-auto-flow:row}.dpct,.dmeta{text-align:left}}
+/* V-Model ref chip on artifacts */
+.vmref{display:inline-block;font-family:var(--mono);font-size:10px;color:var(--navy2);background:var(--ice2);border:1px solid var(--hair);border-radius:4px;padding:0 6px;margin-left:8px;vertical-align:middle}
+/* Policy X-Ref */
+.pmap{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.pmap .pm{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink);background:var(--ice2);border:1px solid var(--hair);border-radius:8px;padding:7px 11px}
+.pmap .pm b{color:var(--navy);font-family:var(--serif)}
+.pmap .pm .arr{color:var(--gold);font-weight:700}
+.xfil{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 14px}
+.xfil button{font:inherit;font-size:12px;padding:4px 11px;border:1px solid var(--hair);background:var(--surface);color:var(--muted);border-radius:14px;cursor:pointer;transition:all .12s}
+.xfil button:hover{border-color:var(--navy2);color:var(--navy)}
+.xfil button[aria-pressed="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+.xwrap{max-height:560px;overflow:auto;border:1px solid var(--hair);border-radius:10px}
+.xreftable{width:100%;border-collapse:collapse;font-size:12px}
+.xreftable th{position:sticky;top:0;z-index:1;text-align:left;background:var(--navy);color:#fff;padding:8px 10px;font-family:var(--serif);font-weight:600;font-size:12px}
+.xreftable td{padding:7px 10px;border-bottom:1px solid var(--hair);vertical-align:top}
+.xreftable tr.vph td{background:var(--ice);font-family:var(--serif);font-weight:600;color:var(--navy);position:sticky;top:33px}
+.xreftable tr:not(.vph):hover td{background:var(--ice2)}
+.vmid{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--navy2);white-space:nowrap}
+.pchip{display:inline-block;font-size:10.5px;color:var(--ink);background:var(--ice2);border:1px solid var(--hair);border-radius:4px;padding:0 5px;margin:1px 2px}
+.dchip{display:inline-block;font-family:var(--mono);font-size:10px;font-weight:700;color:#fff;background:var(--navy2);border-radius:4px;padding:1px 5px;margin:1px 2px}
+.dchip.all{background:var(--gold);color:var(--navy)}
+@media (max-width:760px){.xreftable{font-size:11px}.xreftable td,.xreftable th{padding:6px 6px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <svg class="brandmark" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="none" stroke="#C8A951" stroke-width="1.5"/><path d="M20 7 L31 26 H9 Z" fill="none" stroke="#C8A951" stroke-width="1.5"/><circle cx="20" cy="21" r="3.5" fill="#C8A951"/></svg>
+  <div class="brandtext"><div class="k">Aircraft PLM · Portfolio Assessment</div><div class="s">Airworthiness · Compliance · Go / No-Go</div></div>
+  <nav class="mainnav">
+    <button class="navbtn" data-nav="#/portfolio">Portfolio</button>
+    <button class="navbtn" data-nav="#/project">Project</button>
+    <button class="navbtn" data-nav="#/disciplines">Disciplines</button>
+    <button class="navbtn" data-nav="#/targets">Targets</button>
+    <button class="navbtn" data-nav="#/risk">Risk</button>
+    <button class="navbtn" data-nav="#/refs">Policy X-Ref</button>
+  </nav>
+  <div class="spacer"></div>
+  <span id="dataSrc" class="datasrc" title="Where this dashboard's data came from">○ Sample data</span>
+  <div class="projpick"><label>Project</label><select id="projSel"></select></div>
+  <button class="sebok-chip" id="sebokBtn">SEBoK ›</button>
+</div></header>
+
+<div id="view"></div>
+
+<footer><div class="wrap">
+  <span>Taxonomy &amp; scoring map the aircraft-manufacturer policy cross-reference · targets shared across the portfolio.</span>
+  <span>Gates (G0–G4), SEBoK disciplines &amp; FAA / EASA standards · grounded in the Digital Factory Roadmap and SE V-Model.</span>
+</div></footer>
+
+<div class="drawer-bg" id="drawerBg"><div class="drawer">
+  <button class="x" id="drawerX" aria-label="Close">✕</button>
+  <h2>How this maps to SEBoK, the standards &amp; the agents</h2>
+  <p>This dashboard assesses six work portfolios of a private-jet manufacturer across the Discover→Run lifecycle. Each artifact carries a governing standard (Part 21 / 25, AS9100 / AS9102, ARP4754B / 4761A, DO-178C / 254 / 326A, EIA-748, ITAR / EAR, ICAO Annex 16) and rolls up to a SEBoK discipline. The 39 SE V-Model / ISO 15288 artifacts (ConOps → StRS → architecture → design → V&amp;V → certification evidence) are embedded as targets in every phase and mapped to policies and domains under the <b>Policy X-Ref</b> tab. Gates, disciplines and a rule-based agent layer turn the policy cross-reference into a Go / Review / No-Go call.</p>
+  <h4>The gate = Enterprise Evaluation &amp; Assessment</h4>
+  <p>EE&amp;A should <span class="cite">look for break points where capabilities are significantly enhanced or totally disabled</span>. A critical artifact at zero is that break point.</p>
+  <h4>Target vs assessment = capability gap</h4>
+  <p>Capability-Based Planning compares desired capability to the baseline. Targets are the desired profile; each project's assessment is the observed one.</p>
+  <h4>Per-phase appetite = satisficing threshold</h4>
+  <p>Each phase carries its own Conservative / Balanced / Lenient bar, applied to its cumulative-target maturity. Enterprise decisions satisfice, so the threshold is a choice, not a proof.</p>
+  <h4>The agents</h4>
+  <p>Each assessment agent is a deterministic advisor for one discipline lens — the in-browser proxy for the skill-library evaluators. It reads scores, rates likelihood × impact, and explains the consequence of proceeding unmitigated. Ratings are heuristic decision support, not a guarantee.</p>
+</div></div>
+
+<script type="application/json" id="preloadedPortfolio">
+{
+  "meta": {
+    "cycle": "FY26 Enterprise Programs Review",
+    "assessor": "SEBoK discipline assessment \u00b7 Digital Factory program office"
+  },
+  "overallAppetite": "balanced",
+  "phaseAppetite": {
+    "discover": "balanced",
+    "define": "balanced",
+    "design": "balanced",
+    "develop": "balanced",
+    "deliver": "balanced",
+    "run": "balanced"
+  },
+  "targets": [
+    {
+      "key": "discover",
+      "groups": [
+        [
+          2,
+          2,
+          2,
+          2
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          2,
+          2,
+          2,
+          1,
+          1,
+          2
+        ]
+      ]
+    },
+    {
+      "key": "define",
+      "groups": [
+        [
+          3,
+          2,
+          3,
+          2
+        ],
+        [
+          3,
+          2,
+          2
+        ],
+        [
+          3,
+          2,
+          2,
+          3
+        ],
+        [
+          3,
+          3,
+          2,
+          2,
+          1,
+          2,
+          2
+        ]
+      ]
+    },
+    {
+      "key": "design",
+      "groups": [
+        [
+          3,
+          3,
+          2,
+          3
+        ],
+        [
+          3,
+          3,
+          3
+        ],
+        [
+          2,
+          2,
+          2
+        ],
+        [
+          3,
+          3,
+          3,
+          3,
+          2,
+          3,
+          2,
+          2,
+          3,
+          2,
+          2,
+          2,
+          2,
+          3,
+          3
+        ]
+      ]
+    },
+    {
+      "key": "develop",
+      "groups": [
+        [
+          3,
+          3,
+          2,
+          3
+        ],
+        [
+          3,
+          2,
+          3,
+          2
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          3,
+          2,
+          1
+        ],
+        [
+          2,
+          3,
+          2,
+          2,
+          3,
+          3
+        ]
+      ]
+    },
+    {
+      "key": "deliver",
+      "groups": [
+        [
+          3,
+          3,
+          3,
+          3
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          3
+        ]
+      ]
+    },
+    {
+      "key": "run",
+      "groups": [
+        [
+          2,
+          2,
+          2
+        ],
+        [
+          2,
+          1,
+          1
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          2,
+          1
+        ]
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "dsc-ctrltower",
+      "name": "Control Tower & Supplier Integration",
+      "portfolio": "Digital Supply Chain",
+      "scores": {
+        "discover.0.0": 2,
+        "discover.0.1": 2,
+        "discover.0.2": 2,
+        "discover.0.3": 2,
+        "discover.1.0": 1,
+        "discover.1.1": 1,
+        "discover.2.0": 2,
+        "discover.2.1": 3,
+        "discover.3.0": 2,
+        "discover.3.1": 2,
+        "discover.3.2": 2,
+        "discover.3.3": 1,
+        "discover.3.4": 1,
+        "define.0.1": 2,
+        "define.0.2": 3,
+        "define.0.3": 2,
+        "define.1.0": 2,
+        "define.1.1": 2,
+        "define.1.2": 2,
+        "define.2.1": 2,
+        "define.2.2": 2,
+        "define.2.3": 3,
+        "define.3.1": 3,
+        "define.3.2": 2,
+        "define.3.3": 2,
+        "define.3.4": 1,
+        "define.3.5": 2,
+        "define.3.6": 2,
+        "design.0.0": 3,
+        "design.0.1": 3,
+        "design.0.2": 2,
+        "design.0.3": 3,
+        "design.1.0": 3,
+        "design.1.1": 3,
+        "design.1.2": 3,
+        "design.2.1": 2,
+        "design.2.2": 2,
+        "design.3.0": 3,
+        "design.3.1": 3,
+        "design.3.2": 3,
+        "design.3.3": 2,
+        "design.3.4": 2,
+        "design.3.5": 2,
+        "design.3.6": 2,
+        "design.3.7": 2,
+        "design.3.8": 3,
+        "design.3.9": 2,
+        "design.3.11": 2,
+        "design.3.12": 2,
+        "design.3.13": 2,
+        "design.3.14": 3,
+        "develop.0.0": 2,
+        "develop.0.1": 2,
+        "develop.0.2": 2,
+        "develop.0.3": 2,
+        "develop.1.0": 2,
+        "develop.1.1": 2,
+        "develop.1.2": 3,
+        "develop.1.3": 2,
+        "develop.2.0": 3,
+        "develop.2.1": 2,
+        "develop.3.0": 2,
+        "develop.3.1": 2,
+        "develop.3.2": 1,
+        "develop.4.0": 2,
+        "develop.4.1": 3,
+        "develop.4.2": 2,
+        "develop.4.3": 1,
+        "develop.4.4": 3,
+        "deliver.0.0": 2,
+        "deliver.0.1": 2,
+        "deliver.0.2": 3,
+        "deliver.1.0": 2,
+        "deliver.1.1": 2,
+        "deliver.2.0": 1,
+        "deliver.2.1": 2,
+        "deliver.3.0": 2,
+        "deliver.3.1": 2,
+        "run.0.0": 2,
+        "run.0.1": 2,
+        "run.0.2": 1,
+        "run.1.0": 1,
+        "run.1.1": 1,
+        "run.1.2": 1,
+        "run.2.0": 1,
+        "run.2.1": 1,
+        "run.3.0": 1,
+        "run.3.1": 2,
+        "run.4.0": 2,
+        "run.4.1": 2,
+        "run.4.2": 1
+      }
+    },
+    {
+      "id": "dsc-trace",
+      "name": "Track-and-Trace Serialization (AS9102 ingestion)",
+      "portfolio": "Digital Supply Chain",
+      "scores": {
+        "discover.0.0": 1,
+        "discover.0.2": 1,
+        "discover.0.3": 1,
+        "discover.1.1": 1,
+        "discover.2.0": 1,
+        "discover.2.1": 2,
+        "discover.3.0": 1,
+        "discover.3.1": 1,
+        "discover.3.2": 1,
+        "discover.3.3": 1,
+        "discover.3.4": 1,
+        "define.0.0": 2,
+        "define.0.1": 1,
+        "define.0.2": 2,
+        "define.0.3": 1,
+        "define.1.0": 2,
+        "define.1.1": 1,
+        "define.1.2": 1,
+        "define.2.1": 1,
+        "define.2.2": 1,
+        "define.2.3": 2,
+        "define.3.0": 2,
+        "define.3.4": 1,
+        "define.3.5": 1,
+        "define.3.6": 1,
+        "design.0.3": 2,
+        "design.1.0": 2,
+        "design.1.1": 2,
+        "design.1.2": 2,
+        "design.2.1": 1,
+        "design.2.2": 1,
+        "design.3.0": 2,
+        "design.3.1": 2,
+        "design.3.2": 2,
+        "design.3.7": 1,
+        "design.3.8": 2,
+        "design.3.9": 1,
+        "design.3.10": 1,
+        "design.3.11": 1,
+        "design.3.12": 1,
+        "design.3.14": 2,
+        "develop.0.0": 2,
+        "develop.0.1": 2,
+        "develop.1.1": 1,
+        "develop.1.2": 2,
+        "develop.2.1": 1,
+        "develop.3.0": 0,
+        "develop.3.1": 1,
+        "develop.3.2": 0,
+        "develop.4.0": 1,
+        "develop.4.1": 2,
+        "develop.4.3": 1,
+        "develop.4.4": 2,
+        "develop.4.5": 2,
+        "deliver.0.0": 2,
+        "deliver.0.1": 2,
+        "deliver.0.2": 2,
+        "deliver.0.3": 1,
+        "deliver.1.1": 1,
+        "deliver.2.1": 2,
+        "deliver.3.0": 2,
+        "deliver.3.1": 2
+      }
+    },
+    {
+      "id": "mes-core",
+      "name": "MES Core & Electronic Work Instructions",
+      "portfolio": "Shop Floor & MES",
+      "scores": {
+        "discover.0.0": 3,
+        "discover.0.1": 2,
+        "discover.0.2": 2,
+        "discover.0.3": 2,
+        "discover.1.0": 1,
+        "discover.1.1": 1,
+        "discover.2.0": 2,
+        "discover.2.1": 3,
+        "discover.3.0": 3,
+        "discover.3.1": 2,
+        "discover.3.2": 2,
+        "discover.3.3": 1,
+        "discover.3.4": 1,
+        "discover.3.5": 2,
+        "define.0.0": 3,
+        "define.0.1": 2,
+        "define.0.2": 3,
+        "define.0.3": 2,
+        "define.1.0": 3,
+        "define.1.1": 2,
+        "define.1.2": 2,
+        "define.2.0": 3,
+        "define.2.1": 2,
+        "define.2.2": 2,
+        "define.2.3": 3,
+        "define.3.0": 3,
+        "define.3.1": 3,
+        "define.3.2": 2,
+        "define.3.3": 2,
+        "define.3.4": 1,
+        "define.3.6": 2,
+        "design.0.0": 3,
+        "design.0.1": 3,
+        "design.0.2": 2,
+        "design.0.3": 3,
+        "design.1.0": 3,
+        "design.1.1": 3,
+        "design.1.2": 3,
+        "design.2.0": 2,
+        "design.2.1": 2,
+        "design.2.2": 2,
+        "design.3.0": 3,
+        "design.3.1": 3,
+        "design.3.2": 3,
+        "design.3.3": 3,
+        "design.3.4": 2,
+        "design.3.5": 3,
+        "design.3.6": 2,
+        "design.3.7": 2,
+        "design.3.8": 3,
+        "design.3.9": 2,
+        "design.3.10": 2,
+        "design.3.11": 2,
+        "design.3.13": 3,
+        "design.3.14": 3,
+        "develop.0.0": 3,
+        "develop.0.1": 3,
+        "develop.0.2": 2,
+        "develop.0.3": 3,
+        "develop.1.0": 3,
+        "develop.1.1": 2,
+        "develop.1.2": 3,
+        "develop.1.3": 2,
+        "develop.2.0": 3,
+        "develop.2.1": 2,
+        "develop.3.0": 3,
+        "develop.3.1": 2,
+        "develop.3.2": 1,
+        "develop.4.0": 2,
+        "develop.4.1": 3,
+        "develop.4.2": 2,
+        "develop.4.3": 2,
+        "develop.4.4": 3,
+        "develop.4.5": 3,
+        "deliver.0.0": 3,
+        "deliver.0.1": 3,
+        "deliver.0.2": 3,
+        "deliver.0.3": 3,
+        "deliver.1.0": 3,
+        "deliver.1.1": 2,
+        "deliver.2.0": 2,
+        "deliver.2.1": 3,
+        "deliver.3.0": 3,
+        "deliver.3.1": 3,
+        "run.0.0": 2,
+        "run.0.1": 2,
+        "run.0.2": 2,
+        "run.1.0": 2,
+        "run.1.1": 1,
+        "run.1.2": 1,
+        "run.2.0": 2,
+        "run.3.0": 2,
+        "run.3.1": 2,
+        "run.4.0": 2,
+        "run.4.1": 2,
+        "run.4.2": 1
+      }
+    },
+    {
+      "id": "mes-iot",
+      "name": "IoT / PLC Connectivity & OEE Analytics",
+      "portfolio": "Shop Floor & MES",
+      "scores": {
+        "discover.0.0": 1,
+        "discover.0.3": 1,
+        "discover.1.0": 0,
+        "discover.2.0": 1,
+        "discover.2.1": 1,
+        "discover.3.0": 1,
+        "discover.3.1": 1,
+        "discover.3.4": 0,
+        "define.0.0": 1,
+        "define.0.1": 1,
+        "define.0.2": 1,
+        "define.0.3": 1,
+        "define.1.1": 1,
+        "define.1.2": 1,
+        "define.2.2": 1,
+        "define.3.0": 1,
+        "define.3.1": 1,
+        "define.3.2": 1,
+        "define.3.3": 1,
+        "define.3.4": 0,
+        "define.3.6": 1,
+        "design.0.2": 1,
+        "design.0.3": 1,
+        "design.1.0": 1,
+        "design.1.1": 1,
+        "design.1.2": 1,
+        "design.2.2": 0,
+        "design.3.1": 1,
+        "design.3.2": 1,
+        "design.3.4": 1,
+        "design.3.5": 1,
+        "design.3.6": 1,
+        "design.3.7": 1,
+        "design.3.9": 1,
+        "design.3.12": 1,
+        "design.3.14": 1,
+        "develop.0.1": 1,
+        "develop.0.3": 1,
+        "develop.1.0": 1,
+        "develop.1.1": 1,
+        "develop.1.2": 1,
+        "develop.1.3": 1,
+        "develop.3.1": 1,
+        "develop.3.2": 0,
+        "develop.4.0": 1,
+        "develop.4.1": 1,
+        "develop.4.2": 1,
+        "develop.4.3": 1,
+        "develop.4.5": 1
+      }
+    },
+    {
+      "id": "mro-ahms",
+      "name": "AHMS Telemetry Data Lake",
+      "portfolio": "MRO & Predictive Maintenance",
+      "scores": {
+        "discover.0.0": 2,
+        "discover.0.1": 2,
+        "discover.0.2": 2,
+        "discover.0.3": 2,
+        "discover.1.0": 1,
+        "discover.1.1": 1,
+        "discover.2.0": 2,
+        "discover.2.1": 3,
+        "discover.3.2": 2,
+        "discover.3.3": 1,
+        "discover.3.4": 1,
+        "discover.3.5": 2,
+        "define.0.0": 3,
+        "define.0.1": 2,
+        "define.0.3": 2,
+        "define.1.0": 3,
+        "define.1.1": 2,
+        "define.1.2": 2,
+        "define.2.1": 2,
+        "define.3.0": 3,
+        "define.3.1": 3,
+        "define.3.2": 2,
+        "define.3.3": 2,
+        "define.3.4": 1,
+        "define.3.6": 2,
+        "design.0.0": 2,
+        "design.0.1": 3,
+        "design.0.2": 2,
+        "design.1.0": 3,
+        "design.1.1": 2,
+        "design.2.0": 2,
+        "design.2.2": 2,
+        "design.3.0": 3,
+        "design.3.1": 2,
+        "design.3.2": 2,
+        "design.3.3": 2,
+        "design.3.4": 2,
+        "design.3.6": 2,
+        "design.3.7": 2,
+        "design.3.8": 2,
+        "design.3.9": 2,
+        "design.3.10": 2,
+        "design.3.11": 2,
+        "design.3.12": 2,
+        "design.3.13": 3,
+        "develop.0.0": 2,
+        "develop.0.1": 2,
+        "develop.0.2": 2,
+        "develop.0.3": 2,
+        "develop.1.0": 3,
+        "develop.1.1": 2,
+        "develop.1.2": 2,
+        "develop.1.3": 1,
+        "develop.2.0": 3,
+        "develop.2.1": 2,
+        "develop.3.0": 3,
+        "develop.3.2": 1,
+        "develop.4.0": 2,
+        "develop.4.1": 3,
+        "develop.4.4": 2,
+        "develop.4.5": 2,
+        "deliver.0.0": 2,
+        "deliver.0.1": 2,
+        "deliver.0.2": 2,
+        "deliver.0.3": 3,
+        "deliver.1.0": 2,
+        "deliver.1.1": 2,
+        "deliver.2.1": 2,
+        "deliver.3.0": 2,
+        "deliver.3.1": 2,
+        "run.0.1": 1,
+        "run.0.2": 2,
+        "run.1.0": 2,
+        "run.1.1": 1,
+        "run.1.2": 1,
+        "run.2.0": 2,
+        "run.2.1": 1,
+        "run.3.0": 2,
+        "run.3.1": 2,
+        "run.4.0": 1,
+        "run.4.1": 2,
+        "run.4.2": 1
+      }
+    },
+    {
+      "id": "mro-ml",
+      "name": "Predictive Failure ML Models (DO-178C)",
+      "portfolio": "MRO & Predictive Maintenance",
+      "scores": {
+        "discover.0.0": 1,
+        "discover.0.1": 1,
+        "discover.0.2": 1,
+        "discover.1.1": 1,
+        "discover.2.0": 1,
+        "discover.2.1": 2,
+        "discover.3.0": 1,
+        "discover.3.2": 1,
+        "discover.3.4": 1,
+        "discover.3.5": 1,
+        "define.0.1": 1,
+        "define.0.2": 2,
+        "define.1.0": 2,
+        "define.1.1": 1,
+        "define.2.0": 2,
+        "define.2.1": 1,
+        "define.2.2": 1,
+        "define.2.3": 2,
+        "define.3.0": 2,
+        "define.3.1": 2,
+        "define.3.2": 1,
+        "define.3.3": 1,
+        "define.3.4": 1,
+        "define.3.5": 1,
+        "define.3.6": 1,
+        "design.0.0": 2,
+        "design.0.1": 2,
+        "design.0.2": 1,
+        "design.0.3": 2,
+        "design.1.0": 1,
+        "design.1.1": 1,
+        "design.1.2": 0,
+        "design.2.0": 1,
+        "design.2.1": 0,
+        "design.2.2": 0,
+        "design.3.0": 2,
+        "design.3.2": 2,
+        "design.3.3": 2,
+        "design.3.4": 1,
+        "design.3.5": 2,
+        "design.3.7": 1,
+        "design.3.8": 2,
+        "design.3.9": 1,
+        "design.3.10": 1,
+        "design.3.12": 1,
+        "design.3.13": 2,
+        "design.3.14": 2,
+        "develop.0.0": 2,
+        "develop.0.1": 2,
+        "develop.0.2": 1,
+        "develop.0.3": 2,
+        "develop.1.0": 2,
+        "develop.1.1": 1,
+        "develop.1.2": 2,
+        "develop.2.0": 2,
+        "develop.2.1": 1,
+        "develop.3.0": 2,
+        "develop.3.1": 1,
+        "develop.3.2": 1,
+        "develop.4.0": 1,
+        "develop.4.1": 2,
+        "develop.4.2": 1,
+        "develop.4.4": 1,
+        "develop.4.5": 1,
+        "deliver.0.1": 2,
+        "deliver.0.2": 1,
+        "deliver.0.3": 2,
+        "deliver.1.0": 2,
+        "deliver.1.1": 1,
+        "deliver.2.1": 1,
+        "deliver.3.0": 1
+      }
+    },
+    {
+      "id": "odr-aog",
+      "name": "AOG Command Center & Mobile Repair",
+      "portfolio": "On-Demand Repair",
+      "scores": {
+        "discover.0.0": 2,
+        "discover.0.1": 2,
+        "discover.0.2": 2,
+        "discover.0.3": 2,
+        "discover.1.0": 1,
+        "discover.1.1": 1,
+        "discover.2.0": 2,
+        "discover.2.1": 3,
+        "discover.3.0": 2,
+        "discover.3.2": 2,
+        "discover.3.3": 1,
+        "discover.3.4": 1,
+        "discover.3.5": 2,
+        "define.0.0": 2,
+        "define.0.3": 2,
+        "define.1.0": 3,
+        "define.1.1": 2,
+        "define.1.2": 2,
+        "define.2.1": 2,
+        "define.2.2": 2,
+        "define.2.3": 3,
+        "define.3.0": 3,
+        "define.3.1": 3,
+        "define.3.2": 2,
+        "define.3.3": 2,
+        "define.3.4": 1,
+        "define.3.6": 2,
+        "design.0.0": 3,
+        "design.0.1": 3,
+        "design.0.2": 2,
+        "design.0.3": 3,
+        "design.1.0": 3,
+        "design.1.1": 2,
+        "design.1.2": 2,
+        "design.2.0": 2,
+        "design.2.2": 2,
+        "design.3.0": 3,
+        "design.3.1": 3,
+        "design.3.2": 3,
+        "design.3.3": 3,
+        "design.3.4": 2,
+        "design.3.5": 2,
+        "design.3.7": 2,
+        "design.3.8": 3,
+        "design.3.9": 2,
+        "design.3.10": 2,
+        "design.3.11": 2,
+        "design.3.12": 2,
+        "design.3.13": 3,
+        "design.3.14": 2,
+        "develop.0.0": 3,
+        "develop.0.1": 2,
+        "develop.0.2": 2,
+        "develop.0.3": 3,
+        "develop.1.1": 2,
+        "develop.1.3": 2,
+        "develop.2.1": 2,
+        "develop.3.0": 2,
+        "develop.3.1": 2,
+        "develop.3.2": 1,
+        "develop.4.0": 2,
+        "develop.4.1": 3,
+        "develop.4.3": 2,
+        "develop.4.4": 3,
+        "deliver.0.0": 2,
+        "deliver.0.1": 2,
+        "deliver.0.2": 2,
+        "deliver.0.3": 2,
+        "deliver.1.0": 2,
+        "deliver.1.1": 1,
+        "deliver.2.0": 1,
+        "deliver.2.1": 2,
+        "deliver.3.0": 2,
+        "deliver.3.1": 2,
+        "run.0.0": 2,
+        "run.0.1": 2,
+        "run.0.2": 1,
+        "run.1.0": 1,
+        "run.1.1": 1,
+        "run.1.2": 1,
+        "run.2.0": 1,
+        "run.2.1": 2,
+        "run.3.0": 2,
+        "run.3.1": 1,
+        "run.4.0": 2,
+        "run.4.2": 1
+      }
+    },
+    {
+      "id": "odr-print",
+      "name": "3D-Printed Spares & REO Automation",
+      "portfolio": "On-Demand Repair",
+      "scores": {
+        "discover.0.0": 1,
+        "discover.0.3": 1,
+        "discover.1.0": 0,
+        "discover.1.1": 0,
+        "discover.2.0": 1,
+        "discover.2.1": 1,
+        "discover.3.1": 1,
+        "discover.3.2": 1,
+        "discover.3.4": 0,
+        "define.0.0": 1,
+        "define.0.1": 1,
+        "define.0.3": 1,
+        "define.1.2": 0,
+        "define.2.0": 1,
+        "define.2.1": 1,
+        "define.2.2": 1,
+        "define.3.1": 1,
+        "define.3.2": 1,
+        "define.3.3": 1,
+        "define.3.4": 0,
+        "define.3.5": 1,
+        "define.3.6": 1,
+        "design.0.0": 1,
+        "design.1.1": 1,
+        "design.1.2": 1,
+        "design.3.0": 1,
+        "design.3.2": 1,
+        "design.3.3": 1,
+        "design.3.6": 1,
+        "design.3.8": 1,
+        "design.3.9": 1,
+        "design.3.10": 1,
+        "design.3.11": 1,
+        "design.3.12": 1,
+        "develop.0.0": 1,
+        "develop.0.1": 1,
+        "develop.0.2": 1,
+        "develop.1.0": 1,
+        "develop.1.2": 1,
+        "develop.2.1": 1,
+        "develop.3.0": 1,
+        "develop.3.1": 0,
+        "develop.3.2": 0,
+        "develop.4.0": 1,
+        "develop.4.1": 1,
+        "develop.4.2": 1,
+        "develop.4.3": 1,
+        "develop.4.4": 1,
+        "develop.4.5": 1
+      }
+    },
+    {
+      "id": "qi-vision",
+      "name": "AI Defect Detection (Computer Vision NDT)",
+      "portfolio": "Quality Intelligence",
+      "scores": {
+        "discover.0.0": 2,
+        "discover.0.1": 2,
+        "discover.0.2": 2,
+        "discover.0.3": 2,
+        "discover.1.0": 1,
+        "discover.1.1": 1,
+        "discover.2.0": 3,
+        "discover.2.1": 3,
+        "discover.3.0": 2,
+        "discover.3.1": 2,
+        "discover.3.2": 2,
+        "discover.3.3": 1,
+        "discover.3.4": 1,
+        "discover.3.5": 2,
+        "define.0.0": 3,
+        "define.0.1": 2,
+        "define.0.2": 3,
+        "define.0.3": 2,
+        "define.1.0": 3,
+        "define.1.1": 2,
+        "define.1.2": 2,
+        "define.2.0": 3,
+        "define.2.1": 2,
+        "define.2.2": 2,
+        "define.3.0": 3,
+        "define.3.1": 3,
+        "define.3.2": 2,
+        "define.3.3": 2,
+        "define.3.4": 1,
+        "define.3.5": 2,
+        "define.3.6": 2,
+        "design.0.0": 3,
+        "design.0.1": 3,
+        "design.0.2": 2,
+        "design.0.3": 3,
+        "design.1.0": 3,
+        "design.1.1": 3,
+        "design.1.2": 3,
+        "design.2.0": 2,
+        "design.2.1": 2,
+        "design.2.2": 2,
+        "design.3.0": 3,
+        "design.3.1": 3,
+        "design.3.2": 3,
+        "design.3.3": 3,
+        "design.3.4": 2,
+        "design.3.5": 3,
+        "design.3.6": 2,
+        "design.3.7": 2,
+        "design.3.8": 3,
+        "design.3.10": 2,
+        "design.3.11": 2,
+        "design.3.12": 2,
+        "design.3.13": 3,
+        "design.3.14": 3,
+        "develop.0.0": 3,
+        "develop.0.1": 3,
+        "develop.0.2": 2,
+        "develop.0.3": 3,
+        "develop.1.0": 3,
+        "develop.1.1": 2,
+        "develop.1.2": 3,
+        "develop.1.3": 2,
+        "develop.2.0": 3,
+        "develop.2.1": 2,
+        "develop.3.0": 3,
+        "develop.3.1": 2,
+        "develop.3.2": 1,
+        "develop.4.0": 2,
+        "develop.4.1": 3,
+        "develop.4.2": 2,
+        "develop.4.3": 2,
+        "develop.4.4": 3,
+        "develop.4.5": 3,
+        "deliver.0.0": 3,
+        "deliver.0.1": 3,
+        "deliver.0.2": 3,
+        "deliver.0.3": 3,
+        "deliver.1.0": 3,
+        "deliver.1.1": 2,
+        "deliver.2.0": 2,
+        "deliver.2.1": 3,
+        "deliver.3.0": 3,
+        "deliver.3.1": 3,
+        "run.0.0": 2,
+        "run.0.2": 2,
+        "run.1.0": 2,
+        "run.1.1": 1,
+        "run.1.2": 1,
+        "run.2.0": 2,
+        "run.2.1": 2,
+        "run.3.0": 2,
+        "run.3.1": 2,
+        "run.4.0": 2,
+        "run.4.1": 2,
+        "run.4.2": 1
+      }
+    },
+    {
+      "id": "qi-capa",
+      "name": "Closed-Loop CAPA Automation (8D)",
+      "portfolio": "Quality Intelligence",
+      "scores": {
+        "discover.0.0": 2,
+        "discover.0.1": 2,
+        "discover.0.2": 2,
+        "discover.0.3": 2,
+        "discover.1.0": 1,
+        "discover.1.1": 1,
+        "discover.2.1": 2,
+        "discover.3.0": 2,
+        "discover.3.2": 2,
+        "discover.3.3": 1,
+        "discover.3.4": 1,
+        "discover.3.5": 2,
+        "define.0.0": 3,
+        "define.0.1": 2,
+        "define.0.2": 2,
+        "define.0.3": 2,
+        "define.1.0": 3,
+        "define.1.1": 2,
+        "define.1.2": 2,
+        "define.2.0": 3,
+        "define.2.1": 2,
+        "define.2.2": 2,
+        "define.2.3": 2,
+        "define.3.0": 2,
+        "define.3.1": 2,
+        "define.3.2": 2,
+        "define.3.3": 2,
+        "define.3.4": 1,
+        "define.3.5": 2,
+        "define.3.6": 2,
+        "design.0.0": 3,
+        "design.0.1": 3,
+        "design.0.2": 1,
+        "design.0.3": 3,
+        "design.1.0": 2,
+        "design.1.1": 2,
+        "design.1.2": 3,
+        "design.2.0": 2,
+        "design.2.1": 2,
+        "design.2.2": 2,
+        "design.3.0": 2,
+        "design.3.1": 2,
+        "design.3.2": 3,
+        "design.3.4": 2,
+        "design.3.5": 3,
+        "design.3.6": 2,
+        "design.3.8": 2,
+        "design.3.9": 2,
+        "design.3.10": 1,
+        "design.3.11": 2,
+        "design.3.12": 2,
+        "design.3.13": 3,
+        "design.3.14": 3,
+        "develop.0.0": 2,
+        "develop.0.1": 2,
+        "develop.0.2": 2,
+        "develop.0.3": 2,
+        "develop.1.0": 2,
+        "develop.1.1": 2,
+        "develop.1.2": 2,
+        "develop.1.3": 2,
+        "develop.2.1": 2,
+        "develop.3.0": 2,
+        "develop.3.1": 1,
+        "develop.3.2": 1,
+        "develop.4.0": 2,
+        "develop.4.1": 2,
+        "develop.4.2": 1,
+        "develop.4.3": 2,
+        "develop.4.4": 2,
+        "develop.4.5": 3,
+        "deliver.0.0": 2,
+        "deliver.0.1": 2,
+        "deliver.0.2": 2,
+        "deliver.0.3": 2,
+        "deliver.1.0": 2,
+        "deliver.1.1": 2,
+        "deliver.2.0": 1,
+        "deliver.3.0": 2
+      }
+    },
+    {
+      "id": "cs-portal",
+      "name": "VIP Owner Portal & IETP",
+      "portfolio": "Customer Support",
+      "scores": {
+        "discover.0.0": 2,
+        "discover.0.1": 2,
+        "discover.0.2": 2,
+        "discover.0.3": 2,
+        "discover.1.0": 1,
+        "discover.1.1": 1,
+        "discover.2.0": 2,
+        "discover.2.1": 2,
+        "discover.3.0": 2,
+        "discover.3.1": 2,
+        "discover.3.2": 2,
+        "discover.3.3": 1,
+        "discover.3.4": 1,
+        "discover.3.5": 2,
+        "define.0.0": 3,
+        "define.0.1": 2,
+        "define.0.2": 2,
+        "define.0.3": 2,
+        "define.1.0": 2,
+        "define.1.1": 2,
+        "define.1.2": 2,
+        "define.2.0": 3,
+        "define.2.2": 2,
+        "define.2.3": 3,
+        "define.3.1": 2,
+        "define.3.2": 2,
+        "define.3.3": 2,
+        "define.3.4": 1,
+        "define.3.5": 2,
+        "define.3.6": 2,
+        "design.0.1": 2,
+        "design.0.2": 2,
+        "design.0.3": 2,
+        "design.1.0": 2,
+        "design.1.1": 3,
+        "design.1.2": 2,
+        "design.2.0": 2,
+        "design.2.1": 2,
+        "design.2.2": 2,
+        "design.3.0": 3,
+        "design.3.1": 2,
+        "design.3.2": 3,
+        "design.3.3": 3,
+        "design.3.4": 2,
+        "design.3.5": 3,
+        "design.3.6": 2,
+        "design.3.7": 2,
+        "design.3.8": 3,
+        "design.3.9": 2,
+        "design.3.10": 2,
+        "design.3.11": 2,
+        "design.3.12": 2,
+        "design.3.13": 2,
+        "design.3.14": 3,
+        "develop.0.0": 3,
+        "develop.0.1": 2,
+        "develop.0.2": 2,
+        "develop.0.3": 2,
+        "develop.1.0": 3,
+        "develop.1.1": 2,
+        "develop.1.2": 3,
+        "develop.1.3": 1,
+        "develop.2.0": 3,
+        "develop.2.1": 2,
+        "develop.3.0": 3,
+        "develop.3.1": 2,
+        "develop.3.2": 1,
+        "develop.4.0": 2,
+        "develop.4.1": 2,
+        "develop.4.2": 2,
+        "develop.4.3": 2,
+        "develop.4.4": 2,
+        "develop.4.5": 3,
+        "deliver.0.0": 3,
+        "deliver.0.1": 2,
+        "deliver.0.2": 2,
+        "deliver.0.3": 3,
+        "deliver.1.0": 3,
+        "deliver.1.1": 2,
+        "deliver.2.0": 2,
+        "deliver.2.1": 3,
+        "deliver.3.0": 2,
+        "deliver.3.1": 2,
+        "run.0.0": 2,
+        "run.0.1": 1,
+        "run.0.2": 2,
+        "run.1.0": 1,
+        "run.1.1": 1,
+        "run.1.2": 1,
+        "run.2.0": 2,
+        "run.2.1": 2,
+        "run.3.0": 2,
+        "run.3.1": 2,
+        "run.4.0": 1,
+        "run.4.1": 2
+      }
+    },
+    {
+      "id": "cs-desk",
+      "name": "24/7 Global Support Desk & Warranty Engine",
+      "portfolio": "Customer Support",
+      "scores": {
+        "discover.0.0": 1,
+        "discover.0.1": 1,
+        "discover.0.2": 1,
+        "discover.0.3": 1,
+        "discover.1.0": 1,
+        "discover.1.1": 1,
+        "discover.2.0": 1,
+        "discover.2.1": 2,
+        "discover.3.0": 1,
+        "discover.3.1": 1,
+        "discover.3.2": 1,
+        "discover.3.3": 1,
+        "discover.3.4": 1,
+        "discover.3.5": 1,
+        "define.0.0": 2,
+        "define.0.1": 1,
+        "define.0.3": 1,
+        "define.1.0": 2,
+        "define.1.1": 1,
+        "define.1.2": 1,
+        "define.2.0": 2,
+        "define.2.2": 1,
+        "define.2.3": 2,
+        "define.3.0": 2,
+        "define.3.2": 1,
+        "define.3.3": 1,
+        "define.3.4": 1,
+        "define.3.6": 1,
+        "design.0.0": 2,
+        "design.0.1": 2,
+        "design.0.2": 1,
+        "design.0.3": 2,
+        "design.1.0": 2,
+        "design.1.2": 2,
+        "design.2.0": 1,
+        "design.2.1": 1,
+        "design.2.2": 1,
+        "design.3.1": 2,
+        "design.3.3": 2,
+        "design.3.4": 1,
+        "design.3.6": 1,
+        "design.3.7": 1,
+        "design.3.8": 2,
+        "design.3.9": 1,
+        "design.3.10": 1,
+        "design.3.11": 1,
+        "design.3.13": 2,
+        "design.3.14": 2,
+        "develop.0.2": 1,
+        "develop.0.3": 2,
+        "develop.1.0": 2,
+        "develop.1.1": 1,
+        "develop.1.2": 2,
+        "develop.1.3": 1,
+        "develop.2.1": 1,
+        "develop.3.0": 2,
+        "develop.3.1": 1,
+        "develop.3.2": 1,
+        "develop.4.0": 1,
+        "develop.4.1": 2,
+        "develop.4.2": 1,
+        "develop.4.3": 1,
+        "deliver.0.0": 2,
+        "deliver.0.1": 2,
+        "deliver.0.2": 1,
+        "deliver.0.3": 2,
+        "deliver.1.0": 1,
+        "deliver.1.1": 1,
+        "deliver.2.0": 1,
+        "deliver.2.1": 1,
+        "deliver.3.0": 2,
+        "deliver.3.1": 1
+      }
+    }
+  ],
+  "activeProject": 0
+}
+</script>
+
+<script>
+/* ================= Taxonomy (targets shared) ================= */
+const DATA=[
+ {id:"1.0",key:"discover",name:"Discover",groups:[
+   {label:"CD — Concept Definition",owner:"Concept Definition",arts:[
+     {n:"Market Analysis & Customer Needs (VIP owner benchmark)",b:2},
+     {n:"Concept of Operations (ConOps)",b:2},
+     {n:"Feasibility & Trade Studies / Analysis of Alternatives (AoA)",b:2},
+     {n:"Initial Business Case & Strategy Alignment",b:2}]},
+   {label:"RG — Regulatory Strategy",owner:"Airworthiness & Certification",arts:[
+     {n:"Initial Regulatory Strategy (FAA / EASA baseline · Part 21)",b:1},
+     {n:"Certification Basis Applicability (Part 23 / 25 · CS-23 / CS-25)",b:1}]},
+   {label:"PM — Portfolio Governance",owner:"Program & Portfolio Management",arts:[
+     {n:"Portfolio Alignment Review (Investment Committee · PMI)",b:2,c:true},
+     {n:"Gate 0 (G0) — Project Justification",b:3,c:true}]}]},
+ {id:"2.0",key:"define",name:"Define",groups:[
+   {label:"RE — Requirements Definition",owner:"Requirements Engineering",arts:[
+     {n:"Top-Level Aircraft Requirements (TLARs)",b:3,c:true},
+     {n:"Stakeholder Requirements Specification (StRS)",b:2},
+     {n:"System Requirements Specification (SRS)",b:3},
+     {n:"Requirements Traceability Baseline",b:2,c:true}]},
+   {label:"CE — Certification Planning",owner:"Airworthiness & Certification",arts:[
+     {n:"Initial Certification Plan (CP → FAA / EASA)",b:3,c:true},
+     {n:"Compliance Checklist Baseline (Part 23 / 25)",b:2},
+     {n:"Means of Compliance (MoC) Strategy",b:2}]},
+   {label:"PM — Program & Financial Management",owner:"Program & Portfolio Management",arts:[
+     {n:"Master Program Schedule & WBS",b:3},
+     {n:"Initial Risk Register & Budget (ISO 31000)",b:2},
+     {n:"EVMS Baseline (ANSI / EIA-748)",b:2},
+     {n:"Gate 1 (G1) — Concept Readiness · SRR / SFR",b:3,c:true}]}]},
+ {id:"3.0",key:"design",name:"Design",groups:[
+   {label:"AD — Architecture & Design",owner:"Architecture",arts:[
+     {n:"Systems Architecture & Interface Control Documents (ICDs)",b:3,c:true},
+     {n:"Preliminary & Detailed Engineering Drawings",b:3},
+     {n:"Design for Integration & Interoperability",b:2},
+     {n:"Gate 2 (G2) — Design Freeze · PDR / CDR",b:3,c:true}]},
+   {label:"SA — Safety & Airworthiness Assurance",owner:"Safety Assessment",arts:[
+     {n:"Functional Hazard Assessment (FHA · ARP4761A)",b:3,c:true},
+     {n:"Preliminary System Safety Assessment (PSSA)",b:3,c:true},
+     {n:"Development Assurance Levels (DAL · ARP4754B / ED-79B)",b:3,c:true}]},
+   {label:"HW — Software & Hardware Assurance",owner:"Airborne Systems Assurance",arts:[
+     {n:"Software Development Plan (DO-178C / ED-12C)",b:2},
+     {n:"Airborne Electronic Hardware Plan (DO-254 / ED-80)",b:2},
+     {n:"Airworthiness Security Risk Assessment (DO-326A / DO-356A)",b:2,c:true}]}]},
+ {id:"4.0",key:"develop",name:"Develop",groups:[
+   {label:"MF — Manufacturing & Realization",owner:"Manufacturing Engineering",arts:[
+     {n:"Manufacturing Master Plan & Tooling Setup",b:3},
+     {n:"First Article Inspection (FAI · AS9102)",b:3,c:true},
+     {n:"Prototype Airframe & Avionics Assemblies",b:2},
+     {n:"Gate 3 (G3) — Manufacturing Release",b:3,c:true}]},
+   {label:"VV — Verification & Validation",owner:"Test & Verification",arts:[
+     {n:"Ground & Flight Test Plans / Procedures",b:3,c:true},
+     {n:"Component / Unit Verification",b:2},
+     {n:"Integration & System Verification",b:3,c:true},
+     {n:"Test / Flight-Test Readiness Review (TRR / FTRR)",b:2,c:true}]},
+   {label:"CM — Configuration & Change",owner:"Configuration Management",arts:[
+     {n:"Change Control Log (ECR / ECO) · CCB",b:3,c:true},
+     {n:"Configuration Baseline Management",b:2}]},
+   {label:"QM — Quality Management",owner:"Quality",arts:[
+     {n:"AS9100 Rev D QMS Conformance",b:3,c:true},
+     {n:"Nonconformance / CAPA Closure (8D)",b:2},
+     {n:"Hazardous Substance Compliance (REACH / RoHS / TSCA)",b:1}]}]},
+ {id:"5.0",key:"deliver",name:"Delivery",groups:[
+   {label:"CE — Certification & Airworthiness",owner:"Airworthiness & Certification",arts:[
+     {n:"Type Certificate (TC) & Production Certificate (PC · Part 21)",b:3,c:true},
+     {n:"Means of Compliance (MoC) Verification Complete",b:3,c:true},
+     {n:"Certificate of Airworthiness (CoA) per Aircraft",b:3,c:true},
+     {n:"Gate 4 (G4) — Certification & Entry-into-Service",b:3,c:true}]},
+   {label:"CB — Cabin & Interior Completion",owner:"Cabin Safety",arts:[
+     {n:"Flammability & Interior Completion Certificate (FAR 25.853)",b:3,c:true},
+     {n:"Noise & Emissions Compliance (ICAO Annex 16)",b:2}]},
+   {label:"OD — Operational Documentation",owner:"Technical Publications",arts:[
+     {n:"Airplane Flight Manual (AFM) & Maintenance Manuals",b:2},
+     {n:"Customer Acceptance Sign-off & Delivery Checklist",b:3,c:true}]}]},
+ {id:"6.0",key:"run",name:"Run",groups:[
+   {label:"CA — Continued Airworthiness",owner:"Continued Airworthiness",arts:[
+     {n:"Continued Airworthiness Monitoring Plan (CAMP)",b:2,c:true},
+     {n:"Service Bulletins (SBs) & Airworthiness Directives (ADs)",b:2},
+     {n:"Continued Airworthiness Review Board (CARB)",b:2,c:true}]},
+   {label:"FR — Fleet Reliability & Predictive",owner:"Reliability Engineering",arts:[
+     {n:"Reliability & Fleet Performance Metrics",b:2},
+     {n:"Aircraft Health Monitoring (AHMS · predictive)",b:1},
+     {n:"AI / Model Drift & Retraining Governance",b:1}]},
+   {label:"CS — Customer Support & Sustainment",owner:"Customer Support",arts:[
+     {n:"Customer Support & Spares Allocation Plan",b:2},
+     {n:"Post-Implementation & Annual Portfolio Audit",b:2,c:true}]},
+   {label:"SEC — Security & Export Control",owner:"Security & Trade Compliance",arts:[
+     {n:"ITAR / EAR Export Compliance",b:2,c:true},
+     {n:"Information Security (ISO 27001 / NIST 800-171 / CMMC)",b:2}]}]},
+];
+/* ===== SE V-Model Artifact Map (ISO 15288 / INCOSE) cross-reference =====
+   Each row maps a V-Model artifact to a PLM lifecycle phase (plm), its V-Model
+   phase (vph), ISO 15288 process (iso), governing policies and the work domains
+   it applies to. These are injected below as an extra targeted group per phase. */
+const VMART=[
+ // Concept · Pre-MS A  ->  Discover
+ {vm:"CON-001",name:"Concept of Operations (ConOps)",vph:"Concept",iso:"Business / Mission Analysis",plm:"discover",b:2,c:false,policies:["Part 21/25 cert basis","PMI Portfolio"],domains:["All"]},
+ {vm:"CON-002",name:"Mission Concept Description (MCD)",vph:"Concept",iso:"Business / Mission Analysis",plm:"discover",b:2,c:false,policies:["PMI Portfolio","ISO 31000"],domains:["All"]},
+ {vm:"CON-003",name:"Capability Concept Description (CCD)",vph:"Concept",iso:"Stakeholder Needs & Requirements",plm:"discover",b:2,c:false,policies:["ARP4754B"],domains:["All"]},
+ {vm:"CON-004",name:"Initial Capabilities Document (ICD)",vph:"Concept",iso:"Business / Mission Analysis",plm:"discover",b:1,c:false,policies:["PMI Portfolio"],domains:["All"]},
+ {vm:"CON-005",name:"Technology Assessment Report (TRL)",vph:"Concept",iso:"Business / Mission Analysis",plm:"discover",b:1,c:false,policies:["ISO 31000"],domains:["MES","MRO","QI"]},
+ {vm:"CON-006",name:"Analysis of Alternatives (AoA)",vph:"Concept",iso:"System Analysis",plm:"discover",b:2,c:false,policies:["PMI Portfolio","EIA-748"],domains:["All"]},
+ // TMRR · MS A -> B  ->  Define (requirements, planning, risk)
+ {vm:"TMR-001",name:"Stakeholder Requirements Specification (StRS)",vph:"TMRR",iso:"Stakeholder Needs & Requirements",plm:"define",b:3,c:true,policies:["ARP4754B"],domains:["All"]},
+ {vm:"TMR-002",name:"System Requirements Specification (SyRS)",vph:"TMRR",iso:"System Requirements Definition",plm:"define",b:3,c:true,policies:["ARP4754B","Part 25"],domains:["All"]},
+ {vm:"TMR-006",name:"Systems Engineering Plan (SEP)",vph:"TMRR",iso:"Technical Management",plm:"define",b:2,c:false,policies:["ISO 15288","EIA-748"],domains:["All"]},
+ {vm:"TMR-007",name:"Technology Readiness Assessment (TRA)",vph:"TMRR",iso:"System Analysis",plm:"define",b:2,c:false,policies:["ISO 31000"],domains:["MES","MRO","QI"]},
+ {vm:"TMR-009",name:"MOVOI Decision Analysis Report",vph:"TMRR",iso:"System Analysis",plm:"define",b:1,c:false,policies:["ISO 31000"],domains:["All"]},
+ {vm:"TMR-010",name:"Risk Management Plan & Risk Register",vph:"TMRR",iso:"Risk Management",plm:"define",b:2,c:true,policies:["ISO 31000","EIA-748"],domains:["All"]},
+ {vm:"TMR-011",name:"Independent Technical Risk Assessment (ITRA)",vph:"TMRR",iso:"Technical Review",plm:"define",b:2,c:true,policies:["ISO 31000"],domains:["All"]},
+ // TMRR architecture + EMD · MS B -> C  ->  Design
+ {vm:"TMR-003",name:"Functional Concept Description (FCD)",vph:"TMRR",iso:"Architecture Definition",plm:"design",b:3,c:false,policies:["ARP4754B"],domains:["All"]},
+ {vm:"TMR-004",name:"Architecture Concept Description (ACD)",vph:"TMRR",iso:"Architecture Definition",plm:"design",b:3,c:true,policies:["ARP4754B"],domains:["All"]},
+ {vm:"TMR-005",name:"Interface Requirements Specification (IRS)",vph:"TMRR",iso:"Architecture Definition",plm:"design",b:3,c:true,policies:["ARP4754B","ICD control"],domains:["All"]},
+ {vm:"TMR-008",name:"STPA Loss Scenario Report",vph:"TMRR",iso:"System Analysis (Safety)",plm:"design",b:3,c:true,policies:["ARP4761A","DO-326A"],domains:["All"]},
+ {vm:"TMR-012",name:"SysML v2 Repository Baseline (RDSG digital thread)",vph:"TMRR",iso:"Architecture Definition",plm:"design",b:2,c:false,policies:["ISO 15288","RDSG"],domains:["All"]},
+ {vm:"EMD-001",name:"Physical / Product Concept Description (PCD)",vph:"EMD",iso:"Design Definition",plm:"design",b:3,c:true,policies:["ARP4754B"],domains:["All"]},
+ {vm:"EMD-002",name:"Hardware Requirements Specification (HRS)",vph:"EMD",iso:"Design Definition",plm:"design",b:2,c:false,policies:["DO-254"],domains:["MES","MRO"]},
+ {vm:"EMD-003",name:"Software Requirements Specification (SRS)",vph:"EMD",iso:"Design Definition",plm:"design",b:2,c:false,policies:["DO-178C"],domains:["MRO","QI","CS"]},
+ {vm:"EMD-004",name:"Interface Control Document (ICD)",vph:"EMD",iso:"Design Definition",plm:"design",b:3,c:true,policies:["ARP4754B"],domains:["All"]},
+ {vm:"EMD-005",name:"Algorithm Specification Document",vph:"EMD",iso:"Design Definition",plm:"design",b:2,c:false,policies:["DO-178C","AI governance"],domains:["MRO","QI"]},
+ {vm:"EMD-006",name:"Database Design Description (DDD · ontology)",vph:"EMD",iso:"Design Definition",plm:"design",b:2,c:false,policies:["ISO 27001","RDSG"],domains:["DSC","QI"]},
+ {vm:"EMD-007",name:"Hardware Design Description (HDD)",vph:"EMD",iso:"Design Definition",plm:"design",b:2,c:false,policies:["DO-254"],domains:["MES","MRO"]},
+ {vm:"EMD-008",name:"Software Design Description (SDD)",vph:"EMD",iso:"Design Definition",plm:"design",b:2,c:false,policies:["DO-178C"],domains:["MRO","QI","CS"]},
+ {vm:"EMD-011",name:"Preliminary Design Review (PDR) Package",vph:"EMD",iso:"Technical Review",plm:"design",b:3,c:true,policies:["ARP4754B","Part 25"],domains:["All"]},
+ {vm:"EMD-012",name:"Drawings, Parts Lists & Bills of Materials",vph:"EMD",iso:"Design Definition",plm:"design",b:3,c:true,policies:["AS9102","Part 21"],domains:["MES","DSC"]},
+ // EMD implementation + V&V (right upstroke)  ->  Develop
+ {vm:"EMD-009",name:"Virtual Integrated System (co-simulation model)",vph:"EMD",iso:"Implementation · Integration",plm:"develop",b:2,c:false,policies:["DO-160G"],domains:["MES","MRO"]},
+ {vm:"EMD-010",name:"Test & Evaluation Master Plan (TEMP)",vph:"EMD",iso:"Verification",plm:"develop",b:3,c:true,policies:["DO-178C","DO-254"],domains:["All"]},
+ {vm:"VV-001",name:"Hardware-in-the-Loop (HiL) Integration Plan",vph:"V&V",iso:"Integration",plm:"develop",b:2,c:false,policies:["DO-160G"],domains:["MES","MRO"]},
+ {vm:"VV-002",name:"Component / Unit Verification Reports",vph:"V&V",iso:"Verification",plm:"develop",b:2,c:false,policies:["DO-178C","DO-254"],domains:["All"]},
+ {vm:"VV-003",name:"System Integration Test Plan & Reports",vph:"V&V",iso:"Integration · Verification",plm:"develop",b:3,c:true,policies:["ARP4754B"],domains:["All"]},
+ {vm:"VV-004",name:"System Qualification Test (SQT) Plan & Reports",vph:"V&V",iso:"Verification",plm:"develop",b:3,c:true,policies:["DO-160G","Part 25"],domains:["All"]},
+ // V&V validation + certification  ->  Delivery
+ {vm:"VV-005",name:"System Validation Report",vph:"V&V",iso:"Validation",plm:"deliver",b:3,c:true,policies:["ARP4754B"],domains:["All"]},
+ {vm:"VV-006",name:"Certification Evidence Package",vph:"V&V",iso:"Verification · System Analysis",plm:"deliver",b:3,c:true,policies:["Part 21/25","DO-178C","DO-254","DO-326A","ARP4761A"],domains:["All"]},
+ // Operations & Support  ->  Run
+ {vm:"OS-001",name:"Operations & Maintenance Manual",vph:"O&S",iso:"Operation · Maintenance",plm:"run",b:2,c:false,policies:["Part 145","AFM"],domains:["CS","MRO"]},
+ {vm:"OS-002",name:"Operational Envelope Monitoring Reports",vph:"O&S",iso:"Operation · System Analysis",plm:"run",b:2,c:false,policies:["CAMP","SDD L1"],domains:["MRO","QI"]},
+ {vm:"OS-003",name:"AI Behavioral Drift Reports (MTBH / Brier)",vph:"O&S",iso:"Maintenance · System Analysis",plm:"run",b:1,c:false,policies:["AI governance","DO-326A"],domains:["MRO","QI"]},
+];
+/* inject the V-Model artifacts as one extra targeted group per phase (extends the targets) */
+(function(){const byPhase={};VMART.forEach(v=>{(byPhase[v.plm]=byPhase[v.plm]||[]).push(v);});
+  DATA.forEach(p=>{const vs=byPhase[p.key];if(!vs)return;
+    p.groups.push({label:"VM — SE V-Model · ISO 15288",owner:"Systems Engineering (RDSG digital thread)",
+      arts:vs.map(v=>({n:v.name+" ("+v.vm+")",b:v.b,c:!!v.c,vm:v.vm,iso:v.iso,vph:v.vph}))});});
+})();
+
+DATA.forEach(p=>p.groups.forEach((g,gi)=>g.arts.forEach((art,ai)=>{art.id=p.key+"."+gi+"."+ai;})));
+const APPETITES={conservative:{hi:.90,lo:.60,cov:.80,label:"Conservative",code:"C"},balanced:{hi:.85,lo:.50,cov:.60,label:"Balanced",code:"B"},lenient:{hi:.75,lo:.40,cov:.50,label:"Lenient",code:"L"}};
+
+/* ================= Portfolio state ================= */
+function findArt(pred){for(const p of DATA)for(const g of p.groups)for(const a of g.arts)if(pred(a,g,p))return a;return null;}
+function scoreByName(phaseKey,name){const p=DATA.find(x=>x.key===phaseKey);for(const g of p.groups)for(const a of g.arts)if(a.n.startsWith(name))return a.id;return null;}
+let projects=[];
+let activeProject=0;
+let overallAppetite="balanced";
+let phaseAppetite={}; DATA.forEach(p=>phaseAppetite[p.key]="balanced");
+let openTargets=new Set(DATA.map(p=>p.key));
+const meta={cycle:"FY26 Enterprise Programs Review", assessor:""};
+const AP=()=>projects[activeProject];
+const scoreOf=(art,proj)=>{const v=(proj||AP()).scores[art.id];return v===undefined?null:v;};
+
+/* ================= Compute ================= */
+function pstats(p,proj){let sumB=0,sumA=0,debt=0,gradeable=0,scored=0,hard=[];
+  p.groups.forEach(g=>g.arts.forEach(art=>{if(art.b!=null){const a0=scoreOf(art,proj);const a=(a0==null?0:a0);
+    sumB+=art.b;sumA+=a;if(art.b>0){gradeable++;if(a0!=null)scored++;}if(art.b-a>0)debt+=(art.b-a);
+    if(art.c&&art.b>0&&a0===0)hard.push({art,group:g,phase:p});}}));
+  return{sumB,sumA,debt,gradeable,scored,hard,ratio:(sumB>0?sumA/sumB:null)};}
+function overallOf(proj){let sumB=0,sumA=0,debt=0,gradeable=0,scored=0,hard=[],gaps=[],evi=[];
+  DATA.forEach(p=>{const s=pstats(p,proj);sumB+=s.sumB;sumA+=s.sumA;debt+=s.debt;gradeable+=s.gradeable;scored+=s.scored;s.hard.forEach(h=>hard.push(h));
+    p.groups.forEach(g=>g.arts.forEach(art=>{if(art.b!=null&&art.b>0){const a=scoreOf(art,proj);if(a==null)evi.push({art,group:g,phase:p});else if(art.b-a>0)gaps.push({art,group:g,phase:p,gap:art.b-a});}}));});
+  gaps.sort((x,y)=>(y.art.c-x.art.c)||(y.gap-x.gap));
+  return{sumB,sumA,debt,gradeable,scored,ratio:(sumB>0?sumA/sumB:0),cov:(gradeable>0?scored/gradeable:0),hard,gaps,evi};}
+function tier(r,appKey){const A=APPETITES[appKey];if(r==null)return"muted";if(r>=A.hi)return"go";if(r>=A.lo)return"rev";return"nogo";}
+function tierColor(r,appKey){return cvar(tier(r,appKey));}
+function cvar(t){return t==="go"?"var(--go)":t==="rev"?"var(--rev)":t==="nogo"?"var(--nogo)":"var(--muted)";}
+function cbg(t){return t==="go"?"var(--go-bg)":t==="rev"?"var(--rev-bg)":t==="nogo"?"var(--nogo-bg)":"var(--ice)";}
+function verdict(o,appKey){const A=APPETITES[appKey];
+  if(o.hard.length>0)return{tag:"NO-GO",cls:"nogo",reason:o.hard.length+" critical artifact"+(o.hard.length>1?"s":"")+" at zero — mandatory rework."};
+  if(o.ratio<A.lo)return{tag:"NO-GO",cls:"nogo",reason:"Maturity "+(o.ratio*100).toFixed(0)+"% is below the "+(A.lo*100).toFixed(0)+"% floor."};
+  if(o.ratio>=A.hi&&o.cov>=A.cov)return{tag:"GO",cls:"go",reason:"Ratio and coverage clear the "+A.label.toLowerCase()+" thresholds."};
+  if(o.cov<A.cov)return{tag:"REVIEW",cls:"rev",reason:"Coverage "+(o.cov*100).toFixed(0)+"% under "+(A.cov*100).toFixed(0)+"% — too little evidence to auto-approve."};
+  return{tag:"REVIEW",cls:"rev",reason:"Maturity "+(o.ratio*100).toFixed(0)+"% is between review and go — spot-check required."};}
+function phaseVerdict(p,proj){const s=pstats(p,proj);return verdict({...s,hard:s.hard,cov:(s.gradeable>0?s.scored/s.gradeable:0)},phaseAppetite[p.key]);}
+
+/* ================= Risk engine (multi-agent) ================= */
+function phaseWeight(p){return(p.key==="deliver"||p.key==="run")?1:0;}
+function discWeight(g){return /^(SA|CE|CB|SEC|QM|VV|CA)/.test(g.label)?1:0;}
+function bandOf(E){return E>=16?"critical":E>=10?"high":E>=5?"moderate":"low";}
+function bandColor(b){return b==="critical"?"var(--crit)":b==="high"?"var(--nogo)":b==="moderate"?"var(--rev)":"var(--go)";}
+function bandBg(b){return b==="critical"?"var(--crit-bg)":b==="high"?"var(--nogo-bg)":b==="moderate"?"var(--rev-bg)":"var(--go-bg)";}
+function impactText(art){const n=art.n.toLowerCase();
+  if(/hazard|safety|\bdal\b|pssa|fha|assurance level/.test(n))return"an unsafe condition can reach the aircraft undetected";
+  if(/type certificate|means of compliance|certificate of airworthiness|\bcoa\b|entry-into-service|certification/.test(n))return"the aircraft cannot be legally certified or delivered";
+  if(/flammab|cabin|interior|25\.853/.test(n))return"cabin materials fail flammability and interior sign-off is blocked";
+  if(/export|itar|\bear\b/.test(n))return"controlled technology is exposed to an export-control violation";
+  if(/security|do-326|do-356|iso 27001|nist|cmmc/.test(n))return"connected avionics face a cyber-airworthiness finding";
+  if(/first article|\bfai\b|as9102|as9100|nonconform|capa|hazardous substance/.test(n))return"supplier-quality escapes reach final assembly";
+  if(/flight test|verification|validation|\btrr\b|\bftrr\b|integration/.test(n))return"defects escape into flight test or into service";
+  if(/traceab|requirements|tlar|\bsrs\b|\bstrs\b/.test(n))return"requirements drift and compliance coverage cannot be proven";
+  if(/camp|service bulletin|airworthiness directive|reliab|ahms|carb|fleet/.test(n))return"in-service airworthiness issues go unmanaged across the fleet";
+  if(/schedule|evms|budget|risk register|business case|gate\b/.test(n))return"cost, schedule or gate readiness slips without early warning";
+  if(/architecture|icd|drawings|interoperab/.test(n))return"architecture gaps surface as integration failures and rework";
+  return"confidence in the program milestone is reduced";}
+function risksFor(proj){const risks=[];
+  DATA.forEach(p=>p.groups.forEach(g=>g.arts.forEach(art=>{
+    if(art.b==null||art.b===0)return;const a=scoreOf(art,proj);const assessed=a!=null;const av=assessed?a:0;const gap=art.b-av;
+    if(assessed&&gap<=0)return;
+    let L=assessed?Math.min(5,gap+2):Math.max(3,Math.min(5,art.b+1));
+    let I=Math.min(5,(art.c?4:2)+phaseWeight(p)+discWeight(g));
+    const E=L*I,band=bandOf(E);
+    risks.push({art,group:g,phase:p,a,assessed,gap:Math.max(0,gap),L,I,E,band,impact:impactText(art)});
+  })));
+  risks.sort((x,y)=>y.E-x.E);return risks;}
+
+const AGENTS=[
+ {key:"cr",name:"Concept, Requirements & Regulatory",glyph:"C",lens:"Mission analysis, TLARs, traceability and the FAA / EASA certification basis.",match:l=>/^(CD|RE|RG)/.test(l),
+   guide:(post,worst)=>post<.6?"Lock TLARs, traceability and the certification basis early — everything downstream proves compliance against these.":"Concept and requirements baseline is holding; keep traceability current as the design changes."},
+ {key:"ad",name:"Architecture & Airborne Assurance",glyph:"A",lens:"System architecture, ICDs, and DO-178C / DO-254 airborne software & hardware plans.",match:l=>/^(AD|HW)/.test(l),
+   guide:(post,worst)=>post<.5?"Freeze architecture and stand up DO-178C / DO-254 plans before build — assurance gaps compound into integration and certification failures.":"Design and airborne-assurance posture is sound; sustain ICD and interface discipline."},
+ {key:"sa",name:"Safety & Airworthiness",glyph:"S",lens:"FHA, PSSA and Development Assurance Levels per ARP4754B / ARP4761A.",match:l=>/^SA/.test(l),
+   guide:(post,worst)=>post<.7?"Complete the FHA / PSSA and assign DALs before committing hardware — an unassessed hazard is the one that reaches the aircraft.":"Safety assessment is on track; keep hazards and DALs traced to verification."},
+ {key:"ce",name:"Certification & Cabin Safety",glyph:"T",lens:"Type / Production certificates, Means of Compliance, CoA and FAR 25.853 cabin completion.",match:l=>/^(CE|CB)/.test(l),
+   guide:(post,worst)=>post<.7?"Means of Compliance and cabin-flammability sign-offs are the gate to delivery — close them before scheduling acceptance.":"Certification path is progressing; verify MoC evidence and CoA readiness per tail."},
+ {key:"mv",name:"Manufacturing, V&V & Change",glyph:"M",lens:"FAI (AS9102), flight-test readiness, integration verification and CCB change control.",match:l=>/^(MF|VV|CM)/.test(l),
+   guide:(post,worst)=>post<.6?"Prioritise FAI, integration verification and change control — these are the last line against defect escape into flight test.":"Manufacturing and verification controls are adequate; sustain FAI and change discipline."},
+ {key:"qm",name:"Quality Management",glyph:"Q",lens:"AS9100 QMS conformance, nonconformance / CAPA closure and hazardous-substance compliance.",match:l=>/^QM/.test(l),
+   guide:(post,worst)=>post<.6?"Bring AS9100 conformance and CAPA closure to target — quality escapes here surface as airworthiness findings later.":"Quality management is on track; keep CAPA cycle time down and audit findings closed."},
+ {key:"op",name:"Operations & Sustainment",glyph:"O",lens:"CAMP, CARB, fleet reliability, AHMS predictive monitoring and customer support.",match:l=>/^(CA|FR|CS|OD)/.test(l),
+   guide:(post,worst)=>post<.6?"Stand up CAMP and fleet-health monitoring before entry-into-service — continued airworthiness cannot start after delivery.":"Sustainment posture is on track; confirm spares, CAMP and support SLAs before scale."},
+ {key:"sec",name:"Security & Export Control",glyph:"K",lens:"ITAR / EAR export compliance and ISO 27001 / NIST 800-171 / CMMC information security.",match:l=>/^SEC/.test(l),
+   guide:(post,worst)=>"Confirm export classification and information-security controls; ungoverned data and dual-use technology expose the program to trade-compliance findings."},
+ {key:"pm",name:"Program & Portfolio",glyph:"P",lens:"Gate governance (G0–G4), EVMS (EIA-748), schedule / WBS and the risk register.",match:l=>/^PM/.test(l),
+   guide:(post,worst)=>post<.6?"Tighten gate readiness and EVMS baselines — cost / schedule variance detected late is the most expensive risk in the portfolio.":"Program controls are healthy; keep EVMS and gate evidence current."},
+ {key:"vm",name:"SE V-Model & Digital Thread",glyph:"V",lens:"ISO 15288 artifact completeness — ConOps → StRS → architecture → design → V&V → certification evidence.",match:l=>/^VM/.test(l),
+   guide:(post,worst)=>post<.6?"Close the V-Model artifact chain: an unwritten StRS, ACD, STPA report or certification-evidence package breaks the digital thread and the compliance trace.":"The V-Model artifact chain is largely intact; keep the RDSG digital thread traceable through verification."},
+];
+function agentOf(groupLabel){return AGENTS.find(ag=>ag.match(groupLabel))||AGENTS[AGENTS.length-1];}
+function agentPosture(ag,proj){let sB=0,sA=0;DATA.forEach(p=>p.groups.forEach(g=>{if(!ag.match(g.label))return;g.arts.forEach(art=>{if(art.b!=null){sB+=art.b;const a=scoreOf(art,proj);sA+=(a==null?0:a);}});}));return sB>0?sA/sB:null;}
+
+/* ================= SVG ================= */
+function sealSVG(ratio,tag,cls,label){const R=64,C=2*Math.PI*R,pct=Math.max(0,Math.min(1,ratio)),col=cvar(cls);
+  return `<svg width="176" height="176" viewBox="0 0 176 176" role="img" aria-label="${tag} ${(pct*100).toFixed(0)} percent">
+   <circle cx="88" cy="88" r="80" fill="none" stroke="#C8A951" stroke-width="1"/><circle cx="88" cy="88" r="74" fill="none" stroke="rgba(200,169,81,.35)"/>
+   <circle cx="88" cy="88" r="${R}" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="10"/>
+   <circle cx="88" cy="88" r="${R}" fill="none" stroke="${col}" stroke-width="10" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-pct)}" transform="rotate(-90 88 88)" style="transition:stroke-dashoffset .5s,stroke .3s"/>
+   <text x="88" y="80" text-anchor="middle" fill="#fff" style="font-family:var(--serif);font-size:23px;font-weight:600">${tag}</text>
+   <text x="88" y="104" text-anchor="middle" fill="${col}" style="font-family:var(--mono);font-size:19px;font-weight:600">${(pct*100).toFixed(0)}%</text>
+   <text x="88" y="121" text-anchor="middle" fill="#9db4d4" style="font-size:9px;letter-spacing:.12em">${label||"MATURITY"}</text></svg>`;}
+function radarSVG(proj){const cx=140,cy=130,R=95,n=DATA.length,ang=i=>(-90+i*360/n)*Math.PI/180;let rings="",spokes="",labels="";const pts=[];
+  [.25,.5,.75,1].forEach(t=>{let p=DATA.map((_,i)=>`${(cx+Math.cos(ang(i))*R*t).toFixed(1)},${(cy+Math.sin(ang(i))*R*t).toFixed(1)}`).join(" ");rings+=`<polygon points="${p}" fill="none" stroke="var(--hair)"/>`;});
+  DATA.forEach((p,i)=>{const s=pstats(p,proj);const r=(s.ratio==null?0:s.ratio);const x=cx+Math.cos(ang(i))*R,y=cy+Math.sin(ang(i))*R;
+    spokes+=`<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="var(--hair)"/>`;
+    const lx=cx+Math.cos(ang(i))*(R+16),ly=cy+Math.sin(ang(i))*(R+16),anc=Math.abs(Math.cos(ang(i)))<.3?"middle":(Math.cos(ang(i))>0?"start":"end");
+    labels+=`<text x="${lx.toFixed(1)}" y="${(ly+3).toFixed(1)}" text-anchor="${anc}" style="font-size:11px;fill:var(--muted)">${p.name}</text>`;
+    pts.push([cx+Math.cos(ang(i))*R*r,cy+Math.sin(ang(i))*R*r]);});
+  const poly=`<polygon points="${pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(" ")}" fill="rgba(18,48,90,.14)" stroke="var(--navy2)" stroke-width="2"/>`;
+  const dots=pts.map((p,i)=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.5" fill="${tierColor(pstats(DATA[i],proj).ratio,phaseAppetite[DATA[i].key])}"/>`).join("");
+  return `<svg width="280" height="270" viewBox="0 0 280 270" role="img" aria-label="Phase maturity radar">${rings}${spokes}${poly}${dots}${labels}</svg>`;}
+function gapFlag(art,proj){if(art.b==null)return `<span class="gap-flag" style="color:var(--muted);background:var(--ice)">n/a</span>`;
+  const a=scoreOf(art,proj);if(a==null)return `<span class="gap-flag" style="color:var(--muted);background:var(--ice)">No data</span>`;
+  const g=art.b-a;if(g<=0)return `<span class="gap-flag" style="color:var(--go);background:var(--go-bg)">on target</span>`;
+  const col=g>=2?"var(--nogo)":"var(--rev)",bg=g>=2?"var(--nogo-bg)":"var(--rev-bg)";return `<span class="gap-flag" style="color:${col};background:${bg}">gap −${g}</span>`;}
+function seg(scope,pi,gi,ai,art){const val=scope==="assess"?scoreOf(art):art.b;const dis=scope==="assess"&&art.b==null?" disabled":"";
+  const opts=[["—",null],["0",0],["1",1],["2",2],["3",3]];
+  const btns=opts.map(([lab,v])=>{const pressed=(val===v)||(v===null&&val==null);const s0=v===0?" s0":"";
+    return `<button type="button" class="${s0.trim()}" aria-pressed="${pressed}" data-scope="${scope}" data-p="${pi}" data-g="${gi}" data-a="${ai}" data-v="${v==null?'':v}" aria-label="Set ${lab}">${lab}</button>`;}).join("");
+  return `<div class="seg ${scope==="target"?"target":""}${dis}" role="group">${btns}</div>`;}
+function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+/* ================= Views ================= */
+function renderPortfolio(){
+  // aggregate
+  const withData=projects.filter(pr=>Object.values(pr.scores).some(v=>v!=null));
+  const ratios=withData.map(pr=>overallOf(pr).ratio);
+  const mean=ratios.length?ratios.reduce((a,b)=>a+b,0)/ratios.length:0;
+  let go=0,rev=0,nogo=0,hardTot=0;
+  projects.forEach(pr=>{const o=overallOf(pr);const has=Object.values(pr.scores).some(v=>v!=null);if(!has)return;const v=verdict(o,overallAppetite);if(v.tag==="GO")go++;else if(v.tag==="REVIEW")rev++;else nogo++;hardTot+=o.hard.length;});
+  const posture=nogo>0?"nogo":rev>go?"rev":"go";
+  const postureTag=nogo>0?"AT RISK":rev>go?"WATCH":"HEALTHY";
+  // heatmap
+  let head=`<tr><th class="proj">Project</th>${DATA.map(p=>`<th>${p.name}</th>`).join("")}<th>Overall</th></tr>`;
+  const rowFor=(pr,idx)=>{
+    const cells=DATA.map(p=>{const s=pstats(p,pr);const has=p.groups.some(g=>g.arts.some(a=>scoreOf(a,pr)!=null));
+      if(s.sumB===0||!has)return `<td><div class="pcell empty">—</div></td>`;
+      const t=tier(s.ratio,phaseAppetite[p.key]);return `<td><div class="pcell" style="background:${cbg(t)};color:${cvar(t)};border-color:${cvar(t)}">${(s.ratio*100).toFixed(0)}%</div></td>`;}).join("");
+    const o=overallOf(pr);const has=Object.values(pr.scores).some(v=>v!=null);
+    const ov=has?`<div class="pcell" style="background:${cbg(tier(o.ratio,overallAppetite))};color:${cvar(tier(o.ratio,overallAppetite))};border-color:${cvar(tier(o.ratio,overallAppetite))}">${(o.ratio*100).toFixed(0)}%</div>`:`<div class="pcell empty">—</div>`;
+    const v=has?verdict(o,overallAppetite):{tag:"NO DATA",cls:"muted"};
+    return `<tr><td class="proj" style="padding-left:14px"><button class="projrow" data-selproj="${idx}"><span class="dot" style="background:${cvar(v.cls==="muted"?"muted":v.cls)}"></span><span class="pname">${esc(pr.name)}</span><span class="pverd" style="background:${cbg(v.cls==="muted"?"muted":v.cls)};color:${cvar(v.cls==="muted"?"muted":v.cls)}">${v.tag}</span></button></td>${cells}<td>${ov}</td></tr>`;
+  };
+  const ports=[...new Set(projects.map(p=>p.portfolio||"Ungrouped"))];
+  let rows=ports.map(port=>{
+    const idxs=projects.map((p,i)=>[p,i]).filter(pair=>(pair[0].portfolio||"Ungrouped")===port);
+    const withd=idxs.map(pair=>pair[0]).filter(pr=>Object.values(pr.scores).some(v=>v!=null));
+    const phaseCells=DATA.map(p=>{const rs=withd.map(pr=>pstats(p,pr)).filter(s=>s.sumB>0&&s.ratio!=null);
+      if(!rs.length)return `<td><div class="pcell empty">—</div></td>`;
+      const m=rs.reduce((a,s)=>a+s.ratio,0)/rs.length;const t=tier(m,phaseAppetite[p.key]);
+      return `<td><div class="pcell" style="background:${cbg(t)};color:${cvar(t)};border-color:${cvar(t)};font-weight:700">${(m*100).toFixed(0)}%</div></td>`;}).join("");
+    const ovs=withd.map(pr=>overallOf(pr).ratio);const m=ovs.length?ovs.reduce((a,b)=>a+b,0)/ovs.length:null;
+    const ovc=m!=null?`<div class="pcell" style="background:${cbg(tier(m,overallAppetite))};color:${cvar(tier(m,overallAppetite))};font-weight:700">${(m*100).toFixed(0)}%</div>`:`<div class="pcell empty">—</div>`;
+    const gh=`<tr><td class="proj" style="background:var(--navy);border-radius:6px 0 0 6px"><span style="font-family:var(--serif);font-size:14px;color:#fff">${esc(port)}</span> <span style="font-family:var(--mono);font-size:11px;color:#9db4d4">${idxs.length}</span></td>${phaseCells}<td>${ovc}</td></tr>`;
+    return gh+idxs.map(pair=>rowFor(pair[0],pair[1])).join("");
+  }).join("");
+  return `<section class="band"><div class="wrap pf-head">
+     <div class="seal-holder">${sealSVG(mean,postureTag,posture,"PORTFOLIO")}
+       <div class="appetite" role="group" aria-label="Portfolio appetite">${["conservative","balanced","lenient"].map(k=>`<button data-app="${k}" aria-pressed="${overallAppetite===k}">${APPETITES[k].label}</button>`).join("")}</div>
+     </div>
+     <div class="det-copy"><div class="eyebrow">Portfolio posture</div>
+       <h1>${go} Go · ${rev} Review · ${nogo} No-Go across the portfolio</h1>
+       <p class="lede">Mean maturity across projects with data, scored against shared targets. Each phase carries its own risk appetite; the overall verdict uses the portfolio appetite above. Select a project to drill in.</p>
+       <div class="metrics">
+         <div class="metric"><div class="v">${(mean*100).toFixed(0)}%</div><div class="l">Mean maturity</div></div>
+         <div class="metric"><div class="v">${withData.length}/${projects.length}</div><div class="l">Projects with data</div></div>
+         <div class="metric"><div class="v">${hardTot}</div><div class="l">Hard-gate trips</div></div>
+       </div></div></div></section>
+   <main><div class="wrap">
+     <div class="card" style="margin-bottom:20px"><h3>Portfolio maturity by phase</h3><div class="hint">Cell = Σ assessment ÷ Σ target for that project &amp; phase, coloured by the phase's own appetite. Click a project to open it.</div>
+       <div class="heatwrap"><table class="heat">${head}${rows}</table></div></div>
+     <div class="toolbar"><button class="btn primary" data-nav="#/project">Open active project ›</button><button class="btn" data-nav="#/risk">Portfolio risk ›</button><button class="btn" id="btnExport">Export JSON</button><button class="btn" id="btnImport">Import JSON</button><button class="btn" id="btnCsv">Export CSV</button><input type="file" id="fileInput" accept="application/json" style="display:none"></div>
+   </div></main>`;
+}
+function tile(p,proj){const s=pstats(p,proj),app=phaseAppetite[p.key],t=tier(s.ratio,app),col=cvar(t),w=s.ratio==null?0:Math.min(100,s.ratio*100);
+  const arts=p.groups.reduce((a,g)=>a+g.arts.filter(x=>x.b!=null).length,0);
+  return `<button class="tile" data-nav="#/phase/${p.key}">
+    <div class="tile-top"><span class="phase-id">${p.id}</span><span class="dot" style="background:${col}"></span></div>
+    <div class="tile-name">${p.name}</div>
+    <div class="tile-meta">${arts} artifacts · ${s.debt} debt${s.hard.length?` · <b style="color:var(--nogo)">${s.hard.length} hard</b>`:''} <span class="appmini">${APPETITES[app].code}</span></div>
+    <div class="aggbar"><span style="width:${w}%;background:${col}"></span></div>
+    <div class="tile-ratio" style="color:${col}">${s.ratio==null?'n/a':(s.ratio*100).toFixed(0)+'%'}<small>vs target</small></div></button>`;}
+function renderProject(){const proj=AP();const o=overallOf(proj);const v=verdict(o,overallAppetite);
+  return `<section class="band"><div class="wrap det-grid">
+     <div class="seal-holder">${sealSVG(o.ratio,v.tag,v.cls)}
+       <div class="appetite" role="group" aria-label="Project appetite">${["conservative","balanced","lenient"].map(k=>`<button data-app="${k}" aria-pressed="${overallAppetite===k}">${APPETITES[k].label}</button>`).join("")}</div></div>
+     <div class="det-copy"><div class="eyebrow">${esc(proj.name)} · release determination</div>
+       <h1>${v.tag==="GO"?"Cleared for release":v.tag==="REVIEW"?"Hold for human review":"Blocked — return for rework"}</h1>
+       <p class="lede">Each artifact is assessed 0–3 against its shared maturity target. Shortfalls are capability gaps; a gap on a critical artifact trips a hard gate and forces human review.</p>
+       <div class="verdict-line"><span class="tag" style="background:${cbg(v.cls)};color:${cvar(v.cls)}">${v.tag}</span><span class="verdict-reason">${v.reason}</span></div>
+       <div class="metrics">
+         <div class="metric"><div class="v">${(o.ratio*100).toFixed(0)}%</div><div class="l">Maturity ratio</div></div>
+         <div class="metric"><div class="v">${o.debt}</div><div class="l">Debt points</div></div>
+         <div class="metric"><div class="v">${o.hard.length}</div><div class="l">Hard-gate trips</div></div>
+         <div class="metric"><div class="v">${(o.cov*100).toFixed(0)}%</div><div class="l">Evidence coverage</div></div>
+       </div></div></div></section>
+   <main><div class="wrap">
+     <div class="guidance"><h2>How to run an assessment</h2><div class="steps">
+       <div class="step"><div class="num">1</div><div><div class="st">Set shared targets</div><div class="sd">In Targets, set expected maturity per artifact and each phase's appetite. Targets apply to every project.</div></div></div>
+       <div class="step"><div class="num">2</div><div><div class="st">Score this project</div><div class="sd">Open a phase and assess each artifact 0–3 for ${esc(proj.name)}.</div></div></div>
+       <div class="step"><div class="num">3</div><div><div class="st">Read gate &amp; risk</div><div class="sd">The seal turns Go / Review / No-Go; the Risk screen explains what proceeding unmitigated would cost.</div></div></div>
+     </div></div>
+     <div class="home-grid">
+       <div class="tiles">${DATA.map(p=>tile(p,proj)).join("")}</div>
+       <aside class="home-side">
+         <div class="card"><h3>Phase maturity</h3><div class="hint">Σ assessment ÷ Σ target · coloured by each phase's appetite.</div><div class="radar-wrap">${radarSVG(proj)}</div></div>
+         <div class="card"><h3>Review packet <span class="count-pill">${o.hard.length+o.gaps.length+o.evi.length}</span></h3><div class="hint">Routed to discipline owners.</div>${packetHTML(o)}</div>
+       </aside></div></div></main>`;}
+function packetHTML(o){if(o.hard.length+o.gaps.length+o.evi.length===0)return `<div class="packet-empty">No open items. Every targeted artifact is assessed and on target.</div>`;
+  let html="";o.hard.forEach(h=>html+=`<div class="pk hard"><div class="pk-t">Hard gate · ${h.art.n}</div><div class="pk-m"><span class="pk-mono">${h.phase.id} ${h.phase.name}</span> · 0 vs target ${h.art.b}. <span class="own">${h.group.owner}.</span></div></div>`);
+  o.gaps.slice(0,6).forEach(g=>html+=`<div class="pk gap"><div class="pk-t">${g.art.c?'Critical gap':'Capability gap'} · ${g.art.n}</div><div class="pk-m"><span class="pk-mono">${g.phase.name} · ${g.art.a}→${g.art.b}</span> (−${g.gap}). <span class="own">${g.group.owner}.</span></div></div>`);
+  if(o.gaps.length>6)html+=`<div class="pk-m" style="padding-left:12px">+${o.gaps.length-6} more gaps…</div>`;
+  if(o.evi.length)html+=`<div class="pk evi"><div class="pk-t">Evidence gap · ${o.evi.length} unassessed</div><div class="pk-m">Unscored targeted artifacts count as debt until assessed.</div></div>`;
+  return html;}
+function threshBar(ratio,appKey){const A=APPETITES[appKey];const pct=ratio==null?0:Math.min(100,ratio*100);const t=tier(ratio,appKey);
+  return `<div class="threshbar"><div class="fill" style="width:${pct}%;background:${cvar(t)}"></div>
+    <div class="tick lo" style="left:${A.lo*100}%"></div><div class="tick hi" style="left:${A.hi*100}%"></div>
+    <span class="tk-label" style="left:${A.lo*100}%">${(A.lo*100).toFixed(0)}</span><span class="tk-label" style="left:${A.hi*100}%">${(A.hi*100).toFixed(0)}</span></div>`;}
+function renderPhase(key){const pi=DATA.findIndex(p=>p.key===key);if(pi<0)return renderProject();const p=DATA[pi];const proj=AP();const s=pstats(p,proj);
+  const app=phaseAppetite[p.key];const v=phaseVerdict(p,proj);const t=tier(s.ratio,app);
+  const prev=DATA[(pi-1+DATA.length)%DATA.length],next=DATA[(pi+1)%DATA.length];
+  let body="";p.groups.forEach((g,gi)=>{let rows="";g.arts.forEach((art,ai)=>{rows+=`<div class="art">
+      <div class="art-name">${art.n}${art.vm?'<span class="vmref">'+art.vm+' · '+esc(art.iso)+'</span>':''}${art.c?'<span class="crit">critical</span>':''}${art.b==null?'<span class="nb">not targeted</span>':''}</div>
+      <div class="baseline">target <b>${art.b==null?'—':art.b}</b></div>
+      <div class="rightcell">${gapFlag(art,proj)} ${seg("assess",pi,gi,ai,art)}</div></div>`;});
+    body+=`<div class="group"><div class="group-label">${g.label}<span class="owner">· owner: ${g.owner}</span></div>${rows}</div>`;});
+  const hard=s.hard.length?`<div class="hardbanner"><b>${s.hard.length} hard-gate trip${s.hard.length>1?"s":""}.</b> ${s.hard.map(h=>h.art.n).join(", ")} scored 0 against target — forces No-Go until reworked.</div>`:"";
+  return `<div class="statusbar"><div class="wrap"><button class="backlink" data-nav="#/project">‹ ${esc(proj.name)}</button>
+      <div class="sb-title"><span class="phase-id">${p.id}</span> ${p.name}</div><div class="sb-spacer"></div>
+      <span class="sb-chip" style="background:${cbg(t)};color:${cvar(t)}">${v.tag} · ${s.ratio==null?'n/a':(s.ratio*100).toFixed(0)+'%'}</span>
+      <div class="prevnext"><button data-nav="#/phase/${prev.key}">‹ ${prev.name}</button><button data-nav="#/phase/${next.key}">${next.name} ›</button></div></div></div>
+    <main><div class="wrap phasewrap">
+      <div class="appstrip"><span class="lbl">Phase appetite</span>
+        <div class="segapp" role="group" aria-label="Phase appetite">${["conservative","balanced","lenient"].map(k=>`<button data-phaseapp="${p.key}" data-app="${k}" aria-pressed="${app===k}">${APPETITES[k].label}</button>`).join("")}</div>
+        ${threshBar(s.ratio,app)}
+        <span class="sb-chip" style="background:${cbg(t)};color:${cvar(t)}">${s.ratio==null?'n/a':(s.ratio*100).toFixed(0)+'% vs cumulative target'}</span></div>
+      ${hard}<div class="panel">${body}</div>
+      <div class="toolbar"><button class="btn" data-nav="#/risk">See risk for this project ›</button><button class="btn" data-nav="#/targets">Adjust targets ›</button></div>
+    </div></main>`;}
+function renderTargets(){let blocks="";DATA.forEach((p,pi)=>{const s=pstats(p,AP());let rows="";
+    p.groups.forEach((g,gi)=>{let arts="";g.arts.forEach((art,ai)=>{arts+=`<div class="tart">
+      <div class="art-name">${art.n}${art.c?'<span class="crit">critical</span>':''}</div>
+      <div class="cur">${esc(AP().name)}: ${scoreOf(art)==null?'—':scoreOf(art)}</div>
+      <div class="rightcell"><span class="seg-cap">target</span>${seg("target",pi,gi,ai,art)}</div></div>`;});
+      rows+=`<div class="group"><div class="group-label">${g.label}<span class="owner">· owner: ${g.owner}</span></div>${arts}</div>`;});
+    const open=openTargets.has(p.key),app=phaseAppetite[p.key];
+    blocks+=`<div class="tphase"><div class="tphase-head"><span class="phase-id">${p.id}</span><span class="tphase-name">${p.name}</span>
+      <span class="tphase-read">Σ target ${s.sumB}</span>
+      <div class="segapp" role="group" aria-label="Phase appetite">${["conservative","balanced","lenient"].map(k=>`<button data-phaseapp="${p.key}" data-app="${k}" aria-pressed="${app===k}">${APPETITES[k].code}</button>`).join("")}</div>
+      <div class="bulk"><button data-bulk="set" data-phase="${pi}" data-val="1">All→1</button><button data-bulk="set" data-phase="${pi}" data-val="2">All→2</button><button data-bulk="set" data-phase="${pi}" data-val="3">All→3</button><button data-bulk="inc" data-phase="${pi}">+1</button><button data-bulk="dec" data-phase="${pi}">−1</button><button data-toggletgt="${p.key}">${open?'Hide':'Show'}</button></div>
+      </div>${open?rows:""}</div>`;});
+  return `<div class="statusbar"><div class="wrap"><button class="backlink" data-nav="#/project">‹ Project</button><div class="sb-title">Manage targets &amp; appetite</div></div></div>
+    <main><div class="wrap"><div class="targets-intro"><h2>Set the bar, the appetite, and raise it in waves</h2>
+      <p>Targets are the expected maturity (0–3) per artifact and are shared across every project in the portfolio. Each phase's appetite (C / B / L) sets how strict its Go/Review/No-Go bands are against cumulative targets.</p>
+      <p>Lowering a target relaxes the bar and lifts the ratio; raising it exposes more gap. Bulk actions apply to already-targeted artifacts; set a “—” to bring one into scope.</p>
+      <div class="wavebar"><span class="wl">Apply a maturity wave to every phase:</span><button class="btn" data-wave="1">Foundational (1)</button><button class="btn" data-wave="2">Managed (2)</button><button class="btn" data-wave="3">Optimized (3)</button></div></div>
+      ${blocks}</div></main>`;}
+function renderRisk(){const proj=AP();const o=overallOf(proj);const risks=risksFor(proj);
+  const counts={critical:0,high:0,moderate:0,low:0};risks.forEach(r=>counts[r.band]++);
+  const proceed=risks.filter(r=>r.band==="critical"||r.band==="high").slice(0,6);
+  // phase roll-up
+  const phaseRoll=DATA.map(p=>{const pr=risks.filter(r=>r.phase.key===p.key);const E=pr.reduce((a,b)=>a+b.E,0);return{p,E,n:pr.length,top:pr[0]};}).filter(x=>x.n>0).sort((a,b)=>b.E-a.E);
+  // agents
+  let agentCards="";AGENTS.forEach(ag=>{const post=agentPosture(ag,proj);const ar=risks.filter(r=>ag.match(r.group.label));
+    const pcol=cvar(tier(post,"balanced"));const worst=ar[0];
+    let findings=ar.slice(0,4).map(r=>`<div class="finding"><div class="finding-top">
+        <span class="eband" style="background:${bandBg(r.band)};color:${bandColor(r.band)}">${r.band}</span>
+        <span class="finding-t">${r.art.n}</span><span class="finding-src">${r.phase.name}${r.art.c?' · critical':''}</span></div>
+      <div class="li-row"><span>assessed <span class="mono">${r.assessed?r.a:'—'}</span> / target <span class="mono">${r.art.b}</span></span><span>likelihood <span class="mono">${r.L}/5</span> × impact <span class="mono">${r.I}/5</span> = exposure <span class="mono">${r.E}</span></span></div>
+      <div class="impact">If you proceed unmitigated: <b>${r.impact}</b>.</div>
+      <div class="explain">${r.assessed?`Scored ${r.a} against a target of ${r.art.b} (gap ${r.gap}).`:`Not yet assessed against a target of ${r.art.b}; unknown state is treated as unmitigated risk.`} Likelihood rises with the gap; impact rises because this is ${r.art.c?'a critical':'a standard'} artifact${phaseWeight(r.phase)?' in a release-facing phase':''}. Recommended: raise toward target and re-assess. <span class="own">Owner: ${r.group.owner}.</span></div></div>`).join("");
+    if(ar.length===0)findings=`<div class="finding"><div class="impact" style="color:var(--go)">No open risks in this lens for ${esc(proj.name)}.</div></div>`;
+    const more=ar.length>4?`<div class="moretxt">+${ar.length-4} more findings in this lens.</div>`:"";
+    agentCards+=`<div class="agent"><div class="agent-head"><div class="agent-badge">${ag.glyph}</div>
+      <div><div class="agent-name">${ag.name}</div><div class="agent-lens">${ag.lens}</div></div>
+      <div class="agent-posture"><div class="aggbar" style="flex:1"><span style="width:${post==null?0:Math.min(100,post*100)}%;background:${pcol}"></span></div><span class="finding-src" style="color:${pcol}">${post==null?'n/a':(post*100).toFixed(0)+'%'}</span></div></div>
+      <div class="agent-body">${findings}${more}</div>
+      <div class="agent-guide"><b>Guidance.</b> ${ag.guide(post==null?0:post,worst)}</div></div>`;});
+  const posture=counts.critical>0?"critical":counts.high>0?"high":counts.moderate>0?"moderate":"low";
+  return `<div class="statusbar"><div class="wrap"><button class="backlink" data-nav="#/project">‹ ${esc(proj.name)}</button><div class="sb-title">Risk assessment · ${esc(proj.name)}</div>
+      <div class="sb-spacer"></div><span class="sb-chip" style="background:${bandBg(posture)};color:${bandColor(posture)}">${posture.toUpperCase()} exposure</span></div></div>
+    <main><div class="wrap">
+      <div class="agentnote">Assessment agents are <b>deterministic, rule-based advisors</b> — the in-browser proxy for the skill-library evaluators. Each rates likelihood × impact (1–5) and explains the consequence of proceeding unmitigated. Ratings are decision support, not a guarantee.</div>
+      <div class="riskhead">
+        <div class="proceed"><h3>If you proceed now</h3>
+          <div class="big">${proceed.length? `${proceed.length} high or critical risk${proceed.length>1?"s":""} would ship unmitigated on ${esc(proj.name)}:`:`No high or critical risks are open for ${esc(proj.name)} at the current scoring.`}</div>
+          ${proceed.length?`<ul>${proceed.map(r=>`<li><b>${r.art.n}</b> (${r.phase.name}) — ${r.impact}.</li>`).join("")}</ul>`:""}</div>
+        <div class="card"><h3>Exposure profile</h3><div class="hint">Count of open risks by band across all phases.</div>
+          <div class="bandgrid">
+            <div class="bandbox" style="background:var(--crit-bg)"><div class="n" style="color:var(--crit)">${counts.critical}</div><div class="l" style="color:var(--crit)">Critical</div></div>
+            <div class="bandbox" style="background:var(--nogo-bg)"><div class="n" style="color:var(--nogo)">${counts.high}</div><div class="l" style="color:var(--nogo)">High</div></div>
+            <div class="bandbox" style="background:var(--rev-bg)"><div class="n" style="color:var(--rev)">${counts.moderate}</div><div class="l" style="color:var(--rev)">Moderate</div></div>
+            <div class="bandbox" style="background:var(--go-bg)"><div class="n" style="color:var(--go)">${counts.low}</div><div class="l" style="color:var(--go)">Low</div></div>
+          </div>
+          <div class="hint" style="margin:12px 0 0">Phase exposure (Σ likelihood×impact): ${phaseRoll.map(x=>`<b>${x.p.name}</b> ${x.E}`).join(" · ")||"none"}.</div>
+        </div></div>
+      ${agentCards}
+    </div></main>`;}
+
+/* ================= SEBoK discipline compliance ================= */
+const DISC=[
+ ["CD","Concept Definition","SEBoK · Concept Definition"],
+ ["RE","Requirements & System Definition","SEBoK · System Definition"],
+ ["RG","Regulatory Strategy","SEBoK · SE Standards & Regulation"],
+ ["AD","Architecture & Design","SEBoK · System Definition — Architecture"],
+ ["HW","Software & Hardware Assurance","SEBoK · System Realization — Assurance"],
+ ["SA","Safety & Airworthiness","SEBoK · Systems Safety & Reliability"],
+ ["MF","Manufacturing & Realization","SEBoK · System Realization"],
+ ["VV","Verification & Validation","SEBoK · System V&V"],
+ ["CM","Configuration & Change","SEBoK · SE Management — Configuration"],
+ ["QM","Quality Management","SEBoK · Quality Management"],
+ ["CE","Certification & Airworthiness","SEBoK · SE Standards — Certification"],
+ ["CB","Cabin & Interior Safety","SEBoK · Systems Safety"],
+ ["OD","Operational Documentation","SEBoK · Product & Service Life Mgmt"],
+ ["CA","Continued Airworthiness","SEBoK · Service Life Management"],
+ ["FR","Fleet Reliability & Predictive","SEBoK · Reliability & Availability"],
+ ["CS","Customer Support & Sustainment","SEBoK · System Deployment & Use"],
+ ["SEC","Security & Export Control","SEBoK · Systems Security & Info Assurance"],
+ ["PM","Program & Portfolio","SEBoK · SE Management — Planning"],
+ ["VM","SE V-Model / Digital Thread","SEBoK · SE Process & ISO 15288"],
+];
+function discAgg(pre,proj){let sB=0,sA=0,grad=0,scored=0,gap=0,hard=0;
+  DATA.forEach(p=>p.groups.forEach(g=>{if(!g.label.startsWith(pre+" "))return;g.arts.forEach(a=>{if(a.b==null)return;
+    const v=scoreOf(a,proj);const av=v==null?0:v;sB+=a.b;sA+=av;if(a.b>0){grad++;if(v!=null)scored++;}if(a.b-av>0)gap+=(a.b-av);if(a.c&&a.b>0&&v===0)hard++;});}));
+  return{ratio:sB?sA/sB:null,cov:grad?scored/grad:0,gap,hard,grad};}
+function renderDisciplines(){const proj=AP();
+  const rows=DISC.map(([pre,nm,area])=>({pre,nm,area,a:discAgg(pre,proj)})).filter(x=>x.a.grad>0);
+  rows.sort((x,y)=>((x.a.ratio==null?1:x.a.ratio)-(y.a.ratio==null?1:y.a.ratio)));
+  const bar=x=>{const r=x.a.ratio,t=tier(r,"balanced"),col=cvar(t),w=r==null?0:Math.min(100,r*100);
+    return `<div class="drow">
+      <div class="dname"><span class="dpre">${x.pre}</span>${x.nm}<span class="darea">${x.area}</span></div>
+      <div class="dbar"><span style="width:${w}%;background:${col}"></span></div>
+      <div class="dpct" style="color:${col}">${r==null?'n/a':(r*100).toFixed(0)+'%'}</div>
+      <div class="dmeta">${x.a.hard?`<b style="color:var(--nogo)">${x.a.hard} hard</b> · `:''}gap ${x.a.gap} · cov ${(x.a.cov*100).toFixed(0)}%</div></div>`;};
+  const worst=rows.slice(0,3).map(x=>x.nm).join(", ");
+  return `<div class="statusbar"><div class="wrap"><button class="backlink" data-nav="#/project">‹ ${esc(proj.name)}</button><div class="sb-title">SEBoK discipline compliance · ${esc(proj.name)}</div></div></div>
+    <main><div class="wrap"><div class="targets-intro"><h2>Compliance by SEBoK discipline lens</h2>
+      <p>Every artifact — including the SE V-Model / ISO 15288 items — rolls up to a SEBoK-aligned discipline. The bar is Σ assessment ÷ Σ target for that discipline across all six lifecycle phases, coloured by the balanced Go / Review / No-Go bands. Disciplines are ordered weakest-first, so the biggest compliance gaps surface at the top. A <b style="color:var(--nogo)">hard</b> flag means a critical artifact in that discipline sits at zero — a mandatory-rework trip.</p>
+      ${worst?`<p class="lede" style="margin-top:6px">Weakest lenses for ${esc(proj.name)}: <b>${worst}</b>.</p>`:""}</div>
+      <div class="card">${rows.map(bar).join("")}</div>
+      <div class="toolbar"><button class="btn" data-nav="#/risk">See risk detail ›</button><button class="btn" data-nav="#/refs">Policy X-Ref ›</button></div>
+    </div></main>`;}
+
+/* ================= Policy X-Ref (V-Model -> policies & domains) ================= */
+let xrefFilter="all";
+const DOMAINS=[["all","All"],["DSC","Digital Supply Chain"],["MES","Shop Floor & MES"],["MRO","MRO & Predictive"],["ODR","On-Demand Repair"],["QI","Quality Intelligence"],["CS","Customer Support"]];
+const VPH_ORDER=[["Concept","Concept · Pre-MS A","Discover"],["TMRR","TMRR · MS A → B","Define / Design"],["EMD","EMD · MS B → C","Design / Develop"],["V&V","Verification & Validation","Develop / Delivery"],["O&S","Operations & Support","Run"]];
+const PLM_NAME={discover:"Discover",define:"Define",design:"Design",develop:"Develop",deliver:"Delivery",run:"Run"};
+function renderRefs(){
+  const domMatch=v=>xrefFilter==="all"||v.domains.includes("All")||v.domains.includes(xrefFilter);
+  const cards=[
+   ["Gulfstream MFG · Digital Factory Roadmap","Gulfstream_MFG_Digital_Factory_Roadmap.html","Five-phase transformation, seven-layer semantic stack, four-fold governance and the FAA / EASA-governed digital thread this assessment maps onto.","html"],
+   ["SE V-Model Artifact Map","vmodel_artifact_map.html","ISO 15288 / INCOSE lifecycle artifacts — the 39 items cross-referenced below and now embedded as targets in every phase.","html"],
+   ["Aircraft Manufacturing Policies","Aircraft_Manufacturing_Policies.pdf","Master list of airworthiness, systems-safety, quality, portfolio, cyber / export and sustainability standards, plus the governance review boards.","pdf"],
+   ["Policy Cross-Reference — Lifecycle","Policy_Cross_reference_for_an_aircraft_manufacturer.pdf","Required artifacts and mandatory review gates for each lifecycle phase, Discover through Run.","pdf"],
+   ["Policy Cross-Reference — Portfolios → PLM","Policy_Cross-Reference_of_Portfolios_to_PLM_for_Aircraft_Mfg.pdf","The six work portfolios mapped to phase artifacts and gates — the source for the projects in this dashboard.","pdf"],
+  ];
+  const pmap=VPH_ORDER.map(([k,full,plm])=>`<div class="pm"><b>${full}</b><span class="arr">→</span>${plm}</div>`).join("");
+  const filters=DOMAINS.map(([k,lab])=>`<button data-xref="${k}" aria-pressed="${xrefFilter===k}">${lab}</button>`).join("");
+  let tbody="";
+  VPH_ORDER.forEach(([k,full])=>{const rows=VMART.filter(v=>v.vph===k&&domMatch(v));if(!rows.length)return;
+    tbody+=`<tr class="vph"><td colspan="6">${full}</td></tr>`;
+    rows.forEach(v=>{tbody+=`<tr>
+      <td><span class="vmid">${v.vm}</span></td>
+      <td>${v.name}</td>
+      <td>${PLM_NAME[v.plm]}${v.c?' <span class="crit">critical</span>':''}</td>
+      <td>${v.iso}</td>
+      <td>${v.policies.map(p=>`<span class="pchip">${p}</span>`).join("")}</td>
+      <td>${v.domains.map(d=>`<span class="dchip ${d==="All"?"all":""}">${d}</span>`).join("")}</td></tr>`;});});
+  const shown=VMART.filter(domMatch).length;
+  return `<div class="statusbar"><div class="wrap"><button class="backlink" data-nav="#/portfolio">‹ Portfolio</button><div class="sb-title">Policy X-Ref · SE V-Model → policies &amp; domains</div></div></div>
+   <main><div class="wrap">
+    <div class="card" style="margin-bottom:20px"><h3>V-Model phase → PLM lifecycle</h3><div class="hint">The five ISO 15288 / DoD-AAF V-Model phases map onto the six PLM lifecycle phases assessed in this dashboard. Every V-Model artifact below is now a scored target inside its phase.</div>
+      <div class="pmap">${pmap}</div></div>
+    <div class="card" style="margin-bottom:20px"><h3>Cross-reference — artifact · phase · policy · domain</h3>
+      <div class="hint">Each SE V-Model artifact mapped to its PLM phase, ISO 15288 process, governing policies and the work domains it applies to. Filter by domain to see which portfolios each artifact serves.</div>
+      <div class="xfil" role="group" aria-label="Filter by domain">${filters}</div>
+      <div class="xwrap"><table class="xreftable"><tr><th>V-Model</th><th>Artifact</th><th>PLM phase</th><th>ISO 15288 process</th><th>Governing policies</th><th>Domains</th></tr>${tbody}</table></div>
+      <div class="hint" style="margin-top:10px">${shown} of ${VMART.length} V-Model artifacts shown${xrefFilter==="all"?"":" for "+DOMAINS.find(d=>d[0]===xrefFilter)[1]}. <span class="dchip all">All</span> = program-wide.</div></div>
+    <div class="card" style="margin-bottom:20px"><h3>Reference deliverables</h3><div class="hint">Companion artifacts this assessment is grounded in. Keep them in the same folder as this dashboard so the links resolve on the site.</div>
+      <div class="refgrid">${cards.map(([t,href,d,kd])=>`<a class="refcard" href="${href}" target="_blank" rel="noopener"><span class="rk ${kd}">${kd==='pdf'?'PDF':'HTML'}</span><span class="rt">${t}</span><span class="rd">${d}</span></a>`).join("")}</div></div>
+    <div class="card"><h3>Standards & governance catalog</h3><div class="hint">The compliance ecosystem for private-jet portfolio management, from the Aircraft Manufacturing Policies reference. Taxonomy artifacts cite these standards inline.</div>
+      <table class="stdtable"><tr><th>Domain</th><th>Key standards & reviews</th></tr>${[
+        ["Airworthiness & type certification","14 CFR / EASA CS-23 · CS-25 · Part 21 (DOA / POA) · Part 145 · FAR 25.853"],
+        ["Systems, safety & technical","ARP4754B / ED-79B · ARP4761A / ED-135 · DO-178C · DO-254 · DO-160G"],
+        ["Quality, supply chain & operations","AS9100D · AS9102 (FAI) · AS9110 / AS9120 · ISO 9001 · ISO 45001"],
+        ["Portfolio, program & financial","PMI Portfolio / PMBOK · ANSI/EIA-748 (EVMS) · ISO 31000 · ISO 21500 · MSP"],
+        ["Cybersecurity, information & export","DO-326A / DO-356A · ISO 27001 · NIST SP 800-171 · CMMC · ITAR / EAR"],
+        ["Sustainability & environmental","ICAO Annex 16 (I–III) · REACH · RoHS · TSCA · ISO 14001 · ISO 14064"],
+        ["Governance reviews & gates","Portfolio Investment Committee · Stage-Gate G0–G5 · CRB · CCB · Risk & Quality boards · EVM reviews"],
+      ].map(([d,s])=>`<tr><td>${d}</td><td>${s}</td></tr>`).join("")}</table>
+      <p class="refnote" style="margin-top:14px">The V-Model artifacts inherit the systems-engineering lineage of the <b>SE V-Model Artifact Map</b> (ISO 15288 · INCOSE · DoD AAF) and are governed by the <b>RDSG digital thread</b>. Their PLM phase placement follows the <b>Policy Cross-Reference — Lifecycle</b>, the domain mapping follows the <b>Portfolios → PLM</b> cross-reference, and the whole assessment forms the governance layer of the <b>Gulfstream Digital Factory Roadmap</b>.</p></div>
+   </div></main>`;}
+
+/* ================= Router ================= */
+function parseHash(){const h=location.hash.replace(/^#\/?/,""),parts=h.split("/");
+  if(parts[0]==="phase"&&parts[1])return{name:"phase",param:parts[1]};
+  if(["project","targets","risk","disciplines","refs"].includes(parts[0]))return{name:parts[0]};
+  return{name:"portfolio"};}
+let pendingScroll=null;
+function render(){const v=parseHash(),host=document.getElementById("view");
+  host.innerHTML=v.name==="phase"?renderPhase(v.param):v.name==="project"?renderProject():v.name==="targets"?renderTargets():v.name==="risk"?renderRisk():v.name==="disciplines"?renderDisciplines():v.name==="refs"?renderRefs():renderPortfolio();
+  document.querySelectorAll(".navbtn").forEach(b=>b.classList.toggle("active",b.dataset.nav==="#/"+(v.name==="phase"?"project":v.name)));
+  buildProjSel();
+  if(pendingScroll!=null){window.scrollTo(0,pendingScroll);pendingScroll=null;}else window.scrollTo(0,0);}
+function navigate(hash){if(location.hash===hash)render();else location.hash=hash;}
+window.addEventListener("hashchange",render);
+function rerender(){pendingScroll=window.scrollY;render();}
+function buildProjSel(){const sel=document.getElementById("projSel");if(!sel)return;sel.innerHTML=projects.map((p,i)=>`<option value="${i}" ${i===activeProject?"selected":""}>${esc((p.portfolio?p.portfolio.replace(/ Operations$/,'')+" · ":"")+p.name)}</option>`).join("");}
+
+/* ================= Events ================= */
+document.addEventListener("click",e=>{
+  const sb=e.target.closest(".seg button");
+  if(sb&&sb.dataset.scope){const s=sb.closest(".seg");if(s.classList.contains("disabled"))return;
+    const pi=+sb.dataset.p,gi=+sb.dataset.g,ai=+sb.dataset.a,val=sb.dataset.v===""?null:+sb.dataset.v;const art=DATA[pi].groups[gi].arts[ai];
+    if(sb.dataset.scope==="assess"){if(val==null)delete AP().scores[art.id];else AP().scores[art.id]=val;}else art.b=val;rerender();return;}
+  const pa=e.target.closest("[data-phaseapp]");
+  if(pa){phaseAppetite[pa.dataset.phaseapp]=pa.dataset.app;rerender();return;}
+  const blk=e.target.closest("[data-bulk]");
+  if(blk){const pi=+blk.dataset.phase,mode=blk.dataset.bulk,val=blk.dataset.val?+blk.dataset.val:null;
+    DATA[pi].groups.forEach(gr=>gr.arts.forEach(art=>{if(art.b==null)return;if(mode==="set")art.b=val;else if(mode==="inc")art.b=Math.min(3,art.b+1);else if(mode==="dec")art.b=Math.max(0,art.b-1);}));rerender();return;}
+  const w=e.target.closest("[data-wave]");
+  if(w){const val=+w.dataset.wave;DATA.forEach(p=>p.groups.forEach(gr=>gr.arts.forEach(art=>{if(art.b!=null)art.b=val;})));rerender();return;}
+  const tg=e.target.closest("[data-toggletgt]");
+  if(tg){const k=tg.dataset.toggletgt;openTargets.has(k)?openTargets.delete(k):openTargets.add(k);rerender();return;}
+  const sp=e.target.closest("[data-selproj]");
+  if(sp){activeProject=+sp.dataset.selproj;navigate("#/project");return;}
+  const ap=e.target.closest("[data-app]");
+  if(ap&&!ap.dataset.phaseapp){overallAppetite=ap.dataset.app;rerender();return;}
+  const xf=e.target.closest("[data-xref]");
+  if(xf){xrefFilter=xf.dataset.xref;rerender();return;}
+  const nav=e.target.closest("[data-nav]");
+  if(nav){navigate(nav.dataset.nav);return;}
+  if(e.target.closest("#sebokBtn")){document.getElementById("drawerBg").classList.add("open");return;}
+  if(e.target.id==="btnExport"){doExport();return;}
+  if(e.target.id==="btnCsv"){doCsv();return;}
+  if(e.target.id==="btnImport"){document.getElementById("fileInput").click();return;}
+});
+document.addEventListener("change",e=>{if(e.target.id==="projSel"){activeProject=+e.target.value;rerender();}
+  if(e.target.id==="fileInput"){const f=e.target.files[0];if(f)readImport(f);e.target.value="";}});
+const drawerBg=document.getElementById("drawerBg");
+document.getElementById("drawerX").onclick=()=>drawerBg.classList.remove("open");
+drawerBg.addEventListener("click",e=>{if(e.target===drawerBg)drawerBg.classList.remove("open");});
+
+/* ================= Export / import ================= */
+function currentState(){return{meta,overallAppetite,phaseAppetite,targets:DATA.map(p=>({key:p.key,groups:p.groups.map(g=>g.arts.map(a=>a.b))})),
+  projects:projects.map(pr=>({id:pr.id,name:pr.name,portfolio:pr.portfolio,scores:pr.scores})),activeProject};}
+function download(name,text,type){const b=new Blob([text],{type}),u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download=name;a.click();URL.revokeObjectURL(u);}
+function doExport(){download("aircraft_portfolio_assessment.json",JSON.stringify(currentState(),null,2),"application/json");}
+function doCsv(){let rows=[["Project","Phase ID","Phase","Discipline","Owner","Artifact","Critical","Target","Assessment","Gap"]];
+  projects.forEach(pr=>DATA.forEach(p=>p.groups.forEach(g=>g.arts.forEach(a=>{const v=pr.scores[a.id];rows.push([pr.name,p.id,p.name,g.label,g.owner,a.n,a.c?"Y":"",a.b==null?"":a.b,v==null?"":v,(a.b!=null&&v!=null)?(a.b-v):""]);}))));
+  download("aircraft_portfolio_assessment.csv",rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n"),"text/csv");}
+function applyState(st){
+  if(st.targets)st.targets.forEach(tp=>{const p=DATA.find(x=>x.key===tp.key);if(p)tp.groups.forEach((ga,gi)=>ga.forEach((b,ai)=>{if(p.groups[gi]&&p.groups[gi].arts[ai])p.groups[gi].arts[ai].b=b;}));});
+  if(st.projects)projects=st.projects.map(pr=>({id:pr.id,name:pr.name,portfolio:pr.portfolio||"Ungrouped",scores:pr.scores||{}}));
+  if(st.phaseAppetite)phaseAppetite=st.phaseAppetite;if(st.overallAppetite)overallAppetite=st.overallAppetite;
+  if(typeof st.activeProject==="number")activeProject=Math.min(Math.max(st.activeProject,0),projects.length-1);
+  if(st.meta){meta.cycle=st.meta.cycle??meta.cycle;meta.assessor=st.meta.assessor??meta.assessor;}
+}
+function setDataSrc(text,mode){const el=document.getElementById("dataSrc");if(!el)return;
+  const dot=mode==="live"?"● ":mode==="loading"?"◍ ":"○ ";el.textContent=dot+text;
+  el.classList.toggle("live",mode==="live");el.classList.toggle("loading",mode==="loading");}
+function readImport(f){const r=new FileReader();r.onload=()=>{try{const st=JSON.parse(r.result);applyState(st);setDataSrc("Imported · "+f.name,"live");render();
+}catch(err){alert("Could not read that file — expected JSON exported from this console.");}};r.readAsText(f);}
+
+/* ===== Portfolio loading =====
+   The dashboard ships with the portfolio embedded below (id="preloadedPortfolio"),
+   so it is pre-loaded the instant the page opens — even offline. When the page is
+   served (e.g. GitHub Pages) it then looks for a co-located override file, so the
+   demo can be refreshed by committing a new JSON without editing this HTML. */
+const PORTFOLIO_FILES=["aircraft_portfolio.json","aircraft_console_import.json"];
+function loadEmbedded(){
+  const el=document.getElementById("preloadedPortfolio");
+  if(!el)return false;
+  try{applyState(JSON.parse(el.textContent));return true;}catch(e){return false;}
+}
+async function loadOverride(){
+  for(const url of PORTFOLIO_FILES){
+    try{const res=await fetch(url,{cache:"no-store"});if(!res.ok)continue;
+      applyState(await res.json());return url;}catch(e){/* not found or blocked — try next */}
+  }
+  return null;
+}
+(function init(){
+  const embedded=loadEmbedded();
+  setDataSrc(embedded?"Portfolio · aircraft_portfolio.json":"Sample data", embedded?"live":"sample");
+  render();
+  loadOverride().then(url=>{ if(url){ setDataSrc("Live · "+url,"live"); render(); } });
+})();
+
+</script>
+</body>
+</html>
