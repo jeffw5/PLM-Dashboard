@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Decision Graph of Graphs — Impact Assessment Framework</title>
+<title>Decision Model &amp; Measurement</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
   :root{
@@ -13,8 +13,9 @@
   }
   *{box-sizing:border-box;}
   html,body{height:100%;}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:14px;}
-  header{padding:14px 20px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,#111a26,#0e1520);}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:14px;
+    display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+  header{flex:none;padding:14px 20px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,#111a26,#0e1520);}
   header h1{margin:0 0 2px;font-size:18px;font-weight:650;letter-spacing:.2px;}
   header .sub{color:var(--muted);font-size:12.5px;margin-bottom:12px;}
   .steps{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
@@ -25,12 +26,13 @@
   .step-tab.active .n{background:var(--accent);color:#03121f;}
   .step-tab:hover{color:var(--text);}
   .chev{color:var(--border);font-size:12px;}
-  .layout{display:grid;grid-template-columns:270px 1fr 320px;height:calc(100vh - 96px);}
-  aside{background:var(--panel);border-right:1px solid var(--border);overflow-y:auto;padding:14px;}
+  .layout{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:270px 1fr 320px;}
+  aside{background:var(--panel);border-right:1px solid var(--border);overflow-y:auto;padding:14px;min-height:0;}
   aside.right{border-right:none;border-left:1px solid var(--border);}
-  main.canvas{position:relative;overflow:hidden;background:
+  main.canvas{position:relative;overflow:hidden;min-height:0;background:
       radial-gradient(circle at 20% 20%, rgba(73,176,255,.05), transparent 40%),
       radial-gradient(circle at 80% 80%, rgba(139,107,255,.05), transparent 40%), var(--bg);}
+  .step-canvas{position:absolute;inset:0;}
   h2.panel-title{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:2px 0 10px;font-weight:700;}
   .card{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:12px;}
   .card h3{margin:0 0 8px;font-size:12.5px;color:var(--text);}
@@ -100,7 +102,24 @@
   .impact-list li{padding:4px 6px;border-radius:6px;background:#101823;margin-bottom:4px;color:var(--text);display:flex;justify-content:space-between;}
   .impact-list li span{color:var(--muted);font-size:10.5px;}
   .empty-hint{color:var(--muted);font-size:12px;line-height:1.6;padding:6px 2px;}
-  footer{border-top:1px solid var(--border);padding:8px 20px;color:var(--muted);font-size:10.5px;display:flex;justify-content:space-between;background:#0e1520;}
+  .dnode.frontier-dim .shape{opacity:.16;}
+  .dnode.frontier-dim text{opacity:.35;}
+  .prio-badge{fill:#0e1520;stroke:#0e1520;}
+  .prio-badge-text{fill:#f5a623;font-size:10px;font-weight:800;pointer-events:none;}
+  .queue-list{list-style:none;margin:6px 0 0;padding:0;max-height:260px;overflow-y:auto;}
+  .queue-item{display:flex;align-items:center;gap:8px;padding:6px 7px;border-radius:7px;background:#101823;border:1px solid var(--border);margin-bottom:5px;cursor:pointer;transition:.15s;}
+  .queue-item:hover{border-color:var(--accent);}
+  .queue-item .rank{width:18px;height:18px;border-radius:50%;background:#26364a;color:var(--amber);font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none;}
+  .queue-item .rank.none{color:var(--muted);background:transparent;border:1px dashed var(--border);}
+  .queue-item .info{flex:1;min-width:0;}
+  .queue-item .info .lbl{font-size:11.5px;color:var(--text);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .queue-item .info .ph{font-size:10px;color:var(--muted);}
+  .queue-item .dot{width:9px;height:9px;border-radius:50%;flex:none;}
+  .chip-row{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0;}
+  .chip{font-size:10.5px;background:#101823;border:1px solid var(--border);color:var(--muted);padding:3px 8px;border-radius:20px;}
+  .chip.chosen{background:rgba(46,204,113,.12);border-color:var(--green);color:var(--green);font-weight:700;}
+  footer{flex:none;border-top:1px solid var(--border);padding:8px 20px;color:var(--muted);font-size:10.5px;display:flex;justify-content:space-between;background:#0e1520;gap:16px;}
+  footer span{min-width:0;}
   .concept-svg{width:100%;height:auto;display:block;margin-top:4px;}
   .concept-svg text{fill:var(--muted);font-size:8.5px;}
   .concept-svg .ring{fill:none;stroke:var(--border);}
@@ -112,16 +131,18 @@
 <body>
 
 <header>
-  <h1>Decision Graph of Graphs</h1>
+  <h1>Decision Model &amp; Measurement</h1>
   <div class="sub">Intra-domain &amp; inter-domain decision management — impact assessment across domain, company and 3rd-party strata. Each stratum is a bounded graph you can inspect in isolation; together they nest into an evolving graph of graphs.</div>
   <div class="steps" id="stepTabs">
     <div class="step-tab active" data-step="1"><span class="n">1</span> Intra-Domain</div>
     <span class="chev">→</span>
     <div class="step-tab" data-step="2"><span class="n">2</span> Inter-Domain</div>
     <span class="chev">→</span>
-    <div class="step-tab" data-step="3"><span class="n">3</span> Value Chain (Companies)</div>
+    <div class="step-tab" data-step="3"><span class="n">3</span> Business Operation</div>
     <span class="chev">→</span>
-    <div class="step-tab" data-step="4"><span class="n">4</span> Ecosystem (3rd Parties)</div>
+    <div class="step-tab" data-step="4"><span class="n">4</span> Value Chain (Companies)</div>
+    <span class="chev">→</span>
+    <div class="step-tab" data-step="5"><span class="n">5</span> Ecosystem (3rd Parties)</div>
   </div>
 </header>
 
@@ -149,6 +170,19 @@
         <div class="empty-hint" style="padding-top:8px;">Isolated shows only this domain's decision network. Aggregate reveals where its decisions reach across the boundary into inter-domain, value-chain or ecosystem strata.</div>
       </div>
       <div class="card">
+        <h3>Design-time view</h3>
+        <div class="toggle">
+          <button id="frontierAll" class="on">All decisions</button>
+          <button id="frontierOnly">Frontier only</button>
+        </div>
+        <div class="empty-hint" style="padding-top:8px;">"Frontier only" dims every <b style="color:var(--text)">closed</b> decision so the undecided edge of the design — what still needs to be decided before this domain is fully specified — stands out.</div>
+      </div>
+      <div class="card">
+        <h3>Design-Time Decision Queue</h3>
+        <div class="empty-hint" style="padding-bottom:4px;">Open, at-risk and overlooked decisions for this domain, ranked by priority where assigned. Click a row to open it.</div>
+        <ul class="queue-list" id="queueList"></ul>
+      </div>
+      <div class="card">
         <h3>Legend — Decision class</h3>
         <div class="legend-row"><span class="swatch dot" style="background:#49b0ff"></span> Single Answer (●)</div>
         <div class="legend-row"><span class="swatch diamond" style="background:#8b6bff"></span> Multiple Answer (◆)</div>
@@ -166,12 +200,22 @@
       <div class="card"><div class="empty-hint">Domains sense change both <b style="color:var(--text)">intra-domain</b> (within their own boundary) and <b style="color:var(--text)">inter-domain</b> (horizontal peers, vertical strategy/execution flow). Edges below represent dependency &amp; impact, not just data flow.</div></div>
     </div>
     <div id="step3-left" style="display:none;">
+      <h2 class="panel-title">Business Operation Frame</h2>
+      <div class="card"><div class="empty-hint">This is where design-time decisions meet run-time reality: the recurring operational loop (Identify Defects → Find Cause → Choose Fix → Plan/Protect Fix) that keeps the value stream and supply chain running day to day.</div></div>
+    </div>
+    <div id="step4-left" style="display:none;">
       <h2 class="panel-title">Value Chain Frame</h2>
       <div class="card"><div class="empty-hint">Once decisions cross a company boundary, the receiving company's own domain graph (Step 1) is opaque to you by default — you only see the interface: what was decided, what's expected in return.</div></div>
     </div>
-    <div id="step4-left" style="display:none;">
+    <div id="step5-left" style="display:none;">
       <h2 class="panel-title">Ecosystem Frame</h2>
       <div class="card"><div class="empty-hint">3rd parties are heterogeneous: individuals, automated agents, other companies, and institutions each decide under different authority and incentive structures. Model each as its own decision-capable node.</div></div>
+    </div>
+
+    <div class="card">
+      <h3>Risks &amp; Impact — this view</h3>
+      <div class="empty-hint" style="padding-bottom:4px;">Every risk logged against a node in the graph you're currently looking at. Click a row to open that decision's full impact.</div>
+      <ul class="queue-list" id="riskList"></ul>
     </div>
 
     <details>
@@ -201,6 +245,10 @@
       <summary>Sense → Analyze → Respond → Learn</summary>
       <p><b style="color:var(--text)">Sense</b> intra/inter-domain signals → <b style="color:var(--text)">Analyze</b> against catalog/models/analytics → <b style="color:var(--text)">Respond</b> with a decision (forward/backward chaining) → <b style="color:var(--text)">Learn</b> and harvest the pattern for reuse. This loop runs inside every stratum.</p>
     </details>
+    <details>
+      <summary>One model, many uses</summary>
+      <p><b style="color:var(--text)">Closed</b> decisions validate requirements already committed. <b style="color:var(--text)">Open</b> decisions are what design-time planning is for — prioritize them, plan the trade study, align to a target phase, then close them. The line between the two, across the whole graph, is the <b style="color:var(--text)">decision frontier</b> — toggle it on above.</p>
+    </details>
   </aside>
 
   <!-- CENTER CANVAS -->
@@ -212,6 +260,7 @@
     <div id="step2-canvas" class="step-canvas" style="display:none;"></div>
     <div id="step3-canvas" class="step-canvas" style="display:none;"></div>
     <div id="step4-canvas" class="step-canvas" style="display:none;"></div>
+    <div id="step5-canvas" class="step-canvas" style="display:none;"></div>
     <div class="canvas-tools">
       <button id="zoomIn" title="Zoom in">+</button>
       <button id="zoomOut" title="Zoom out">−</button>
@@ -228,15 +277,17 @@
 
     <h2 class="panel-title" style="margin-top:16px;">Graph of Graphs</h2>
     <div class="card">
-      <svg class="concept-svg" viewBox="0 0 220 160">
-        <circle class="ring active" cx="110" cy="85" r="18"/>
-        <circle class="ring" cx="110" cy="85" r="42"/>
-        <circle class="ring" cx="110" cy="85" r="66"/>
-        <circle class="ring" cx="110" cy="85" r="90" opacity="0.6"/>
-        <text x="110" y="88" text-anchor="middle" fill="#e7edf5" font-weight="700">Domain</text>
-        <text x="110" y="45" text-anchor="middle">Inter-Domain</text>
-        <text x="110" y="21" text-anchor="middle">Value Chain</text>
-        <text x="110" y="4" text-anchor="middle">Ecosystem</text>
+      <svg class="concept-svg" viewBox="0 0 220 190">
+        <circle class="ring active" cx="110" cy="105" r="16"/>
+        <circle class="ring" cx="110" cy="105" r="36"/>
+        <circle class="ring" cx="110" cy="105" r="56"/>
+        <circle class="ring" cx="110" cy="105" r="76" opacity="0.75"/>
+        <circle class="ring" cx="110" cy="105" r="96" opacity="0.5"/>
+        <text x="110" y="108" text-anchor="middle" fill="#e7edf5" font-weight="700">Domain</text>
+        <text x="110" y="71" text-anchor="middle">Inter-Domain</text>
+        <text x="110" y="51" text-anchor="middle">Biz Operation</text>
+        <text x="110" y="31" text-anchor="middle">Value Chain</text>
+        <text x="110" y="11" text-anchor="middle">Ecosystem</text>
       </svg>
       <div class="empty-hint">Each ring is itself a graph whose nodes are, one level in, graphs of their own — a containment hierarchy that still allows lateral edges within a ring (peer domains, peer companies, peer 3rd parties).</div>
     </div>
@@ -245,7 +296,7 @@
 
 <footer>
   <span>Framework synthesized from: Fitch — "All Faults are Decision Faults" (2017), "Exploiting Decision to Requirements Traceability" (2009), "Leveraging Decision Patterns to Tame Complexity" (2022), "Extending MBSE for Decision Patterns and Traceability" (2024), PPI SyEN #107 "Introduction to Decision Patterns" (2021); The Value Enablement Group — "Business Sensory Platform" v3.</span>
-  <span>Prototype — Step 1 fully modeled; Steps 2–4 are scaffolds to populate as decisions are traced outward.</span>
+  <span>Prototype — Step 1 fully modeled; Steps 2–5 are scaffolds to populate as decisions are traced outward.</span>
 </footer>
 
 <script>
@@ -259,21 +310,54 @@ var PATTERNS = {
   process: {
     label: "Process Capability Design pattern (14 decisions) — J. Fitch, condensed from PPI SyEN #107",
     nodes: [
-      {id:"p1",   parent:null, label:"Capability Concept", cls:"Single", q:"What is the top-level architecture, design or implementation concept for this capability?", status:"closed"},
+      {id:"p1",   parent:null, label:"Capability Concept", cls:"Single", q:"What is the top-level architecture, design or implementation concept for this capability?", status:"closed",
+        chosenAlt:"Lean process redesign (chosen)"},
       {id:"p1.1", parent:"p1", label:"Usage Scenarios", cls:"Multiple", q:"Where (in which situations, scenarios) will we apply this capability?", status:"open",
-        criteria:["Compliance","Number of users","Urgency","Differentiation","Unmet needs","Long term needs","Time to market","Low cost","Fit our strategy"]},
-      {id:"p1.1.1", parent:"p1.1", label:"Value Proposition", cls:"Single", q:"How will this capability offer unique value in this usage scenario?", status:"open"},
-      {id:"p1.2", parent:"p1", label:"Core Methods", cls:"Single", q:"What methods or combination of methods provide the engine for this capability?", status:"closed"},
-      {id:"p1.3", parent:"p1", label:"Process Architecture", cls:"Multi-part", q:"What process architecture, framework or flow will we use to deploy this capability?", status:"open"},
-      {id:"p1.3.1", parent:"p1.3", label:"Process Design", cls:"Single", q:"How will this part of our process operate?", status:"open"},
-      {id:"p1.3.1.1", parent:"p1.3.1", label:"Tools", cls:"Single", q:"What set of tools will we use to enable this part of our process?", status:"overlooked"},
-      {id:"p1.3.1.2", parent:"p1.3.1", label:"Work Products", cls:"Multiple", q:"What work products will this process create? How will these be delivered downstream?", status:"open"},
-      {id:"p1.4", parent:"p1", label:"Capability Interfaces", cls:"Multiple", q:"With what processes or other capabilities will this capability interact?", status:"atrisk"},
-      {id:"p1.4.1", parent:"p1.4", label:"Interface Concept", cls:"Single", q:"How will these capabilities interact with each other? How will the interface be implemented?", status:"open"},
-      {id:"p1.5", parent:"p1", label:"Organization Design", cls:"Multi-part", q:"How will we organize ourselves to effectively deliver this capability? Who staffs it, and in what role?", status:"open"},
-      {id:"p1.6", parent:"p1", label:"Platform", cls:"Multi-part", q:"What infrastructure (facilities, work centers, equipment, tools) combine to provide the platform for this capability?", status:"atrisk"},
-      {id:"p1.7", parent:"p1", label:"Metrics", cls:"Multiple", q:"What metrics will be monitored for this capability, and how will each be captured?", status:"open"},
-      {id:"p1.8", parent:"p1", label:"Growth Plan", cls:"Single", q:"How will we acquire or grow this capability over time?", status:"overlooked"}
+        criteria:["Compliance","Number of users","Urgency","Differentiation","Unmet needs","Long term needs","Time to market","Low cost","Fit our strategy"],
+        priority:3, analysisTask:"Run stakeholder workshops across the 3 candidate scenarios; score each against the 9-criterion pattern.",
+        alternatives:["Retail onboarding only","Retail + wholesale","All channels (retail, wholesale, digital)"],
+        risks:[{risk:"Scenario scope creeps during stakeholder workshops", impact:"Launch date slips because 'all channels' scope wasn't budgeted.", likelihood:"Med", severity:"Med"}]},
+      {id:"p1.1.1", parent:"p1.1", label:"Value Proposition", cls:"Single", q:"How will this capability offer unique value in this usage scenario?", status:"open",
+        analysisTask:"Draft the value proposition once Usage Scenarios (1.1) closes — this decision is downstream of it.",
+        alternatives:["Speed-to-activation","Cost-to-serve reduction","Error-rate reduction"]},
+      {id:"p1.2", parent:"p1", label:"Core Methods", cls:"Single", q:"What methods or combination of methods provide the engine for this capability?", status:"closed",
+        chosenAlt:"Lean Six Sigma DMAIC (chosen)"},
+      {id:"p1.3", parent:"p1", label:"Process Architecture", cls:"Multi-part", q:"What process architecture, framework or flow will we use to deploy this capability?", status:"open",
+        priority:1, analysisTask:"Architecture trade study: linear vs. parallel vs. hub-and-spoke flow. Result shapes Organization Design (1.5) and Platform (1.6).",
+        alternatives:["Linear sequential flow","Parallel intake + review","Hub-and-spoke with regional hubs"],
+        risks:[{risk:"Architecture chosen without evaluating Org Design/Platform cost together", impact:"A cheaper-looking architecture turns out to require a full re-org and platform rebuild.", likelihood:"Med", severity:"High"}]},
+      {id:"p1.3.1", parent:"p1.3", label:"Process Design", cls:"Single", q:"How will this part of our process operate?", status:"open",
+        analysisTask:"Detail step-level design once the parent Process Architecture (1.3) alternative is selected.",
+        alternatives:["Manual + checklist","Semi-automated with exception queue","Fully automated, human-in-the-loop review"]},
+      {id:"p1.3.1.1", parent:"p1.3.1", label:"Tools", cls:"Single", q:"What set of tools will we use to enable this part of our process?", status:"overlooked",
+        priority:2, analysisTask:"Not yet on the trade study backlog and no owner assigned — tool choice is currently defaulting by inertia. Classic 'decision overlooked' pattern; add immediately.",
+        alternatives:["(none evaluated yet)"],
+        risks:[{risk:"Tool choice defaults by inertia with no evaluation", impact:"Team standardizes on a tool that can't scale past pilot volume, forcing a costly mid-flight migration.", likelihood:"High", severity:"Med"}]},
+      {id:"p1.3.1.2", parent:"p1.3.1", label:"Work Products", cls:"Multiple", q:"What work products will this process create? How will these be delivered downstream?", status:"open",
+        analysisTask:"Define output artifacts and downstream delivery format.",
+        alternatives:["PDF packet","Structured API payload","Both"]},
+      {id:"p1.4", parent:"p1", label:"Capability Interfaces", cls:"Multiple", q:"With what processes or other capabilities will this capability interact?", status:"atrisk",
+        priority:4, analysisTask:"Two interface partners have diverging expectations — needs a cross-domain alignment meeting before this can close.",
+        alternatives:["Point-to-point APIs per partner","Shared integration bus","Hybrid (bus + point-to-point for legacy)"],
+        risks:[{risk:"Interface partners build to diverging assumptions", impact:"Integration fails at UAT, costing a full sprint to reconcile.", likelihood:"Med", severity:"High"}]},
+      {id:"p1.4.1", parent:"p1.4", label:"Interface Concept", cls:"Single", q:"How will these capabilities interact with each other? How will the interface be implemented?", status:"open",
+        analysisTask:"Depends on Capability Interfaces (1.4) resolving first.",
+        alternatives:["REST/JSON","Event-driven (pub/sub)","File-based batch"]},
+      {id:"p1.5", parent:"p1", label:"Organization Design", cls:"Multi-part", q:"How will we organize ourselves to effectively deliver this capability? Who staffs it, and in what role?", status:"open",
+        priority:5, analysisTask:"Org design workshop pending the outcome of Process Architecture (1.3).",
+        alternatives:["Centralized team","Federated / embedded team","Hybrid center-of-excellence"],
+        risks:[{risk:"Org design decided before Process Architecture closes", impact:"Team is staffed for the wrong process shape and has to be re-organized within the quarter.", likelihood:"Low", severity:"Med"}]},
+      {id:"p1.6", parent:"p1", label:"Platform", cls:"Multi-part", q:"What infrastructure (facilities, work centers, equipment, tools) combine to provide the platform for this capability?", status:"atrisk",
+        priority:6, analysisTask:"Budget not yet approved for platform investment — blocking closure.",
+        alternatives:["Extend legacy platform","Buy COTS platform","Build custom platform"],
+        risks:[{risk:"Platform investment stalls on unapproved budget", impact:"Manual workarounds become permanent because the 'temporary' state persists past launch.", likelihood:"High", severity:"Med"}]},
+      {id:"p1.7", parent:"p1", label:"Metrics", cls:"Multiple", q:"What metrics will be monitored for this capability, and how will each be captured?", status:"open",
+        analysisTask:"Define KPI set and instrumentation plan.",
+        alternatives:["Cycle time + error rate","Cycle time + error rate + CSAT","Full balanced scorecard"]},
+      {id:"p1.8", parent:"p1", label:"Growth Plan", cls:"Single", q:"How will we acquire or grow this capability over time?", status:"overlooked",
+        priority:7, analysisTask:"Flagged during the reverse-engineering decision blitz as missing — no owner, not yet framed as a question.",
+        alternatives:["(none evaluated yet)"],
+        risks:[{risk:"No growth plan means capacity isn't provisioned ahead of demand", impact:"Capability hits a ceiling right when adoption is accelerating.", likelihood:"Med", severity:"Med"}]}
     ],
     influences: [
       {from:"p1.3", to:"p1.5", label:"shapes"},
@@ -284,7 +368,7 @@ var PATTERNS = {
   service: {
     label: "Service Design pattern (condensed; ~25 decisions) — Fitch",
     nodes: [
-      {id:"s1", parent:null, label:"Service Concept", cls:"Multi-part", q:"What is the overall concept for this service?", status:"closed"},
+      {id:"s1", parent:null, label:"Service Concept", cls:"Multi-part", q:"What is the overall concept for this service?", status:"closed", chosenAlt:"Human-assisted digital claims service (chosen)"},
       {id:"s1.1", parent:"s1", label:"Application Scenarios", cls:"Multiple", q:"In which scenarios will this service be applied?", status:"open"},
       {id:"s1.1.1", parent:"s1.1", label:"Scenario Value Prop.", cls:"Single", q:"What unique value does the service offer in this scenario?", status:"open"},
       {id:"s1.2", parent:"s1", label:"Service Options", cls:"Multiple", q:"What service tiers or options will be offered?", status:"open"},
@@ -292,20 +376,32 @@ var PATTERNS = {
       {id:"s1.3", parent:"s1", label:"Methods Engine", cls:"Multi-part", q:"What methods power the delivery of this service?", status:"open"},
       {id:"s1.3.1", parent:"s1.3", label:"Behaviors to Exploit", cls:"Multiple", q:"Which behaviors should the service exploit?", status:"open"},
       {id:"s1.3.1.1", parent:"s1.3.1", label:"Exploitation Method", cls:"Single", q:"How will the service exploit this behavior?", status:"open"},
-      {id:"s1.3.2", parent:"s1.3", label:"Behaviors to Control", cls:"Multiple", q:"Which behaviors must the service control?", status:"atrisk"},
+      {id:"s1.3.2", parent:"s1.3", label:"Behaviors to Control", cls:"Multiple", q:"Which behaviors must the service control?", status:"atrisk",
+        priority:2, analysisTask:"Legal and Ops disagree on which behaviors need hard controls vs. soft guidance — needs a joint review before this can close.",
+        alternatives:["Hard policy controls only","Soft guidance + monitoring","Tiered: hard controls for top-risk behaviors, guidance elsewhere"],
+        risks:[{risk:"No agreed control tier for risky behaviors", impact:"An uncontrolled behavior causes a compliance incident before Legal and Ops finish debating.", likelihood:"Med", severity:"High"}]},
       {id:"s1.3.2.1", parent:"s1.3.2", label:"Control Method", cls:"Single", q:"How will the service control this behavior?", status:"open"},
       {id:"s1.4", parent:"s1", label:"Service Flow", cls:"Multi-part", q:"What is the end-to-end flow of the service?", status:"open"},
       {id:"s1.4.1", parent:"s1.4", label:"(Step) Method", cls:"Single", q:"How does each step of the flow operate?", status:"open"},
-      {id:"s1.4.1.1", parent:"s1.4.1", label:"Tools", cls:"Single", q:"What tools enable this step?", status:"overlooked"},
+      {id:"s1.4.1.1", parent:"s1.4.1", label:"Tools", cls:"Single", q:"What tools enable this step?", status:"overlooked",
+        priority:1, analysisTask:"No owner assigned; the team is using whatever tool a new hire happened to bring. Add to backlog before it hardens into a de facto standard.",
+        alternatives:["(none evaluated yet)"],
+        risks:[{risk:"De facto tool standard hardens before it's evaluated", impact:"Support costs balloon once the ad hoc tool is embedded in every step's workflow.", likelihood:"High", severity:"Med"}]},
       {id:"s1.4.1.2", parent:"s1.4.1", label:"Work Products", cls:"Multiple", q:"What does this step produce?", status:"open"},
       {id:"s1.4.1.3", parent:"s1.4.1", label:"Metrics", cls:"Multiple", q:"What metrics monitor this step?", status:"open"},
       {id:"s1.5", parent:"s1", label:"Service Delivery Platform", cls:"Multi-part", q:"What platform delivers this service?", status:"open"},
       {id:"s1.5.1", parent:"s1.5", label:"Information Architecture", cls:"Single", q:"How is service information structured?", status:"open"},
       {id:"s1.5.1.1", parent:"s1.5.1", label:"Data Stores Concept", cls:"Single", q:"Where and how is service data stored?", status:"open"},
-      {id:"s1.6", parent:"s1", label:"Service Interfaces", cls:"Multiple", q:"With what other services or capabilities does this service interact?", status:"atrisk"},
+      {id:"s1.6", parent:"s1", label:"Service Interfaces", cls:"Multiple", q:"With what other services or capabilities does this service interact?", status:"atrisk",
+        priority:3, analysisTask:"Downstream claims-payment service hasn't confirmed its interface contract — blocks closure.",
+        alternatives:["Synchronous API call","Async event handoff","Manual handoff (interim) with automation planned"],
+        risks:[{risk:"Downstream claims-payment interface contract unconfirmed", impact:"Claims stall at the handoff point, driving customer complaints and SLA breaches.", likelihood:"Med", severity:"High"}]},
       {id:"s1.6.1", parent:"s1.6", label:"Interface Concept", cls:"Single", q:"How is each interface implemented?", status:"open"},
       {id:"s1.7", parent:"s1", label:"Service Lifecycle", cls:"Multi-part", q:"How does the service move through develop / test / deploy / deliver / support?", status:"open"},
-      {id:"s1.7.1", parent:"s1.7", label:"LC Phase Strategy", cls:"Single", q:"What is the strategy for each lifecycle phase?", status:"overlooked"}
+      {id:"s1.7.1", parent:"s1.7", label:"LC Phase Strategy", cls:"Single", q:"What is the strategy for each lifecycle phase?", status:"overlooked",
+        priority:4, analysisTask:"Surfaced during the reverse-engineering blitz — the team has an implicit deploy strategy but nothing written down or agreed.",
+        alternatives:["(none evaluated yet)"],
+        risks:[{risk:"Deploy strategy is tribal knowledge, not written down", impact:"A key person leaves and the deploy process breaks with no documentation to fall back on.", likelihood:"Med", severity:"Med"}]}
     ],
     influences: [
       {from:"s1.3", to:"s1.4", label:"shapes"},
@@ -316,17 +412,26 @@ var PATTERNS = {
   product: {
     label: "System/Product Design pattern (condensed; full pattern ~100 decisions) — Fitch",
     nodes: [
-      {id:"pr1", parent:null, label:"Solution Concept", cls:"Multi-part", q:"What is the overall solution concept for this product/system?", status:"closed"},
+      {id:"pr1", parent:null, label:"Solution Concept", cls:"Multi-part", q:"What is the overall solution concept for this product/system?", status:"closed", chosenAlt:"Networked field sensor unit, edge-processed (chosen)"},
       {id:"pr1.1", parent:"pr1", label:"Use Cases to Support", cls:"Multiple", q:"Which use cases must this solution support?", status:"open"},
       {id:"pr1.1.1", parent:"pr1.1", label:"UC Value Proposition", cls:"Single", q:"What unique value is delivered in this use case?", status:"open"},
       {id:"pr1.2", parent:"pr1", label:"Feature Set", cls:"Multiple", q:"What features will the product offer?", status:"open"},
       {id:"pr1.3", parent:"pr1", label:"Operating Regime", cls:"Multiple", q:"Under what conditions must the solution operate?", status:"open"},
-      {id:"pr1.3.1", parent:"pr1.3", label:"Behaviors to Exploit/Control", cls:"Multiple", q:"Which behaviors are exploited or controlled in this regime?", status:"atrisk"},
+      {id:"pr1.3.1", parent:"pr1.3", label:"Behaviors to Exploit/Control", cls:"Multiple", q:"Which behaviors are exploited or controlled in this regime?", status:"atrisk",
+        priority:1, analysisTask:"Safety and performance engineering disagree on which regime behaviors are exploitable vs. must be constrained — needs a joint review.",
+        alternatives:["Exploit-first, add guardrails later","Control-first, relax once validated","Split by subsystem criticality"],
+        risks:[{risk:"Exploit vs. control behaviors unresolved between Safety and Performance", impact:"A behavior shipped as 'exploitable' turns out to be a safety hazard in the field.", likelihood:"Low", severity:"High"}]},
       {id:"pr1.4", parent:"pr1", label:"Solution Architecture", cls:"Multi-part", q:"What is the logical & physical architecture of the solution?", status:"open"},
       {id:"pr1.4.1", parent:"pr1.4", label:"Function X Technology", cls:"Single", q:"What technology realizes function X?", status:"open"},
       {id:"pr1.4.2", parent:"pr1.4", label:"Hardware Platform", cls:"Multi-part", q:"What hardware architecture underlies the solution?", status:"open"},
-      {id:"pr1.4.3", parent:"pr1.4", label:"Software Platform", cls:"Multi-part", q:"What software architecture underlies the solution?", status:"overlooked"},
-      {id:"pr1.5", parent:"pr1", label:"External Interfaces", cls:"Multiple", q:"With what external systems must this solution interface?", status:"atrisk"},
+      {id:"pr1.4.3", parent:"pr1.4", label:"Software Platform", cls:"Multi-part", q:"What software architecture underlies the solution?", status:"overlooked",
+        priority:2, analysisTask:"Hardware Platform (parent sibling) has an owner and a plan; Software Platform does not — asymmetric attention is a red flag.",
+        alternatives:["(none evaluated yet)"],
+        risks:[{risk:"No owner or plan while Hardware Platform proceeds on schedule", impact:"Hardware ships ahead of a software platform that isn't ready, delaying the whole product.", likelihood:"Med", severity:"High"}]},
+      {id:"pr1.5", parent:"pr1", label:"External Interfaces", cls:"Multiple", q:"With what external systems must this solution interface?", status:"atrisk",
+        priority:3, analysisTask:"Waiting on the partner system's interface spec, which is itself an open decision in their domain — cross-company dependency (see Step 4).",
+        alternatives:["Adopt partner's proposed spec","Propose our own spec","Adapter layer to decouple from partner's spec"],
+        risks:[{risk:"Blocked on a partner's own open decision", impact:"Our launch date is now hostage to another company's internal timeline (see Step 4).", likelihood:"Med", severity:"High"}]},
       {id:"pr1.5.1", parent:"pr1.5", label:"Interface Concept", cls:"Single", q:"How is each external interface implemented?", status:"open"},
       {id:"pr1.6", parent:"pr1", label:"System Lifecycle", cls:"Multi-part", q:"How does the system move through dev/test/trial/mfg/deploy/support/end-of-life?", status:"open"}
     ],
@@ -338,12 +443,18 @@ var PATTERNS = {
   data: {
     label: "Data Asset decision pattern (extrapolated using the same pattern topology; not in source docs verbatim)",
     nodes: [
-      {id:"d1", parent:null, label:"Data Asset Concept", cls:"Single", q:"What is the top-level scope/concept for this data asset?", status:"closed"},
+      {id:"d1", parent:null, label:"Data Asset Concept", cls:"Single", q:"What is the top-level scope/concept for this data asset?", status:"closed", chosenAlt:"Unified Customer 360 asset, single source of truth (chosen)"},
       {id:"d1.1", parent:"d1", label:"Sources & Acquisition", cls:"Multiple", q:"What sources feed this data asset, and how is it acquired?", status:"open"},
       {id:"d1.1.1", parent:"d1.1", label:"Source Integration Method", cls:"Single", q:"How is each source integrated (batch/stream/API)?", status:"open"},
-      {id:"d1.2", parent:"d1", label:"Data Model / Schema", cls:"Multi-part", q:"What is the schema/structure of this data asset?", status:"atrisk"},
+      {id:"d1.2", parent:"d1", label:"Data Model / Schema", cls:"Multi-part", q:"What is the schema/structure of this data asset?", status:"atrisk",
+        priority:1, analysisTask:"Two upstream source systems use conflicting entity definitions — schema can't close until that's reconciled.",
+        alternatives:["Canonical schema, sources conform","Federated schema, per-source mapping layer","Hybrid: canonical core + source-specific extensions"],
+        risks:[{risk:"Conflicting entity definitions across source systems", impact:"Downstream analytics silently mis-joins records, corrupting reported metrics.", likelihood:"Med", severity:"High"}]},
       {id:"d1.3", parent:"d1", label:"Quality Rules", cls:"Multiple", q:"What quality/validation rules apply?", status:"open"},
-      {id:"d1.4", parent:"d1", label:"Governance & Stewardship", cls:"Multi-part", q:"Who classifies, owns and grants access to this data?", status:"overlooked"},
+      {id:"d1.4", parent:"d1", label:"Governance & Stewardship", cls:"Multi-part", q:"Who classifies, owns and grants access to this data?", status:"overlooked",
+        priority:2, analysisTask:"No steward assigned yet — the asset is being built and consumed before anyone owns its classification or access policy.",
+        alternatives:["(none evaluated yet)"],
+        risks:[{risk:"No steward while the asset is already in active use", impact:"Sensitive fields get exposed to a consumer who shouldn't have access — discovered during an audit.", likelihood:"Med", severity:"High"}]},
       {id:"d1.5", parent:"d1", label:"Data Interfaces", cls:"Multiple", q:"How is this data asset exposed to consumers (API, extract, event)?", status:"open"},
       {id:"d1.6", parent:"d1", label:"Data Lifecycle", cls:"Multi-part", q:"How does this asset move through ingest/store/use/archive/retire?", status:"open"}
     ],
@@ -355,13 +466,19 @@ var PATTERNS = {
   analytics: {
     label: "Analytics decision pattern (extrapolated using the same pattern topology; not in source docs verbatim)",
     nodes: [
-      {id:"a1", parent:null, label:"Analytics Concept", cls:"Single", q:"What is the top-level concept for this analytics capability?", status:"closed"},
+      {id:"a1", parent:null, label:"Analytics Concept", cls:"Single", q:"What is the top-level concept for this analytics capability?", status:"closed", chosenAlt:"Propensity-to-churn scoring model, monthly batch (chosen)"},
       {id:"a1.1", parent:"a1", label:"Questions to Answer", cls:"Multiple", q:"What business questions must this analytics capability answer?", status:"open"},
       {id:"a1.1.1", parent:"a1.1", label:"Value Proposition", cls:"Single", q:"What decision does answering this question improve?", status:"open"},
-      {id:"a1.2", parent:"a1", label:"Model / Method Selection", cls:"Multi-part", q:"What modeling technique(s) will be used?", status:"atrisk"},
+      {id:"a1.2", parent:"a1", label:"Model / Method Selection", cls:"Multi-part", q:"What modeling technique(s) will be used?", status:"atrisk",
+        priority:1, analysisTask:"Interpretability requirement (from Compliance) conflicts with the accuracy gains of the leading candidate model — needs a criteria trade-off decision first.",
+        alternatives:["Gradient-boosted trees (higher accuracy, lower interpretability)","Logistic regression (lower accuracy, high interpretability)","GBT + SHAP explainability layer"],
+        risks:[{risk:"Interpretability vs. accuracy trade-off undecided", impact:"A high-accuracy model gets shelved post-hoc because compliance can't explain its decisions.", likelihood:"Med", severity:"Med"}]},
       {id:"a1.3", parent:"a1", label:"Data Requirements", cls:"Multiple", q:"What data assets and features are required?", status:"open"},
       {id:"a1.4", parent:"a1", label:"Analytics Platform", cls:"Multi-part", q:"What platform trains, serves and monitors the model?", status:"open"},
-      {id:"a1.5", parent:"a1", label:"Output & Visualization", cls:"Multiple", q:"How are outputs presented and consumed?", status:"overlooked"},
+      {id:"a1.5", parent:"a1", label:"Output & Visualization", cls:"Multiple", q:"How are outputs presented and consumed?", status:"overlooked",
+        priority:2, analysisTask:"Model is being built with no agreed consumption surface — nobody has decided if this feeds a dashboard, an API, or an alert.",
+        alternatives:["(none evaluated yet)"],
+        risks:[{risk:"No agreed consumption surface while the model is already being built", impact:"Model ships with no dashboard, API, or alert to act on it — value never realized.", likelihood:"High", severity:"Med"}]},
       {id:"a1.6", parent:"a1", label:"Analytics Lifecycle", cls:"Multi-part", q:"How does the model move through develop/validate/deploy/monitor/retrain/retire?", status:"open"}
     ],
     influences: [
@@ -373,22 +490,37 @@ var PATTERNS = {
 
 var GHOSTS = [
   {id:"g2", label:"Inter-Domain: Product Mgmt", step:2, target:"prodmgmt"},
-  {id:"g3", label:"Value Chain: Supplier Co.", step:3, target:"supplier"},
-  {id:"g4", label:"Ecosystem: Regulator", step:4, target:"institutions"}
+  {id:"g3", label:"Biz Operation: Identify Defects", step:3, target:"identify"},
+  {id:"g4", label:"Value Chain: Supplier Co.", step:4, target:"supplier"},
+  {id:"g5", label:"Ecosystem: Regulator", step:5, target:"institutions"}
 ];
 
 /* ---------------------------------------------------------------
-   DATA: Steps 2-4 — fixed-layout illustrative graphs
+   RISK & IMPACT — shared severity/likelihood color helpers
+   Every node across every step may carry a risks[] array:
+   {risk, impact, likelihood:'Low'|'Med'|'High', severity:'Low'|'Med'|'High'}
+----------------------------------------------------------------*/
+var SEV_COLOR = {Low:"#2ecc71", Med:"#f5a623", High:"#e0483e"};
+
+/* ---------------------------------------------------------------
+   DATA: Steps 2-5 — fixed-layout illustrative graphs
 ----------------------------------------------------------------*/
 var STEP2 = {
   nodes: [
-    {id:"strategic", x:600, y:55,  label:"Strategic Management", kind:"vertical", q:"Sets direction that constrains every domain's decisions below it."},
-    {id:"core",      x:600, y:300, label:"Marketing Mgmt (Step 1 domain)", kind:"core", q:"The domain currently open in Step 1 — shown here as it sits among its peers."},
-    {id:"proddev",   x:600, y:545, label:"Product Development", kind:"vertical", q:"Executes capability build-out implied by upstream decisions."},
-    {id:"prodmgmt",  x:255, y:175, label:"Product Management", kind:"horizontal", q:"Peer domain: portfolio & feature decisions."},
-    {id:"custmgmt",  x:255, y:425, label:"Customer Management", kind:"horizontal", q:"Peer domain: engagement & experience decisions."},
-    {id:"commmgmt",  x:945, y:175, label:"Commercial Management", kind:"horizontal", q:"Peer domain: pricing & channel decisions."},
-    {id:"finmgmt",   x:945, y:425, label:"Financial Management", kind:"horizontal", q:"Peer domain: budget & ROI decisions."}
+    {id:"strategic", x:600, y:55,  label:"Strategic Management", kind:"vertical", q:"Sets direction that constrains every domain's decisions below it.",
+      risks:[{risk:"Strategic direction changes without cascading to operational domains", impact:"Domains keep executing against a stale strategy, wasting budget and eroding trust in leadership decisions.", likelihood:"Med", severity:"High"}]},
+    {id:"core",      x:600, y:300, label:"Marketing Mgmt (Step 1 domain)", kind:"core", q:"The domain currently open in Step 1 — shown here as it sits among its peers.",
+      risks:[{risk:"Step 1 domain's Process Architecture decision stays open past its target phase", impact:"Downstream Product Management and Financial Management decisions stay blocked, delaying the whole quarter's roadmap.", likelihood:"High", severity:"High"}]},
+    {id:"proddev",   x:600, y:545, label:"Product Development", kind:"vertical", q:"Executes capability build-out implied by upstream decisions.",
+      risks:[{risk:"Capability requirements arrive later than the build schedule assumes", impact:"Engineering commits to a delivery date before requirements are stable, forcing rework.", likelihood:"Med", severity:"Med"}]},
+    {id:"prodmgmt",  x:255, y:175, label:"Product Management", kind:"horizontal", q:"Peer domain: portfolio & feature decisions.",
+      risks:[{risk:"Positioning decisions made without portfolio-wide visibility", impact:"Two products cannibalize the same segment, diluting both business cases.", likelihood:"Med", severity:"Med"}]},
+    {id:"custmgmt",  x:255, y:425, label:"Customer Management", kind:"horizontal", q:"Peer domain: engagement & experience decisions.",
+      risks:[{risk:"Experience impact decisions lag customer sentiment data", impact:"Churn signals go unaddressed for a full reporting cycle.", likelihood:"Med", severity:"Med"}]},
+    {id:"commmgmt",  x:945, y:175, label:"Commercial Management", kind:"horizontal", q:"Peer domain: pricing & channel decisions.",
+      risks:[{risk:"Pricing decisions made independent of financial ROI modeling", impact:"Margin erosion discovered only after a pricing change ships.", likelihood:"Low", severity:"High"}]},
+    {id:"finmgmt",   x:945, y:425, label:"Financial Management", kind:"horizontal", q:"Peer domain: budget & ROI decisions.",
+      risks:[{risk:"Budget impact assessed after resourcing commitments are already made", impact:"Funding gap forces a mid-quarter scope cut on a committed initiative.", likelihood:"Med", severity:"High"}]}
   ],
   edges: [
     {from:"strategic", to:"core", label:"direction", kind:"v"},
@@ -404,13 +536,50 @@ var STEP2 = {
   ]
 };
 
+/* STEP 3 — Business Operation: the recurring operational decision loop
+   (Kepner-Tregoe SA/PA/DA/PPA, via Business Sensory Platform's
+   "Operational Decisions" under Operations Management) that runs the
+   value stream and supply chain day to day, underneath the design-time
+   decisions modeled in Steps 1-2. */
 var STEP3 = {
   nodes: [
-    {id:"us",          x:600, y:300, label:"Our Company (Step 2 aggregate)", kind:"core", q:"The full inter-domain graph from Step 2, collapsed to a single node at this stratum."},
-    {id:"supplier",     x:200, y:130, label:"Supplier(s)", kind:"company", q:"Provides components/materials — their decisions on spec & capacity ripple into ours."},
-    {id:"partner",      x:200, y:470, label:"Channel Partner(s)", kind:"company", q:"Co-designs go-to-market decisions with us."},
-    {id:"distributor",  x:1000,y:130, label:"Distributor(s)", kind:"company", q:"Executes fulfillment decisions we hand off."},
-    {id:"market",       x:1000,y:470, label:"Consumer / Market", kind:"company", q:"Demand-side decisions (purchase, adoption) feed back upstream."}
+    {id:"valuestream", x:600, y:120, label:"Value Stream: Order-to-Cash", kind:"vertical", q:"Leverages the capability to create value — and is where defects first surface.",
+      risks:[{risk:"Value stream throughput degrades without an early warning sensor", impact:"Order-to-cash cycle time creeps up for weeks before anyone notices in the P&L.", likelihood:"Med", severity:"Med"}]},
+    {id:"identify",    x:255, y:300, label:"Identify Defects (SA)", kind:"core", q:"Situation Appraisal: scan for deviations between what should be happening and what is.",
+      risks:[{risk:"Defect identification relies on manual customer complaints rather than instrumentation", impact:"Systemic defects are discovered late, after volume has scaled the damage.", likelihood:"High", severity:"High"}]},
+    {id:"findcause",   x:255, y:520, label:"Find Cause (PA)", kind:"core", q:"Problem Analysis: confirm root cause before choosing an action.",
+      risks:[{risk:"Root-cause analysis stops at the first plausible cause", impact:"The real cause resurfaces weeks later as a repeat defect — a classic 'decision poorly made' pattern.", likelihood:"Med", severity:"Med"}]},
+    {id:"choosefix",   x:600, y:520, label:"Choose Fix (DA)", kind:"decision", q:"Decision Analysis: this is the actual decision point in the operational loop — which fix, and why.",
+      risks:[{risk:"Fix is chosen without evaluating implementation cost across the value stream", impact:"A fix that looks cheap in isolation triggers rework in three other domains.", likelihood:"Med", severity:"High"}]},
+    {id:"planprotect", x:945, y:520, label:"Plan/Protect Fix (PPA)", kind:"core", q:"Potential Problem Analysis: anticipate how the fix could fail and mitigate proactively.",
+      risks:[{risk:"Protective/preventive actions are logged but never resourced", impact:"The same defect recurs next quarter — prevention exists on paper only.", likelihood:"High", severity:"Med"}]},
+    {id:"supplychain", x:945, y:300, label:"Supply Chain: Supplier Network", kind:"vertical", q:"Where protective actions may need to reach outside the company.",
+      risks:[{risk:"Supply chain disruption isn't visible until it hits the value stream", impact:"A single-source supplier issue halts fulfillment with no buffer or fallback plan.", likelihood:"Low", severity:"High"}]}
+  ],
+  edges: [
+    {from:"valuestream", to:"identify", label:"defect surfaces", kind:"h"},
+    {from:"identify", to:"findcause", label:"root cause analysis", kind:"h"},
+    {from:"findcause", to:"choosefix", label:"informs fix", kind:"h"},
+    {from:"choosefix", to:"planprotect", label:"commit to implement", kind:"h"},
+    {from:"planprotect", to:"valuestream", label:"sustain capability", kind:"influence"},
+    {from:"planprotect", to:"supplychain", label:"protective action", kind:"h"},
+    {from:"supplychain", to:"identify", label:"supply-side defect signal", kind:"influence"}
+  ],
+  containers: []
+};
+
+var STEP4 = {
+  nodes: [
+    {id:"us",          x:600, y:300, label:"Our Company (Steps 2-3 aggregate)", kind:"core", q:"The full inter-domain + operational graph, collapsed to a single node at this stratum.",
+      risks:[{risk:"Cross-company commitments made without inter-domain sign-off", impact:"Sales promises a delivery date Operations can't actually hit.", likelihood:"Med", severity:"High"}]},
+    {id:"supplier",     x:200, y:130, label:"Supplier(s)", kind:"company", q:"Provides components/materials — their decisions on spec & capacity ripple into ours.",
+      risks:[{risk:"Single-source dependency on component specification", impact:"Supplier's own open decision (their domain, not ours) blocks our production schedule with no alternative.", likelihood:"Med", severity:"High"}]},
+    {id:"partner",      x:200, y:470, label:"Channel Partner(s)", kind:"company", q:"Co-designs go-to-market decisions with us.",
+      risks:[{risk:"Co-design decisions diverge without a shared criteria pattern", impact:"Channel partner builds to a different spec than what ships, discovered at integration.", likelihood:"Low", severity:"Med"}]},
+    {id:"distributor",  x:1000,y:130, label:"Distributor(s)", kind:"company", q:"Executes fulfillment decisions we hand off.",
+      risks:[{risk:"Fulfillment decisions handed off without an agreed SLA", impact:"Delivery delays get blamed downstream with no contractual recourse.", likelihood:"Med", severity:"Med"}]},
+    {id:"market",       x:1000,y:470, label:"Consumer / Market", kind:"company", q:"Demand-side decisions (purchase, adoption) feed back upstream.",
+      risks:[{risk:"Demand signal reaches decision-makers only after a full sales cycle", impact:"Inventory and staffing decisions lag real demand by a full quarter.", likelihood:"High", severity:"Med"}]}
   ],
   edges: [
     {from:"supplier", to:"us", label:"component/spec decisions", kind:"h"},
@@ -422,13 +591,18 @@ var STEP3 = {
   containers: []
 };
 
-var STEP4 = {
+var STEP5 = {
   nodes: [
-    {id:"valuechain",   x:600, y:310, label:"Value Chain (Step 3 aggregate)", kind:"core", q:"The full cross-company graph from Step 3, collapsed to a single node at this stratum."},
-    {id:"individuals",  x:220, y:140, label:"Individuals (customers, employees, investors)", kind:"party", q:"Personal decisions: purchase, consent, employment, investment."},
-    {id:"agents",       x:980, y:140, label:"Agents (brokers, AI/automated agents)", kind:"party", q:"Delegated decision-makers acting on behalf of a principal — human or automated."},
-    {id:"institutions", x:220, y:500, label:"Institutions (regulators, standards bodies)", kind:"party", q:"Constrain the decision space itself via rules, standards and approvals."},
-    {id:"companies3rd", x:980, y:500, label:"3rd-Party Companies (outside the value chain)", kind:"party", q:"Competitors or coopetition partners whose decisions shift the landscape indirectly."}
+    {id:"valuechain",   x:600, y:310, label:"Value Chain (Step 4 aggregate)", kind:"core", q:"The full cross-company graph from Step 4, collapsed to a single node at this stratum.",
+      risks:[{risk:"Value chain decisions made without ecosystem-level regulatory review", impact:"A committed alternative later has to be unwound after a compliance finding.", likelihood:"Low", severity:"High"}]},
+    {id:"individuals",  x:220, y:140, label:"Individuals (customers, employees, investors)", kind:"party", q:"Personal decisions: purchase, consent, employment, investment.",
+      risks:[{risk:"Consent/purchase decision data isn't fed back into domain-level design", impact:"Product decisions keep optimizing for a customer profile that's already shifted.", likelihood:"Med", severity:"Med"}]},
+    {id:"agents",       x:980, y:140, label:"Agents (brokers, AI/automated agents)", kind:"party", q:"Delegated decision-makers acting on behalf of a principal — human or automated.",
+      risks:[{risk:"Delegated/automated agents execute decisions outside their intended authority boundary", impact:"An automation makes a commitment no human reviewed — the classic AI-agent overreach risk.", likelihood:"Med", severity:"High"}]},
+    {id:"institutions", x:220, y:500, label:"Institutions (regulators, standards bodies)", kind:"party", q:"Constrain the decision space itself via rules, standards and approvals.",
+      risks:[{risk:"Regulatory or standards changes aren't sensed until an audit", impact:"Retroactive compliance work consumes a full engineering quarter.", likelihood:"Low", severity:"High"}]},
+    {id:"companies3rd", x:980, y:500, label:"3rd-Party Companies (outside the value chain)", kind:"party", q:"Competitors or coopetition partners whose decisions shift the landscape indirectly.",
+      risks:[{risk:"Competitor decisions shift the landscape faster than the strategic layer re-plans", impact:"A committed roadmap becomes obsolete mid-execution.", likelihood:"Med", severity:"Med"}]}
   ],
   edges: [
     {from:"institutions", to:"valuechain", label:"constrains via regulation", kind:"h"},
@@ -443,7 +617,7 @@ var STEP4 = {
 /* ---------------------------------------------------------------
    STATE
 ----------------------------------------------------------------*/
-var state = { step:1, pattern:"process", scope:"isolated", selected:null, view:{} };
+var state = { step:1, pattern:"process", scope:"isolated", frontier:"all", selected:null, view:{} };
 var svgNS = "http://www.w3.org/2000/svg";
 
 function el(tag, attrs, parent){
@@ -470,6 +644,7 @@ function wrapLines(str, max){
 
 var STATUS_COLOR = {open:"#f5a623", closed:"#2ecc71", overlooked:"#7f8c8d", atrisk:"#e0483e"};
 var CLASS_COLOR = {"Single":"#49b0ff","Multiple":"#8b6bff","Multi-part":"#49b0ff"};
+var KIND_COLOR = {core:"#49b0ff", vertical:"#8b6bff", horizontal:"#49b0ff", company:"#2ecc71", party:"#2ecc71", decision:"#f5a623"};
 
 /* ---------------------------------------------------------------
    STEP 1 RENDER — tidy tree layout of a decision pattern
@@ -495,7 +670,47 @@ function layoutTree(nodes){
   var maxDepth = Math.max.apply(null, Object.keys(depth).map(function(k){return depth[k];}));
   var width = Math.max(1100, leafX*leafGap+140);
   var height = 70 + (maxDepth+1)*levelGap + 60;
-  return {x:x,y:y,root:root,children:children,width:width,height:height};
+  return {x:x,y:y,root:root,children:children,width:width,height:height,depth:depth};
+}
+
+/* ---------------------------------------------------------------
+   DESIGN-TIME DECISION PLANNING
+   "Closed" decisions already committed an alternative. "Open" /
+   "at risk" / "overlooked" decisions are the design-time frontier —
+   the work still ahead. See PPI SyEN #107 "One Model, Many Uses":
+   validate from closed decisions, plan from open ones, discover the frontier.
+----------------------------------------------------------------*/
+var PHASE_BY_DEPTH = ["Concept","Preliminary Design","Detailed Design","Detailed Design"];
+function targetPhaseForDepth(d){ return PHASE_BY_DEPTH[Math.min(d, PHASE_BY_DEPTH.length-1)]; }
+
+function depthOf(patKey, id){
+  var pat = PATTERNS[patKey], byId={}; pat.nodes.forEach(function(n){byId[n.id]=n;});
+  var d=0, cur=byId[id];
+  while(cur && cur.parent){ d++; cur=byId[cur.parent]; }
+  return d;
+}
+
+function defaultPlan(node){
+  if(node.status==="closed"){
+    return { alternatives:[node.chosenAlt || "(alternative committed — not labeled)"], analysisTask:"Closed — alternative committed; downstream consequences captured.", priority:null };
+  }
+  var task = node.status==="overlooked"
+    ? "Not yet on the trade study backlog — no owner assigned."
+    : node.status==="atrisk"
+      ? "Blocked — needs resolution before this decision can close."
+      : "Trade study open: evaluate candidate alternatives against the criteria pattern.";
+  var alts = node.status==="overlooked" ? ["(none evaluated yet)"] : ["Alternative A","Alternative B","Alternative C"];
+  return { alternatives: alts, analysisTask: task, priority: null };
+}
+
+function planFor(patKey, node){
+  var base = defaultPlan(node);
+  return {
+    priority: (node.priority!==undefined) ? node.priority : base.priority,
+    analysisTask: node.analysisTask || base.analysisTask,
+    alternatives: node.alternatives || base.alternatives,
+    targetPhase: targetPhaseForDepth(depthOf(patKey, node.id))
+  };
 }
 
 function nodeShapeSize(cls){
@@ -529,7 +744,7 @@ function renderStep1(){
   // ghost aggregate stubs off the root
   if(state.scope==="aggregate"){
     var rx = layout.x[layout.root], ry = layout.y[layout.root];
-    var positions = [{dx:-260,dy:-40},{dx:0,dy:-70},{dx:260,dy:-40}];
+    var positions = [{dx:-330,dy:-30},{dx:-115,dy:-70},{dx:115,dy:-70},{dx:330,dy:-30}];
     GHOSTS.forEach(function(g,i){
       var gx = rx+positions[i].dx, gy = Math.max(30, ry+positions[i].dy);
       drawEdge(gGhosts, rx, ry-22, gx, gy+16, true, null, null, null, 0.6, true);
@@ -544,24 +759,117 @@ function renderStep1(){
   // decision nodes
   pat.nodes.forEach(function(n){
     var cx=layout.x[n.id], cy=layout.y[n.id];
-    var grp = el("g",{class:"dnode", "data-id":n.id},gNodes);
+    var isDimmed = state.frontier==="frontier" && n.status==="closed";
+    var grp = el("g",{class:"dnode"+(isDimmed?" frontier-dim":""), "data-id":n.id},gNodes);
     var color = STATUS_COLOR[n.status] || "#49b0ff";
+    var badgeX, badgeY;
     if(n.cls==="Single"){
       el("circle",{class:"shape",cx:cx,cy:cy,r:27,fill:color},grp);
+      badgeX=cx+20; badgeY=cy-20;
     } else if(n.cls==="Multiple"){
       el("polygon",{class:"shape",points:diamondPoints(cx,cy,30),fill:color},grp);
+      badgeX=cx+24; badgeY=cy-16;
     } else {
       el("rect",{class:"shape",x:cx-48,y:cy-22,width:96,height:44,rx:8,fill:color},grp);
+      badgeX=cx+42; badgeY=cy-16;
     }
     var lines = wrapLines(n.label, n.cls==="Single"?12:14);
     var startY = cy - (lines.length-1)*6 + 3;
     lines.forEach(function(ln,li){ textEl(cx, startY+li*12, ln, "light", grp); });
+    if(n.priority){
+      el("circle",{class:"prio-badge",cx:badgeX,cy:badgeY,r:9},grp);
+      var pt = textEl(badgeX, badgeY+3.5, String(n.priority), "prio-badge-text", grp); pt.setAttribute("text-anchor","middle");
+    }
     var title = el("title",{},grp); title.textContent = n.label+" — "+n.q;
     grp.addEventListener("click", (function(id){ return function(){ selectNode("step1", id); }; })(n.id));
   });
 
   attachPanZoom(svg);
   applySelectionVisual();
+  renderQueue();
+  renderRiskSummary("step1");
+}
+
+/* ---------------------------------------------------------------
+   DESIGN-TIME DECISION QUEUE (left panel)
+----------------------------------------------------------------*/
+function renderQueue(){
+  var listEl = document.getElementById("queueList");
+  if(!listEl) return;
+  var pat = PATTERNS[state.pattern];
+  var open = pat.nodes.filter(function(n){ return n.status!=="closed"; });
+  var sevRank = {overlooked:0, atrisk:1, open:2};
+  open.sort(function(a,b){
+    var ap = a.priority || 999, bp = b.priority || 999;
+    if(ap!==bp) return ap-bp;
+    return (sevRank[a.status]!==undefined?sevRank[a.status]:3) - (sevRank[b.status]!==undefined?sevRank[b.status]:3);
+  });
+  listEl.innerHTML = "";
+  if(open.length===0){
+    var li0 = document.createElement("li");
+    li0.className = "empty-hint";
+    li0.textContent = "Every decision in this domain is closed.";
+    listEl.appendChild(li0);
+    return;
+  }
+  open.forEach(function(n){
+    var plan = planFor(state.pattern, n);
+    var li = document.createElement("li");
+    li.className = "queue-item";
+    var rank = document.createElement("div");
+    rank.className = "rank"+(n.priority?"":" none");
+    rank.textContent = n.priority ? String(n.priority) : "–";
+    var info = document.createElement("div");
+    info.className = "info";
+    var lbl = document.createElement("div"); lbl.className="lbl"; lbl.textContent = n.label;
+    var ph = document.createElement("div"); ph.className="ph"; ph.textContent = plan.targetPhase;
+    info.appendChild(lbl); info.appendChild(ph);
+    var dot = document.createElement("div");
+    dot.className = "dot"; dot.style.background = STATUS_COLOR[n.status] || "#f5a623";
+    li.appendChild(rank); li.appendChild(info); li.appendChild(dot);
+    li.addEventListener("click", (function(id){ return function(){ selectNode("step1", id); }; })(n.id));
+    listEl.appendChild(li);
+  });
+}
+
+/* ---------------------------------------------------------------
+   RISK & IMPACT SUMMARY (left panel) — works for every step 1-5.
+   Flattens every node's risks[] in the currently active view into
+   one severity-ranked list so teams can measure exposure as they
+   step from Intra-Domain through Ecosystem.
+----------------------------------------------------------------*/
+function renderRiskSummary(key){
+  var listEl = document.getElementById("riskList");
+  if(!listEl) return;
+  var data = dataForStepKey(key);
+  var rows = [];
+  data.nodes.forEach(function(n){
+    (n.risks||[]).forEach(function(r){ rows.push({node:n, r:r}); });
+  });
+  var sevRank = {High:0, Med:1, Low:2};
+  rows.sort(function(a,b){ return (sevRank[a.r.severity]!==undefined?sevRank[a.r.severity]:3) - (sevRank[b.r.severity]!==undefined?sevRank[b.r.severity]:3); });
+  listEl.innerHTML = "";
+  if(rows.length===0){
+    var li0 = document.createElement("li");
+    li0.className = "empty-hint";
+    li0.textContent = "No risks logged against this view yet.";
+    listEl.appendChild(li0);
+    return;
+  }
+  rows.forEach(function(row){
+    var li = document.createElement("li");
+    li.className = "queue-item";
+    var dot = document.createElement("div");
+    dot.className = "dot"; dot.style.background = SEV_COLOR[row.r.severity] || "#f5a623"; dot.style.flex="none";
+    var info = document.createElement("div");
+    info.className = "info";
+    var lbl = document.createElement("div"); lbl.className="lbl"; lbl.textContent = row.r.risk;
+    var ph = document.createElement("div"); ph.className="ph"; ph.textContent = row.node.label+" · "+row.r.severity+" sev / "+row.r.likelihood+" likelihood";
+    info.appendChild(lbl); info.appendChild(ph);
+    li.appendChild(dot); li.appendChild(info);
+    li.addEventListener("click", (function(k,id){ return function(){ selectNode(k, id); }; })(key, row.node.id));
+    listEl.appendChild(li);
+  });
 }
 
 function diamondPoints(cx,cy,r){
@@ -610,7 +918,7 @@ function renderFixedStep(stepNum, data, canvasId){
 
   data.nodes.forEach(function(n){
     var grp = el("g",{class:"dnode", "data-id":n.id},gNodes);
-    var color = n.kind==="core" ? "#49b0ff" : (n.kind==="vertical" ? "#8b6bff" : (n.kind==="company"||n.kind==="party" ? "#2ecc71" : "#49b0ff"));
+    var color = KIND_COLOR[n.kind] || "#49b0ff";
     var w=150,h=54;
     el("rect",{class:"shape",x:n.x-w/2,y:n.y-h/2,width:w,height:h,rx:10,fill:color},grp);
     var lines = wrapLines(n.label, 18);
@@ -622,11 +930,13 @@ function renderFixedStep(stepNum, data, canvasId){
 
   attachPanZoom(svg);
   applySelectionVisual();
+  renderRiskSummary("fixed"+stepNum);
 }
 
 function renderStep2(){ renderFixedStep(2, STEP2, "step2-canvas"); }
 function renderStep3(){ renderFixedStep(3, STEP3, "step3-canvas"); }
 function renderStep4(){ renderFixedStep(4, STEP4, "step4-canvas"); }
+function renderStep5(){ renderFixedStep(5, STEP5, "step5-canvas"); }
 
 /* ---------------------------------------------------------------
    SELECTION, DETAIL PANEL, IMPACT TRACE
@@ -636,6 +946,8 @@ function dataForStepKey(key){
   if(key==="fixed2") return {nodes:STEP2.nodes, edges:STEP2.edges};
   if(key==="fixed3") return {nodes:STEP3.nodes, edges:STEP3.edges};
   if(key==="fixed4") return {nodes:STEP4.nodes, edges:STEP4.edges};
+  if(key==="fixed5") return {nodes:STEP5.nodes, edges:STEP5.edges};
+  return {nodes:[], edges:[]};
 }
 function edgesForPattern(patKey){
   var pat = PATTERNS[patKey], edges=[];
@@ -684,12 +996,42 @@ function renderDetail(){
     html += '<div class="card" style="padding:8px;"><h3>Governance status</h3><div class="status-row" id="statusRow"></div></div>';
   }
 
+  var plan = (node.cls && state.selected.key==="step1") ? planFor(state.pattern, node) : null;
+  if(plan){
+    var isClosed = node.status==="closed";
+    html += '<div class="card" style="padding:8px;"><h3>Design-Time Decision Plan</h3>';
+    html += '<div style="display:flex;gap:8px;margin-bottom:6px;">';
+    html += '<span class="badge" style="background:#26364a;color:'+(plan.priority?'var(--amber)':'var(--muted)')+';">Priority: '+(plan.priority?("#"+plan.priority):"unranked")+'</span>';
+    html += '<span class="badge" style="background:#26364a;color:var(--accent);">Phase: '+plan.targetPhase+'</span>';
+    html += '</div>';
+    html += '<div class="qtext" style="margin:0 0 8px;">'+plan.analysisTask+'</div>';
+    html += '<div style="font-size:11px;color:var(--muted);margin-bottom:4px;">'+(isClosed?"Committed alternative":"Candidate alternatives (not yet selected)")+'</div>';
+    html += '<div class="chip-row">';
+    plan.alternatives.forEach(function(a){ html += '<span class="chip'+(isClosed?' chosen':'')+'">'+a+'</span>'; });
+    html += '</div></div>';
+  }
+
+  if(node.risks && node.risks.length){
+    html += '<div class="card" style="padding:8px;"><h3>Risks &amp; Business Impact</h3>';
+    node.risks.forEach(function(r){
+      var sc = SEV_COLOR[r.severity] || "#f5a623";
+      html += '<div style="border-left:3px solid '+sc+';padding:6px 0 8px 10px;margin-bottom:6px;">';
+      html += '<div style="font-size:12px;font-weight:700;color:var(--text);">'+r.risk+'</div>';
+      html += '<div style="font-size:11.5px;color:var(--muted);margin:3px 0 5px;">'+r.impact+'</div>';
+      html += '<span class="badge" style="background:'+sc+'22;color:'+sc+';border:1px solid '+sc+'55;">Severity: '+r.severity+'</span>';
+      html += '<span class="badge" style="background:#26364a;color:var(--muted);">Likelihood: '+r.likelihood+'</span>';
+      html += '</div>';
+    });
+    html += '</div>';
+  }
+
   if(node.cls){
+    var isClosedC = node.status==="closed";
     html += '<div class="card" style="padding:8px;"><h3>Decision-to-everything trace (R-D-R)</h3><div class="chain">';
     html += '<div class="link">Requirement / Criterion</div><div class="arrow">↓ constrains</div>';
-    html += '<div class="link me">'+node.label+'</div><div class="arrow">↓ chooses</div>';
-    html += '<div class="link">Alternative (selected)</div><div class="arrow">↓ inherent consequence</div>';
-    html += '<div class="link">Derived Requirement</div><div class="arrow">↓ may introduce</div>';
+    html += '<div class="link me">'+node.label+'</div><div class="arrow">↓ '+(isClosedC?"chooses":"will choose")+'</div>';
+    html += '<div class="link">'+(isClosedC?"Alternative (selected)":"Alternative (candidate — not yet selected)")+'</div><div class="arrow">↓ inherent consequence</div>';
+    html += '<div class="link">Derived Requirement'+(isClosedC?"":" (pending)")+'</div><div class="arrow">↓ may introduce</div>';
     html += '<div class="link">Risk → Mitigation</div>';
     html += '</div></div>';
   }
@@ -765,6 +1107,7 @@ function refreshActiveCanvas(){
   if(state.step===2) renderStep2();
   if(state.step===3) renderStep3();
   if(state.step===4) renderStep4();
+  if(state.step===5) renderStep5();
 }
 
 /* ---------------------------------------------------------------
@@ -820,14 +1163,15 @@ function resetActive(){
 var BREADCRUMBS = {
   1: '<b>Step 1 — Intra-Domain.</b> One domain’s Decision Breakdown Structure (DBS). Click a decision to inspect it; click "Trace Downstream Impact" to ripple the consequence through dependent decisions.',
   2: '<b>Step 2 — Inter-Domain.</b> Domain → Inter-Domain (operations / value stream / supply chain). Peer domains connected horizontally; strategy/execution connected vertically. The core node is the domain you opened in Step 1.',
-  3: '<b>Step 3 — Value Chain.</b> Inter-Domain → Value Chain (companies). Each company is itself a full Step-1/Step-2 graph, collapsed to one node here — you see the interface, not their internals.',
-  4: '<b>Step 4 — Ecosystem.</b> Value Chain → Ecosystem (3rd parties: individuals, agents, institutions, outside companies). These actors decide under different authority and incentive structures than your own domains.'
+  3: '<b>Step 3 — Business Operation.</b> Inter-Domain → Business Operation. The recurring operational decision loop (Identify Defects → Find Cause → Choose Fix → Plan/Protect Fix) that runs the value stream and supply chain day to day.',
+  4: '<b>Step 4 — Value Chain.</b> Business Operation → Value Chain (companies). Each company is itself a full Step-1/2/3 graph, collapsed to one node here — you see the interface, not their internals.',
+  5: '<b>Step 5 — Ecosystem.</b> Value Chain → Ecosystem (3rd parties: individuals, agents, institutions, outside companies). These actors decide under different authority and incentive structures than your own domains.'
 };
 
 function setActiveStep(n){
   state.step = n;
   document.querySelectorAll(".step-tab").forEach(function(t){ t.classList.toggle("active", Number(t.getAttribute("data-step"))===n); });
-  [1,2,3,4].forEach(function(i){
+  [1,2,3,4,5].forEach(function(i){
     document.getElementById("step"+i+"-canvas").style.display = (i===n?"block":"none");
     var lp = document.getElementById("step"+i+"-left"); if(lp) lp.style.display = (i===n?"block":"none");
   });
@@ -836,6 +1180,8 @@ function setActiveStep(n){
   if(n===2 && !document.getElementById("svg-step2-canvas")) renderStep2();
   if(n===3 && !document.getElementById("svg-step3-canvas")) renderStep3();
   if(n===4 && !document.getElementById("svg-step4-canvas")) renderStep4();
+  if(n===5 && !document.getElementById("svg-step5-canvas")) renderStep5();
+  renderRiskSummary(n===1 ? "step1" : "fixed"+n);
 }
 
 document.getElementById("stepTabs").addEventListener("click", function(e){
@@ -859,6 +1205,17 @@ document.getElementById("scopeIsolated").addEventListener("click", function(){
 document.getElementById("scopeAggregate").addEventListener("click", function(){
   state.scope="aggregate";
   this.classList.add("on"); document.getElementById("scopeIsolated").classList.remove("on");
+  renderStep1();
+});
+
+document.getElementById("frontierAll").addEventListener("click", function(){
+  state.frontier="all";
+  this.classList.add("on"); document.getElementById("frontierOnly").classList.remove("on");
+  renderStep1();
+});
+document.getElementById("frontierOnly").addEventListener("click", function(){
+  state.frontier="frontier";
+  this.classList.add("on"); document.getElementById("frontierAll").classList.remove("on");
   renderStep1();
 });
 

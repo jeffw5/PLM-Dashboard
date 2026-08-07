@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Decision Model &amp; Measurement — Overview</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --bg:#0e1520; --panel:#141d29; --panel2:#1a2532; --border:#2a3849;
+    --text:#e7edf5; --muted:#8fa0b3; --accent:#49b0ff; --accent2:#8b6bff;
+    --amber:#f5a623; --green:#2ecc71; --red:#e0483e;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;}
+  header{padding:40px 24px 32px;border-bottom:1px solid var(--border);
+    background:linear-gradient(180deg,#111a26,#0e1520);text-align:center;}
+  header .kicker{color:var(--accent);font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;}
+  header h1{margin:0 0 10px;font-size:32px;font-weight:700;letter-spacing:.2px;}
+  header .sub{color:var(--muted);font-size:15px;max-width:640px;margin:0 auto 22px;}
+  .btnrow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+  .btn{display:inline-block;text-decoration:none;padding:11px 20px;border-radius:8px;font-size:13.5px;font-weight:700;border:1px solid var(--border);}
+  .btn.primary{background:linear-gradient(180deg,#2a8fe0,#1c6fbf);border-color:#1c6fbf;color:#fff;}
+  .btn.ghost{background:var(--panel2);color:var(--text);}
+  main{max-width:820px;margin:0 auto;padding:40px 24px 80px;}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:26px 28px;margin-bottom:22px;}
+  .card h2{margin:0 0 6px;font-size:19px;color:var(--text);display:flex;align-items:center;gap:10px;}
+  .card h2 .num{width:26px;height:26px;border-radius:50%;background:rgba(73,176,255,.15);color:var(--accent);
+    display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:800;flex:none;}
+  .card p, .card li{color:var(--muted);font-size:14.5px;}
+  .card p{margin:10px 0;}
+  .card strong{color:var(--text);}
+  .card ul, .card ol{margin:10px 0;padding-left:22px;}
+  .card li{margin-bottom:8px;}
+  .strata{display:grid;grid-template-columns:1fr;gap:10px;margin-top:14px;}
+  .stratum{display:flex;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:9px;background:var(--panel2);align-items:flex-start;}
+  .stratum .n{width:22px;height:22px;border-radius:50%;background:#26364a;color:var(--text);font-size:11px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;flex:none;margin-top:1px;}
+  .stratum .body b{color:var(--text);font-size:13.5px;}
+  .stratum .body div{color:var(--muted);font-size:13px;margin-top:2px;}
+  .pillrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+  .pill{font-size:11.5px;font-weight:700;padding:5px 11px;border-radius:20px;background:#26364a;color:var(--accent);border:1px solid var(--border);}
+  .quote{border-left:3px solid var(--accent2);padding:2px 0 2px 16px;margin:14px 0;font-size:13.5px;color:var(--text);font-style:italic;}
+  .quote cite{display:block;margin-top:4px;color:var(--muted);font-size:12px;font-style:normal;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;}
+  @media(max-width:640px){.grid2{grid-template-columns:1fr;}}
+  .feature{border:1px solid var(--border);border-radius:9px;padding:12px 14px;background:var(--panel2);}
+  .feature b{color:var(--text);font-size:13px;display:block;margin-bottom:4px;}
+  .feature span{color:var(--muted);font-size:12.5px;}
+  .caveat{border-left:3px solid var(--amber);padding:2px 0 2px 14px;margin:10px 0;font-size:13.5px;color:var(--muted);}
+  .caveat b{color:var(--text);}
+  footer{border-top:1px solid var(--border);padding:24px;text-align:center;color:var(--muted);font-size:11.5px;}
+  footer .src{max-width:820px;margin:0 auto 10px;line-height:1.7;}
+  a{color:var(--accent);}
+  table.who{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px;}
+  table.who td{border-top:1px solid var(--border);padding:9px 0;vertical-align:top;}
+  table.who td:first-child{width:34%;color:var(--text);font-weight:700;padding-right:14px;}
+  table.who td:last-child{color:var(--muted);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="kicker">Decision-Centric Systems Engineering — Reference Prototype</div>
+  <h1>Decision Model &amp; Measurement</h1>
+  <div class="sub">An interactive graph-of-graphs for tracing decisions, and the risks they carry, from a single process step out through inter-domain operations, business operation, the value chain, and the wider ecosystem.</div>
+  <div class="btnrow">
+    <a class="btn primary" href="decision-model-and-measurement.html">Open the Interactive Dashboard →</a>
+    <a class="btn ghost" href="#dawg">Jump to: Using This With DAWG</a>
+  </div>
+</header>
+
+<main>
+
+  <div class="card">
+    <h2><span class="num">1</span>What This Is</h2>
+    <p>Decision Model &amp; Measurement is a single-file, browser-based tool that operationalizes a specific, well-established claim in decision-centric systems engineering: that <strong>the decision — not the requirement, not the architecture element — is the first-class object that mediates problem and solution</strong>, and that most of what we call requirements are in fact <em>derived</em> requirements, downstream consequences of decisions already made.</p>
+    <p>It takes that claim and extends it in one direction the source literature gestures at but doesn't fully build out: decisions don't stay contained inside one system or one team. A decision made inside a single process step has a Decision Breakdown Structure (DBS) of its own, but that DBS is only the innermost layer of a much larger, nested structure — a <strong>graph of graphs</strong> — that also spans how domains affect each other, how the business actually runs day to day, how decisions cross company boundaries along a value chain, and how individuals, automated agents, institutions, and outside companies shape and constrain all of the above.</p>
+    <p>The tool lets you step through that structure one stratum at a time, inspect any decision's framing question, class, criteria, status, and committed or candidate alternatives, trace how a decision ripples downstream, and see the risks and business impact logged against it — all while staying explicit about which decisions are closed, which are still open, and which were overlooked entirely.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">2</span>Theoretical Foundations</h2>
+    <p>Nothing in the tool is invented from scratch. It's a working synthesis of six pieces of source material, most of it either published by or presented to INCOSE audiences:</p>
+    <div class="pillrow">
+      <span class="pill">Decision-to-Everything Traceability</span>
+      <span class="pill">Decision Patterns (DBS)</span>
+      <span class="pill">All Faults are Decision Faults</span>
+      <span class="pill">Business Sensory Platform</span>
+      <span class="pill">Kepner-Tregoe Systematic Thinking</span>
+      <span class="pill">MBSE / LML Extension Gaps</span>
+    </div>
+    <p style="margin-top:14px;">In brief: Fitch's decision-centric information model (2009, 2021–2024) defines a decision as <em>"a fundamental question or issue that demands an answer or solution — not the alternative chosen,"</em> and shows that a Requirement–Decision–Requirement (R-D-R) trace, not a document hierarchy, is what actually connects problem to solution. His companion taxonomy of decision faults — <strong>overlooked, poorly made, poorly implemented</strong> — and the three preventive controls (traceability, decision patterns, decision management methodology) form the governance model behind the tool's status tracking. The Business Sensory Platform (The Value Enablement Group) supplies the intra-domain / inter-domain sensing model and the Sense→Analyze→Respond→Learn loop that the tool's stratum structure is built on. Kepner-Tregoe's four Systematic Thinking patterns (Situation Appraisal, Problem Analysis, Decision Analysis, Potential Problem Analysis) supply the recurring operational decision loop modeled at the Business Operation stratum.</p>
+    <div class="quote">"There is a pattern of decisions behind every strategy, solution design, or life... exposing this decision pattern gives you a unique set of controls."<cite>— John Fitch, PPI SyEN #107, "Introduction to Decision Patterns," Dec. 2021</cite></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">3</span>The Five Strata</h2>
+    <p>Each stratum is a bounded graph you can inspect in isolation or trace outward from in aggregate — decisions are contained, but not sealed off.</p>
+    <div class="strata">
+      <div class="stratum"><div class="n">1</div><div class="body"><b>Intra-Domain</b><div>A single domain's Decision Breakdown Structure — process, service, product, data, or analytics asset. Fully modeled with real decision-pattern content, status, priority, and risk.</div></div></div>
+      <div class="stratum"><div class="n">2</div><div class="body"><b>Inter-Domain</b><div>How peer domains affect each other horizontally (Marketing ↔ Product ↔ Customer ↔ Commercial ↔ Financial) and vertically (Strategy → domain → Execution), within a value stream / supply chain frame.</div></div></div>
+      <div class="stratum"><div class="n">3</div><div class="body"><b>Business Operation</b><div>The recurring operational decision loop — Identify Defects → Find Cause → Choose Fix → Plan/Protect Fix — that keeps the value stream and supply chain running day to day, underneath the design-time decisions above it.</div></div></div>
+      <div class="stratum"><div class="n">4</div><div class="body"><b>Value Chain</b><div>Decisions that cross a company boundary — suppliers, channel partners, distributors, and the market. Each company's own domain graph is opaque from here; you only see the interface.</div></div></div>
+      <div class="stratum"><div class="n">5</div><div class="body"><b>Ecosystem</b><div>3rd parties that aren't part of the value chain but still shape the decision space: individuals, automated/AI agents, regulators and standards bodies, and outside companies.</div></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">4</span>What You Can Do With It</h2>
+    <div class="grid2">
+      <div class="feature"><b>Decision Breakdown Structures</b><span>Five worked asset-type patterns (Process, Service, Product, Data, Analytics), condensed from Fitch's published patterns where they exist, extrapolated on the same topology where they don't.</span></div>
+      <div class="feature"><b>Design-Time Decision Queue</b><span>Every open, at-risk, or overlooked decision in the current domain, ranked by priority — the practical answer to "which decisions do we need to make next, and why haven't we?"</span></div>
+      <div class="feature"><b>Decision Frontier view</b><span>Dims every closed decision so the undecided edge of the design — the actual frontier of remaining work — is what you see.</span></div>
+      <div class="feature"><b>R-D-R traceability chain</b><span>Requirement/Criterion → Decision → Alternative → Derived Requirement → Risk → Mitigation, rendered per decision, worded differently for closed vs. still-open decisions.</span></div>
+      <div class="feature"><b>Downstream impact tracing</b><span>Select a decision and ripple its consequence through every dependent decision in the graph — a direct answer to "what does changing this actually touch?"</span></div>
+      <div class="feature"><b>Risk &amp; Business Impact register</b><span>Severity- and likelihood-rated risk entries attached to nodes at every stratum, aggregated into a per-view summary so exposure is visible as you step outward.</span></div>
+    </div>
+  </div>
+
+  <div class="card" id="dawg">
+    <h2><span class="num">5</span>Using This With the INCOSE Decision Analysis Working Group</h2>
+    <p>This was built as a discussion artifact, not a finished product — its value to DAWG is less "here is a tool" and more "here is something concrete enough to argue with." A few specific ways it maps onto the working group's territory:</p>
+    <table class="who">
+      <tr><td>Teaching &amp; tutorial demo</td><td>A live, click-through alternative to static slides for walking a room through decision-centric traceability, the DBS concept, and the three decision-fault modes — usable in an IS/GfSE tutorial, a webinar, or a DAWG working session without any installed software.</td></tr>
+      <tr><td>Tooling-gap discussion starter</td><td>Fitch's own 2024 "Extending MBSE for Decision Patterns" presentation lists concrete gaps in current MBSE tooling (Innoslate/LML): no "Decision-in-the-Middle" N-1-N view, no one-page DBS summary, no built-in weighted-score visualization, painful cross-project decision instantiation. This prototype takes a stance on several of those gaps in miniature — DAWG could use it as a talking point when engaging tool vendors or the SysML v2 / LML community on what decision-pattern support should actually look like.</td></tr>
+      <tr><td>Decision pattern library extension</td><td>The pattern data is a small, readable, forkable JavaScript object — no proprietary tool required. DAWG members could contribute additional asset-type patterns (hardware, software, safety case, mission) as a working exercise, or as case-study material for an INCOSE symposium paper.</td></tr>
+      <tr><td>Cross-organization decision traceability</td><td>Published decision-pattern work stops largely at the boundary of a single program. The Business Operation, Value Chain, and Ecosystem strata here are a first attempt at extending decision traceability past that boundary — relevant to DAWG's adjacent interest in systems-of-systems and digital-engineering-ecosystem decision governance.</td></tr>
+      <tr><td>Risk-measurement template</td><td>The severity/likelihood risk register operationalizes the fault-prevention argument from "All Faults are Decision Faults" into something scoreable. It's a plausible starting point for a DAWG position paper or self-assessment instrument on decision-risk measurement maturity.</td></tr>
+      <tr><td>Low-barrier peer review</td><td>Single self-contained HTML file, no build step, no server, no account. Any WG member can open it, read the source, edit it, and send back a modified copy — which lowers the bar for the kind of iterative critique a working group thrives on.</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">6</span>Current Status &amp; Honest Caveats</h2>
+    <div class="caveat"><b>Step 1 is fully modeled</b> with real decision, status, priority, and risk data across five asset-type patterns. Steps 2–5 are illustrative scaffolds — the graph shapes and relationships are grounded in the source material, but the specific nodes are examples meant to be replaced with an organization's real inter-domain, operational, value-chain, and ecosystem data.</div>
+    <div class="caveat"><b>Data and Analytics decision patterns are extrapolated</b>, not sourced verbatim — no published Fitch pattern currently covers those two asset types, so their content follows the same Concept → Scenarios → Architecture → Interfaces → Lifecycle topology as the sourced patterns. This is flagged directly in the tool's own UI, and is an open contribution opportunity rather than a hidden gap.</div>
+    <div class="caveat"><b>This is a prototype, not a validated instrument.</b> The risk severity/likelihood ratings, priority rankings, and example decisions throughout are illustrative — built to demonstrate the framework's shape, not measured against a real program.</div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">7</span>Getting Started</h2>
+    <ol>
+      <li>Open the dashboard and start on <strong>Step 1 — Intra-Domain</strong>. Pick an asset type from the dropdown and click through a few decisions to get a feel for the DBS.</li>
+      <li>Toggle <strong>Frontier only</strong> to see just the undecided edge of the design, and open the <strong>Design-Time Decision Queue</strong> to see what's prioritized and why.</li>
+      <li>Click <strong>Trace Downstream Impact →</strong> on any decision to see the ripple effect, and check the <strong>Risks &amp; Business Impact</strong> card for what's logged against it.</li>
+      <li>Switch <strong>Containment scope</strong> to Aggregate to see the ghost stubs where this domain's decisions reach into the other four strata, then step through Tabs 2–5 to see those strata directly.</li>
+      <li>Watch the <strong>Risks &amp; Impact — this view</strong> list in the left panel update as you move between strata — that's the "measure risk along the way" view.</li>
+    </ol>
+    <div class="btnrow" style="margin-top:18px;">
+      <a class="btn primary" href="decision-model-and-measurement.html">Open the Interactive Dashboard →</a>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="src">Framework synthesized from: J. Fitch, "All Faults are Decision Faults — and How to Prevent Them" (INCOSE C-OH, 2017) · "Exploiting Decision to Requirements Traceability" (NDIA CMMI Conference, 2009) · "Leveraging Decision Patterns to Tame Complexity and Accelerate Solution Delivery" (INCOSE GfSE / PPI, 2022) · "Extending MBSE for Decision Patterns and Traceability" (MBSE-CON / INCOSE Orlando, 2024) · "Introduction to Decision Patterns," PPI SyEN Edition #107 (Dec. 2021) — all © their respective authors, used here for synthesis and discussion. The Value Enablement Group, "Business Sensory Platform" v3 (2009–2020).</div>
+  <div>Decision Model &amp; Measurement — a reference prototype, not an official INCOSE work product.</div>
+</footer>
+
+</body>
+</html>
