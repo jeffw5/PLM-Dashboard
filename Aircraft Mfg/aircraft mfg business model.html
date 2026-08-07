@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gulfstream DDD Business Model Interactive</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #2980b9;
+            --light: #ecf0f1;
+            --shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        h1, h2, h3 { text-align: center; color: var(--primary); }
+        p.subtitle { text-align: center; color: var(--secondary); margin-bottom: 30px; font-style: italic; }
+
+        /* Ontology Mapping Header */
+        #ontology-mapping {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .ontology-btn {
+            background-color: #e0e0e0;
+            border: 2px solid transparent;
+            color: var(--primary);
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: var(--transition);
+        }
+
+        .ontology-btn:hover {
+            background-color: #d0d0d0;
+        }
+
+        .ontology-btn.active {
+            background-color: var(--accent);
+            color: white;
+            border-color: #1a5276;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Domain Container */
+        #domain-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        /* Domain Cards */
+        .domain-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            width: 300px;
+            overflow: hidden;
+            border-top: 5px solid var(--primary);
+            transition: var(--transition), opacity 0.5s ease;
+            opacity: 1;
+        }
+
+        .domain-card.filtered-out {
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .domain-header {
+            background-color: var(--light);
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .domain-title { font-size: 1.2em; font-weight: bold; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+        .domain-description { font-size: 0.9em; color: #666; margin: 5px 0 0 0; }
+
+        .services-list {
+            padding: 15px;
+        }
+
+        .service-item {
+            margin-bottom: 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .service-item:hover {
+            border-color: var(--accent);
+            background-color: #fbfdff;
+        }
+
+        .service-title {
+            background-color: #f9f9f9;
+            padding: 10px 15px;
+            font-weight: bold;
+            font-size: 1em;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .service-title:hover {
+            background-color: #f0f0f0;
+        }
+
+        .service-title::after {
+            content: '▼';
+            font-size: 0.8em;
+            transition: transform 0.3s ease;
+        }
+
+        .service-item.expanded .service-title::after {
+            transform: rotate(180deg);
+        }
+
+        .processes-list {
+            display: none;
+            padding: 10px 15px;
+            background-color: #fafafa;
+            border-top: 1px solid #eee;
+        }
+
+        .service-item.expanded .processes-list {
+            display: block;
+        }
+
+        .process-item {
+            list-style-type: none;
+            padding: 5px 0;
+            font-size: 0.9em;
+            color: #555;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .process-item::before {
+            content: '↪';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Gulfstream Aerospace Business Model</h1>
+    <p class="subtitle">An Interactive DDD Domain Map with Ontology Mapping</p>
+
+    <div id="ontology-mapping">
+        <h3>Map to Domain Operations (Ontologies)</h3>
+        <button class="ontology-btn active" data-ontology="all" onclick="filterByOntology('all')">All Domains</button>
+        <button class="ontology-btn" data-ontology="business" onclick="filterByOntology('business')">Business Operations</button>
+        <button class="ontology-btn" data-ontology="commercial" onclick="filterByOntology('commercial')">Commercial Operations</button>
+        <button class="ontology-btn" data-ontology="customer-support" onclick="filterByOntology('customer-support')">Customer Support Operations</button>
+        <button class="ontology-btn" data-ontology="supply-chain" onclick="filterByOntology('supply-chain')">Supply Chain Operations</button>
+        <button class="ontology-btn" data-ontology="manufacturing" onclick="filterByOntology('manufacturing')">Manufacturing Operations</button>
+    </div>
+
+    <div id="domain-container">
+        <!-- Domains will be injected here by JavaScript -->
+    </div>
+
+    <script>
+        const businessModel = {
+            domains: [
+                {
+                    id: "engineering",
+                    title: "Product Engineering",
+                    description: "Designing, certifying, and improving the next-generation aircraft.",
+                    ontologies: ["manufacturing", "commercial"],
+                    services: [
+                        {
+                            title: "Aircraft Design & Simulation",
+                            processes: ["Conceptual Design (CAD/CAE)", "Aerodynamics & CFD Analysis", "Avionics Integration", "Material Science Research"]
+                        },
+                        {
+                            title: "Certification & Regulatory Compliance",
+                            processes: ["FAA/EASA Type Certification Planning", "Flight Test Data Analysis", "Safety Case Development", "Continued Airworthiness Monitoring"]
+                        }
+                    ]
+                },
+                {
+                    id: "manufacturing",
+                    title: "Aircraft Manufacturing",
+                    description: "Physical assembly, component fabrication, and final integration.",
+                    ontologies: ["manufacturing", "supply-chain"],
+                    services: [
+                        {
+                            title: "Component Fabrication",
+                            processes: ["Composite Material Layering", "Precision Machining", "Sheet Metal Forming"]
+                        },
+                        {
+                            title: "Major Assembly Integration (MAI)",
+                            processes: ["Fuselage Joinery", "Wing-to-Body Mating", "Landing Gear Installation"]
+                        },
+                        {
+                            title: "Final Assembly Line (FAL)",
+                            processes: ["Engine Mounting", "Cabin Completion & Outfitting", "System Power-On Tests"]
+                        }
+                    ]
+                },
+                {
+                    id: "supply-chain",
+                    title: "Supply Chain & Logistics",
+                    description: "Global procurement, inventory management, and inbound logistics.",
+                    ontologies: ["supply-chain", "manufacturing", "business"],
+                    services: [
+                        {
+                            title: "Supplier Relationship Management (SRM)",
+                            processes: ["Supplier Selection & Auditing", "Contract Negotiation", "Performance Monitoring"]
+                        },
+                        {
+                            title: "Procurement & Strategic Sourcing",
+                            processes: ["Raw Material Sourcing", "Long-Lead Item Ordering", "Just-In-Time (JIT) Delivery Planning"]
+                        },
+                        {
+                            title: "Global Logistics & Warehousing",
+                            processes: ["Parts Tracking", "Warehousing Optimization", "AOG (Aircraft on Ground) Logistics"]
+                        }
+                    ]
+                },
+                {
+                    id: "sales",
+                    title: "Sales & Marketing",
+                    description: "Client relationship building, fleet planning, and closing contracts.",
+                    ontologies: ["commercial", "business"],
+                    services: [
+                        {
+                            title: "Customer Relationship Management (CRM)",
+                            processes: ["Lead Generation", "Client Needs Assessment", "High-Net-Worth Individual (HNWI) Outreach"]
+                        },
+                        {
+                            title: "Aircraft Sales & Financing",
+                            processes: ["Proposal Generation", "Price Negotiation", "Financing and Leasing Support", "Used Aircraft Trade-In"]
+                        }
+                    ]
+                },
+                {
+                    id: "customer-support",
+                    title: "Customer Support & Aftermarket",
+                    description: "Lifetime service, maintenance, and operational support.",
+                    ontologies: ["customer-support", "commercial"],
+                    services: [
+                        {
+                            title: "Planned Support & Fleet Maintenance",
+                            processes: ["Scheduled Inspection Planning", "Component Exchange Programs (CEP)", "Service Bulletin (SB) Implementations"]
+                        },
+                        {
+                            title: "MRO (Maintenance, Repair, & Overhaul)",
+                            processes: ["Engine Overhaul Management", "Structural Repairs", "Avionics Upgrades"]
+                        },
+                        {
+                            title: "On-Demand Support (AOG)",
+                            processes: ["24/7 technical hotline", "Mobile Repair Team (MRT) Deployment", "Urgent Parts Dispatch"]
+                        }
+                    ]
+                },
+                {
+                    id: "corporate",
+                    title: "Corporate Strategy & Finance",
+                    description: "Strategic planning, financial control, and overall governance.",
+                    ontologies: ["business"],
+                    services: [
+                        {
+                            title: "Financial Planning & Analysis (FP&A)",
+                            processes: ["Revenue Forecasting", "Cost Accounting & Control", "Investment Appraisal"]
+                        },
+                        {
+                            title: "Strategic Planning",
+                            processes: ["Market Analysis", "Mergers & Acquisitions (M&A) Evaluation", "Brand Management"]
+                        }
+                    ]
+                }
+            ]
+        };
+
+        const container = document.getElementById('domain-container');
+
+        // Initial render
+        renderDomains(businessModel.domains);
+
+        function renderDomains(domains) {
+            container.innerHTML = '';
+            domains.forEach(domain => {
+                const domainCard = document.createElement('div');
+                domainCard.className = 'domain-card';
+                domainCard.id = `domain-${domain.id}`;
+                domainCard.setAttribute('data-ontologies', domain.ontologies.join(' '));
+
+                domainCard.innerHTML = `
+                    <div class="domain-header">
+                        <h4 class="domain-title">${domain.title}</h4>
+                        <p class="domain-description">${domain.description}</p>
+                    </div>
+                    <div class="services-list">
+                        ${domain.services.map((service, index) => renderService(service, domain.id, index)).join('')}
+                    </div>
+                `;
+                container.appendChild(domainCard);
+            });
+        }
+
+        function renderService(service, domainId, serviceIndex) {
+            const serviceId = `${domainId}-service-${serviceIndex}`;
+            return `
+                <div class="service-item" id="${serviceId}">
+                    <div class="service-title" onclick="toggleService('${serviceId}')">
+                        ${service.title}
+                    </div>
+                    <ul class="processes-list">
+                        ${service.processes.map(process => `<li class="process-item">${process}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        function toggleService(serviceId) {
+            const serviceItem = document.getElementById(serviceId);
+            if (serviceItem) {
+                serviceItem.classList.toggle('expanded');
+            }
+        }
+
+        function filterByOntology(ontology) {
+            // Update button states
+            document.querySelectorAll('.ontology-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.ontology-btn[data-ontology="${ontology}"]`).classList.add('active');
+
+            const domainCards = document.querySelectorAll('.domain-card');
+
+            domainCards.forEach(card => {
+                if (ontology === 'all' || card.getAttribute('data-ontologies').includes(ontology)) {
+                    card.classList.remove('filtered-out');
+                } else {
+                    card.classList.add('filtered-out');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
