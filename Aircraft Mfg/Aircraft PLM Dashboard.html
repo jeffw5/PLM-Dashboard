@@ -352,6 +352,31 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .gsp{flex:1 1 12px}
 .gzbtn{font:inherit;font-size:11.5px;padding:3px 10px;border:1px solid var(--hair);background:var(--ice2);color:var(--navy);border-radius:8px;cursor:pointer}
 .gzbtn:hover{border-color:var(--navy2);background:var(--surface)}
+/* portfolio nodes */
+.gpf{font-family:var(--serif);font-size:10px;font-weight:600;fill:var(--navy-soft)}
+.lg.pf{background:var(--navy-soft);border:1.5px solid var(--gold);border-radius:3px}
+.lg.e-mem{height:2px;background:var(--gold)}
+/* RDF chain graph — node labels */
+.gop{font-family:var(--serif);font-size:11px;font-weight:700;fill:var(--navy)}
+.gdmn{font-family:var(--serif);font-size:10px;font-weight:600;fill:var(--navy-soft)}
+.gsvc{font-size:9px;fill:#4f6f92}
+.gproc{font-size:8.5px;fill:var(--muted)}
+/* legend swatches for chain tiers */
+.lg.op{background:var(--navy);border:2px solid var(--gold);border-radius:50%}
+.lg.dom{background:var(--navy-soft);border:1.5px solid var(--gold);border-radius:50%}
+.lg.pf{background:var(--gold);border:1px solid var(--navy);border-radius:3px}
+.lg.svc{background:#6b8fb5;border-radius:2px}
+.lg.proc{background:var(--muted);border-radius:50%;width:8px;height:8px;margin-left:2px}
+.lg.e-chain{height:2px;background:var(--navy2)}
+/* Impact rollup rows */
+.rurow{display:grid;grid-template-columns:minmax(150px,1.3fr) 2fr 50px minmax(96px,auto);gap:12px;align-items:center;padding:7px 2px;border-bottom:1px solid var(--hair)}
+.rurow:last-child{border-bottom:none}
+.ru-lab{font-size:12.5px;color:var(--ink);line-height:1.3}
+.ru-sub{display:block;font-size:10.5px;color:var(--muted)}
+.ru-bar{position:relative;height:9px;border-radius:5px;background:var(--ice);overflow:hidden}
+.ru-bar span{position:absolute;left:0;top:0;height:100%;border-radius:5px;transition:width .4s}
+.ru-val{font-family:var(--mono);font-size:12px;font-weight:600;text-align:right}
+.ru-cov{font-family:var(--mono);font-size:10.5px;color:var(--muted);white-space:nowrap}
 </style>
 </head>
 <body>
@@ -2144,56 +2169,53 @@ function renderRefs(){
       <p class="refnote" style="margin-top:14px">The V-Model artifacts inherit the systems-engineering lineage of the <b>SE V-Model Artifact Map</b> (ISO 15288 · INCOSE · DoD AAF) and are governed by the <b>RDSG digital thread</b>. Their PLM phase placement follows the <b>Policy Cross-Reference — Lifecycle</b>, the domain mapping follows the <b>Portfolios → PLM</b> cross-reference, and the whole assessment forms the governance layer of the <b>Gulfstream Digital Factory Roadmap</b>.</p></div>
    </div></main>`;}
 
-/* ================= Value Map: semantic knowledge layer ================= */
-/* Domain-specific ontologies — departments and their subdomains */
-const ONT=[
- {id:"eng", name:"Engineering & Design",        sub:["Systems Engineering","Airframe & Structures","Avionics & Software","Configuration & PLM"]},
- {id:"mfg", name:"Manufacturing & Production",  sub:["Shop Floor / MES","Tooling & Automation","Assembly & Integration","Additive Manufacturing"]},
- {id:"scm", name:"Supply Chain & Procurement",  sub:["Supplier Management","Logistics & Track-and-Trace","Inventory & Spares"]},
- {id:"qual",name:"Quality & Airworthiness",     sub:["Quality Management (AS9100)","Inspection & NDT","Certification & Compliance","Continued Airworthiness"]},
- {id:"mro", name:"MRO & Aftermarket",           sub:["Predictive Maintenance","Field Service / AOG","Fleet Reliability"]},
- {id:"cust",name:"Customer & Commercial",       sub:["Owner Experience","Support & Warranty","Sales & Portfolio Strategy"]},
- {id:"data",name:"Digital, Data & IT",          sub:["Semantic Knowledge Layer","Data Platform","Cybersecurity & Export","AI / ML Governance"]},
-];
-/* Business capabilities, each owned by a primary domain */
+const OPDOM=[{"id": "op:business", "label": "Business Operations"}, {"id": "op:commercial", "label": "Commercial Operations"}, {"id": "op:customer", "label": "Customer Support Operations"}, {"id": "op:supply", "label": "Supply Chain Operations"}, {"id": "op:manufacturing", "label": "Manufacturing Operations"}];
+const DOM=[{"id": "pe", "label": "Product Engineering Domain", "ops": ["op:manufacturing", "op:commercial"]}, {"id": "amf", "label": "Aircraft Manufacturing Domain", "ops": ["op:manufacturing", "op:supply"]}, {"id": "sc", "label": "Supply Chain & Logistics Domain", "ops": ["op:supply", "op:manufacturing", "op:business"]}, {"id": "sm", "label": "Sales & Marketing Domain", "ops": ["op:commercial", "op:business"]}, {"id": "csa", "label": "Customer Support & Aftermarket Domain", "ops": ["op:customer", "op:commercial"]}, {"id": "csf", "label": "Corporate Strategy & Finance Domain", "ops": ["op:business"]}];
+const SVC=[{"id": "AircraftDesignService", "label": "Aircraft Design & Simulation", "domain": "pe", "procs": ["ProcCADDesign", "ProcCFDAnalysis", "ProcAvionicsIntegration", "ProcMaterialResearch"]}, {"id": "CertificationService", "label": "Certification & Regulatory Compliance", "domain": "pe", "procs": ["ProcTypeCert", "ProcFlightTestData", "ProcSafetyCase", "ProcAirworthiness"]}, {"id": "ComponentFabricationService", "label": "Component Fabrication", "domain": "amf", "procs": ["ProcCompositeLayering", "ProcPrecisionMachining", "ProcSheetMetalForming"]}, {"id": "MajorAssemblyService", "label": "Major Assembly Integration (MAI)", "domain": "amf", "procs": ["ProcFuselageJoinery", "ProcWingBodyMating", "ProcLandingGearInstall"]}, {"id": "FinalAssemblyService", "label": "Final Assembly Line (FAL)", "domain": "amf", "procs": ["ProcEngineMounting", "ProcCabinOutfitting", "ProcSystemPowerOn"]}, {"id": "SRMService", "label": "Supplier Relationship Management (SRM)", "domain": "sc", "procs": ["ProcSupplierAuditing", "ProcContractNegotiation", "ProcPerfMonitoring"]}, {"id": "ProcurementService", "label": "Procurement & Strategic Sourcing", "domain": "sc", "procs": ["ProcRawMaterials", "ProcLongLeadOrdering", "ProcJITPlanning"]}, {"id": "GlobalLogisticsService", "label": "Global Logistics & Warehousing", "domain": "sc", "procs": ["ProcPartsTracking", "ProcWarehouseOptimization", "ProcAOGLogistics"]}, {"id": "CRMService", "label": "Customer Relationship Management (CRM)", "domain": "sm", "procs": ["ProcLeadGeneration", "ProcNeedsAssessment", "ProcHNWIOutreach"]}, {"id": "SalesFinancingService", "label": "Aircraft Sales & Financing", "domain": "sm", "procs": ["ProcProposalGeneration", "ProcPriceNegotiation", "ProcFinancingSupport", "ProcTradeIn"]}, {"id": "PlannedSupportServiceInst", "label": "Planned Support & Fleet Maintenance", "domain": "csa", "procs": ["ProcScheduledInspection", "ProcComponentExchange", "ProcServiceBulletin"]}, {"id": "MROServiceInst", "label": "MRO (Maintenance, Repair, & Overhaul)", "domain": "csa", "procs": ["ProcEngineOverhaul", "ProcStructuralRepairs", "ProcAvionicsUpgrades"]}, {"id": "OnDemandSupportServiceInst", "label": "On-Demand Support (AOG)", "domain": "csa", "procs": ["Proc247Hotline", "ProcMRTDeployment", "ProcUrgentPartsDispatch"]}, {"id": "FPAAnalysisService", "label": "Financial Planning & Analysis (FP&A)", "domain": "csf", "procs": ["ProcRevenueForecasting", "ProcCostAccounting", "ProcInvestmentAppraisal"]}, {"id": "StrategicPlanningService", "label": "Strategic Planning", "domain": "csf", "procs": ["ProcMarketAnalysis", "ProcMAEvaluation", "ProcBrandManagement"]}];
+const PROC=[{"id": "ProcCADDesign", "label": "Conceptual Design (CAD/CAE)", "svc": "AircraftDesignService"}, {"id": "ProcCFDAnalysis", "label": "Aerodynamics & CFD Analysis", "svc": "AircraftDesignService"}, {"id": "ProcAvionicsIntegration", "label": "Avionics Integration", "svc": "AircraftDesignService"}, {"id": "ProcMaterialResearch", "label": "Material Science Research", "svc": "AircraftDesignService"}, {"id": "ProcTypeCert", "label": "FAA/EASA Type Certification Planning", "svc": "CertificationService"}, {"id": "ProcFlightTestData", "label": "Flight Test Data Analysis", "svc": "CertificationService"}, {"id": "ProcSafetyCase", "label": "Safety Case Development", "svc": "CertificationService"}, {"id": "ProcAirworthiness", "label": "Continued Airworthiness Monitoring", "svc": "CertificationService"}, {"id": "ProcCompositeLayering", "label": "Composite Material Layering", "svc": "ComponentFabricationService"}, {"id": "ProcPrecisionMachining", "label": "Precision Machining", "svc": "ComponentFabricationService"}, {"id": "ProcSheetMetalForming", "label": "Sheet Metal Forming", "svc": "ComponentFabricationService"}, {"id": "ProcFuselageJoinery", "label": "Fuselage Joinery", "svc": "MajorAssemblyService"}, {"id": "ProcWingBodyMating", "label": "Wing-to-Body Mating", "svc": "MajorAssemblyService"}, {"id": "ProcLandingGearInstall", "label": "Landing Gear Installation", "svc": "MajorAssemblyService"}, {"id": "ProcEngineMounting", "label": "Engine Mounting", "svc": "FinalAssemblyService"}, {"id": "ProcCabinOutfitting", "label": "Cabin Completion & Outfitting", "svc": "FinalAssemblyService"}, {"id": "ProcSystemPowerOn", "label": "System Power-On Tests", "svc": "FinalAssemblyService"}, {"id": "ProcSupplierAuditing", "label": "Supplier Selection & Auditing", "svc": "SRMService"}, {"id": "ProcContractNegotiation", "label": "Contract Negotiation", "svc": "SRMService"}, {"id": "ProcPerfMonitoring", "label": "Performance Monitoring", "svc": "SRMService"}, {"id": "ProcRawMaterials", "label": "Raw Material Sourcing", "svc": "ProcurementService"}, {"id": "ProcLongLeadOrdering", "label": "Long-Lead Item Ordering", "svc": "ProcurementService"}, {"id": "ProcJITPlanning", "label": "Just-In-Time (JIT) Delivery Planning", "svc": "ProcurementService"}, {"id": "ProcPartsTracking", "label": "Parts Tracking", "svc": "GlobalLogisticsService"}, {"id": "ProcWarehouseOptimization", "label": "Warehousing Optimization", "svc": "GlobalLogisticsService"}, {"id": "ProcAOGLogistics", "label": "AOG (Aircraft on Ground) Logistics", "svc": "GlobalLogisticsService"}, {"id": "ProcLeadGeneration", "label": "Lead Generation", "svc": "CRMService"}, {"id": "ProcNeedsAssessment", "label": "Client Needs Assessment", "svc": "CRMService"}, {"id": "ProcHNWIOutreach", "label": "High-Net-Worth Individual Outreach", "svc": "CRMService"}, {"id": "ProcProposalGeneration", "label": "Proposal Generation", "svc": "SalesFinancingService"}, {"id": "ProcPriceNegotiation", "label": "Price Negotiation", "svc": "SalesFinancingService"}, {"id": "ProcFinancingSupport", "label": "Financing and Leasing Support", "svc": "SalesFinancingService"}, {"id": "ProcTradeIn", "label": "Used Aircraft Trade-In", "svc": "SalesFinancingService"}, {"id": "ProcScheduledInspection", "label": "Scheduled Inspection Planning", "svc": "PlannedSupportServiceInst"}, {"id": "ProcComponentExchange", "label": "Component Exchange Programs (CEP)", "svc": "PlannedSupportServiceInst"}, {"id": "ProcServiceBulletin", "label": "Service Bulletin (SB) Implementations", "svc": "PlannedSupportServiceInst"}, {"id": "ProcEngineOverhaul", "label": "Engine Overhaul Management", "svc": "MROServiceInst"}, {"id": "ProcStructuralRepairs", "label": "Structural Repairs", "svc": "MROServiceInst"}, {"id": "ProcAvionicsUpgrades", "label": "Avionics Upgrades", "svc": "MROServiceInst"}, {"id": "Proc247Hotline", "label": "24/7 Technical Hotline", "svc": "OnDemandSupportServiceInst"}, {"id": "ProcMRTDeployment", "label": "Mobile Repair Team (MRT) Deployment", "svc": "OnDemandSupportServiceInst"}, {"id": "ProcUrgentPartsDispatch", "label": "Urgent Parts Dispatch", "svc": "OnDemandSupportServiceInst"}, {"id": "ProcRevenueForecasting", "label": "Revenue Forecasting", "svc": "FPAAnalysisService"}, {"id": "ProcCostAccounting", "label": "Cost Accounting & Control", "svc": "FPAAnalysisService"}, {"id": "ProcInvestmentAppraisal", "label": "Investment Appraisal", "svc": "FPAAnalysisService"}, {"id": "ProcMarketAnalysis", "label": "Market Analysis", "svc": "StrategicPlanningService"}, {"id": "ProcMAEvaluation", "label": "Mergers & Acquisitions Evaluation", "svc": "StrategicPlanningService"}, {"id": "ProcBrandManagement", "label": "Brand Management", "svc": "StrategicPlanningService"}];
+
+/* ===== Bridging layer: business capabilities under RDF domains, service->capability, project->process ===== */
 const CAPS=[
- {id:"digital-thread",name:"Digital Thread Traceability",domain:"eng"},
- {id:"config-plm",name:"Configuration & Change Control",domain:"eng"},
- {id:"mbse",name:"Model-Based Systems Engineering",domain:"eng"},
- {id:"mes-exec",name:"Digital Shop-Floor Execution",domain:"mfg"},
- {id:"oee",name:"OEE & Line Optimization",domain:"mfg"},
- {id:"addmfg",name:"Additive / On-Demand Parts",domain:"mfg"},
- {id:"supplier-risk",name:"Supplier Risk & Lead-Time",domain:"scm"},
- {id:"track-trace",name:"Serialized Track & Trace",domain:"scm"},
- {id:"fai",name:"Automated First-Article Inspection",domain:"qual"},
- {id:"cv-ndt",name:"AI Defect Detection / NDT",domain:"qual"},
- {id:"capa",name:"Closed-Loop CAPA",domain:"qual"},
- {id:"cert-eic",name:"Certification Evidence",domain:"qual"},
- {id:"predictive",name:"Predictive Maintenance",domain:"mro"},
- {id:"ahms",name:"Aircraft Health Monitoring",domain:"mro"},
- {id:"aog",name:"Rapid AOG Response",domain:"mro"},
- {id:"owner-portal",name:"VIP Owner Experience",domain:"cust"},
- {id:"warranty",name:"Warranty & Support Ops",domain:"cust"},
- {id:"semantic",name:"Semantic Knowledge Layer",domain:"data"},
- {id:"ai-gov",name:"AI / ML Governance",domain:"data"},
- {id:"cyber",name:"Cyber & Export Control",domain:"data"},
+ {id:"mbse",name:"Model-Based Systems Engineering",domain:"pe"},
+ {id:"digital-thread",name:"Digital Thread Traceability",domain:"pe"},
+ {id:"cert-eic",name:"Certification & Airworthiness Evidence",domain:"pe"},
+ {id:"config-plm",name:"Configuration & Change Control",domain:"pe"},
+ {id:"semantic",name:"Semantic Knowledge Layer",domain:"pe"},
+ {id:"mes-exec",name:"Digital Shop-Floor Execution",domain:"amf"},
+ {id:"oee",name:"OEE & Line Optimization",domain:"amf"},
+ {id:"fai",name:"Automated Inspection & FAI",domain:"amf"},
+ {id:"cv-ndt",name:"AI Defect Detection / NDT",domain:"amf"},
+ {id:"addmfg",name:"Additive / On-Demand Parts",domain:"amf"},
+ {id:"capa",name:"Closed-Loop CAPA",domain:"amf"},
+ {id:"supplier-risk",name:"Supplier Risk & Lead-Time",domain:"sc"},
+ {id:"track-trace",name:"Serialized Track & Trace",domain:"sc"},
+ {id:"cyber",name:"Cyber & Export Control",domain:"sc"},
+ {id:"crm",name:"CRM & Client Engagement",domain:"sm"},
+ {id:"sales-fin",name:"Aircraft Sales & Financing",domain:"sm"},
+ {id:"predictive",name:"Predictive Maintenance",domain:"csa"},
+ {id:"ahms",name:"Aircraft Health Monitoring",domain:"csa"},
+ {id:"aog",name:"Rapid AOG Response",domain:"csa"},
+ {id:"owner-portal",name:"VIP Owner Experience",domain:"csa"},
+ {id:"warranty",name:"Warranty & Support Ops",domain:"csa"},
+ {id:"ai-gov",name:"AI / ML Governance",domain:"csa"},
+ {id:"fpa",name:"Financial Planning & Analysis",domain:"csf"},
+ {id:"strategy",name:"Strategic Planning & M&A",domain:"csf"},
 ];
-/* Project metadata: primary domain, delivered capabilities, upstream dependencies */
+const SVC_CAP={AircraftDesignService:"mbse",CertificationService:"cert-eic",ComponentFabricationService:"fai",MajorAssemblyService:"mes-exec",FinalAssemblyService:"oee",SRMService:"supplier-risk",ProcurementService:"supplier-risk",GlobalLogisticsService:"track-trace",CRMService:"crm",SalesFinancingService:"sales-fin",PlannedSupportServiceInst:"ahms",MROServiceInst:"predictive",OnDemandSupportServiceInst:"aog",FPAAnalysisService:"fpa",StrategicPlanningService:"strategy"};
 const PROJMETA={
- "dsc-ctrltower":{domain:"scm", caps:["supplier-risk","digital-thread"], deps:[]},
- "dsc-trace":    {domain:"scm", caps:["track-trace","fai"], deps:["dsc-ctrltower"]},
- "mes-core":     {domain:"mfg", caps:["mes-exec","oee","config-plm"], deps:[]},
- "mes-iot":      {domain:"mfg", caps:["oee","predictive"], deps:["mes-core"]},
- "mro-ahms":     {domain:"mro", caps:["ahms","predictive","semantic"], deps:["mes-iot"]},
- "mro-ml":       {domain:"mro", caps:["predictive","ai-gov"], deps:["mro-ahms"]},
- "odr-aog":      {domain:"mro", caps:["aog","track-trace"], deps:["dsc-ctrltower"]},
- "odr-print":    {domain:"mfg", caps:["addmfg","aog"], deps:["odr-aog"]},
- "qi-vision":    {domain:"qual",caps:["cv-ndt","fai"], deps:["mes-core"]},
- "qi-capa":      {domain:"qual",caps:["capa","cert-eic"], deps:["qi-vision"]},
- "cs-portal":    {domain:"cust",caps:["owner-portal","ahms"], deps:["mro-ahms"]},
- "cs-desk":      {domain:"cust",caps:["warranty","cyber"], deps:["cs-portal"]},
+ "dsc-ctrltower":{domain:"sc", caps:["supplier-risk","digital-thread"], deps:[], procs:["ProcSupplierAuditing","ProcPerfMonitoring","ProcPartsTracking","ProcJITPlanning"]},
+ "dsc-trace":    {domain:"sc", caps:["track-trace","fai"], deps:["dsc-ctrltower"], procs:["ProcPartsTracking","ProcWarehouseOptimization","ProcRawMaterials"]},
+ "mes-core":     {domain:"amf", caps:["mes-exec","oee","config-plm"], deps:[], procs:["ProcPrecisionMachining","ProcFuselageJoinery","ProcSystemPowerOn","ProcCabinOutfitting"]},
+ "mes-iot":      {domain:"amf", caps:["oee","predictive"], deps:["mes-core"], procs:["ProcPrecisionMachining","ProcCompositeLayering","ProcEngineMounting"]},
+ "mro-ahms":     {domain:"csa", caps:["ahms","predictive","semantic"], deps:["mes-iot"], procs:["ProcScheduledInspection","ProcServiceBulletin","ProcAirworthiness"]},
+ "mro-ml":       {domain:"csa", caps:["predictive","ai-gov"], deps:["mro-ahms"], procs:["ProcEngineOverhaul","ProcComponentExchange","ProcAirworthiness"]},
+ "odr-aog":      {domain:"csa", caps:["aog","track-trace"], deps:["dsc-ctrltower"], procs:["Proc247Hotline","ProcMRTDeployment","ProcUrgentPartsDispatch","ProcAOGLogistics"]},
+ "odr-print":    {domain:"amf", caps:["addmfg","aog"], deps:["odr-aog"], procs:["ProcUrgentPartsDispatch","ProcCompositeLayering","ProcStructuralRepairs"]},
+ "qi-vision":    {domain:"amf", caps:["cv-ndt","fai"], deps:["mes-core"], procs:["ProcPrecisionMachining","ProcFuselageJoinery","ProcStructuralRepairs"]},
+ "qi-capa":      {domain:"amf", caps:["capa","cert-eic"], deps:["qi-vision"], procs:["ProcSystemPowerOn","ProcServiceBulletin","ProcSafetyCase"]},
+ "cs-portal":    {domain:"csa", caps:["owner-portal","ahms"], deps:["mro-ahms"], procs:["ProcNeedsAssessment","ProcScheduledInspection","ProcComponentExchange"]},
+ "cs-desk":      {domain:"csa", caps:["warranty","cyber"], deps:["cs-portal"], procs:["Proc247Hotline","ProcServiceBulletin","ProcHNWIOutreach"]},
 };
-/* Strategy & operational OKRs, each key result advanced by capabilities */
 const OKRS=[
  {id:"o-cert",obj:"Compress time-to-certification",type:"Strategy",krs:[
    {id:"kr-cert1",kr:"Cert-evidence cycle time",unit:"mo",base:18,target:11,caps:["cert-eic","digital-thread","config-plm"]},
@@ -2214,12 +2236,16 @@ const OKRS=[
    {id:"kr-oee1",kr:"Overall Equipment Effectiveness",unit:"%",base:63,target:82,caps:["mes-exec","oee"]},
    {id:"kr-oee2",kr:"Assembly rework hours",unit:"%",base:100,target:70,caps:["mes-exec","cv-ndt"]}]},
 ];
-
-/* ---- helpers ---- */
-function capDomain(cid){const c=CAPS.find(x=>x.id===cid);return c?c.domain:null;}
+const DOMBY={},SVCBY={},PROCBY={},CAPBY={},OPBY={};
+DOM.forEach(d=>DOMBY[d.id]=d);SVC.forEach(s=>SVCBY[s.id]=s);PROC.forEach(p=>PROCBY[p.id]=p);CAPS.forEach(c=>CAPBY[c.id]=c);OPDOM.forEach(o=>OPBY[o.id]=o);
+const DOM_SHORT={pe:"Engineering",amf:"Manufacturing",sc:"Supply Chain",sm:"Sales",csa:"Support / MRO",csf:"Strategy / Finance"};
+function capDomain(cid){return (CAPBY[cid]||{}).domain;}
 function shortName(s){s=String(s).replace(/\s*\(.*?\)\s*/g," ").replace(/\s+/g," ").trim();return s.length>24?s.slice(0,22)+"…":s;}
 function fmt(v){return (Math.round(v*10)/10).toString();}
+function projOf(nd){return projects.find(p=>"prj:"+p.id===nd.id);}
 function chipFor(pr){const t=tier(overallOf(pr).ratio,overallAppetite);return `<span class="vchip" style="background:${cbg(t)};color:${cvar(t)}">${esc(shortName(pr.name))}</span>`;}
+
+/* ---- OKR helpers ---- */
 function krContribProjects(kr){return projects.filter(pr=>{const m=PROJMETA[pr.id];return m&&(m.caps||[]).some(c=>kr.caps.includes(c));});}
 function krAttain(kr){const ps=krContribProjects(kr);const frac=ps.length?ps.reduce((a,pr)=>a+overallOf(pr).ratio,0)/ps.length:0;return{frac:Math.max(0,Math.min(1,frac)),ps};}
 function krProjected(kr){return kr.base+(kr.target-kr.base)*krAttain(kr).frac;}
@@ -2227,127 +2253,198 @@ function okrItemsFor(ps){const set=new Set(ps.map(p=>p.id));const items=[];
   OKRS.forEach(o=>o.krs.forEach(kr=>{const contrib=krContribProjects(kr).filter(pr=>set.has(pr.id));if(!contrib.length)return;
     const frac=contrib.reduce((a,pr)=>a+overallOf(pr).ratio,0)/contrib.length;items.push({o,kr,contrib,frac:Math.max(0,Math.min(1,frac))});}));
   return items;}
-function domainProjects(domId){return projects.filter(pr=>{const m=PROJMETA[pr.id];if(!m)return false;if(m.domain===domId)return true;return (m.caps||[]).some(c=>capDomain(c)===domId);});}
 function krmini(i){const col=i.frac>=.8?"var(--go)":i.frac>=.5?"var(--rev)":"var(--nogo)";
   return `<span class="krmini" title="${esc(i.o.obj)}"><span class="kb"><span style="width:${(i.frac*100).toFixed(0)}%;background:${col}"></span></span>${esc(i.kr.kr)} <b style="color:${col}">${(i.frac*100).toFixed(0)}%</b></span>`;}
 function scopeSummary(ps){if(!ps.length)return "No projects mapped to this scope.";
   const items=okrItemsFor(ps);const mean=ps.reduce((a,p)=>a+overallOf(p).ratio,0)/ps.length;
   const risk=items.filter(i=>i.frac<.5).length;const sorted=items.slice().sort((a,b)=>b.frac-a.frac);const top=sorted[0],low=sorted[sorted.length-1];
   let s=`Mean delivery maturity <b>${(mean*100).toFixed(0)}%</b> across ${ps.length} project${ps.length>1?'s':''}, touching ${items.length} key result${items.length>1?'s':''}. `;
-  if(top)s+=`Strongest lift: <b>${top.kr.kr}</b> <span class="vmeta">(${top.o.obj})</span>. `;
+  if(top)s+=`Strongest lift: <b>${top.kr.kr}</b>. `;
   if(risk)s+=`<b style="color:var(--nogo)">${risk} at risk</b>${low&&low.frac<.5?` — notably <b>${low.kr.kr}</b>`:''}.`;
   else if(items.length)s+=`All impacted key results are on a healthy trajectory.`;
   return s;}
+function domainProjects(did){return projects.filter(pr=>{const m=PROJMETA[pr.id];if(!m)return false;
+  if(m.domain===did)return true;
+  if((m.caps||[]).some(c=>capDomain(c)===did))return true;
+  return (m.procs||[]).some(p=>{const pp=PROCBY[p];const s=pp&&SVCBY[pp.svc];return s&&s.domain===did;});});}
+
+/* ================= Impact rollup: project -> process -> service -> capability -> domain -> operation ================= */
+function projMat(pr){return overallOf(pr).ratio;}
+function projsForProc(pid){return projects.filter(pr=>((PROJMETA[pr.id]||{}).procs||[]).includes(pid));}
+function procImpact(pid){const ps=projsForProc(pid);return{v:ps.length?ps.reduce((a,p)=>a+projMat(p),0)/ps.length:null,ps};}
+function svcImpact(sid){const s=SVCBY[sid];if(!s)return{v:null,cov:0,tot:0,adr:0};const ims=s.procs.map(procImpact);const ad=ims.filter(x=>x.v!=null);
+  return{v:ad.length?ad.reduce((a,x)=>a+x.v,0)/ad.length:null,cov:s.procs.length?ad.length/s.procs.length:0,tot:s.procs.length,adr:ad.length};}
+function domServices(did){return SVC.filter(s=>s.domain===did);}
+function capServices(cid){return SVC.filter(s=>SVC_CAP[s.id]===cid);}
+function capImpact(cid){const ims=capServices(cid).map(s=>svcImpact(s.id)).filter(x=>x.v!=null);return{v:ims.length?ims.reduce((a,x)=>a+x.v,0)/ims.length:null,cov:0,tot:capServices(cid).length,adr:ims.length};}
+function domImpact(did){const svs=domServices(did).map(s=>svcImpact(s.id));const ad=svs.filter(x=>x.v!=null);
+  return{v:ad.length?ad.reduce((a,x)=>a+x.v,0)/ad.length:null,cov:svs.length?ad.length/svs.length:0,tot:svs.length,adr:ad.length};}
+function opDomains(opid){return DOM.filter(d=>d.ops.includes(opid));}
+function opImpact(opid){const ds=opDomains(opid).map(d=>domImpact(d.id));const ad=ds.filter(x=>x.v!=null);
+  return{v:ad.length?ad.reduce((a,x)=>a+x.v,0)/ad.length:null,cov:ds.length?ad.length/ds.length:0,tot:ds.length,adr:ad.length};}
 
 /* ================= Knowledge graph ================= */
 let valueTab="graph", graphSel=null, graphPos=null;
 let vgTx=0, vgTy=0, vgScale=1, vgDrag={active:false};
-let fDomains=new Set(ONT.map(d=>d.id)), fTypes=new Set(["domain","cap","project"]),
-    fVerdicts=new Set(["GO","REVIEW","NO-GO"]), fEdges=new Set(["deliver","dep","part"]);
-const DOM_SHORT={eng:"Engineering",mfg:"Manufacturing",scm:"Supply Chain",qual:"Quality",mro:"MRO",cust:"Customer",data:"Digital / IT"};
-function projOf(nd){return projects.find(p=>"prj:"+p.id===nd.id);}
+let fDomains=new Set(DOM.map(d=>d.id)),
+    fTypes=new Set(["opdomain","domain","cap","service","project"]),
+    fVerdicts=new Set(["GO","REVIEW","NO-GO"]),
+    fEdges=new Set(["domop","capdom","svccap","procsvc","projproc","dep","member"]);
+const EDGE_GROUPS={chain:["domop","capdom","svccap","procsvc","projproc"],depends:["dep"],portfolio:["member"]};
+function edgeGroupOn(g){return EDGE_GROUPS[g].every(t=>fEdges.has(t));}
+function svcDomain(sid){const s=SVCBY[sid];return s?s.domain:null;}
+function procDomain(pid){const p=PROCBY[pid];const s=p&&SVCBY[p.svc];return s?s.domain:null;}
 function nodeVisible(nd){
   if(!fTypes.has(nd.type))return false;
-  if(nd.type==="domain"||nd.type==="cap")return fDomains.has(nd.domain);
-  const pr=projOf(nd);if(!pr)return false;const m=PROJMETA[pr.id]||{caps:[]};
-  const doms=new Set([m.domain,...(m.caps||[]).map(capDomain)]);
+  if(nd.type==="opdomain")return opDomains(nd.id).some(d=>fDomains.has(d.id));
+  if(nd.type==="domain")return fDomains.has(nd.id.slice(4));
+  if(nd.type==="cap")return fDomains.has(capDomain(nd.id.slice(4)));
+  if(nd.type==="service")return fDomains.has(svcDomain(nd.id.slice(4)));
+  if(nd.type==="process")return fDomains.has(procDomain(nd.id.slice(5)));
+  if(nd.type==="portfolio"){const ps=projects.filter(p=>p.portfolio===nd.label);return ps.some(pr=>fDomains.has((PROJMETA[pr.id]||{}).domain));}
+  const pr=projOf(nd);if(!pr)return false;const m=PROJMETA[pr.id]||{caps:[],procs:[]};
+  const doms=new Set([m.domain,...(m.caps||[]).map(capDomain),...(m.procs||[]).map(procDomain)]);
   if(![...doms].some(d=>fDomains.has(d)))return false;
   return fVerdicts.has(verdict(overallOf(pr),overallAppetite).tag);
 }
 function toggleFilter(cat,val){
-  if(cat==="reset"){fDomains=new Set(ONT.map(d=>d.id));fTypes=new Set(["domain","cap","project"]);fVerdicts=new Set(["GO","REVIEW","NO-GO"]);fEdges=new Set(["deliver","dep","part"]);return;}
-  const S=cat==="dom"?fDomains:cat==="type"?fTypes:cat==="verd"?fVerdicts:fEdges;
+  if(cat==="reset"){fDomains=new Set(DOM.map(d=>d.id));fTypes=new Set(["opdomain","domain","cap","service","process","project","portfolio"]);fVerdicts=new Set(["GO","REVIEW","NO-GO"]);fEdges=new Set(["domop","capdom","svccap","procsvc","projproc","dep","member"]);return;}
+  if(cat==="edge"){const grp=EDGE_GROUPS[val];const on=grp.every(t=>fEdges.has(t));grp.forEach(t=>on?fEdges.delete(t):fEdges.add(t));return;}
+  const S=cat==="dom"?fDomains:cat==="type"?fTypes:fVerdicts;
   S.has(val)?S.delete(val):S.add(val);}
 function valueGraph(){const nodes=[],edges=[],idx={};
   const add=(id,type,label,domain)=>{if(idx[id]!=null)return;idx[id]=nodes.length;nodes.push({id,type,label,domain});};
-  ONT.forEach(d=>add("dom:"+d.id,"domain",d.name,d.id));
-  CAPS.forEach(c=>{add("cap:"+c.id,"cap",c.name,c.domain);edges.push(["cap:"+c.id,"dom:"+c.domain,"part"]);});
+  OPDOM.forEach(o=>add(o.id,"opdomain",o.label,null));
+  DOM.forEach(d=>{add("dom:"+d.id,"domain",d.label,d.id);d.ops.forEach(op=>edges.push(["dom:"+d.id,op,"domop"]));});
+  CAPS.forEach(c=>{add("cap:"+c.id,"cap",c.name,c.domain);edges.push(["cap:"+c.id,"dom:"+c.domain,"capdom"]);});
+  SVC.forEach(s=>{add("svc:"+s.id,"service",s.label,s.domain);const cap=SVC_CAP[s.id];if(cap)edges.push(["svc:"+s.id,"cap:"+cap,"svccap"]);});
+  PROC.forEach(p=>{add("proc:"+p.id,"process",p.label,procDomain(p.id));if(p.svc)edges.push(["proc:"+p.id,"svc:"+p.svc,"procsvc"]);});
+  const ports=[...new Set(projects.map(p=>p.portfolio))];
+  ports.forEach((pn,i)=>add("pf:"+i,"portfolio",pn,null));
   projects.forEach(pr=>{const m=PROJMETA[pr.id];if(!m)return;add("prj:"+pr.id,"project",pr.name,m.domain);
-    (m.caps||[]).forEach(c=>{if(idx["cap:"+c]!=null)edges.push(["prj:"+pr.id,"cap:"+c,"deliver"]);});
-    (m.deps||[]).forEach(dp=>{if(idx["prj:"+dp]!=null)edges.push(["prj:"+pr.id,"prj:"+dp,"dep"]);});});
+    (m.procs||[]).forEach(p=>{if(idx["proc:"+p]!=null)edges.push(["prj:"+pr.id,"proc:"+p,"projproc"]);});
+    (m.deps||[]).forEach(dp=>{if(idx["prj:"+dp]!=null)edges.push(["prj:"+pr.id,"prj:"+dp,"dep"]);});
+    const pi=ports.indexOf(pr.portfolio);if(pi>=0)edges.push(["prj:"+pr.id,"pf:"+pi,"member"]);});
   return{nodes,edges,idx};}
 function layoutGraph(g,W,H){if(graphPos&&graphPos.__n===g.nodes.length)return graphPos;
-  const n=g.nodes.length;const pos=g.nodes.map((nd,i)=>{const ring=nd.type==="domain"?0.9:nd.type==="cap"?0.55:0.25;
-    const off=nd.type==="domain"?0:nd.type==="cap"?1.7:0.8;const ang=2*Math.PI*i/n+off;
-    return{x:W/2+Math.cos(ang)*ring*W*0.4,y:H/2+Math.sin(ang)*ring*H*0.4,vx:0,vy:0};});
-  const adj=g.edges.map(e=>[g.idx[e[0]],g.idx[e[1]]]);const k=Math.sqrt((W*H)/n)*0.66;
-  for(let it=0;it<320;it++){const t=1-it/320;
+  const R={opdomain:0.95,portfolio:0.82,domain:0.7,cap:0.52,service:0.36,process:0.2,project:0.08};
+  const OFF={opdomain:0,portfolio:2.5,domain:0.5,cap:1.2,service:2.0,process:0.9,project:1.6};
+  const n=g.nodes.length;const pos=g.nodes.map((nd,i)=>{const ring=R[nd.type]??0.3,off=OFF[nd.type]??0;const ang=2*Math.PI*i/n+off;
+    return{x:W/2+Math.cos(ang)*ring*W*0.42,y:H/2+Math.sin(ang)*ring*H*0.42,vx:0,vy:0};});
+  const adj=g.edges.map(e=>[g.idx[e[0]],g.idx[e[1]]]);const k=Math.sqrt((W*H)/n)*0.62;
+  for(let it=0;it<300;it++){const t=1-it/300;
     for(let i=0;i<n;i++){let fx=0,fy=0;for(let j=0;j<n;j++){if(i===j)continue;let dx=pos[i].x-pos[j].x,dy=pos[i].y-pos[j].y;let d2=dx*dx+dy*dy||0.01;let d=Math.sqrt(d2);let f=k*k/d;fx+=dx/d*f;fy+=dy/d*f;}pos[i].vx=fx;pos[i].vy=fy;}
     adj.forEach(([a,b])=>{let dx=pos[a].x-pos[b].x,dy=pos[a].y-pos[b].y;let d=Math.sqrt(dx*dx+dy*dy)||0.01;let f=d*d/k;let ux=dx/d*f,uy=dy/d*f;pos[a].vx-=ux;pos[a].vy-=uy;pos[b].vx+=ux;pos[b].vy+=uy;});
     for(let i=0;i<n;i++){pos[i].vx+=(W/2-pos[i].x)*0.02;pos[i].vy+=(H/2-pos[i].y)*0.02;
-      let sp=Math.sqrt(pos[i].vx*pos[i].vx+pos[i].vy*pos[i].vy)||0.01;let mx=16*t+2;if(sp>mx){pos[i].vx*=mx/sp;pos[i].vy*=mx/sp;}
+      let sp=Math.sqrt(pos[i].vx*pos[i].vx+pos[i].vy*pos[i].vy)||0.01;let mx=15*t+2;if(sp>mx){pos[i].vx*=mx/sp;pos[i].vy*=mx/sp;}
       pos[i].x+=pos[i].vx;pos[i].y+=pos[i].vy;pos[i].x=Math.max(34,Math.min(W-34,pos[i].x));pos[i].y=Math.max(30,Math.min(H-30,pos[i].y));}}
   graphPos={__n:n};g.nodes.forEach((nd,i)=>graphPos[nd.id]={x:pos[i].x,y:pos[i].y});return graphPos;}
 function projTierColor(pr){return cvar(tier(overallOf(pr).ratio,overallAppetite));}
+const EC={domop:["var(--gold)",1.7,""],capdom:["var(--navy-soft)",1,""],svccap:["#6b8fb5",1,""],procsvc:["var(--hair)",1,""],projproc:["var(--navy2)",1.2,""],dep:["var(--nogo)",1.5,'stroke-dasharray="4 3"'],member:["var(--gold-hi)",1.1,'stroke-dasharray="1 3"']};
 function graphDetail(g){
-  if(!graphSel)return `<div class="gdetail muted">Tap any node to trace its interdependencies. Projects are coloured by Go / Review / No-Go. Tap again to deselect.</div>`;
+  if(!graphSel)return `<div class="gdetail muted">Tap any node to trace its chain. The graph links <b>project → process → service → capability → domain → operational domain</b>. Projects are coloured by verdict. Tap again to deselect.</div>`;
   const i=g.idx[graphSel];if(i==null)return `<div class="gdetail muted">—</div>`;const nd=g.nodes[i];
   const conn=g.edges.filter(([a,b])=>a===graphSel||b===graphSel).map(([a,b,ty])=>({o:a===graphSel?b:a,ty}));
+  const lbl=id=>{const j=g.idx[id];return j!=null?g.nodes[j].label:id;};
+  const impline=im=>im.v==null?'<span class="vmeta">not yet addressed</span>':`<b style="color:${cvar(tier(im.v,overallAppetite))}">${(im.v*100).toFixed(0)}%</b>${im.tot!=null?` · cov ${(im.cov*100).toFixed(0)}%`:''}`;
   let sec="";
-  if(nd.type==="project"){const pr=projects.find(x=>"prj:"+x.id===nd.id);const o=overallOf(pr);const t=tier(o.ratio,overallAppetite);const vt=verdict(o,overallAppetite);
-    const caps=conn.filter(c=>c.ty==="deliver").map(c=>g.nodes[g.idx[c.o]].label);
-    const deps=conn.filter(c=>c.ty==="dep").map(c=>g.nodes[g.idx[c.o]].label);
+  if(nd.type==="project"){const pr=projOf(nd);const o=overallOf(pr);const t=tier(o.ratio,overallAppetite);const vt=verdict(o,overallAppetite);
+    const procs=conn.filter(c=>c.ty==="projproc").map(c=>lbl(c.o));const deps=conn.filter(c=>c.ty==="dep").map(c=>lbl(c.o));const pf=conn.filter(c=>c.ty==="member").map(c=>lbl(c.o));
     sec=`<span class="vchip" style="background:${cbg(t)};color:${cvar(t)}">${vt.tag} · ${(o.ratio*100).toFixed(0)}%</span>
-      <div class="gd-sec"><h5>Delivers</h5>${caps.map(c=>`<span class="ont-s">${esc(c)}</span>`).join("")||'—'}</div>
-      ${deps.length?`<div class="gd-sec"><h5>Depends on</h5>${deps.map(c=>`<span class="ont-s">${esc(shortName(c))}</span>`).join("")}</div>`:""}
+      ${pf.length?`<div class="gd-sec"><h5>Portfolio</h5><span class="ont-s">${esc(pf[0])}</span></div>`:''}
+      <div class="gd-sec"><h5>Processes improved</h5>${procs.map(p=>`<span class="ont-s">${esc(p)}</span>`).join("")||'—'}</div>
+      ${deps.length?`<div class="gd-sec"><h5>Depends on</h5>${deps.map(p=>`<span class="ont-s">${esc(shortName(p))}</span>`).join("")}</div>`:''}
       <div class="gd-sec"><h5>OKR contribution</h5>${okrItemsFor([pr]).map(krmini).join("")||'—'}</div>`;
-  }else if(nd.type==="cap"){const dn=g.nodes[g.idx["dom:"+nd.domain]];const prjs=conn.filter(c=>c.ty==="deliver").map(c=>g.nodes[g.idx[c.o]].label);
-    sec=`<div class="gd-sec"><h5>Domain</h5><span class="ont-s">${esc(dn?dn.label:nd.domain)}</span></div>
-      <div class="gd-sec"><h5>Delivered by</h5>${prjs.map(p=>`<span class="ont-s">${esc(shortName(p))}</span>`).join("")||'<span class="vmeta">no active project — capability gap</span>'}</div>`;
-  }else{const d=ONT.find(x=>"dom:"+x.id===nd.id);const caps=CAPS.filter(c=>c.domain===d.id);const ps=domainProjects(d.id);
-    sec=`<div class="gd-sec"><h5>Subdomains</h5>${d.sub.map(s=>`<span class="ont-s">${esc(s)}</span>`).join("")}</div>
-      <div class="gd-sec"><h5>Capabilities</h5>${caps.map(c=>`<span class="ont-s">${esc(c.name)}</span>`).join("")}</div>
-      <div class="gd-sec"><h5>Projects</h5>${ps.map(chipFor).join("")||'—'}</div>`;}
+  }else if(nd.type==="process"){const p=PROCBY[nd.id.slice(5)];const s=SVCBY[p.svc];const im=procImpact(p.id);
+    sec=`<div class="gd-sec"><h5>Powers service</h5><span class="ont-s">${esc(s.label)}</span> <span class="vmeta">(${esc(DOMBY[s.domain].label)})</span></div>
+      <div class="gd-sec"><h5>Improved by projects</h5>${im.ps.map(chipFor).join("")||'<span class="vmeta">not yet addressed by any project</span>'}</div>
+      <div class="gd-sec"><h5>Impact</h5>${impline(im)}</div>`;
+  }else if(nd.type==="service"){const s=SVCBY[nd.id.slice(4)];const cap=CAPBY[SVC_CAP[s.id]];const im=svcImpact(s.id);
+    sec=`<div class="gd-sec"><h5>Domain / capability</h5><span class="ont-s">${esc(DOMBY[s.domain].label)}</span>${cap?`<span class="ont-s">${esc(cap.name)}</span>`:''}</div>
+      <div class="gd-sec"><h5>Processes</h5>${s.procs.map(p=>`<span class="ont-s">${esc(PROCBY[p].label)}</span>`).join("")}</div>
+      <div class="gd-sec"><h5>Rolled-up impact</h5>${impline(im)}</div>`;
+  }else if(nd.type==="cap"){const c=CAPBY[nd.id.slice(4)];const im=capImpact(c.id);
+    sec=`<div class="gd-sec"><h5>Domain</h5><span class="ont-s">${esc(DOMBY[c.domain].label)}</span></div>
+      <div class="gd-sec"><h5>Realised by services</h5>${capServices(c.id).map(s=>`<span class="ont-s">${esc(s.label)}</span>`).join("")||'<span class="vmeta">no service mapped</span>'}</div>
+      <div class="gd-sec"><h5>Impact</h5>${impline(im)}</div>`;
+  }else if(nd.type==="portfolio"){const ps=projects.filter(p=>p.portfolio===nd.label);
+    sec=`<div class="sum" style="margin-top:8px">${scopeSummary(ps)}</div><div class="gd-sec"><h5>Member projects</h5>${ps.map(chipFor).join("")}</div>`;
+  }else if(nd.type==="domain"){const d=DOMBY[nd.id.slice(4)];const im=domImpact(d.id);
+    sec=`<div class="gd-sec"><h5>Operational domains</h5>${d.ops.map(o=>`<span class="ont-s">${esc(OPBY[o].label)}</span>`).join("")}</div>
+      <div class="gd-sec"><h5>Services</h5>${domServices(d.id).map(s=>`<span class="ont-s">${esc(s.label)}</span>`).join("")}</div>
+      <div class="gd-sec"><h5>Domain impact (rolled up)</h5>${impline(im)}</div>
+      <div class="gd-sec"><h5>Projects</h5>${domainProjects(d.id).map(chipFor).join("")||'—'}</div>`;
+  }else{const im=opImpact(nd.id);
+    sec=`<div class="gd-sec"><h5>Domains</h5>${opDomains(nd.id).map(d=>`<span class="ont-s">${esc(d.label)}</span>`).join("")}</div>
+      <div class="gd-sec"><h5>Operational impact (rolled up)</h5>${impline(im)}</div>`;}
   return `<div class="gdetail"><div class="gd-k">${nd.type}</div><div class="gd-t">${esc(nd.label)}</div>${sec}
     <div class="gd-sec"><button class="btn" data-gnode="${graphSel}">Deselect</button></div></div>`;}
-function valueGraphView(){const g=valueGraph();const W=920,H=580;const pos=layoutGraph(g,W,H);
-  const vis={};g.nodes.forEach(nd=>vis[nd.id]=nodeVisible(nd));
-  if(graphSel&&!vis[graphSel])graphSel=null;
+function valueGraphView(){const g=valueGraph();const W=960,H=620;const pos=layoutGraph(g,W,H);
+  const vis={};g.nodes.forEach(nd=>vis[nd.id]=nodeVisible(nd));if(graphSel&&!vis[graphSel])graphSel=null;
   let near=null;if(graphSel){near=new Set([graphSel]);g.edges.forEach(([a,b])=>{if(a===graphSel)near.add(b);if(b===graphSel)near.add(a);});}
   const edgeSVG=g.edges.map(([a,b,ty])=>{const pa=pos[a],pb=pos[b];const show=vis[a]&&vis[b]&&fEdges.has(ty);
-    const on=!near||(near.has(a)&&near.has(b));const op=on?(ty==="dep"?0.55:ty==="deliver"?0.3:0.22):0.05;
-    const col=ty==="deliver"?"var(--navy2)":ty==="dep"?"var(--nogo)":"var(--hair)";const dash=ty==="dep"?'stroke-dasharray="4 3"':'';
-    return `<line data-s="${a}" data-t="${b}" x1="${pa.x.toFixed(1)}" y1="${pa.y.toFixed(1)}" x2="${pb.x.toFixed(1)}" y2="${pb.y.toFixed(1)}" stroke="${col}" stroke-width="${ty==="dep"?1.6:1}" opacity="${op}" ${dash} style="${show?'':'display:none'}"/>`;}).join("");
-  const nodeSVG=g.nodes.map(nd=>{const p=pos[nd.id];const o=(near&&!near.has(nd.id))?0.14:1;const hid=vis[nd.id]?'':'display:none;';
+    const on=!near||(near.has(a)&&near.has(b));const [col,w,dash]=EC[ty];const op=on?(ty==="dep"?0.55:ty==="projproc"?0.4:ty==="domop"?0.5:0.24):0.05;
+    return `<line data-s="${a}" data-t="${b}" x1="${pa.x.toFixed(1)}" y1="${pa.y.toFixed(1)}" x2="${pb.x.toFixed(1)}" y2="${pb.y.toFixed(1)}" stroke="${col}" stroke-width="${w}" opacity="${op}" ${dash} style="${show?'':'display:none'}"/>`;}).join("");
+  const nodeSVG=g.nodes.map(nd=>{const p=pos[nd.id];const o=(near&&!near.has(nd.id))?0.12:1;const hid=vis[nd.id]?'':'display:none;';
     const head=`<g class="gnode" data-gnode="${nd.id}" data-type="${nd.type}" transform="translate(${p.x.toFixed(1)},${p.y.toFixed(1)})" style="${hid}opacity:${o}">`;
-    if(nd.type==="domain")return head+`<circle r="19" fill="var(--navy)" stroke="var(--gold)" stroke-width="1.5"/><text y="33" text-anchor="middle" class="glabel gdom">${esc(nd.label)}</text></g>`;
-    if(nd.type==="cap"){const lbl=(near&&near.has(nd.id))?`<text y="-11" text-anchor="middle" class="glabel gcap">${esc(nd.label)}</text>`:"";
-      return head+`<rect x="-6" y="-6" width="12" height="12" rx="2" transform="rotate(45)" fill="var(--gold)" stroke="#fff" stroke-width="1"/>${lbl}</g>`;}
+    const nearLbl=near&&near.has(nd.id);
+    if(nd.type==="opdomain")return head+`<circle r="22" fill="var(--navy)" stroke="var(--gold)" stroke-width="2.5"/><text y="35" text-anchor="middle" class="glabel gop">${esc(nd.label.replace(' Operations',''))}</text></g>`;
+    if(nd.type==="domain")return head+`<circle r="14" fill="var(--navy-soft)" stroke="var(--gold)" stroke-width="1.4"/><text y="27" text-anchor="middle" class="glabel gdmn">${esc(nd.label.replace(' Domain',''))}</text></g>`;
+    if(nd.type==="portfolio")return head+`<rect x="-15" y="-11" width="30" height="22" rx="6" fill="var(--gold)" stroke="var(--navy)" stroke-width="1.2"/><text y="26" text-anchor="middle" class="glabel gpf">${esc(shortName(nd.label))}</text></g>`;
+    if(nd.type==="cap"){const l=nearLbl?`<text y="-11" text-anchor="middle" class="glabel gcap">${esc(nd.label)}</text>`:"";return head+`<rect x="-6" y="-6" width="12" height="12" rx="2" transform="rotate(45)" fill="var(--gold)" stroke="#fff" stroke-width="1"/>${l}</g>`;}
+    if(nd.type==="service"){const l=nearLbl?`<text y="21" text-anchor="middle" class="glabel gsvc">${esc(shortName(nd.label))}</text>`:"";return head+`<rect x="-10" y="-7" width="20" height="14" rx="4" fill="#6b8fb5" stroke="#fff" stroke-width="1"/>${l}</g>`;}
+    if(nd.type==="process"){const l=nearLbl?`<text y="-9" text-anchor="middle" class="glabel gproc">${esc(shortName(nd.label))}</text>`:"";return head+`<circle r="5.5" fill="var(--muted)" stroke="#fff" stroke-width="1"/>${l}</g>`;}
     const pr=projOf(nd);const col=pr?projTierColor(pr):"var(--muted)";
     return head+`<circle r="10" fill="${col}" stroke="#fff" stroke-width="1.5"/><text y="21" text-anchor="middle" class="glabel gprj">${esc(shortName(nd.label))}</text></g>`;}).join("");
-  const svg=`<svg id="vgsvg" viewBox="0 0 ${W} ${H}" class="vgraph" role="img" aria-label="Capability and domain knowledge graph"><g id="vgview" transform="translate(${vgTx.toFixed(1)},${vgTy.toFixed(1)}) scale(${vgScale.toFixed(3)})">${edgeSVG}${nodeSVG}</g></svg>`;
-  const legend=`<div class="glegend"><span><i class="lg dom"></i>Domain</span><span><i class="lg cap"></i>Capability</span><span><i class="lg prj"></i>Project (colour = verdict)</span><span><i class="lg e-del"></i>delivers</span><span><i class="lg e-dep"></i>depends on</span><span><i class="lg e-part"></i>part-of domain</span></div>`;
+  const svg=`<svg id="vgsvg" viewBox="0 0 ${W} ${H}" class="vgraph" role="img" aria-label="Business-model knowledge graph"><g id="vgview" transform="translate(${vgTx.toFixed(1)},${vgTy.toFixed(1)}) scale(${vgScale.toFixed(3)})">${edgeSVG}${nodeSVG}</g></svg>`;
+  const legend=`<div class="glegend"><span><i class="lg op"></i>Op-domain</span><span><i class="lg dom"></i>Domain</span><span><i class="lg cap"></i>Capability</span><span><i class="lg svc"></i>Service</span><span><i class="lg proc"></i>Process</span><span><i class="lg prj"></i>Project</span><span><i class="lg pf"></i>Portfolio</span><span><i class="lg e-chain"></i>chain</span><span><i class="lg e-dep"></i>depends</span><span><i class="lg e-mem"></i>in portfolio</span></div>`;
   const pill=(cat,val,label,on)=>`<button class="gpill" data-gfilter="${cat}:${val}" aria-pressed="${on}">${label}</button>`;
   const controls=`<div class="gcontrols">
-     <div class="gctl-row"><span class="gctl-lbl">Domains</span>${ONT.map(d=>pill("dom",d.id,DOM_SHORT[d.id],fDomains.has(d.id))).join("")}</div>
-     <div class="gctl-row"><span class="gctl-lbl">Show</span>${pill("type","project","Projects",fTypes.has("project"))}${pill("type","cap","Capabilities",fTypes.has("cap"))}${pill("type","domain","Domains",fTypes.has("domain"))}
-       <span class="gctl-lbl">Verdict</span>${pill("verd","GO","Go",fVerdicts.has("GO"))}${pill("verd","REVIEW","Review",fVerdicts.has("REVIEW"))}${pill("verd","NO-GO","No-Go",fVerdicts.has("NO-GO"))}</div>
-     <div class="gctl-row"><span class="gctl-lbl">Edges</span>${pill("edge","deliver","delivers",fEdges.has("deliver"))}${pill("edge","dep","depends",fEdges.has("dep"))}${pill("edge","part","part-of",fEdges.has("part"))}
+     <div class="gctl-row"><span class="gctl-lbl">Domains</span>${DOM.map(d=>pill("dom",d.id,DOM_SHORT[d.id],fDomains.has(d.id))).join("")}</div>
+     <div class="gctl-row"><span class="gctl-lbl">Tiers</span>${pill("type","opdomain","Op-domains",fTypes.has("opdomain"))}${pill("type","domain","Domains",fTypes.has("domain"))}${pill("type","cap","Capabilities",fTypes.has("cap"))}${pill("type","service","Services",fTypes.has("service"))}${pill("type","process","Processes",fTypes.has("process"))}${pill("type","project","Projects",fTypes.has("project"))}${pill("type","portfolio","Portfolios",fTypes.has("portfolio"))}</div>
+     <div class="gctl-row"><span class="gctl-lbl">Verdict</span>${pill("verd","GO","Go",fVerdicts.has("GO"))}${pill("verd","REVIEW","Review",fVerdicts.has("REVIEW"))}${pill("verd","NO-GO","No-Go",fVerdicts.has("NO-GO"))}
+       <span class="gctl-lbl">Edges</span>${pill("edge","chain","chain",edgeGroupOn("chain"))}${pill("edge","depends","depends",edgeGroupOn("depends"))}${pill("edge","portfolio","in portfolio",edgeGroupOn("portfolio"))}
        <span class="gsp"></span>
        <button class="gzbtn" data-gzoom="out" aria-label="Zoom out">−</button><button class="gzbtn" data-gzoom="in" aria-label="Zoom in">+</button>
        <button class="gzbtn" data-gzoom="reset">Reset view</button><button class="gzbtn" data-gfilter="reset:all">Reset filters</button><button class="gzbtn" data-gzoom="relayout">Re-layout</button></div>
    </div>`;
-  return `<div class="card" style="margin-bottom:16px"><h3>Capability &amp; domain knowledge graph</h3>
-     <div class="hint">Interdependencies between projects, the capabilities they deliver, and the business domains of the semantic knowledge layer. Solid = delivers · dashed red = project dependency · grey = capability part-of domain. Filter with the controls, <b>drag the background to pan</b>, drag a node to move it, scroll or use +/− to zoom, and tap a node to trace its neighbourhood.</div>
+  return `<div class="card" style="margin-bottom:16px"><h3>Business-model knowledge graph</h3>
+     <div class="hint">The DDD business model from the RDF, wired as a chain: <b>project → process → service → capability → domain → operational domain</b>. Gold = domain-to-operation · blue = service-to-capability · grey = process-to-service · navy = project-to-process · dashed red = project dependency · dotted = in portfolio. Processes and portfolios are hidden by default — enable them under Tiers. Drag the background to pan, drag a node to move it, scroll to zoom, tap to trace.</div>
      ${controls}
      <div class="vgraphwrap"><div>${svg}${legend}</div>${graphDetail(g)}</div></div>
-   <div class="card"><h3>Semantic knowledge layer · domain ontology</h3><div class="hint">Departments and their subdomains for the aircraft manufacturer — the domain-specific ontologies the graph is scored against.</div>${ontTree()}</div>`;}
-function ontTree(){return `<div class="onttree">${ONT.map(d=>`<div class="ont-d"><div class="ont-dn">${esc(d.name)}</div><div class="ont-subs">${d.sub.map(s=>`<span class="ont-s">${esc(s)}</span>`).join("")}</div></div>`).join("")}</div>`;}
+   <div class="card"><h3>Business model · domains, services &amp; processes</h3><div class="hint">The bounded-context domains from the RDF, their operational-domain mapping, and the services and underlying processes each owns.</div>${bmTree()}</div>`;}
+function bmTree(){return `<div class="onttree">`+DOM.map(d=>`<div class="ont-d"><div class="ont-dn">${esc(d.label)}</div><div class="vmeta" style="margin:-3px 0 7px">${d.ops.map(o=>esc(OPBY[o].label.replace(' Operations',''))).join(" · ")} operations</div>${domServices(d.id).map(s=>`<div style="margin-bottom:6px"><b style="font-size:12px;color:var(--navy2)">${esc(s.label)}</b><div class="ont-subs" style="margin-top:3px">${s.procs.map(p=>`<span class="ont-s">${esc(PROCBY[p].label)}</span>`).join("")}</div></div>`).join("")}</div>`).join("")+`</div>`;}
 
-/* ================= OKR impact views ================= */
+/* ================= Impact rollup view ================= */
+function impBar(im,label,sub){const v=im.v,col=v==null?"var(--hair)":cvar(tier(v,overallAppetite));const w=v==null?0:v*100;
+  return `<div class="rurow"><div class="ru-lab">${label}${sub?`<span class="ru-sub">${sub}</span>`:''}</div>
+    <div class="ru-bar"><span style="width:${w.toFixed(0)}%;background:${col}"></span></div>
+    <div class="ru-val" style="color:${v==null?'var(--muted)':col}">${v==null?'n/a':(v*100).toFixed(0)+'%'}</div>
+    <div class="ru-cov">${im.tot!=null&&im.tot>0?`cov ${(im.cov*100).toFixed(0)}% <span class="vmeta">(${im.adr}/${im.tot})</span>`:'<span class="vmeta">unaddressed</span>'}</div></div>`;}
+function rollupView(){
+  return `<div class="targets-intro" style="margin-bottom:8px"><h2>Impact rollup — operations &amp; strategy</h2>
+     <p>Delivery maturity flows up the business model: a project's maturity scores the <b>processes</b> it improves, processes roll up to <b>services</b>, services to <b>domains</b>, and domains to the five <b>operational domains</b>. The bar is mean maturity of addressed children; <b>coverage</b> is the share of children a project actually touches. Auto-generated from the current assessment and the RDF business model.</p></div>`+
+    OPDOM.map(op=>{const im=opImpact(op.id);const ds=opDomains(op.id);
+      return `<div class="vcard"><h4>${esc(op.label)}</h4>${impBar(im,"Operational impact")}
+        <div class="gd-sec"><h5>Domains &amp; services</h5>
+        ${ds.map(d=>impBar(domImpact(d.id),esc(d.label))).join("")}</div></div>`;}).join("");
+}
+
+/* ================= OKR views ================= */
 function okrStrategyView(){const grp={Strategy:[],Operational:[]};OKRS.forEach(o=>grp[o.type].push(o));
   const bar=kr=>{const{frac,ps}=krAttain(kr);const proj=krProjected(kr);const col=frac>=.8?"var(--go)":frac>=.5?"var(--rev)":"var(--nogo)";
     return `<div class="krrow"><div><div class="kr-name">${esc(kr.kr)}</div><div class="kr-proj">${ps.map(chipFor).join("")||'<span class="vmeta">no project mapped</span>'}</div></div>
       <div class="kr-bar"><div class="fill" style="width:${(frac*100).toFixed(0)}%;background:${col}"></div></div>
       <div class="kr-val">${fmt(kr.base)} → <b style="color:${col}">${fmt(proj)}</b> → ${fmt(kr.target)}${kr.unit?" "+kr.unit:""}<br><span class="vmeta">${(frac*100).toFixed(0)}% to target</span></div></div>`;};
   const sec=(title,list)=>`<div class="card" style="margin-bottom:18px"><h3>${title} objectives</h3>${list.map(o=>`<div class="okrobj"><div class="okr-type">${o.type}</div><h4>${esc(o.obj)}</h4>${o.krs.map(bar).join("")}</div>`).join("")}</div>`;
-  return `<div class="targets-intro" style="margin-bottom:4px"><h2>Projected OKR attainment</h2><p>Each key result is advanced by the projects that deliver its enabling capabilities. Projected value interpolates base→target by the mean delivery maturity of those projects, so a stalled project drags its key results toward the baseline. Auto-generated from the current assessment.</p></div>${sec("Strategy",grp.Strategy)}${sec("Operational",grp.Operational)}`;}
-function okrDomainView(){return `<div class="targets-intro" style="margin-bottom:4px"><h2>Impact by business domain</h2><p>Each domain of the semantic knowledge layer, the projects and capabilities it owns, and the OKRs it moves.</p></div>`+
-  ONT.map(d=>{const ps=domainProjects(d.id);const items=okrItemsFor(ps);const caps=CAPS.filter(c=>c.domain===d.id);
-   return `<div class="vcard"><h4>${esc(d.name)}</h4><div class="vmeta">${d.sub.join(" · ")}</div>
+  return `<div class="targets-intro" style="margin-bottom:4px"><h2>Projected OKR attainment</h2><p>Each key result is advanced by the projects delivering its enabling capabilities; projected value interpolates base→target by their mean delivery maturity.</p></div>${sec("Strategy",grp.Strategy)}${sec("Operational",grp.Operational)}`;}
+function okrDomainView(){return `<div class="targets-intro" style="margin-bottom:4px"><h2>Impact by business domain</h2><p>Each bounded-context domain from the RDF, its rolled-up chain impact, the projects and services it owns, and the OKRs it moves.</p></div>`+
+  DOM.map(d=>{const ps=domainProjects(d.id);const items=okrItemsFor(ps);const im=domImpact(d.id);
+   return `<div class="vcard"><h4>${esc(d.label)}</h4><div class="vmeta">${d.ops.map(o=>esc(OPBY[o].label)).join(" · ")}</div>
+     ${impBar(im,"Chain impact")}
      <div class="sum">${scopeSummary(ps)}</div>
      <div class="gd-sec"><h5>Projects</h5>${ps.length?ps.map(chipFor).join(""):'<span class="vmeta">none mapped</span>'}</div>
-     <div class="gd-sec"><h5>Capabilities</h5>${caps.map(c=>`<span class="ont-s">${esc(c.name)}</span>`).join("")||'<span class="vmeta">—</span>'}</div>
+     <div class="gd-sec"><h5>Services</h5>${domServices(d.id).map(s=>`<span class="ont-s">${esc(s.label)}</span>`).join("")}</div>
      <div class="gd-sec"><h5>OKR impact</h5>${items.length?items.map(krmini).join(""):'<span class="vmeta">no OKR linkage</span>'}</div></div>`;}).join("");}
 function okrPortfolioView(){const ports=[...new Set(projects.map(p=>p.portfolio))];
   return `<div class="targets-intro" style="margin-bottom:4px"><h2>Impact by portfolio</h2><p>The six work portfolios and the strategy / operational key results their projects advance.</p></div>`+
@@ -2360,47 +2457,41 @@ function projSummary(pr,items,vt){if(!items.length)return "No direct key-result 
   if(vt.tag==="GO")return `On track to advance <b>${items.length}</b> key result${items.length>1?'s':''} across ${objs.length} objective${objs.length>1?'s':''}; strongest lift to <b>${top.kr.kr}</b>.`;
   if(vt.tag==="REVIEW")return `Partially advancing <b>${items.length}</b> key result${items.length>1?'s':''}; <b>${top.kr.kr}</b> is progressing but coverage gaps cap the gain until review clears.`;
   return `<b style="color:var(--nogo)">At risk:</b> ${items.length} key result${items.length>1?'s':''} depend on this project — projected to miss target while it sits at ${(overallOf(pr).ratio*100).toFixed(0)}% and No-Go.`;}
-function okrProjectView(){return `<div class="targets-intro" style="margin-bottom:4px"><h2>Impact by project</h2><p>Each project's delivered capabilities, dependencies, and its contribution to strategy / operational OKRs.</p></div>`+
-  projects.map(pr=>{const m=PROJMETA[pr.id]||{caps:[],deps:[]};const o=overallOf(pr);const t=tier(o.ratio,overallAppetite);const vt=verdict(o,overallAppetite);const items=okrItemsFor([pr]);
-   const caps=(m.caps||[]).map(c=>{const cc=CAPS.find(x=>x.id===c);return cc?cc.name:c;});
+function okrProjectView(){return `<div class="targets-intro" style="margin-bottom:4px"><h2>Impact by project</h2><p>Each project's processes, delivered capabilities, dependencies, and contribution to strategy / operational OKRs.</p></div>`+
+  projects.map(pr=>{const m=PROJMETA[pr.id]||{caps:[],deps:[],procs:[]};const o=overallOf(pr);const t=tier(o.ratio,overallAppetite);const vt=verdict(o,overallAppetite);const items=okrItemsFor([pr]);
+   const caps=(m.caps||[]).map(c=>(CAPBY[c]||{}).name||c);
+   const procs=(m.procs||[]).map(p=>(PROCBY[p]||{}).label||p);
    const deps=(m.deps||[]).map(dp=>{const pp=projects.find(x=>x.id===dp);return pp?shortName(pp.name):dp;});
-   const dom=ONT.find(x=>x.id===m.domain);
+   const dom=DOMBY[m.domain];
    return `<div class="vcard"><h4>${esc(pr.name)} <span class="vchip" style="background:${cbg(t)};color:${cvar(t)}">${vt.tag}</span></h4>
-     <div class="vmeta">${esc(pr.portfolio)}${dom?" · "+esc(dom.name):""} · maturity ${(o.ratio*100).toFixed(0)}%</div>
+     <div class="vmeta">${esc(pr.portfolio)}${dom?" · "+esc(dom.label):""} · maturity ${(o.ratio*100).toFixed(0)}%</div>
      <div class="sum">${projSummary(pr,items,vt)}</div>
+     <div class="gd-sec"><h5>Processes improved</h5>${procs.map(c=>`<span class="ont-s">${esc(c)}</span>`).join("")||'<span class="vmeta">—</span>'}</div>
      <div class="gd-sec"><h5>Delivers capabilities</h5>${caps.map(c=>`<span class="ont-s">${esc(c)}</span>`).join("")||'<span class="vmeta">—</span>'}</div>
-     ${deps.length?`<div class="gd-sec"><h5>Depends on</h5>${deps.map(d=>`<span class="ont-s">${esc(d)}</span>`).join("")}</div>`:""}
+     ${deps.length?`<div class="gd-sec"><h5>Depends on</h5>${deps.map(x=>`<span class="ont-s">${esc(x)}</span>`).join("")}</div>`:""}
      <div class="gd-sec"><h5>OKR contribution</h5>${items.length?items.map(krmini).join(""):'<span class="vmeta">no direct OKR linkage</span>'}</div></div>`;}).join("");}
-function renderValue(){const tabs=[["graph","Knowledge Graph"],["strategy","Strategy & OKRs"],["domain","By Domain"],["portfolio","By Portfolio"],["project","By Project"]];
+function renderValue(){const tabs=[["graph","Knowledge Graph"],["rollup","Impact Rollup"],["strategy","Strategy & OKRs"],["domain","By Domain"],["portfolio","By Portfolio"],["project","By Project"]];
   const sub=`<div class="vtabs" role="group" aria-label="Value map view">${tabs.map(([k,l])=>`<button data-vtab="${k}" aria-pressed="${valueTab===k}">${l}</button>`).join("")}</div>`;
-  const body=valueTab==="graph"?valueGraphView():valueTab==="strategy"?okrStrategyView():valueTab==="domain"?okrDomainView():valueTab==="portfolio"?okrPortfolioView():okrProjectView();
-  return `<div class="statusbar"><div class="wrap"><button class="backlink" data-nav="#/portfolio">‹ Portfolio</button><div class="sb-title">Value Map · capabilities, domains &amp; OKR impact</div></div></div>
+  const body=valueTab==="graph"?valueGraphView():valueTab==="rollup"?rollupView():valueTab==="strategy"?okrStrategyView():valueTab==="domain"?okrDomainView():valueTab==="portfolio"?okrPortfolioView():okrProjectView();
+  return `<div class="statusbar"><div class="wrap"><button class="backlink" data-nav="#/portfolio">‹ Portfolio</button><div class="sb-title">Value Map · business model, chain impact &amp; OKRs</div></div></div>
     <main><div class="wrap">${sub}${body}</div></main>`;}
 
 /* ================= Graph interaction: pan · node-drag · zoom · filter ================= */
 function vgApplyViewport(){const vp=document.getElementById("vgview");if(vp)vp.setAttribute("transform",`translate(${vgTx.toFixed(1)},${vgTy.toFixed(1)}) scale(${vgScale.toFixed(3)})`);}
-function vgZoomAt(factor,qx,qy){const s=vgScale,s2=Math.max(0.4,Math.min(3,s*factor));if(s2===s)return;
-  vgTx=qx-(s2/s)*(qx-vgTx);vgTy=qy-(s2/s)*(qy-vgTy);vgScale=s2;vgApplyViewport();}
-function vgPointerDown(e){const svg=document.getElementById("vgsvg");if(!svg)return;
-  const node=e.target.closest(".gnode");window.__vgMoved=false;
+function vgZoomAt(factor,qx,qy){const s=vgScale,s2=Math.max(0.35,Math.min(3.5,s*factor));if(s2===s)return;vgTx=qx-(s2/s)*(qx-vgTx);vgTy=qy-(s2/s)*(qy-vgTy);vgScale=s2;vgApplyViewport();}
+function vgPointerDown(e){const svg=document.getElementById("vgsvg");if(!svg)return;const node=e.target.closest(".gnode");window.__vgMoved=false;
   if(node){const id=node.getAttribute("data-gnode");const vp=document.getElementById("vgview");
-    vgDrag={active:true,moved:false,mode:"node",id,el:node,startX:e.clientX,startY:e.clientY,
-      vpInv:vp.getScreenCTM().inverse(),
-      lines:[...svg.querySelectorAll("line")].filter(l=>l.dataset.s===id||l.dataset.t===id).map(l=>({el:l,end:l.dataset.s===id?"s":"t"}))};
-    e.preventDefault();}
+    vgDrag={active:true,moved:false,mode:"node",id,el:node,startX:e.clientX,startY:e.clientY,vpInv:vp.getScreenCTM().inverse(),
+      lines:[...svg.querySelectorAll("line")].filter(l=>l.dataset.s===id||l.dataset.t===id).map(l=>({el:l,end:l.dataset.s===id?"s":"t"}))};e.preventDefault();}
   else if(e.target.closest("#vgsvg")){vgDrag={active:true,moved:false,mode:"pan",startX:e.clientX,startY:e.clientY,tx0:vgTx,ty0:vgTy,a:svg.getScreenCTM().a};e.preventDefault();}
   else{vgDrag={active:false};}}
-function vgPointerMove(e){if(!vgDrag||!vgDrag.active)return;
-  const dx=e.clientX-vgDrag.startX,dy=e.clientY-vgDrag.startY;if(Math.abs(dx)+Math.abs(dy)>3){vgDrag.moved=true;window.__vgMoved=true;}
-  if(vgDrag.mode==="node"){const svg=document.getElementById("vgsvg");const pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;
-    const loc=pt.matrixTransform(vgDrag.vpInv);graphPos[vgDrag.id]={x:loc.x,y:loc.y};
+function vgPointerMove(e){if(!vgDrag||!vgDrag.active)return;const dx=e.clientX-vgDrag.startX,dy=e.clientY-vgDrag.startY;if(Math.abs(dx)+Math.abs(dy)>3){vgDrag.moved=true;window.__vgMoved=true;}
+  if(vgDrag.mode==="node"){const svg=document.getElementById("vgsvg");const pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const loc=pt.matrixTransform(vgDrag.vpInv);graphPos[vgDrag.id]={x:loc.x,y:loc.y};
     vgDrag.el.setAttribute("transform",`translate(${loc.x.toFixed(1)},${loc.y.toFixed(1)})`);
     vgDrag.lines.forEach(o=>{if(o.end==="s"){o.el.setAttribute("x1",loc.x.toFixed(1));o.el.setAttribute("y1",loc.y.toFixed(1));}else{o.el.setAttribute("x2",loc.x.toFixed(1));o.el.setAttribute("y2",loc.y.toFixed(1));}});}
   else if(vgDrag.mode==="pan"){vgTx=vgDrag.tx0+dx/vgDrag.a;vgTy=vgDrag.ty0+dy/vgDrag.a;vgApplyViewport();}}
 function vgPointerUp(){if(vgDrag)vgDrag.active=false;}
-function vgWheel(e){const svg=document.getElementById("vgsvg");if(!svg||!e.target.closest("#vgsvg"))return;e.preventDefault();
-  const pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const q=pt.matrixTransform(svg.getScreenCTM().inverse());
-  vgZoomAt(e.deltaY<0?1.12:1/1.12,q.x,q.y);}
+function vgWheel(e){const svg=document.getElementById("vgsvg");if(!svg||!e.target.closest("#vgsvg"))return;e.preventDefault();const pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const q=pt.matrixTransform(svg.getScreenCTM().inverse());vgZoomAt(e.deltaY<0?1.12:1/1.12,q.x,q.y);}
 document.addEventListener("pointerdown",vgPointerDown);
 document.addEventListener("pointermove",vgPointerMove);
 document.addEventListener("pointerup",vgPointerUp);
@@ -2411,8 +2502,7 @@ document.addEventListener("click",e=>{
   if(gf){const [cat,val]=gf.dataset.gfilter.split(":");toggleFilter(cat,val);rerender();return;}
   const gz=e.target.closest("[data-gzoom]");
   if(gz){const z=gz.dataset.gzoom;
-    if(z==="in")vgZoomAt(1.2,460,290);
-    else if(z==="out")vgZoomAt(1/1.2,460,290);
+    if(z==="in")vgZoomAt(1.2,480,310);else if(z==="out")vgZoomAt(1/1.2,480,310);
     else if(z==="reset"){vgTx=0;vgTy=0;vgScale=1;vgApplyViewport();}
     else if(z==="relayout"){graphPos=null;rerender();}
     return;}

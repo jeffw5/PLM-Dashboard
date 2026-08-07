@@ -1,0 +1,274 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix ddd:  <http://example.org/ddd/core#> .
+@prefix aero: <http://example.org/aerospace/business-model#> .
+
+# =================================================================
+# ONTOLOGY SCHEMA (TBox)
+# =================================================================
+
+# --- Classes ---
+ddd:Domain a owl:Class ;
+    rdfs:label "Bounded Context Domain" ;
+    rdfs:comment "A top-level business domain in Domain-Driven Design." .
+
+ddd:Service a owl:Class ;
+    rdfs:label "Domain Service" ;
+    rdfs:comment "A service provided within a bounded context." .
+
+ddd:Process a owl:Class ;
+    rdfs:label "Underlying Process" ;
+    rdfs:comment "An operational task or process that powers a domain service." .
+
+ddd:DomainOperation a owl:Class ;
+    rdfs:label "Domain Operation Ontology" ;
+    rdfs:comment "High-level classification of operational ontologies." .
+
+# --- Subclasses of Domain Operations ---
+aero:BusinessOperation a owl:Class ;
+    rdfs:subClassOf ddd:DomainOperation ;
+    rdfs:label "Business Operations" .
+
+aero:CommercialOperation a owl:Class ;
+    rdfs:subClassOf ddd:DomainOperation ;
+    rdfs:label "Commercial Operations" .
+
+aero:CustomerSupportOperation a owl:Class ;
+    rdfs:subClassOf ddd:DomainOperation ;
+    rdfs:label "Customer Support Operations" .
+
+aero:SupplyChainOperation a owl:Class ;
+    rdfs:subClassOf ddd:DomainOperation ;
+    rdfs:label "Supply Chain Operations" .
+
+aero:ManufacturingOperation a owl:Class ;
+    rdfs:subClassOf ddd:DomainOperation ;
+    rdfs:label "Manufacturing Operations" .
+
+# --- Customer Support Service Taxonomy ---
+aero:CustomerSupportService a owl:Class ;
+    rdfs:subClassOf ddd:Service ;
+    rdfs:label "Customer Support Service" .
+
+aero:MROService a owl:Class ;
+    rdfs:subClassOf aero:CustomerSupportService ;
+    rdfs:label "Maintenance, Repair, and Overhaul (MRO) Service" .
+
+aero:PlannedSupportService a owl:Class ;
+    rdfs:subClassOf aero:CustomerSupportService ;
+    rdfs:label "Planned Support Service" .
+
+aero:OnDemandSupportService a owl:Class ;
+    rdfs:subClassOf aero:CustomerSupportService ;
+    rdfs:label "On-Demand Support Service" .
+
+# --- Object Properties ---
+ddd:hasService a owl:ObjectProperty ;
+    rdfs:domain ddd:Domain ;
+    rdfs:range ddd:Service ;
+    rdfs:label "has service" .
+
+ddd:hasProcess a owl:ObjectProperty ;
+    rdfs:domain ddd:Service ;
+    rdfs:range ddd:Process ;
+    rdfs:label "has underlying process" .
+
+ddd:mappedToOperation a owl:ObjectProperty ;
+    rdfs:domain ddd:Domain ;
+    rdfs:range ddd:DomainOperation ;
+    rdfs:label "mapped to domain operation ontology" .
+
+# =================================================================
+# INDIVIDUAL DATA (ABox)
+# =================================================================
+
+# -----------------------------------------------------------------
+# 1. Product Engineering Domain
+# -----------------------------------------------------------------
+aero:ProductEngineeringDomain a ddd:Domain ;
+    rdfs:label "Product Engineering Domain" ;
+    rdfs:comment "Designing, certifying, and improving next-generation aircraft." ;
+    ddd:mappedToOperation aero:OpManufacturing , aero:OpCommercial ;
+    ddd:hasService aero:AircraftDesignService , aero:CertificationService .
+
+aero:AircraftDesignService a ddd:Service ;
+    rdfs:label "Aircraft Design & Simulation" ;
+    ddd:hasProcess aero:ProcCADDesign , aero:ProcCFDAnalysis , aero:ProcAvionicsIntegration , aero:ProcMaterialResearch .
+
+aero:CertificationService a ddd:Service ;
+    rdfs:label "Certification & Regulatory Compliance" ;
+    ddd:hasProcess aero:ProcTypeCert , aero:ProcFlightTestData , aero:ProcSafetyCase , aero:ProcAirworthiness .
+
+# -----------------------------------------------------------------
+# 2. Aircraft Manufacturing Domain
+# -----------------------------------------------------------------
+aero:AircraftManufacturingDomain a ddd:Domain ;
+    rdfs:label "Aircraft Manufacturing Domain" ;
+    rdfs:comment "Physical assembly, component fabrication, and final integration." ;
+    ddd:mappedToOperation aero:OpManufacturing , aero:OpSupplyChain ;
+    ddd:hasService aero:ComponentFabricationService , aero:MajorAssemblyService , aero:FinalAssemblyService .
+
+aero:ComponentFabricationService a ddd:Service ;
+    rdfs:label "Component Fabrication" ;
+    ddd:hasProcess aero:ProcCompositeLayering , aero:ProcPrecisionMachining , aero:ProcSheetMetalForming .
+
+aero:MajorAssemblyService a ddd:Service ;
+    rdfs:label "Major Assembly Integration (MAI)" ;
+    ddd:hasProcess aero:ProcFuselageJoinery , aero:ProcWingBodyMating , aero:ProcLandingGearInstall .
+
+aero:FinalAssemblyService a ddd:Service ;
+    rdfs:label "Final Assembly Line (FAL)" ;
+    ddd:hasProcess aero:ProcEngineMounting , aero:ProcCabinOutfitting , aero:ProcSystemPowerOn .
+
+# -----------------------------------------------------------------
+# 3. Supply Chain & Logistics Domain
+# -----------------------------------------------------------------
+aero:SupplyChainDomain a ddd:Domain ;
+    rdfs:label "Supply Chain & Logistics Domain" ;
+    rdfs:comment "Global procurement, inventory management, and inbound logistics." ;
+    ddd:mappedToOperation aero:OpSupplyChain , aero:OpManufacturing , aero:OpBusiness ;
+    ddd:hasService aero:SRMService , aero:ProcurementService , aero:GlobalLogisticsService .
+
+aero:SRMService a ddd:Service ;
+    rdfs:label "Supplier Relationship Management (SRM)" ;
+    ddd:hasProcess aero:ProcSupplierAuditing , aero:ProcContractNegotiation , aero:ProcPerfMonitoring .
+
+aero:ProcurementService a ddd:Service ;
+    rdfs:label "Procurement & Strategic Sourcing" ;
+    ddd:hasProcess aero:ProcRawMaterials , aero:ProcLongLeadOrdering , aero:ProcJITPlanning .
+
+aero:GlobalLogisticsService a ddd:Service ;
+    rdfs:label "Global Logistics & Warehousing" ;
+    ddd:hasProcess aero:ProcPartsTracking , aero:ProcWarehouseOptimization , aero:ProcAOGLogistics .
+
+# -----------------------------------------------------------------
+# 4. Sales & Marketing Domain
+# -----------------------------------------------------------------
+aero:SalesAndMarketingDomain a ddd:Domain ;
+    rdfs:label "Sales & Marketing Domain" ;
+    rdfs:comment "Client relationship building, fleet planning, and closing contracts." ;
+    ddd:mappedToOperation aero:OpCommercial , aero:OpBusiness ;
+    ddd:hasService aero:CRMService , aero:SalesFinancingService .
+
+aero:CRMService a ddd:Service ;
+    rdfs:label "Customer Relationship Management (CRM)" ;
+    ddd:hasProcess aero:ProcLeadGeneration , aero:ProcNeedsAssessment , aero:ProcHNWIOutreach .
+
+aero:SalesFinancingService a ddd:Service ;
+    rdfs:label "Aircraft Sales & Financing" ;
+    ddd:hasProcess aero:ProcProposalGeneration , aero:ProcPriceNegotiation , aero:ProcFinancingSupport , aero:ProcTradeIn .
+
+# -----------------------------------------------------------------
+# 5. Customer Support & Aftermarket Domain
+# -----------------------------------------------------------------
+aero:CustomerSupportDomain a ddd:Domain ;
+    rdfs:label "Customer Support & Aftermarket Domain" ;
+    rdfs:comment "Lifetime service, maintenance, and operational support." ;
+    ddd:mappedToOperation aero:OpCustomerSupport , aero:OpCommercial ;
+    ddd:hasService aero:PlannedSupportServiceInst , aero:MROServiceInst , aero:OnDemandSupportServiceInst .
+
+aero:PlannedSupportServiceInst a aero:PlannedSupportService ;
+    rdfs:label "Planned Support & Fleet Maintenance" ;
+    ddd:hasProcess aero:ProcScheduledInspection , aero:ProcComponentExchange , aero:ProcServiceBulletin .
+
+aero:MROServiceInst a aero:MROService ;
+    rdfs:label "MRO (Maintenance, Repair, & Overhaul)" ;
+    ddd:hasProcess aero:ProcEngineOverhaul , aero:ProcStructuralRepairs , aero:ProcAvionicsUpgrades .
+
+aero:OnDemandSupportServiceInst a aero:OnDemandSupportService ;
+    rdfs:label "On-Demand Support (AOG)" ;
+    ddd:hasProcess aero:Proc247Hotline , aero:ProcMRTDeployment , aero:ProcUrgentPartsDispatch .
+
+# -----------------------------------------------------------------
+# 6. Corporate Strategy & Finance Domain
+# -----------------------------------------------------------------
+aero:CorporateStrategyDomain a ddd:Domain ;
+    rdfs:label "Corporate Strategy & Finance Domain" ;
+    rdfs:comment "Strategic planning, financial control, and overall governance." ;
+    ddd:mappedToOperation aero:OpBusiness ;
+    ddd:hasService aero:FPAAnalysisService , aero:StrategicPlanningService .
+
+aero:FPAAnalysisService a ddd:Service ;
+    rdfs:label "Financial Planning & Analysis (FP&A)" ;
+    ddd:hasProcess aero:ProcRevenueForecasting , aero:ProcCostAccounting , aero:ProcInvestmentAppraisal .
+
+aero:StrategicPlanningService a ddd:Service ;
+    rdfs:label "Strategic Planning" ;
+    ddd:hasProcess aero:ProcMarketAnalysis , aero:ProcMAEvaluation , aero:ProcBrandManagement .
+
+# -----------------------------------------------------------------
+# Operation Ontology Instances
+# -----------------------------------------------------------------
+aero:OpBusiness a aero:BusinessOperation ;
+    rdfs:label "Business Operations" .
+
+aero:OpCommercial a aero:CommercialOperation ;
+    rdfs:label "Commercial Operations" .
+
+aero:OpCustomerSupport a aero:CustomerSupportOperation ;
+    rdfs:label "Customer Support Operations" .
+
+aero:OpSupplyChain a aero:SupplyChainOperation ;
+    rdfs:label "Supply Chain Operations" .
+
+aero:OpManufacturing a aero:ManufacturingOperation ;
+    rdfs:label "Manufacturing Operations" .
+
+# -----------------------------------------------------------------
+# Process Instances
+# -----------------------------------------------------------------
+aero:ProcCADDesign a ddd:Process ; rdfs:label "Conceptual Design (CAD/CAE)" .
+aero:ProcCFDAnalysis a ddd:Process ; rdfs:label "Aerodynamics & CFD Analysis" .
+aero:ProcAvionicsIntegration a ddd:Process ; rdfs:label "Avionics Integration" .
+aero:ProcMaterialResearch a ddd:Process ; rdfs:label "Material Science Research" .
+aero:ProcTypeCert a ddd:Process ; rdfs:label "FAA/EASA Type Certification Planning" .
+aero:ProcFlightTestData a ddd:Process ; rdfs:label "Flight Test Data Analysis" .
+aero:ProcSafetyCase a ddd:Process ; rdfs:label "Safety Case Development" .
+aero:ProcAirworthiness a ddd:Process ; rdfs:label "Continued Airworthiness Monitoring" .
+
+aero:ProcCompositeLayering a ddd:Process ; rdfs:label "Composite Material Layering" .
+aero:ProcPrecisionMachining a ddd:Process ; rdfs:label "Precision Machining" .
+aero:ProcSheetMetalForming a ddd:Process ; rdfs:label "Sheet Metal Forming" .
+aero:ProcFuselageJoinery a ddd:Process ; rdfs:label "Fuselage Joinery" .
+aero:ProcWingBodyMating a ddd:Process ; rdfs:label "Wing-to-Body Mating" .
+aero:ProcLandingGearInstall a ddd:Process ; rdfs:label "Landing Gear Installation" .
+aero:ProcEngineMounting a ddd:Process ; rdfs:label "Engine Mounting" .
+aero:ProcCabinOutfitting a ddd:Process ; rdfs:label "Cabin Completion & Outfitting" .
+aero:ProcSystemPowerOn a ddd:Process ; rdfs:label "System Power-On Tests" .
+
+aero:ProcSupplierAuditing a ddd:Process ; rdfs:label "Supplier Selection & Auditing" .
+aero:ProcContractNegotiation a ddd:Process ; rdfs:label "Contract Negotiation" .
+aero:ProcPerfMonitoring a ddd:Process ; rdfs:label "Performance Monitoring" .
+aero:ProcRawMaterials a ddd:Process ; rdfs:label "Raw Material Sourcing" .
+aero:ProcLongLeadOrdering a ddd:Process ; rdfs:label "Long-Lead Item Ordering" .
+aero:ProcJITPlanning a ddd:Process ; rdfs:label "Just-In-Time (JIT) Delivery Planning" .
+aero:ProcPartsTracking a ddd:Process ; rdfs:label "Parts Tracking" .
+aero:ProcWarehouseOptimization a ddd:Process ; rdfs:label "Warehousing Optimization" .
+aero:ProcAOGLogistics a ddd:Process ; rdfs:label "AOG (Aircraft on Ground) Logistics" .
+
+aero:ProcLeadGeneration a ddd:Process ; rdfs:label "Lead Generation" .
+aero:ProcNeedsAssessment a ddd:Process ; rdfs:label "Client Needs Assessment" .
+aero:ProcHNWIOutreach a ddd:Process ; rdfs:label "High-Net-Worth Individual Outreach" .
+aero:ProcProposalGeneration a ddd:Process ; rdfs:label "Proposal Generation" .
+aero:ProcPriceNegotiation a ddd:Process ; rdfs:label "Price Negotiation" .
+aero:ProcFinancingSupport a ddd:Process ; rdfs:label "Financing and Leasing Support" .
+aero:ProcTradeIn a ddd:Process ; rdfs:label "Used Aircraft Trade-In" .
+
+aero:ProcScheduledInspection a ddd:Process ; rdfs:label "Scheduled Inspection Planning" .
+aero:ProcComponentExchange a ddd:Process ; rdfs:label "Component Exchange Programs (CEP)" .
+aero:ProcServiceBulletin a ddd:Process ; rdfs:label "Service Bulletin (SB) Implementations" .
+aero:ProcEngineOverhaul a ddd:Process ; rdfs:label "Engine Overhaul Management" .
+aero:ProcStructuralRepairs a ddd:Process ; rdfs:label "Structural Repairs" .
+aero:ProcAvionicsUpgrades a ddd:Process ; rdfs:label "Avionics Upgrades" .
+aero:Proc247Hotline a ddd:Process ; rdfs:label "24/7 Technical Hotline" .
+aero:ProcMRTDeployment a ddd:Process ; rdfs:label "Mobile Repair Team (MRT) Deployment" .
+aero:ProcUrgentPartsDispatch a ddd:Process ; rdfs:label "Urgent Parts Dispatch" .
+
+aero:ProcRevenueForecasting a ddd:Process ; rdfs:label "Revenue Forecasting" .
+aero:ProcCostAccounting a ddd:Process ; rdfs:label "Cost Accounting & Control" .
+aero:ProcInvestmentAppraisal a ddd:Process ; rdfs:label "Investment Appraisal" .
+aero:ProcMarketAnalysis a ddd:Process ; rdfs:label "Market Analysis" .
+aero:ProcMAEvaluation a ddd:Process ; rdfs:label "Mergers & Acquisitions Evaluation" .
+aero:ProcBrandManagement a ddd:Process ; rdfs:label "Brand Management" .
