@@ -339,6 +339,19 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .krmini{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;color:var(--ink);margin:4px 12px 4px 0}
 .krmini .kb{width:64px;height:7px;border-radius:4px;background:var(--ice);position:relative;overflow:hidden;flex:none}
 .krmini .kb span{position:absolute;left:0;top:0;height:100%;border-radius:4px}
+/* graph interaction controls */
+.vgraph{touch-action:none;user-select:none;cursor:grab}
+.vgraph:active{cursor:grabbing}
+.gcontrols{margin:12px 0 14px;display:flex;flex-direction:column;gap:8px}
+.gctl-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.gctl-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:2px}
+.gctl-row .gctl-lbl:not(:first-child){margin-left:10px}
+.gpill{font:inherit;font-size:11.5px;padding:3px 10px;border:1px solid var(--hair);background:var(--surface);color:var(--muted);border-radius:13px;cursor:pointer;transition:all .12s}
+.gpill:hover{border-color:var(--navy2);color:var(--navy)}
+.gpill[aria-pressed="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+.gsp{flex:1 1 12px}
+.gzbtn{font:inherit;font-size:11.5px;padding:3px 10px;border:1px solid var(--hair);background:var(--ice2);color:var(--navy);border-radius:8px;cursor:pointer}
+.gzbtn:hover{border-color:var(--navy2);background:var(--surface)}
 </style>
 </head>
 <body>
@@ -2228,6 +2241,23 @@ function scopeSummary(ps){if(!ps.length)return "No projects mapped to this scope
 
 /* ================= Knowledge graph ================= */
 let valueTab="graph", graphSel=null, graphPos=null;
+let vgTx=0, vgTy=0, vgScale=1, vgDrag={active:false};
+let fDomains=new Set(ONT.map(d=>d.id)), fTypes=new Set(["domain","cap","project"]),
+    fVerdicts=new Set(["GO","REVIEW","NO-GO"]), fEdges=new Set(["deliver","dep","part"]);
+const DOM_SHORT={eng:"Engineering",mfg:"Manufacturing",scm:"Supply Chain",qual:"Quality",mro:"MRO",cust:"Customer",data:"Digital / IT"};
+function projOf(nd){return projects.find(p=>"prj:"+p.id===nd.id);}
+function nodeVisible(nd){
+  if(!fTypes.has(nd.type))return false;
+  if(nd.type==="domain"||nd.type==="cap")return fDomains.has(nd.domain);
+  const pr=projOf(nd);if(!pr)return false;const m=PROJMETA[pr.id]||{caps:[]};
+  const doms=new Set([m.domain,...(m.caps||[]).map(capDomain)]);
+  if(![...doms].some(d=>fDomains.has(d)))return false;
+  return fVerdicts.has(verdict(overallOf(pr),overallAppetite).tag);
+}
+function toggleFilter(cat,val){
+  if(cat==="reset"){fDomains=new Set(ONT.map(d=>d.id));fTypes=new Set(["domain","cap","project"]);fVerdicts=new Set(["GO","REVIEW","NO-GO"]);fEdges=new Set(["deliver","dep","part"]);return;}
+  const S=cat==="dom"?fDomains:cat==="type"?fTypes:cat==="verd"?fVerdicts:fEdges;
+  S.has(val)?S.delete(val):S.add(val);}
 function valueGraph(){const nodes=[],edges=[],idx={};
   const add=(id,type,label,domain)=>{if(idx[id]!=null)return;idx[id]=nodes.length;nodes.push({id,type,label,domain});};
   ONT.forEach(d=>add("dom:"+d.id,"domain",d.name,d.id));
@@ -2271,21 +2301,35 @@ function graphDetail(g){
   return `<div class="gdetail"><div class="gd-k">${nd.type}</div><div class="gd-t">${esc(nd.label)}</div>${sec}
     <div class="gd-sec"><button class="btn" data-gnode="${graphSel}">Deselect</button></div></div>`;}
 function valueGraphView(){const g=valueGraph();const W=920,H=580;const pos=layoutGraph(g,W,H);
+  const vis={};g.nodes.forEach(nd=>vis[nd.id]=nodeVisible(nd));
+  if(graphSel&&!vis[graphSel])graphSel=null;
   let near=null;if(graphSel){near=new Set([graphSel]);g.edges.forEach(([a,b])=>{if(a===graphSel)near.add(b);if(b===graphSel)near.add(a);});}
-  const edgeSVG=g.edges.map(([a,b,ty])=>{const pa=pos[a],pb=pos[b];
+  const edgeSVG=g.edges.map(([a,b,ty])=>{const pa=pos[a],pb=pos[b];const show=vis[a]&&vis[b]&&fEdges.has(ty);
     const on=!near||(near.has(a)&&near.has(b));const op=on?(ty==="dep"?0.55:ty==="deliver"?0.3:0.22):0.05;
     const col=ty==="deliver"?"var(--navy2)":ty==="dep"?"var(--nogo)":"var(--hair)";const dash=ty==="dep"?'stroke-dasharray="4 3"':'';
-    return `<line x1="${pa.x.toFixed(1)}" y1="${pa.y.toFixed(1)}" x2="${pb.x.toFixed(1)}" y2="${pb.y.toFixed(1)}" stroke="${col}" stroke-width="${ty==="dep"?1.6:1}" opacity="${op}" ${dash}/>`;}).join("");
-  const nodeSVG=g.nodes.map(nd=>{const p=pos[nd.id];const o=(near&&!near.has(nd.id))?0.14:1;
-    if(nd.type==="domain")return `<g class="gnode" data-gnode="${nd.id}" opacity="${o}"><circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="19" fill="var(--navy)" stroke="var(--gold)" stroke-width="1.5"/><text x="${p.x.toFixed(1)}" y="${(p.y+33).toFixed(1)}" text-anchor="middle" class="glabel gdom">${esc(nd.label)}</text></g>`;
-    if(nd.type==="cap"){const lbl=(near&&near.has(nd.id))?`<text x="${p.x.toFixed(1)}" y="${(p.y-11).toFixed(1)}" text-anchor="middle" class="glabel gcap">${esc(nd.label)}</text>`:"";
-      return `<g class="gnode" data-gnode="${nd.id}" opacity="${o}"><rect x="${(p.x-6).toFixed(1)}" y="${(p.y-6).toFixed(1)}" width="12" height="12" rx="2" transform="rotate(45 ${p.x.toFixed(1)} ${p.y.toFixed(1)})" fill="var(--gold)" stroke="#fff" stroke-width="1"/>${lbl}</g>`;}
-    const pr=projects.find(x=>"prj:"+x.id===nd.id);const col=pr?projTierColor(pr):"var(--muted)";
-    return `<g class="gnode" data-gnode="${nd.id}" opacity="${o}"><circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="10" fill="${col}" stroke="#fff" stroke-width="1.5"/><text x="${p.x.toFixed(1)}" y="${(p.y+21).toFixed(1)}" text-anchor="middle" class="glabel gprj">${esc(shortName(nd.label))}</text></g>`;}).join("");
-  const svg=`<svg viewBox="0 0 ${W} ${H}" class="vgraph" role="img" aria-label="Capability and domain knowledge graph">${edgeSVG}${nodeSVG}</svg>`;
+    return `<line data-s="${a}" data-t="${b}" x1="${pa.x.toFixed(1)}" y1="${pa.y.toFixed(1)}" x2="${pb.x.toFixed(1)}" y2="${pb.y.toFixed(1)}" stroke="${col}" stroke-width="${ty==="dep"?1.6:1}" opacity="${op}" ${dash} style="${show?'':'display:none'}"/>`;}).join("");
+  const nodeSVG=g.nodes.map(nd=>{const p=pos[nd.id];const o=(near&&!near.has(nd.id))?0.14:1;const hid=vis[nd.id]?'':'display:none;';
+    const head=`<g class="gnode" data-gnode="${nd.id}" data-type="${nd.type}" transform="translate(${p.x.toFixed(1)},${p.y.toFixed(1)})" style="${hid}opacity:${o}">`;
+    if(nd.type==="domain")return head+`<circle r="19" fill="var(--navy)" stroke="var(--gold)" stroke-width="1.5"/><text y="33" text-anchor="middle" class="glabel gdom">${esc(nd.label)}</text></g>`;
+    if(nd.type==="cap"){const lbl=(near&&near.has(nd.id))?`<text y="-11" text-anchor="middle" class="glabel gcap">${esc(nd.label)}</text>`:"";
+      return head+`<rect x="-6" y="-6" width="12" height="12" rx="2" transform="rotate(45)" fill="var(--gold)" stroke="#fff" stroke-width="1"/>${lbl}</g>`;}
+    const pr=projOf(nd);const col=pr?projTierColor(pr):"var(--muted)";
+    return head+`<circle r="10" fill="${col}" stroke="#fff" stroke-width="1.5"/><text y="21" text-anchor="middle" class="glabel gprj">${esc(shortName(nd.label))}</text></g>`;}).join("");
+  const svg=`<svg id="vgsvg" viewBox="0 0 ${W} ${H}" class="vgraph" role="img" aria-label="Capability and domain knowledge graph"><g id="vgview" transform="translate(${vgTx.toFixed(1)},${vgTy.toFixed(1)}) scale(${vgScale.toFixed(3)})">${edgeSVG}${nodeSVG}</g></svg>`;
   const legend=`<div class="glegend"><span><i class="lg dom"></i>Domain</span><span><i class="lg cap"></i>Capability</span><span><i class="lg prj"></i>Project (colour = verdict)</span><span><i class="lg e-del"></i>delivers</span><span><i class="lg e-dep"></i>depends on</span><span><i class="lg e-part"></i>part-of domain</span></div>`;
+  const pill=(cat,val,label,on)=>`<button class="gpill" data-gfilter="${cat}:${val}" aria-pressed="${on}">${label}</button>`;
+  const controls=`<div class="gcontrols">
+     <div class="gctl-row"><span class="gctl-lbl">Domains</span>${ONT.map(d=>pill("dom",d.id,DOM_SHORT[d.id],fDomains.has(d.id))).join("")}</div>
+     <div class="gctl-row"><span class="gctl-lbl">Show</span>${pill("type","project","Projects",fTypes.has("project"))}${pill("type","cap","Capabilities",fTypes.has("cap"))}${pill("type","domain","Domains",fTypes.has("domain"))}
+       <span class="gctl-lbl">Verdict</span>${pill("verd","GO","Go",fVerdicts.has("GO"))}${pill("verd","REVIEW","Review",fVerdicts.has("REVIEW"))}${pill("verd","NO-GO","No-Go",fVerdicts.has("NO-GO"))}</div>
+     <div class="gctl-row"><span class="gctl-lbl">Edges</span>${pill("edge","deliver","delivers",fEdges.has("deliver"))}${pill("edge","dep","depends",fEdges.has("dep"))}${pill("edge","part","part-of",fEdges.has("part"))}
+       <span class="gsp"></span>
+       <button class="gzbtn" data-gzoom="out" aria-label="Zoom out">−</button><button class="gzbtn" data-gzoom="in" aria-label="Zoom in">+</button>
+       <button class="gzbtn" data-gzoom="reset">Reset view</button><button class="gzbtn" data-gfilter="reset:all">Reset filters</button><button class="gzbtn" data-gzoom="relayout">Re-layout</button></div>
+   </div>`;
   return `<div class="card" style="margin-bottom:16px"><h3>Capability &amp; domain knowledge graph</h3>
-     <div class="hint">Interdependencies between projects, the capabilities they deliver, and the business domains of the semantic knowledge layer. Solid = delivers · dashed red = project dependency · grey = capability part-of domain. Tap a node to trace its neighbourhood.</div>
+     <div class="hint">Interdependencies between projects, the capabilities they deliver, and the business domains of the semantic knowledge layer. Solid = delivers · dashed red = project dependency · grey = capability part-of domain. Filter with the controls, <b>drag the background to pan</b>, drag a node to move it, scroll or use +/− to zoom, and tap a node to trace its neighbourhood.</div>
+     ${controls}
      <div class="vgraphwrap"><div>${svg}${legend}</div>${graphDetail(g)}</div></div>
    <div class="card"><h3>Semantic knowledge layer · domain ontology</h3><div class="hint">Departments and their subdomains for the aircraft manufacturer — the domain-specific ontologies the graph is scored against.</div>${ontTree()}</div>`;}
 function ontTree(){return `<div class="onttree">${ONT.map(d=>`<div class="ont-d"><div class="ont-dn">${esc(d.name)}</div><div class="ont-subs">${d.sub.map(s=>`<span class="ont-s">${esc(s)}</span>`).join("")}</div></div>`).join("")}</div>`;}
@@ -2333,6 +2377,47 @@ function renderValue(){const tabs=[["graph","Knowledge Graph"],["strategy","Stra
   return `<div class="statusbar"><div class="wrap"><button class="backlink" data-nav="#/portfolio">‹ Portfolio</button><div class="sb-title">Value Map · capabilities, domains &amp; OKR impact</div></div></div>
     <main><div class="wrap">${sub}${body}</div></main>`;}
 
+/* ================= Graph interaction: pan · node-drag · zoom · filter ================= */
+function vgApplyViewport(){const vp=document.getElementById("vgview");if(vp)vp.setAttribute("transform",`translate(${vgTx.toFixed(1)},${vgTy.toFixed(1)}) scale(${vgScale.toFixed(3)})`);}
+function vgZoomAt(factor,qx,qy){const s=vgScale,s2=Math.max(0.4,Math.min(3,s*factor));if(s2===s)return;
+  vgTx=qx-(s2/s)*(qx-vgTx);vgTy=qy-(s2/s)*(qy-vgTy);vgScale=s2;vgApplyViewport();}
+function vgPointerDown(e){const svg=document.getElementById("vgsvg");if(!svg)return;
+  const node=e.target.closest(".gnode");window.__vgMoved=false;
+  if(node){const id=node.getAttribute("data-gnode");const vp=document.getElementById("vgview");
+    vgDrag={active:true,moved:false,mode:"node",id,el:node,startX:e.clientX,startY:e.clientY,
+      vpInv:vp.getScreenCTM().inverse(),
+      lines:[...svg.querySelectorAll("line")].filter(l=>l.dataset.s===id||l.dataset.t===id).map(l=>({el:l,end:l.dataset.s===id?"s":"t"}))};
+    e.preventDefault();}
+  else if(e.target.closest("#vgsvg")){vgDrag={active:true,moved:false,mode:"pan",startX:e.clientX,startY:e.clientY,tx0:vgTx,ty0:vgTy,a:svg.getScreenCTM().a};e.preventDefault();}
+  else{vgDrag={active:false};}}
+function vgPointerMove(e){if(!vgDrag||!vgDrag.active)return;
+  const dx=e.clientX-vgDrag.startX,dy=e.clientY-vgDrag.startY;if(Math.abs(dx)+Math.abs(dy)>3){vgDrag.moved=true;window.__vgMoved=true;}
+  if(vgDrag.mode==="node"){const svg=document.getElementById("vgsvg");const pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;
+    const loc=pt.matrixTransform(vgDrag.vpInv);graphPos[vgDrag.id]={x:loc.x,y:loc.y};
+    vgDrag.el.setAttribute("transform",`translate(${loc.x.toFixed(1)},${loc.y.toFixed(1)})`);
+    vgDrag.lines.forEach(o=>{if(o.end==="s"){o.el.setAttribute("x1",loc.x.toFixed(1));o.el.setAttribute("y1",loc.y.toFixed(1));}else{o.el.setAttribute("x2",loc.x.toFixed(1));o.el.setAttribute("y2",loc.y.toFixed(1));}});}
+  else if(vgDrag.mode==="pan"){vgTx=vgDrag.tx0+dx/vgDrag.a;vgTy=vgDrag.ty0+dy/vgDrag.a;vgApplyViewport();}}
+function vgPointerUp(){if(vgDrag)vgDrag.active=false;}
+function vgWheel(e){const svg=document.getElementById("vgsvg");if(!svg||!e.target.closest("#vgsvg"))return;e.preventDefault();
+  const pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const q=pt.matrixTransform(svg.getScreenCTM().inverse());
+  vgZoomAt(e.deltaY<0?1.12:1/1.12,q.x,q.y);}
+document.addEventListener("pointerdown",vgPointerDown);
+document.addEventListener("pointermove",vgPointerMove);
+document.addEventListener("pointerup",vgPointerUp);
+document.addEventListener("pointercancel",vgPointerUp);
+window.addEventListener("wheel",vgWheel,{passive:false});
+document.addEventListener("click",e=>{
+  const gf=e.target.closest("[data-gfilter]");
+  if(gf){const [cat,val]=gf.dataset.gfilter.split(":");toggleFilter(cat,val);rerender();return;}
+  const gz=e.target.closest("[data-gzoom]");
+  if(gz){const z=gz.dataset.gzoom;
+    if(z==="in")vgZoomAt(1.2,460,290);
+    else if(z==="out")vgZoomAt(1/1.2,460,290);
+    else if(z==="reset"){vgTx=0;vgTy=0;vgScale=1;vgApplyViewport();}
+    else if(z==="relayout"){graphPos=null;rerender();}
+    return;}
+});
+
 /* ================= Router ================= */
 function parseHash(){const h=location.hash.replace(/^#\/?/,""),parts=h.split("/");
   if(parts[0]==="phase"&&parts[1])return{name:"phase",param:parts[1]};
@@ -2373,7 +2458,7 @@ document.addEventListener("click",e=>{
   const vt=e.target.closest("[data-vtab]");
   if(vt){valueTab=vt.dataset.vtab;graphSel=null;rerender();return;}
   const gn=e.target.closest("[data-gnode]");
-  if(gn){graphSel=(graphSel===gn.dataset.gnode?null:gn.dataset.gnode);rerender();return;}
+  if(gn){if(window.__vgMoved){window.__vgMoved=false;return;}graphSel=(graphSel===gn.dataset.gnode?null:gn.dataset.gnode);rerender();return;}
   const nav=e.target.closest("[data-nav]");
   if(nav){navigate(nav.dataset.nav);return;}
   if(e.target.closest("#sebokBtn")){document.getElementById("drawerBg").classList.add("open");return;}
