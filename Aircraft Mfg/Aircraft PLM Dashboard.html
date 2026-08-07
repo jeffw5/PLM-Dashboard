@@ -287,6 +287,58 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 .dchip{display:inline-block;font-family:var(--mono);font-size:10px;font-weight:700;color:#fff;background:var(--navy2);border-radius:4px;padding:1px 5px;margin:1px 2px}
 .dchip.all{background:var(--gold);color:var(--navy)}
 @media (max-width:760px){.xreftable{font-size:11px}.xreftable td,.xreftable th{padding:6px 6px}}
+/* Value Map */
+.vtabs{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 18px}
+.vtabs button{font:inherit;font-size:13px;padding:6px 14px;border:1px solid var(--hair);background:var(--surface);color:var(--muted);border-radius:16px;cursor:pointer;transition:all .12s}
+.vtabs button:hover{border-color:var(--navy2);color:var(--navy)}
+.vtabs button[aria-pressed="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+.vgraphwrap{display:grid;grid-template-columns:1fr 306px;gap:18px;align-items:start}
+@media(max-width:900px){.vgraphwrap{grid-template-columns:1fr}}
+.vgraph{width:100%;height:auto;background:var(--ice2);border:1px solid var(--hair);border-radius:12px;display:block}
+.gnode{cursor:pointer}
+.glabel{font-family:var(--sans);fill:var(--ink)}
+.gdom{font-family:var(--serif);font-size:11px;font-weight:600;fill:var(--navy)}
+.gcap{font-size:9.5px;fill:var(--muted)}
+.gprj{font-size:9.5px;fill:var(--ink)}
+.gnode:hover circle,.gnode:hover rect{stroke:var(--navy);stroke-width:2}
+.glegend{display:flex;flex-wrap:wrap;gap:14px;margin-top:10px;font-size:11.5px;color:var(--muted)}
+.glegend i{display:inline-block;width:12px;height:12px;margin-right:5px;vertical-align:-2px}
+.lg.dom{background:var(--navy);border:1.5px solid var(--gold);border-radius:50%}
+.lg.cap{background:var(--gold);border-radius:2px;transform:rotate(45deg);width:9px;height:9px;margin-left:2px}
+.lg.prj{background:var(--go);border-radius:50%}
+.lg.e-del{height:2px;background:var(--navy2)}
+.lg.e-dep{height:0;border-top:2px dashed var(--nogo)}
+.lg.e-part{height:2px;background:var(--hair)}
+.gdetail{background:var(--surface);border:1px solid var(--hair);border-radius:12px;padding:16px;font-size:13px}
+.gdetail.muted{color:var(--muted);line-height:1.5}
+.gd-t{font-family:var(--serif);font-size:15px;color:var(--navy);font-weight:600;margin:2px 0 6px}
+.gd-k{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.gd-sec{margin-top:12px}
+.gd-sec h5{margin:0 0 5px;font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+.onttree{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-top:12px}
+.ont-d{border:1px solid var(--hair);border-radius:10px;padding:12px;background:var(--surface)}
+.ont-dn{font-family:var(--serif);font-weight:600;color:var(--navy);margin-bottom:7px}
+.ont-subs{display:flex;flex-wrap:wrap;gap:5px}
+.ont-s{display:inline-block;font-size:11px;color:var(--ink);background:var(--ice2);border:1px solid var(--hair);border-radius:4px;padding:1px 7px;margin:1px 0}
+.okrobj{margin-bottom:16px}
+.okrobj:last-child{margin-bottom:0}
+.okrobj h4{margin:0 0 8px;font-family:var(--serif);color:var(--navy);font-size:15px}
+.okr-type{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--gold)}
+.krrow{display:grid;grid-template-columns:minmax(180px,1.5fr) 2fr minmax(120px,auto);gap:14px;align-items:center;padding:10px 4px;border-bottom:1px solid var(--hair)}
+.krrow:last-child{border-bottom:none}
+.kr-name{font-size:13px;color:var(--ink);font-weight:500}
+.kr-proj{margin-top:4px}
+.kr-bar{position:relative;height:10px;border-radius:5px;background:var(--ice);overflow:hidden}
+.kr-bar .fill{position:absolute;top:0;left:0;height:100%;border-radius:5px;transition:width .4s}
+.kr-val{font-family:var(--mono);font-size:11px;color:var(--ink);text-align:right;white-space:nowrap;line-height:1.5}
+.vchip{display:inline-block;font-size:10.5px;font-weight:600;border-radius:10px;padding:1px 9px;margin:2px 3px 0 0}
+.vcard{border:1px solid var(--hair);border-radius:12px;padding:16px;margin-bottom:14px;background:var(--surface)}
+.vcard h4{margin:0 0 4px;font-family:var(--serif);color:var(--navy);font-size:15px}
+.vcard .sum{font-size:13px;color:var(--ink);line-height:1.55;margin:8px 0 4px}
+.vmeta{font-size:11.5px;color:var(--muted)}
+.krmini{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;color:var(--ink);margin:4px 12px 4px 0}
+.krmini .kb{width:64px;height:7px;border-radius:4px;background:var(--ice);position:relative;overflow:hidden;flex:none}
+.krmini .kb span{position:absolute;left:0;top:0;height:100%;border-radius:4px}
 </style>
 </head>
 <body>
@@ -297,6 +349,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
     <button class="navbtn" data-nav="#/portfolio">Portfolio</button>
     <button class="navbtn" data-nav="#/project">Project</button>
     <button class="navbtn" data-nav="#/disciplines">Disciplines</button>
+    <button class="navbtn" data-nav="#/value">Value Map</button>
     <button class="navbtn" data-nav="#/targets">Targets</button>
     <button class="navbtn" data-nav="#/risk">Risk</button>
     <button class="navbtn" data-nav="#/refs">Policy X-Ref</button>
@@ -2043,13 +2096,6 @@ const VPH_ORDER=[["Concept","Concept · Pre-MS A","Discover"],["TMRR","TMRR · M
 const PLM_NAME={discover:"Discover",define:"Define",design:"Design",develop:"Develop",deliver:"Delivery",run:"Run"};
 function renderRefs(){
   const domMatch=v=>xrefFilter==="all"||v.domains.includes("All")||v.domains.includes(xrefFilter);
-  const cards=[
-   ["Gulfstream MFG · Digital Factory Roadmap","Gulfstream_MFG_Digital_Factory_Roadmap.html","Five-phase transformation, seven-layer semantic stack, four-fold governance and the FAA / EASA-governed digital thread this assessment maps onto.","html"],
-   ["SE V-Model Artifact Map","vmodel_artifact_map.html","ISO 15288 / INCOSE lifecycle artifacts — the 39 items cross-referenced below and now embedded as targets in every phase.","html"],
-   ["Aircraft Manufacturing Policies","Aircraft_Manufacturing_Policies.pdf","Master list of airworthiness, systems-safety, quality, portfolio, cyber / export and sustainability standards, plus the governance review boards.","pdf"],
-   ["Policy Cross-Reference — Lifecycle","Policy_Cross_reference_for_an_aircraft_manufacturer.pdf","Required artifacts and mandatory review gates for each lifecycle phase, Discover through Run.","pdf"],
-   ["Policy Cross-Reference — Portfolios → PLM","Policy_Cross-Reference_of_Portfolios_to_PLM_for_Aircraft_Mfg.pdf","The six work portfolios mapped to phase artifacts and gates — the source for the projects in this dashboard.","pdf"],
-  ];
   const pmap=VPH_ORDER.map(([k,full,plm])=>`<div class="pm"><b>${full}</b><span class="arr">→</span>${plm}</div>`).join("");
   const filters=DOMAINS.map(([k,lab])=>`<button data-xref="${k}" aria-pressed="${xrefFilter===k}">${lab}</button>`).join("");
   let tbody="";
@@ -2072,8 +2118,6 @@ function renderRefs(){
       <div class="xfil" role="group" aria-label="Filter by domain">${filters}</div>
       <div class="xwrap"><table class="xreftable"><tr><th>V-Model</th><th>Artifact</th><th>PLM phase</th><th>ISO 15288 process</th><th>Governing policies</th><th>Domains</th></tr>${tbody}</table></div>
       <div class="hint" style="margin-top:10px">${shown} of ${VMART.length} V-Model artifacts shown${xrefFilter==="all"?"":" for "+DOMAINS.find(d=>d[0]===xrefFilter)[1]}. <span class="dchip all">All</span> = program-wide.</div></div>
-    <div class="card" style="margin-bottom:20px"><h3>Reference deliverables</h3><div class="hint">Companion artifacts this assessment is grounded in. Keep them in the same folder as this dashboard so the links resolve on the site.</div>
-      <div class="refgrid">${cards.map(([t,href,d,kd])=>`<a class="refcard" href="${href}" target="_blank" rel="noopener"><span class="rk ${kd}">${kd==='pdf'?'PDF':'HTML'}</span><span class="rt">${t}</span><span class="rd">${d}</span></a>`).join("")}</div></div>
     <div class="card"><h3>Standards & governance catalog</h3><div class="hint">The compliance ecosystem for private-jet portfolio management, from the Aircraft Manufacturing Policies reference. Taxonomy artifacts cite these standards inline.</div>
       <table class="stdtable"><tr><th>Domain</th><th>Key standards & reviews</th></tr>${[
         ["Airworthiness & type certification","14 CFR / EASA CS-23 · CS-25 · Part 21 (DOA / POA) · Part 145 · FAR 25.853"],
@@ -2087,14 +2131,216 @@ function renderRefs(){
       <p class="refnote" style="margin-top:14px">The V-Model artifacts inherit the systems-engineering lineage of the <b>SE V-Model Artifact Map</b> (ISO 15288 · INCOSE · DoD AAF) and are governed by the <b>RDSG digital thread</b>. Their PLM phase placement follows the <b>Policy Cross-Reference — Lifecycle</b>, the domain mapping follows the <b>Portfolios → PLM</b> cross-reference, and the whole assessment forms the governance layer of the <b>Gulfstream Digital Factory Roadmap</b>.</p></div>
    </div></main>`;}
 
+/* ================= Value Map: semantic knowledge layer ================= */
+/* Domain-specific ontologies — departments and their subdomains */
+const ONT=[
+ {id:"eng", name:"Engineering & Design",        sub:["Systems Engineering","Airframe & Structures","Avionics & Software","Configuration & PLM"]},
+ {id:"mfg", name:"Manufacturing & Production",  sub:["Shop Floor / MES","Tooling & Automation","Assembly & Integration","Additive Manufacturing"]},
+ {id:"scm", name:"Supply Chain & Procurement",  sub:["Supplier Management","Logistics & Track-and-Trace","Inventory & Spares"]},
+ {id:"qual",name:"Quality & Airworthiness",     sub:["Quality Management (AS9100)","Inspection & NDT","Certification & Compliance","Continued Airworthiness"]},
+ {id:"mro", name:"MRO & Aftermarket",           sub:["Predictive Maintenance","Field Service / AOG","Fleet Reliability"]},
+ {id:"cust",name:"Customer & Commercial",       sub:["Owner Experience","Support & Warranty","Sales & Portfolio Strategy"]},
+ {id:"data",name:"Digital, Data & IT",          sub:["Semantic Knowledge Layer","Data Platform","Cybersecurity & Export","AI / ML Governance"]},
+];
+/* Business capabilities, each owned by a primary domain */
+const CAPS=[
+ {id:"digital-thread",name:"Digital Thread Traceability",domain:"eng"},
+ {id:"config-plm",name:"Configuration & Change Control",domain:"eng"},
+ {id:"mbse",name:"Model-Based Systems Engineering",domain:"eng"},
+ {id:"mes-exec",name:"Digital Shop-Floor Execution",domain:"mfg"},
+ {id:"oee",name:"OEE & Line Optimization",domain:"mfg"},
+ {id:"addmfg",name:"Additive / On-Demand Parts",domain:"mfg"},
+ {id:"supplier-risk",name:"Supplier Risk & Lead-Time",domain:"scm"},
+ {id:"track-trace",name:"Serialized Track & Trace",domain:"scm"},
+ {id:"fai",name:"Automated First-Article Inspection",domain:"qual"},
+ {id:"cv-ndt",name:"AI Defect Detection / NDT",domain:"qual"},
+ {id:"capa",name:"Closed-Loop CAPA",domain:"qual"},
+ {id:"cert-eic",name:"Certification Evidence",domain:"qual"},
+ {id:"predictive",name:"Predictive Maintenance",domain:"mro"},
+ {id:"ahms",name:"Aircraft Health Monitoring",domain:"mro"},
+ {id:"aog",name:"Rapid AOG Response",domain:"mro"},
+ {id:"owner-portal",name:"VIP Owner Experience",domain:"cust"},
+ {id:"warranty",name:"Warranty & Support Ops",domain:"cust"},
+ {id:"semantic",name:"Semantic Knowledge Layer",domain:"data"},
+ {id:"ai-gov",name:"AI / ML Governance",domain:"data"},
+ {id:"cyber",name:"Cyber & Export Control",domain:"data"},
+];
+/* Project metadata: primary domain, delivered capabilities, upstream dependencies */
+const PROJMETA={
+ "dsc-ctrltower":{domain:"scm", caps:["supplier-risk","digital-thread"], deps:[]},
+ "dsc-trace":    {domain:"scm", caps:["track-trace","fai"], deps:["dsc-ctrltower"]},
+ "mes-core":     {domain:"mfg", caps:["mes-exec","oee","config-plm"], deps:[]},
+ "mes-iot":      {domain:"mfg", caps:["oee","predictive"], deps:["mes-core"]},
+ "mro-ahms":     {domain:"mro", caps:["ahms","predictive","semantic"], deps:["mes-iot"]},
+ "mro-ml":       {domain:"mro", caps:["predictive","ai-gov"], deps:["mro-ahms"]},
+ "odr-aog":      {domain:"mro", caps:["aog","track-trace"], deps:["dsc-ctrltower"]},
+ "odr-print":    {domain:"mfg", caps:["addmfg","aog"], deps:["odr-aog"]},
+ "qi-vision":    {domain:"qual",caps:["cv-ndt","fai"], deps:["mes-core"]},
+ "qi-capa":      {domain:"qual",caps:["capa","cert-eic"], deps:["qi-vision"]},
+ "cs-portal":    {domain:"cust",caps:["owner-portal","ahms"], deps:["mro-ahms"]},
+ "cs-desk":      {domain:"cust",caps:["warranty","cyber"], deps:["cs-portal"]},
+};
+/* Strategy & operational OKRs, each key result advanced by capabilities */
+const OKRS=[
+ {id:"o-cert",obj:"Compress time-to-certification",type:"Strategy",krs:[
+   {id:"kr-cert1",kr:"Cert-evidence cycle time",unit:"mo",base:18,target:11,caps:["cert-eic","digital-thread","config-plm"]},
+   {id:"kr-cert2",kr:"First-time compliance-checklist pass",unit:"%",base:72,target:92,caps:["digital-thread","capa"]}]},
+ {id:"o-dispatch",obj:"Raise fleet dispatch reliability",type:"Strategy",krs:[
+   {id:"kr-disp1",kr:"Unscheduled removals / 1k FH",unit:"",base:4.2,target:2.5,caps:["predictive","ahms"]},
+   {id:"kr-disp2",kr:"Predictive catch rate",unit:"%",base:35,target:75,caps:["predictive","ahms","ai-gov"]}]},
+ {id:"o-after",obj:"Grow aftermarket value",type:"Strategy",krs:[
+   {id:"kr-af1",kr:"AOG mean-time-to-repair",unit:"hr",base:52,target:24,caps:["aog","addmfg","track-trace"]},
+   {id:"kr-af2",kr:"Owner NPS",unit:"pts",base:41,target:65,caps:["owner-portal","warranty","ahms"]}]},
+ {id:"o-supply",obj:"Stabilize the supply chain",type:"Operational",krs:[
+   {id:"kr-sup1",kr:"Supplier lead-time variance",unit:"%",base:28,target:12,caps:["supplier-risk"]},
+   {id:"kr-sup2",kr:"Serialized part traceability",unit:"%",base:60,target:98,caps:["track-trace","fai","digital-thread"]}]},
+ {id:"o-quality",obj:"Eliminate escaped defects",type:"Operational",krs:[
+   {id:"kr-q1",kr:"Escaped defects / aircraft",unit:"",base:9,target:2,caps:["cv-ndt","capa","fai"]},
+   {id:"kr-q2",kr:"Inspection automation coverage",unit:"%",base:20,target:80,caps:["cv-ndt","fai"]}]},
+ {id:"o-oee",obj:"Lift manufacturing throughput",type:"Operational",krs:[
+   {id:"kr-oee1",kr:"Overall Equipment Effectiveness",unit:"%",base:63,target:82,caps:["mes-exec","oee"]},
+   {id:"kr-oee2",kr:"Assembly rework hours",unit:"%",base:100,target:70,caps:["mes-exec","cv-ndt"]}]},
+];
+
+/* ---- helpers ---- */
+function capDomain(cid){const c=CAPS.find(x=>x.id===cid);return c?c.domain:null;}
+function shortName(s){s=String(s).replace(/\s*\(.*?\)\s*/g," ").replace(/\s+/g," ").trim();return s.length>24?s.slice(0,22)+"…":s;}
+function fmt(v){return (Math.round(v*10)/10).toString();}
+function chipFor(pr){const t=tier(overallOf(pr).ratio,overallAppetite);return `<span class="vchip" style="background:${cbg(t)};color:${cvar(t)}">${esc(shortName(pr.name))}</span>`;}
+function krContribProjects(kr){return projects.filter(pr=>{const m=PROJMETA[pr.id];return m&&(m.caps||[]).some(c=>kr.caps.includes(c));});}
+function krAttain(kr){const ps=krContribProjects(kr);const frac=ps.length?ps.reduce((a,pr)=>a+overallOf(pr).ratio,0)/ps.length:0;return{frac:Math.max(0,Math.min(1,frac)),ps};}
+function krProjected(kr){return kr.base+(kr.target-kr.base)*krAttain(kr).frac;}
+function okrItemsFor(ps){const set=new Set(ps.map(p=>p.id));const items=[];
+  OKRS.forEach(o=>o.krs.forEach(kr=>{const contrib=krContribProjects(kr).filter(pr=>set.has(pr.id));if(!contrib.length)return;
+    const frac=contrib.reduce((a,pr)=>a+overallOf(pr).ratio,0)/contrib.length;items.push({o,kr,contrib,frac:Math.max(0,Math.min(1,frac))});}));
+  return items;}
+function domainProjects(domId){return projects.filter(pr=>{const m=PROJMETA[pr.id];if(!m)return false;if(m.domain===domId)return true;return (m.caps||[]).some(c=>capDomain(c)===domId);});}
+function krmini(i){const col=i.frac>=.8?"var(--go)":i.frac>=.5?"var(--rev)":"var(--nogo)";
+  return `<span class="krmini" title="${esc(i.o.obj)}"><span class="kb"><span style="width:${(i.frac*100).toFixed(0)}%;background:${col}"></span></span>${esc(i.kr.kr)} <b style="color:${col}">${(i.frac*100).toFixed(0)}%</b></span>`;}
+function scopeSummary(ps){if(!ps.length)return "No projects mapped to this scope.";
+  const items=okrItemsFor(ps);const mean=ps.reduce((a,p)=>a+overallOf(p).ratio,0)/ps.length;
+  const risk=items.filter(i=>i.frac<.5).length;const sorted=items.slice().sort((a,b)=>b.frac-a.frac);const top=sorted[0],low=sorted[sorted.length-1];
+  let s=`Mean delivery maturity <b>${(mean*100).toFixed(0)}%</b> across ${ps.length} project${ps.length>1?'s':''}, touching ${items.length} key result${items.length>1?'s':''}. `;
+  if(top)s+=`Strongest lift: <b>${top.kr.kr}</b> <span class="vmeta">(${top.o.obj})</span>. `;
+  if(risk)s+=`<b style="color:var(--nogo)">${risk} at risk</b>${low&&low.frac<.5?` — notably <b>${low.kr.kr}</b>`:''}.`;
+  else if(items.length)s+=`All impacted key results are on a healthy trajectory.`;
+  return s;}
+
+/* ================= Knowledge graph ================= */
+let valueTab="graph", graphSel=null, graphPos=null;
+function valueGraph(){const nodes=[],edges=[],idx={};
+  const add=(id,type,label,domain)=>{if(idx[id]!=null)return;idx[id]=nodes.length;nodes.push({id,type,label,domain});};
+  ONT.forEach(d=>add("dom:"+d.id,"domain",d.name,d.id));
+  CAPS.forEach(c=>{add("cap:"+c.id,"cap",c.name,c.domain);edges.push(["cap:"+c.id,"dom:"+c.domain,"part"]);});
+  projects.forEach(pr=>{const m=PROJMETA[pr.id];if(!m)return;add("prj:"+pr.id,"project",pr.name,m.domain);
+    (m.caps||[]).forEach(c=>{if(idx["cap:"+c]!=null)edges.push(["prj:"+pr.id,"cap:"+c,"deliver"]);});
+    (m.deps||[]).forEach(dp=>{if(idx["prj:"+dp]!=null)edges.push(["prj:"+pr.id,"prj:"+dp,"dep"]);});});
+  return{nodes,edges,idx};}
+function layoutGraph(g,W,H){if(graphPos&&graphPos.__n===g.nodes.length)return graphPos;
+  const n=g.nodes.length;const pos=g.nodes.map((nd,i)=>{const ring=nd.type==="domain"?0.9:nd.type==="cap"?0.55:0.25;
+    const off=nd.type==="domain"?0:nd.type==="cap"?1.7:0.8;const ang=2*Math.PI*i/n+off;
+    return{x:W/2+Math.cos(ang)*ring*W*0.4,y:H/2+Math.sin(ang)*ring*H*0.4,vx:0,vy:0};});
+  const adj=g.edges.map(e=>[g.idx[e[0]],g.idx[e[1]]]);const k=Math.sqrt((W*H)/n)*0.66;
+  for(let it=0;it<320;it++){const t=1-it/320;
+    for(let i=0;i<n;i++){let fx=0,fy=0;for(let j=0;j<n;j++){if(i===j)continue;let dx=pos[i].x-pos[j].x,dy=pos[i].y-pos[j].y;let d2=dx*dx+dy*dy||0.01;let d=Math.sqrt(d2);let f=k*k/d;fx+=dx/d*f;fy+=dy/d*f;}pos[i].vx=fx;pos[i].vy=fy;}
+    adj.forEach(([a,b])=>{let dx=pos[a].x-pos[b].x,dy=pos[a].y-pos[b].y;let d=Math.sqrt(dx*dx+dy*dy)||0.01;let f=d*d/k;let ux=dx/d*f,uy=dy/d*f;pos[a].vx-=ux;pos[a].vy-=uy;pos[b].vx+=ux;pos[b].vy+=uy;});
+    for(let i=0;i<n;i++){pos[i].vx+=(W/2-pos[i].x)*0.02;pos[i].vy+=(H/2-pos[i].y)*0.02;
+      let sp=Math.sqrt(pos[i].vx*pos[i].vx+pos[i].vy*pos[i].vy)||0.01;let mx=16*t+2;if(sp>mx){pos[i].vx*=mx/sp;pos[i].vy*=mx/sp;}
+      pos[i].x+=pos[i].vx;pos[i].y+=pos[i].vy;pos[i].x=Math.max(34,Math.min(W-34,pos[i].x));pos[i].y=Math.max(30,Math.min(H-30,pos[i].y));}}
+  graphPos={__n:n};g.nodes.forEach((nd,i)=>graphPos[nd.id]={x:pos[i].x,y:pos[i].y});return graphPos;}
+function projTierColor(pr){return cvar(tier(overallOf(pr).ratio,overallAppetite));}
+function graphDetail(g){
+  if(!graphSel)return `<div class="gdetail muted">Tap any node to trace its interdependencies. Projects are coloured by Go / Review / No-Go. Tap again to deselect.</div>`;
+  const i=g.idx[graphSel];if(i==null)return `<div class="gdetail muted">—</div>`;const nd=g.nodes[i];
+  const conn=g.edges.filter(([a,b])=>a===graphSel||b===graphSel).map(([a,b,ty])=>({o:a===graphSel?b:a,ty}));
+  let sec="";
+  if(nd.type==="project"){const pr=projects.find(x=>"prj:"+x.id===nd.id);const o=overallOf(pr);const t=tier(o.ratio,overallAppetite);const vt=verdict(o,overallAppetite);
+    const caps=conn.filter(c=>c.ty==="deliver").map(c=>g.nodes[g.idx[c.o]].label);
+    const deps=conn.filter(c=>c.ty==="dep").map(c=>g.nodes[g.idx[c.o]].label);
+    sec=`<span class="vchip" style="background:${cbg(t)};color:${cvar(t)}">${vt.tag} · ${(o.ratio*100).toFixed(0)}%</span>
+      <div class="gd-sec"><h5>Delivers</h5>${caps.map(c=>`<span class="ont-s">${esc(c)}</span>`).join("")||'—'}</div>
+      ${deps.length?`<div class="gd-sec"><h5>Depends on</h5>${deps.map(c=>`<span class="ont-s">${esc(shortName(c))}</span>`).join("")}</div>`:""}
+      <div class="gd-sec"><h5>OKR contribution</h5>${okrItemsFor([pr]).map(krmini).join("")||'—'}</div>`;
+  }else if(nd.type==="cap"){const dn=g.nodes[g.idx["dom:"+nd.domain]];const prjs=conn.filter(c=>c.ty==="deliver").map(c=>g.nodes[g.idx[c.o]].label);
+    sec=`<div class="gd-sec"><h5>Domain</h5><span class="ont-s">${esc(dn?dn.label:nd.domain)}</span></div>
+      <div class="gd-sec"><h5>Delivered by</h5>${prjs.map(p=>`<span class="ont-s">${esc(shortName(p))}</span>`).join("")||'<span class="vmeta">no active project — capability gap</span>'}</div>`;
+  }else{const d=ONT.find(x=>"dom:"+x.id===nd.id);const caps=CAPS.filter(c=>c.domain===d.id);const ps=domainProjects(d.id);
+    sec=`<div class="gd-sec"><h5>Subdomains</h5>${d.sub.map(s=>`<span class="ont-s">${esc(s)}</span>`).join("")}</div>
+      <div class="gd-sec"><h5>Capabilities</h5>${caps.map(c=>`<span class="ont-s">${esc(c.name)}</span>`).join("")}</div>
+      <div class="gd-sec"><h5>Projects</h5>${ps.map(chipFor).join("")||'—'}</div>`;}
+  return `<div class="gdetail"><div class="gd-k">${nd.type}</div><div class="gd-t">${esc(nd.label)}</div>${sec}
+    <div class="gd-sec"><button class="btn" data-gnode="${graphSel}">Deselect</button></div></div>`;}
+function valueGraphView(){const g=valueGraph();const W=920,H=580;const pos=layoutGraph(g,W,H);
+  let near=null;if(graphSel){near=new Set([graphSel]);g.edges.forEach(([a,b])=>{if(a===graphSel)near.add(b);if(b===graphSel)near.add(a);});}
+  const edgeSVG=g.edges.map(([a,b,ty])=>{const pa=pos[a],pb=pos[b];
+    const on=!near||(near.has(a)&&near.has(b));const op=on?(ty==="dep"?0.55:ty==="deliver"?0.3:0.22):0.05;
+    const col=ty==="deliver"?"var(--navy2)":ty==="dep"?"var(--nogo)":"var(--hair)";const dash=ty==="dep"?'stroke-dasharray="4 3"':'';
+    return `<line x1="${pa.x.toFixed(1)}" y1="${pa.y.toFixed(1)}" x2="${pb.x.toFixed(1)}" y2="${pb.y.toFixed(1)}" stroke="${col}" stroke-width="${ty==="dep"?1.6:1}" opacity="${op}" ${dash}/>`;}).join("");
+  const nodeSVG=g.nodes.map(nd=>{const p=pos[nd.id];const o=(near&&!near.has(nd.id))?0.14:1;
+    if(nd.type==="domain")return `<g class="gnode" data-gnode="${nd.id}" opacity="${o}"><circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="19" fill="var(--navy)" stroke="var(--gold)" stroke-width="1.5"/><text x="${p.x.toFixed(1)}" y="${(p.y+33).toFixed(1)}" text-anchor="middle" class="glabel gdom">${esc(nd.label)}</text></g>`;
+    if(nd.type==="cap"){const lbl=(near&&near.has(nd.id))?`<text x="${p.x.toFixed(1)}" y="${(p.y-11).toFixed(1)}" text-anchor="middle" class="glabel gcap">${esc(nd.label)}</text>`:"";
+      return `<g class="gnode" data-gnode="${nd.id}" opacity="${o}"><rect x="${(p.x-6).toFixed(1)}" y="${(p.y-6).toFixed(1)}" width="12" height="12" rx="2" transform="rotate(45 ${p.x.toFixed(1)} ${p.y.toFixed(1)})" fill="var(--gold)" stroke="#fff" stroke-width="1"/>${lbl}</g>`;}
+    const pr=projects.find(x=>"prj:"+x.id===nd.id);const col=pr?projTierColor(pr):"var(--muted)";
+    return `<g class="gnode" data-gnode="${nd.id}" opacity="${o}"><circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="10" fill="${col}" stroke="#fff" stroke-width="1.5"/><text x="${p.x.toFixed(1)}" y="${(p.y+21).toFixed(1)}" text-anchor="middle" class="glabel gprj">${esc(shortName(nd.label))}</text></g>`;}).join("");
+  const svg=`<svg viewBox="0 0 ${W} ${H}" class="vgraph" role="img" aria-label="Capability and domain knowledge graph">${edgeSVG}${nodeSVG}</svg>`;
+  const legend=`<div class="glegend"><span><i class="lg dom"></i>Domain</span><span><i class="lg cap"></i>Capability</span><span><i class="lg prj"></i>Project (colour = verdict)</span><span><i class="lg e-del"></i>delivers</span><span><i class="lg e-dep"></i>depends on</span><span><i class="lg e-part"></i>part-of domain</span></div>`;
+  return `<div class="card" style="margin-bottom:16px"><h3>Capability &amp; domain knowledge graph</h3>
+     <div class="hint">Interdependencies between projects, the capabilities they deliver, and the business domains of the semantic knowledge layer. Solid = delivers · dashed red = project dependency · grey = capability part-of domain. Tap a node to trace its neighbourhood.</div>
+     <div class="vgraphwrap"><div>${svg}${legend}</div>${graphDetail(g)}</div></div>
+   <div class="card"><h3>Semantic knowledge layer · domain ontology</h3><div class="hint">Departments and their subdomains for the aircraft manufacturer — the domain-specific ontologies the graph is scored against.</div>${ontTree()}</div>`;}
+function ontTree(){return `<div class="onttree">${ONT.map(d=>`<div class="ont-d"><div class="ont-dn">${esc(d.name)}</div><div class="ont-subs">${d.sub.map(s=>`<span class="ont-s">${esc(s)}</span>`).join("")}</div></div>`).join("")}</div>`;}
+
+/* ================= OKR impact views ================= */
+function okrStrategyView(){const grp={Strategy:[],Operational:[]};OKRS.forEach(o=>grp[o.type].push(o));
+  const bar=kr=>{const{frac,ps}=krAttain(kr);const proj=krProjected(kr);const col=frac>=.8?"var(--go)":frac>=.5?"var(--rev)":"var(--nogo)";
+    return `<div class="krrow"><div><div class="kr-name">${esc(kr.kr)}</div><div class="kr-proj">${ps.map(chipFor).join("")||'<span class="vmeta">no project mapped</span>'}</div></div>
+      <div class="kr-bar"><div class="fill" style="width:${(frac*100).toFixed(0)}%;background:${col}"></div></div>
+      <div class="kr-val">${fmt(kr.base)} → <b style="color:${col}">${fmt(proj)}</b> → ${fmt(kr.target)}${kr.unit?" "+kr.unit:""}<br><span class="vmeta">${(frac*100).toFixed(0)}% to target</span></div></div>`;};
+  const sec=(title,list)=>`<div class="card" style="margin-bottom:18px"><h3>${title} objectives</h3>${list.map(o=>`<div class="okrobj"><div class="okr-type">${o.type}</div><h4>${esc(o.obj)}</h4>${o.krs.map(bar).join("")}</div>`).join("")}</div>`;
+  return `<div class="targets-intro" style="margin-bottom:4px"><h2>Projected OKR attainment</h2><p>Each key result is advanced by the projects that deliver its enabling capabilities. Projected value interpolates base→target by the mean delivery maturity of those projects, so a stalled project drags its key results toward the baseline. Auto-generated from the current assessment.</p></div>${sec("Strategy",grp.Strategy)}${sec("Operational",grp.Operational)}`;}
+function okrDomainView(){return `<div class="targets-intro" style="margin-bottom:4px"><h2>Impact by business domain</h2><p>Each domain of the semantic knowledge layer, the projects and capabilities it owns, and the OKRs it moves.</p></div>`+
+  ONT.map(d=>{const ps=domainProjects(d.id);const items=okrItemsFor(ps);const caps=CAPS.filter(c=>c.domain===d.id);
+   return `<div class="vcard"><h4>${esc(d.name)}</h4><div class="vmeta">${d.sub.join(" · ")}</div>
+     <div class="sum">${scopeSummary(ps)}</div>
+     <div class="gd-sec"><h5>Projects</h5>${ps.length?ps.map(chipFor).join(""):'<span class="vmeta">none mapped</span>'}</div>
+     <div class="gd-sec"><h5>Capabilities</h5>${caps.map(c=>`<span class="ont-s">${esc(c.name)}</span>`).join("")||'<span class="vmeta">—</span>'}</div>
+     <div class="gd-sec"><h5>OKR impact</h5>${items.length?items.map(krmini).join(""):'<span class="vmeta">no OKR linkage</span>'}</div></div>`;}).join("");}
+function okrPortfolioView(){const ports=[...new Set(projects.map(p=>p.portfolio))];
+  return `<div class="targets-intro" style="margin-bottom:4px"><h2>Impact by portfolio</h2><p>The six work portfolios and the strategy / operational key results their projects advance.</p></div>`+
+  ports.map(port=>{const ps=projects.filter(p=>p.portfolio===port);const items=okrItemsFor(ps);
+   return `<div class="vcard"><h4>${esc(port)}</h4><div class="sum">${scopeSummary(ps)}</div>
+     <div class="gd-sec"><h5>Projects</h5>${ps.map(chipFor).join("")}</div>
+     <div class="gd-sec"><h5>OKR impact</h5>${items.length?items.map(krmini).join(""):'<span class="vmeta">no OKR linkage</span>'}</div></div>`;}).join("");}
+function projSummary(pr,items,vt){if(!items.length)return "No direct key-result linkage; supports enabling capabilities.";
+  const top=items.slice().sort((a,b)=>b.frac-a.frac)[0];const objs=[...new Set(items.map(i=>i.o.obj))];
+  if(vt.tag==="GO")return `On track to advance <b>${items.length}</b> key result${items.length>1?'s':''} across ${objs.length} objective${objs.length>1?'s':''}; strongest lift to <b>${top.kr.kr}</b>.`;
+  if(vt.tag==="REVIEW")return `Partially advancing <b>${items.length}</b> key result${items.length>1?'s':''}; <b>${top.kr.kr}</b> is progressing but coverage gaps cap the gain until review clears.`;
+  return `<b style="color:var(--nogo)">At risk:</b> ${items.length} key result${items.length>1?'s':''} depend on this project — projected to miss target while it sits at ${(overallOf(pr).ratio*100).toFixed(0)}% and No-Go.`;}
+function okrProjectView(){return `<div class="targets-intro" style="margin-bottom:4px"><h2>Impact by project</h2><p>Each project's delivered capabilities, dependencies, and its contribution to strategy / operational OKRs.</p></div>`+
+  projects.map(pr=>{const m=PROJMETA[pr.id]||{caps:[],deps:[]};const o=overallOf(pr);const t=tier(o.ratio,overallAppetite);const vt=verdict(o,overallAppetite);const items=okrItemsFor([pr]);
+   const caps=(m.caps||[]).map(c=>{const cc=CAPS.find(x=>x.id===c);return cc?cc.name:c;});
+   const deps=(m.deps||[]).map(dp=>{const pp=projects.find(x=>x.id===dp);return pp?shortName(pp.name):dp;});
+   const dom=ONT.find(x=>x.id===m.domain);
+   return `<div class="vcard"><h4>${esc(pr.name)} <span class="vchip" style="background:${cbg(t)};color:${cvar(t)}">${vt.tag}</span></h4>
+     <div class="vmeta">${esc(pr.portfolio)}${dom?" · "+esc(dom.name):""} · maturity ${(o.ratio*100).toFixed(0)}%</div>
+     <div class="sum">${projSummary(pr,items,vt)}</div>
+     <div class="gd-sec"><h5>Delivers capabilities</h5>${caps.map(c=>`<span class="ont-s">${esc(c)}</span>`).join("")||'<span class="vmeta">—</span>'}</div>
+     ${deps.length?`<div class="gd-sec"><h5>Depends on</h5>${deps.map(d=>`<span class="ont-s">${esc(d)}</span>`).join("")}</div>`:""}
+     <div class="gd-sec"><h5>OKR contribution</h5>${items.length?items.map(krmini).join(""):'<span class="vmeta">no direct OKR linkage</span>'}</div></div>`;}).join("");}
+function renderValue(){const tabs=[["graph","Knowledge Graph"],["strategy","Strategy & OKRs"],["domain","By Domain"],["portfolio","By Portfolio"],["project","By Project"]];
+  const sub=`<div class="vtabs" role="group" aria-label="Value map view">${tabs.map(([k,l])=>`<button data-vtab="${k}" aria-pressed="${valueTab===k}">${l}</button>`).join("")}</div>`;
+  const body=valueTab==="graph"?valueGraphView():valueTab==="strategy"?okrStrategyView():valueTab==="domain"?okrDomainView():valueTab==="portfolio"?okrPortfolioView():okrProjectView();
+  return `<div class="statusbar"><div class="wrap"><button class="backlink" data-nav="#/portfolio">‹ Portfolio</button><div class="sb-title">Value Map · capabilities, domains &amp; OKR impact</div></div></div>
+    <main><div class="wrap">${sub}${body}</div></main>`;}
+
 /* ================= Router ================= */
 function parseHash(){const h=location.hash.replace(/^#\/?/,""),parts=h.split("/");
   if(parts[0]==="phase"&&parts[1])return{name:"phase",param:parts[1]};
-  if(["project","targets","risk","disciplines","refs"].includes(parts[0]))return{name:parts[0]};
+  if(["project","targets","risk","disciplines","refs","value"].includes(parts[0]))return{name:parts[0]};
   return{name:"portfolio"};}
 let pendingScroll=null;
 function render(){const v=parseHash(),host=document.getElementById("view");
-  host.innerHTML=v.name==="phase"?renderPhase(v.param):v.name==="project"?renderProject():v.name==="targets"?renderTargets():v.name==="risk"?renderRisk():v.name==="disciplines"?renderDisciplines():v.name==="refs"?renderRefs():renderPortfolio();
+  host.innerHTML=v.name==="phase"?renderPhase(v.param):v.name==="project"?renderProject():v.name==="targets"?renderTargets():v.name==="risk"?renderRisk():v.name==="disciplines"?renderDisciplines():v.name==="refs"?renderRefs():v.name==="value"?renderValue():renderPortfolio();
   document.querySelectorAll(".navbtn").forEach(b=>b.classList.toggle("active",b.dataset.nav==="#/"+(v.name==="phase"?"project":v.name)));
   buildProjSel();
   if(pendingScroll!=null){window.scrollTo(0,pendingScroll);pendingScroll=null;}else window.scrollTo(0,0);}
@@ -2124,6 +2370,10 @@ document.addEventListener("click",e=>{
   if(ap&&!ap.dataset.phaseapp){overallAppetite=ap.dataset.app;rerender();return;}
   const xf=e.target.closest("[data-xref]");
   if(xf){xrefFilter=xf.dataset.xref;rerender();return;}
+  const vt=e.target.closest("[data-vtab]");
+  if(vt){valueTab=vt.dataset.vtab;graphSel=null;rerender();return;}
+  const gn=e.target.closest("[data-gnode]");
+  if(gn){graphSel=(graphSel===gn.dataset.gnode?null:gn.dataset.gnode);rerender();return;}
   const nav=e.target.closest("[data-nav]");
   if(nav){navigate(nav.dataset.nav);return;}
   if(e.target.closest("#sebokBtn")){document.getElementById("drawerBg").classList.add("open");return;}
