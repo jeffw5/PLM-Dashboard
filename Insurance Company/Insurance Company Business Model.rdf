@@ -1,0 +1,1493 @@
+@prefix hf:       <http://example.org/hartford/ddd#> .
+@prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:     <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:      <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct:      <http://purl.org/dc/terms/> .
+
+# =================================================================
+# ONTOLOGY & CLASS DEFINITIONS
+# =================================================================
+
+hf:EnterpriseBusinessModel a owl:Ontology ;
+    rdfs:label "The Hartford Domain-Driven Business Model Ontology" ;
+    rdfs:comment "A DDD ontology mapping insurance domains, services, processes, and operations." ;
+    owl:versionInfo "1.1" ;
+    dct:description "v1.1 extends v1.0 by aligning the DDD model's relation pattern with the enterprise Core ontology suite (Ontology_Core_Asset, Ontology_Core_Capability, Ontology_Core_Domain, Ontology_Core_Event): every Service/Process now carries the same BFO-style relations (enables, performedBy, creates/modifies, initiates, assignedTo, guides/constrains, controls) used in those Core ontology SHACL shapes, and every bounded context's Service catalog has been filled out to a comparable depth." .
+
+# --- DDD Core Classes (v1.0) ---
+hf:Domain a owl:Class ;
+    rdfs:label "Business Domain" .
+
+hf:SubDomain a owl:Class ;
+    rdfs:subClassOf hf:Domain ;
+    rdfs:label "Sub-Domain / Bounded Context" .
+
+hf:DomainService a owl:Class ;
+    rdfs:label "Domain Service" .
+
+hf:BusinessProcess a owl:Class ;
+    rdfs:label "Underlying Business Process" .
+
+hf:OperationalArea a owl:Class ;
+    rdfs:label "Functional Operational Area" .
+
+hf:OntologyConcept a owl:Class ;
+    rdfs:label "Domain-Specific Ontology Concept" .
+
+# --- DDD Core Object Properties (v1.0) ---
+hf:hasSubDomain a owl:ObjectProperty ;
+    rdfs:domain hf:Domain ;
+    rdfs:range hf:SubDomain .
+
+hf:providesService a owl:ObjectProperty ;
+    rdfs:domain hf:SubDomain ;
+    rdfs:range hf:DomainService .
+
+hf:executedByProcess a owl:ObjectProperty ;
+    rdfs:domain hf:DomainService ;
+    rdfs:range hf:BusinessProcess .
+
+hf:supportedByOperation a owl:ObjectProperty ;
+    rdfs:domain hf:BusinessProcess ;
+    rdfs:range hf:OperationalArea .
+
+hf:mapsToOntologyConcept a owl:ObjectProperty ;
+    rdfs:domain hf:DomainService ;
+    rdfs:range hf:OntologyConcept .
+
+# =================================================================
+# 0. EXTENDED CLASSES  (aligned to Ontology_Core_Asset / Capability / Domain / Event)
+# =================================================================
+# These classes mirror the target classes referenced by the Core ontology's SHACL
+# NodeShapes (taxonomy-core-serviceShape, ProcessShape, EventsShape, ValueStreamShape,
+# PersonaShape, RoleShape, RulesShape, ComplianceShape, DigitalAssetShape,
+# PhysicalAssetShape) so the DDD model can carry the same relation pattern.
+
+hf:Capability a owl:Class ;
+    rdfs:label "Business Capability" ;
+    rdfs:comment "What the enterprise is able to do, independent of how; mirrors service.model#Capability in the Core Capability ontology." .
+
+hf:Event a owl:Class ;
+    rdfs:label "Business Event" ;
+    rdfs:comment "A discrete occurrence that a Process initiates or that triggers a Process; mirrors ontology-core-event/Event." .
+
+hf:Asset a owl:Class ;
+    rdfs:label "Business Asset" ;
+    rdfs:comment "Parent class of Digital and Physical assets created/modified by processes; mirrors ontology-core-asset/Artifact." .
+
+hf:DigitalAsset a owl:Class ;
+    rdfs:subClassOf hf:Asset ;
+    rdfs:label "Digital Asset" .
+
+hf:PhysicalAsset a owl:Class ;
+    rdfs:subClassOf hf:Asset ;
+    rdfs:label "Physical Asset" .
+
+hf:ValueStream a owl:Class ;
+    rdfs:label "Value Stream" ;
+    rdfs:comment "An end-to-end stream of value delivery enabled by one or more Services; mirrors taxonomy-core-valuestream/ValueStream." .
+
+hf:Persona a owl:Class ;
+    rdfs:label "Persona" ;
+    rdfs:comment "An internal or external actor assigned a Role; mirrors taxonomy-core-persona/Persona." .
+
+hf:Role a owl:Class ;
+    rdfs:label "Role" ;
+    rdfs:comment "A function performed against a Process; mirrors taxonomy-core-role/Role." .
+
+hf:Rules a owl:Class ;
+    rdfs:label "Business Rule" ;
+    rdfs:comment "Guides or constrains a Process; mirrors taxonomy-core-rules/Rules." .
+
+hf:Compliance a owl:Class ;
+    rdfs:label "Compliance Requirement" ;
+    rdfs:comment "Controls a Process to ensure regulatory conformance; mirrors taxonomy-core-compliance/Compliance." .
+
+# =================================================================
+# 0b. EXTENDED OBJECT PROPERTIES  (relations mirrored from the Core ontology's
+#      basic-formal-ontology upper-ontology predicates: enables, performedBy,
+#      performs, creates, modifies, generates, initiates, assignedTo, guides,
+#      constrains, controls, enabledBy)
+# =================================================================
+
+hf:enablesCapability a owl:ObjectProperty ;
+    rdfs:domain hf:DomainService ;
+    rdfs:range hf:Capability ;
+    rdfs:comment "Mirrors ServiceShape: Service -enables-> Capability." .
+
+hf:enablesValueStream a owl:ObjectProperty ;
+    rdfs:domain hf:DomainService ;
+    rdfs:range hf:ValueStream ;
+    rdfs:comment "Mirrors ServiceShape: Service -enables-> ValueStream." .
+
+hf:enabledByService a owl:ObjectProperty ;
+    owl:inverseOf hf:enablesValueStream ;
+    rdfs:domain hf:ValueStream ;
+    rdfs:range hf:DomainService ;
+    rdfs:comment "Mirrors ValueStreamShape: ValueStream -enabledBy-> Service." .
+
+hf:assignedToPersona a owl:ObjectProperty ;
+    rdfs:domain hf:DomainService ;
+    rdfs:range hf:Persona ;
+    rdfs:comment "Mirrors ServiceShape: Service -assignedTo-> Persona." .
+
+hf:assignedToRole a owl:ObjectProperty ;
+    rdfs:domain hf:Persona ;
+    rdfs:range hf:Role ;
+    rdfs:comment "Mirrors PersonaShape: Persona -assignedTo-> Role." .
+
+hf:performedByRole a owl:ObjectProperty ;
+    rdfs:domain hf:BusinessProcess ;
+    rdfs:range hf:Role ;
+    rdfs:comment "Mirrors ProcessShape: Process -performedBy-> Persona/Role." .
+
+hf:performsProcess a owl:ObjectProperty ;
+    owl:inverseOf hf:performedByRole ;
+    rdfs:domain hf:Role ;
+    rdfs:range hf:BusinessProcess ;
+    rdfs:comment "Mirrors RoleShape: Role -performs-> Process." .
+
+hf:createsAsset a owl:ObjectProperty ;
+    rdfs:domain hf:BusinessProcess ;
+    rdfs:range hf:Asset ;
+    rdfs:comment "Mirrors ProcessShape: Process -creates-> DigitalAsset/PhysicalAsset." .
+
+hf:modifiesAsset a owl:ObjectProperty ;
+    rdfs:domain hf:BusinessProcess ;
+    rdfs:range hf:Asset ;
+    rdfs:comment "Mirrors ProcessShape: Process -modifies-> DigitalAsset/PhysicalAsset." .
+
+hf:initiatesEvent a owl:ObjectProperty ;
+    rdfs:domain hf:BusinessProcess ;
+    rdfs:range hf:Event ;
+    rdfs:comment "Mirrors ProcessShape: Process -initiates-> Event." .
+
+hf:triggersProcess a owl:ObjectProperty ;
+    owl:inverseOf hf:initiatesEvent ;
+    rdfs:domain hf:Event ;
+    rdfs:range hf:BusinessProcess ;
+    rdfs:comment "Mirrors EventsShape: Event -initiates-> Process." .
+
+hf:guidesProcess a owl:ObjectProperty ;
+    rdfs:domain hf:Rules ;
+    rdfs:range hf:BusinessProcess ;
+    rdfs:comment "Mirrors RulesShape: Rules -guides-> Process." .
+
+hf:constrainsProcess a owl:ObjectProperty ;
+    rdfs:domain hf:Rules ;
+    rdfs:range hf:BusinessProcess ;
+    rdfs:comment "Mirrors RulesShape: Rules -constrains-> Process." .
+
+hf:controlsProcess a owl:ObjectProperty ;
+    rdfs:domain hf:Compliance ;
+    rdfs:range hf:BusinessProcess ;
+    rdfs:comment "Mirrors ComplianceShape: Compliance -controls-> Process." .
+
+# --- Reverse/inverse declarations for the v1.0/v1.1 core DDD chain (v1.2) ---
+# Declared so any reasoner or SPARQL engine can walk "what depends on this"
+# upward from a Domain/SubDomain/Service/Process/Asset/Capability/Concept
+# without needing every reverse triple physically re-asserted.
+
+hf:subDomainOf a owl:ObjectProperty ;
+    owl:inverseOf hf:hasSubDomain ;
+    rdfs:domain hf:SubDomain ;
+    rdfs:range hf:Domain .
+
+hf:providedBySubDomain a owl:ObjectProperty ;
+    owl:inverseOf hf:providesService ;
+    rdfs:domain hf:DomainService ;
+    rdfs:range hf:SubDomain .
+
+hf:processOfService a owl:ObjectProperty ;
+    owl:inverseOf hf:executedByProcess ;
+    rdfs:domain hf:BusinessProcess ;
+    rdfs:range hf:DomainService .
+
+hf:operationSupportsProcess a owl:ObjectProperty ;
+    owl:inverseOf hf:supportedByOperation ;
+    rdfs:domain hf:OperationalArea ;
+    rdfs:range hf:BusinessProcess .
+
+hf:conceptMappedFromService a owl:ObjectProperty ;
+    owl:inverseOf hf:mapsToOntologyConcept ;
+    rdfs:domain hf:OntologyConcept ;
+    rdfs:range hf:DomainService .
+
+hf:assetCreatedByProcess a owl:ObjectProperty ;
+    owl:inverseOf hf:createsAsset ;
+    rdfs:domain hf:Asset ;
+    rdfs:range hf:BusinessProcess .
+
+hf:assetModifiedByProcess a owl:ObjectProperty ;
+    owl:inverseOf hf:modifiesAsset ;
+    rdfs:domain hf:Asset ;
+    rdfs:range hf:BusinessProcess .
+
+hf:capabilityEnabledByService a owl:ObjectProperty ;
+    owl:inverseOf hf:enablesCapability ;
+    rdfs:domain hf:Capability ;
+    rdfs:range hf:DomainService .
+
+# =================================================================
+# 0c. SYSTEM / DEPENDENCY / RISK EXTENSION (v1.2)
+# =================================================================
+# Closes the three gaps found during design-time impact-analysis validation:
+#   (1) no first-class System/Application distinct from OperationalArea,
+#   (2) no "depends on / consumes" edge (only "creates/modifies", which is
+#       output-only and can't answer "what breaks if this asset changes"),
+#   (3) no Risk/Issue/Observation instances, even though the Core ontology's
+#       own ProcessShape/IssueShape already define generates->Observation and
+#       occursIn->Process as the intended risk primitive.
+
+hf:System a owl:Class ;
+    rdfs:label "System" ;
+    rdfs:comment "A deployable IT system, platform, or application that implements/automates a Process. Distinct from hf:OperationalArea, which is the organizational function that owns the system, not the system itself." .
+
+hf:Issue a owl:Class ;
+    rdfs:label "Issue" ;
+    rdfs:comment "Mirrors taxonomy-core-issue/Issue: occurs in a Process and generates an Observation." .
+
+hf:Observation a owl:Class ;
+    rdfs:label "Observation" ;
+    rdfs:comment "Mirrors taxonomy-core-process/Observation: a recorded finding generated by a Process or an Issue." .
+
+hf:Risk a owl:Class ;
+    rdfs:label "Risk" ;
+    rdfs:comment "A design-time or operational risk, scored by severity/likelihood, that can be attached to a System, Process, or Service for impact analysis." .
+
+hf:implementedBySystem a owl:ObjectProperty ;
+    rdfs:domain hf:BusinessProcess ;
+    rdfs:range hf:System ;
+    rdfs:comment "The System that automates/implements this Process." .
+
+hf:systemImplementsProcess a owl:ObjectProperty ;
+    owl:inverseOf hf:implementedBySystem ;
+    rdfs:domain hf:System ;
+    rdfs:range hf:BusinessProcess .
+
+hf:dependsOnSystem a owl:ObjectProperty ;
+    rdfs:domain hf:BusinessProcess ;
+    rdfs:range hf:System ;
+    rdfs:comment "A Process's dependency on a System other than the one that directly implements it (cross-system dependency)." .
+
+hf:consumesAsset a owl:ObjectProperty ;
+    rdfs:domain hf:BusinessProcess ;
+    rdfs:range hf:Asset ;
+    rdfs:comment "A Process's read/input dependency on an Asset produced or modified elsewhere -- the relation needed to trace 'what breaks if this asset's shape changes', which creates/modifies alone cannot answer." .
+
+hf:assetConsumedBy a owl:ObjectProperty ;
+    owl:inverseOf hf:consumesAsset ;
+    rdfs:domain hf:Asset ;
+    rdfs:range hf:BusinessProcess .
+
+hf:precedesProcess a owl:ObjectProperty ;
+    rdfs:domain hf:BusinessProcess ;
+    rdfs:range hf:BusinessProcess ;
+    rdfs:comment "Typical lifecycle sequencing between Processes (not necessarily 1:1 per transaction) -- enables end-to-end pipeline impact tracing across service boundaries." .
+
+hf:followsProcess a owl:ObjectProperty ;
+    owl:inverseOf hf:precedesProcess ;
+    rdfs:domain hf:BusinessProcess ;
+    rdfs:range hf:BusinessProcess .
+
+hf:generatesObservation a owl:ObjectProperty ;
+    rdfs:domain hf:BusinessProcess ;
+    rdfs:range hf:Observation ;
+    rdfs:comment "Mirrors Core ProcessShape: Process -generates-> Observation." .
+
+hf:occursInProcess a owl:ObjectProperty ;
+    rdfs:domain hf:Issue ;
+    rdfs:range hf:BusinessProcess ;
+    rdfs:comment "Mirrors Core IssueShape: Issue -occursIn-> Process." .
+
+hf:issueGeneratesObservation a owl:ObjectProperty ;
+    rdfs:domain hf:Issue ;
+    rdfs:range hf:Observation ;
+    rdfs:comment "Mirrors Core IssueShape: Issue -generates-> Observation." .
+
+hf:impactsProcess a owl:ObjectProperty ;
+    rdfs:domain hf:Risk ;
+    rdfs:range hf:BusinessProcess .
+
+hf:impactsSystem a owl:ObjectProperty ;
+    rdfs:domain hf:Risk ;
+    rdfs:range hf:System .
+
+hf:impactsService a owl:ObjectProperty ;
+    rdfs:domain hf:Risk ;
+    rdfs:range hf:DomainService .
+
+hf:riskSeverity a owl:DatatypeProperty ;
+    rdfs:domain hf:Risk ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Controlled value: High | Medium | Low." .
+
+hf:riskLikelihood a owl:DatatypeProperty ;
+    rdfs:domain hf:Risk ;
+    rdfs:range xsd:string ;
+    rdfs:comment "Controlled value: High | Medium | Low." .
+
+# =================================================================
+# 1. CORE BUSINESS DOMAINS & BOUNDED CONTEXTS
+# =================================================================
+
+# --- Commercial Lines Domain ---
+hf:CommercialLinesDomain a hf:Domain ;
+    rdfs:label "Commercial Lines Domain" ;
+    hf:hasSubDomain hf:SmallBusinessSubDomain ,
+                    hf:MiddleLargeCommercialSubDomain ,
+                    hf:GlobalSpecialtySubDomain .
+
+hf:SmallBusinessSubDomain a hf:SubDomain ;
+    rdfs:label "Small Business Bounded Context" ;
+    rdfs:comment "Standardized P&C products for small business enterprise" ;
+    hf:providesService hf:BOPIssuanceService ,
+                       hf:WorkersCompService ,
+                       hf:CommercialAutoService ,
+                       hf:CyberLiabilityBOPRiderService .
+
+hf:MiddleLargeCommercialSubDomain a hf:SubDomain ;
+    rdfs:label "Middle & Large Commercial Bounded Context" ;
+    rdfs:comment "Complex property, liability, and umbrella coverage for mid-to-large enterprises" ;
+    hf:providesService hf:ComplexPropertyUnderwritingService ,
+                       hf:UmbrellaLiabilityService ,
+                       hf:CasualtyClaimsLitigationService .
+
+hf:GlobalSpecialtySubDomain a hf:SubDomain ;
+    rdfs:label "Global Specialty (Navigators) Bounded Context" ;
+    rdfs:comment "High-hazard, E&S lines, marine, and financial lines" ;
+    hf:providesService hf:ExcessAndSurplusService ,
+                       hf:OceanMarineRiskService ,
+                       hf:FinancialLinesDirectorsService ,
+                       hf:CyberSpecialtyRiskService .
+
+# --- Personal Lines Domain ---
+hf:PersonalLinesDomain a hf:Domain ;
+    rdfs:label "Personal Lines Domain" ;
+    hf:hasSubDomain hf:AARPAffinitySubDomain ,
+                    hf:StandardPersonalLinesSubDomain .
+
+hf:AARPAffinitySubDomain a hf:SubDomain ;
+    rdfs:label "AARP Partnership Bounded Context" ;
+    rdfs:comment "Exclusive direct-to-consumer auto and home insurance partnership" ;
+    hf:providesService hf:AARPAutoPolicyService ,
+                       hf:AARPHomeownersService ,
+                       hf:AARPUmbrellaService .
+
+hf:StandardPersonalLinesSubDomain a hf:SubDomain ;
+    rdfs:label "Standard Personal Lines Bounded Context" ;
+    hf:providesService hf:RentersCoverageService ,
+                       hf:PersonalAutoService ,
+                       hf:HomeownersInsuranceService .
+
+# --- Group Benefits Domain ---
+hf:GroupBenefitsDomain a hf:Domain ;
+    rdfs:label "Group Benefits Domain" ;
+    hf:hasSubDomain hf:EmployerGroupBenefitsSubDomain .
+
+hf:EmployerGroupBenefitsSubDomain a hf:SubDomain ;
+    rdfs:label "Employer Group Benefits Bounded Context" ;
+    hf:providesService hf:GroupLifeService ,
+                       hf:ShortTermDisabilityService ,
+                       hf:LongTermDisabilityService ,
+                       hf:VoluntaryAccidentalDeathService ,
+                       hf:AbsenceManagementService .
+
+# --- Hartford Funds Domain ---
+hf:HartfordFundsDomain a hf:Domain ;
+    rdfs:label "Hartford Funds (Investment) Domain" ;
+    hf:hasSubDomain hf:AssetManagementSubDomain .
+
+hf:AssetManagementSubDomain a hf:SubDomain ;
+    rdfs:label "Asset Management & Investment Bounded Context" ;
+    hf:providesService hf:MutualFundManagementService ,
+                       hf:ETFStrategyService ,
+                       hf:InstitutionalSeparateAccountService .
+
+# =================================================================
+# 2. FUNCTIONAL & CORPORATE OPERATIONAL AREAS
+# =================================================================
+
+# Technical Operations
+hf:OpUnderwriting a hf:OperationalArea ;
+    rdfs:label "Underwriting Operations" ;
+    rdfs:comment "Risk assessment, pricing, policy structuring" .
+
+hf:OpClaimsManagement a hf:OperationalArea ;
+    rdfs:label "Claims Management Operations" ;
+    rdfs:comment "Intake, adjudication, negotiation, and ClaimPlus enterprise services" .
+
+hf:OpRiskEngineering a hf:OperationalArea ;
+    rdfs:label "Risk Engineering & Loss Control Operations" ;
+    rdfs:comment "Safety assessments, hazard mitigation, ergonomic consulting" .
+
+hf:OpDistributionSales a hf:OperationalArea ;
+    rdfs:label "Distribution & Sales Operations" ;
+    rdfs:comment "Independent agent network, wholesale brokers, direct channels" .
+
+hf:OpActuarialAnalytics a hf:OperationalArea ;
+    rdfs:label "Actuarial & Quantitative Analytics" ;
+    rdfs:comment "Pricing models, loss reserving, predictive data science" .
+
+# Corporate Support Operations
+hf:OpITInnovation a hf:OperationalArea ;
+    rdfs:label "IT & Innovation Operations" ;
+    rdfs:comment "Cloud infrastructure, cybersecurity, AI platform automation" .
+
+hf:OpFinanceCapital a hf:OperationalArea ;
+    rdfs:label "Finance, Accounting & Capital Management" ;
+    rdfs:comment "Financial reporting, enterprise investment, capital adequacy" .
+
+hf:OpLegalCompliance a hf:OperationalArea ;
+    rdfs:label "Legal, Compliance & Regulatory Affairs" ;
+    rdfs:comment "State regulatory filings, contract law, litigation management" .
+
+hf:OpHRMarketingCustomer a hf:OperationalArea ;
+    rdfs:label "HR, Marketing & Policyholder Service Operations" ;
+    rdfs:comment "Talent acquisition, brand strategy, direct customer service" .
+
+# --- New Operational Areas (v1.1) ---
+hf:OpReinsuranceCapitalMarkets a hf:OperationalArea ;
+    rdfs:label "Reinsurance & Capital Markets Operations" ;
+    rdfs:comment "Treaty/facultative reinsurance placement, cat bonds, capital markets risk transfer" .
+
+hf:OpDataGovernancePlatform a hf:OperationalArea ;
+    rdfs:label "Data Governance & Analytics Platform Operations" ;
+    rdfs:comment "Enterprise data quality, telematics/IoT ingestion, model governance" .
+
+hf:OpCustomerExperienceDesign a hf:OperationalArea ;
+    rdfs:label "Customer Experience & Product Design Operations" ;
+    rdfs:comment "Self-service product design, digital journey design, UX research" .
+
+# =================================================================
+# 3. SERVICES, PROCESSES & OPERATIONAL MAPPINGS
+# =================================================================
+
+# -----------------------------------------------------------------
+# 3.1 Small Business Bounded Context
+# -----------------------------------------------------------------
+
+# --- Service: BOP Issuance (v1.0, extended with mirrored relations) ---
+hf:BOPIssuanceService a hf:DomainService ;
+    rdfs:label "Business Owner's Policy (BOP) Automated Service" ;
+    hf:executedByProcess hf:ProcStraightThroughUnderwriting ,
+                         hf:ProcAutomatedBinding ;
+    hf:mapsToOntologyConcept hf:ConceptPolicyContract ,
+                             hf:ConceptCommercialRiskProfile ;
+    hf:enablesCapability hf:CapUnderwriteRisk , hf:CapPriceRisk ;
+    hf:enablesValueStream hf:VSCommercialLinesPolicyToClaim ;
+    hf:assignedToPersona hf:PersonaUnderwriter .
+
+hf:ProcStraightThroughUnderwriting a hf:BusinessProcess ;
+    rdfs:label "Straight-Through Automated Underwriting Process" ;
+    hf:supportedByOperation hf:OpUnderwriting ,
+                            hf:OpITInnovation ;
+    hf:performedByRole hf:RoleUnderwriter ;
+    hf:createsAsset hf:AssetPolicyDocument ;
+    hf:initiatesEvent hf:EventPolicyBound ;
+    hf:implementedBySystem hf:SysPolicyAdminPlatform ;
+    hf:precedesProcess hf:ProcAutomatedBinding .
+
+
+hf:ProcAutomatedBinding a hf:BusinessProcess ;
+    rdfs:label "Real-Time Policy Binding & Rating Process" ;
+    hf:supportedByOperation hf:OpActuarialAnalytics ,
+                            hf:OpDistributionSales ;
+    hf:performedByRole hf:RoleActuary ;
+    hf:createsAsset hf:AssetActuarialModel ;
+    hf:implementedBySystem hf:SysPolicyAdminPlatform ;
+    hf:consumesAsset hf:AssetPolicyDocument .
+
+
+# --- Service: Workers' Compensation (fleshed out from stub) ---
+hf:WorkersCompService a hf:DomainService ;
+    rdfs:label "Workers' Compensation Statutory Coverage Service" ;
+    rdfs:comment "Statutory wage-replacement and medical benefit coverage for workplace injury, rated on payroll exposure." ;
+    hf:executedByProcess hf:ProcPayrollExposureRating ,
+                         hf:ProcClaimsIntakeTriage ;
+    hf:mapsToOntologyConcept hf:ConceptStatutoryBenefitSchedule ,
+                             hf:ConceptExperienceModRating ;
+    hf:enablesCapability hf:CapUnderwriteRisk , hf:CapAdjudicateClaims ;
+    hf:assignedToPersona hf:PersonaUnderwriter .
+
+hf:ProcPayrollExposureRating a hf:BusinessProcess ;
+    rdfs:label "Payroll-Based Exposure Rating Process" ;
+    hf:supportedByOperation hf:OpUnderwriting ,
+                            hf:OpActuarialAnalytics ;
+    hf:performedByRole hf:RoleUnderwriter ;
+    hf:createsAsset hf:AssetPolicyDocument ;
+    hf:initiatesEvent hf:EventPolicyBound ;
+    hf:implementedBySystem hf:SysPolicyAdminPlatform ;
+    hf:precedesProcess hf:ProcClaimsIntakeTriage .
+
+
+hf:ProcClaimsIntakeTriage a hf:BusinessProcess ;
+    rdfs:label "Injury Claims Intake & Triage Process" ;
+    hf:supportedByOperation hf:OpClaimsManagement ;
+    hf:performedByRole hf:RoleClaimsAdjuster ;
+    hf:createsAsset hf:AssetClaimsFile ;
+    hf:initiatesEvent hf:EventFNOLReceived ;
+    hf:implementedBySystem hf:SysClaimsManagementPlatform .
+
+
+# --- Service: Commercial Auto (fleshed out from stub) ---
+hf:CommercialAutoService a hf:DomainService ;
+    rdfs:label "Commercial Fleet Auto Liability & Physical Damage Service" ;
+    rdfs:comment "Liability and physical damage coverage for commercial vehicle fleets, rated with telematics." ;
+    hf:executedByProcess hf:ProcFleetTelematicsRating ,
+                         hf:ProcCommercialAutoClaimsHandling ;
+    hf:mapsToOntologyConcept hf:ConceptFleetRiskProfile ,
+                             hf:ConceptAutoLossEvent ;
+    hf:enablesCapability hf:CapUnderwriteRisk , hf:CapAdjudicateClaims ;
+    hf:assignedToPersona hf:PersonaUnderwriter .
+
+hf:ProcFleetTelematicsRating a hf:BusinessProcess ;
+    rdfs:label "Fleet Telematics-Based Rating Process" ;
+    hf:supportedByOperation hf:OpUnderwriting ,
+                            hf:OpDataGovernancePlatform ;
+    hf:performedByRole hf:RoleUnderwriter ;
+    hf:createsAsset hf:AssetPolicyDocument ;
+    hf:modifiesAsset hf:AssetInsuredVehiclePhysical ;
+    hf:implementedBySystem hf:SysTelematicsIoTPlatform ;
+    hf:precedesProcess hf:ProcCommercialAutoClaimsHandling .
+
+
+hf:ProcCommercialAutoClaimsHandling a hf:BusinessProcess ;
+    rdfs:label "Commercial Auto Claims Handling Process" ;
+    hf:supportedByOperation hf:OpClaimsManagement ;
+    hf:performedByRole hf:RoleClaimsAdjuster ;
+    hf:modifiesAsset hf:AssetClaimsFile ;
+    hf:initiatesEvent hf:EventClaimSettled ;
+    hf:implementedBySystem hf:SysClaimsManagementPlatform ;
+    hf:consumesAsset hf:AssetPolicyDocument .
+
+
+# --- Service: Small Business Cyber Rider (new, v1.1) ---
+hf:CyberLiabilityBOPRiderService a hf:DomainService ;
+    rdfs:label "Small Business Cyber Liability Endorsement Service" ;
+    rdfs:comment "New v1.1 service: cyber liability endorsement attached to the BOP for small business insureds." ;
+    hf:executedByProcess hf:ProcCyberRiskScreening ;
+    hf:mapsToOntologyConcept hf:ConceptCyberExposureProfile ;
+    hf:enablesCapability hf:CapUnderwriteRisk ;
+    hf:assignedToPersona hf:PersonaUnderwriter .
+
+hf:ProcCyberRiskScreening a hf:BusinessProcess ;
+    rdfs:label "Cyber Risk Screening & Endorsement Process" ;
+    hf:supportedByOperation hf:OpUnderwriting ,
+                            hf:OpITInnovation ;
+    hf:performedByRole hf:RoleUnderwriter ;
+    hf:createsAsset hf:AssetPolicyDocument ;
+    hf:implementedBySystem hf:SysPolicyAdminPlatform .
+
+
+# -----------------------------------------------------------------
+# 3.2 Middle & Large Commercial Bounded Context
+# -----------------------------------------------------------------
+
+# --- Service: Complex Property Underwriting (v1.0, extended) ---
+hf:ComplexPropertyUnderwritingService a hf:DomainService ;
+    rdfs:label "Middle/Large Commercial Property Underwriting Service" ;
+    hf:executedByProcess hf:ProcOnsiteRiskInspection ,
+                         hf:ProcCatastropheLossModeling ;
+    hf:mapsToOntologyConcept hf:ConceptPropertyLossExposure ,
+                             hf:ConceptReinsuranceStructure ;
+    hf:enablesCapability hf:CapUnderwriteRisk , hf:CapEngineerRisk ;
+    hf:enablesValueStream hf:VSCommercialLinesPolicyToClaim ;
+    hf:assignedToPersona hf:PersonaRiskEngineer .
+
+hf:ProcOnsiteRiskInspection a hf:BusinessProcess ;
+    rdfs:label "On-Site Physical Safety & Risk Inspection Process" ;
+    hf:supportedByOperation hf:OpRiskEngineering ;
+    hf:performedByRole hf:RoleRiskEngineer ;
+    hf:createsAsset hf:AssetRiskInspectionReport ;
+    hf:initiatesEvent hf:EventInspectionCompleted ;
+    hf:precedesProcess hf:ProcCatastropheLossModeling .
+
+
+hf:ProcCatastropheLossModeling a hf:BusinessProcess ;
+    rdfs:label "Catastrophe & Exposure Predictive Modeling Process" ;
+    hf:supportedByOperation hf:OpActuarialAnalytics ,
+                            hf:OpReinsuranceCapitalMarkets ;
+    hf:performedByRole hf:RoleActuary ;
+    hf:createsAsset hf:AssetActuarialModel ;
+    hf:implementedBySystem hf:SysActuarialModelingPlatform ;
+    hf:consumesAsset hf:AssetRiskInspectionReport .
+
+
+# --- Service: Umbrella Liability (fleshed out from stub) ---
+hf:UmbrellaLiabilityService a hf:DomainService ;
+    rdfs:label "Commercial Umbrella & Excess Liability Service" ;
+    rdfs:comment "Excess-of-loss liability tower structured over underlying commercial primary policies." ;
+    hf:executedByProcess hf:ProcLayeredTowerStructuring ,
+                         hf:ProcLargeLossClaimsNegotiation ;
+    hf:mapsToOntologyConcept hf:ConceptExcessLayerTower ,
+                             hf:ConceptLitigationExposure ;
+    hf:enablesCapability hf:CapUnderwriteRisk , hf:CapAdjudicateClaims ;
+    hf:assignedToPersona hf:PersonaUnderwriter .
+
+hf:ProcLayeredTowerStructuring a hf:BusinessProcess ;
+    rdfs:label "Layered Excess Tower Structuring Process" ;
+    hf:supportedByOperation hf:OpUnderwriting ,
+                            hf:OpActuarialAnalytics ;
+    hf:performedByRole hf:RoleUnderwriter ;
+    hf:createsAsset hf:AssetPolicyDocument ;
+    hf:implementedBySystem hf:SysPolicyAdminPlatform ;
+    hf:precedesProcess hf:ProcLargeLossClaimsNegotiation .
+
+
+hf:ProcLargeLossClaimsNegotiation a hf:BusinessProcess ;
+    rdfs:label "Large Loss Claims Negotiation & Settlement Process" ;
+    hf:supportedByOperation hf:OpClaimsManagement ,
+                            hf:OpLegalCompliance ;
+    hf:performedByRole hf:RoleClaimsAdjuster ;
+    hf:modifiesAsset hf:AssetClaimsFile ;
+    hf:initiatesEvent hf:EventClaimSettled ;
+    hf:implementedBySystem hf:SysClaimsManagementPlatform ;
+    hf:consumesAsset hf:AssetActuarialModel .
+
+
+# --- Service: Casualty Claims Litigation (new, v1.1) ---
+hf:CasualtyClaimsLitigationService a hf:DomainService ;
+    rdfs:label "Complex Casualty Claims Litigation Management Service" ;
+    rdfs:comment "New v1.1 service: coordinated defense and litigation strategy for high-severity casualty claims." ;
+    hf:executedByProcess hf:ProcLitigationStrategyManagement ;
+    hf:mapsToOntologyConcept hf:ConceptLitigationExposure ;
+    hf:enablesCapability hf:CapAdjudicateClaims , hf:CapEnsureCompliance ;
+    hf:assignedToPersona hf:PersonaComplianceOfficer .
+
+hf:ProcLitigationStrategyManagement a hf:BusinessProcess ;
+    rdfs:label "Litigation Strategy & Outside Counsel Management Process" ;
+    hf:supportedByOperation hf:OpLegalCompliance ,
+                            hf:OpClaimsManagement ;
+    hf:performedByRole hf:RoleComplianceOfficer ;
+    hf:modifiesAsset hf:AssetClaimsFile ;
+    hf:implementedBySystem hf:SysClaimsManagementPlatform .
+
+
+# -----------------------------------------------------------------
+# 3.3 Global Specialty (Navigators) Bounded Context
+# -----------------------------------------------------------------
+
+# --- Service: Excess & Surplus (v1.0, extended) ---
+hf:ExcessAndSurplusService a hf:DomainService ;
+    rdfs:label "Excess & Surplus (E&S) Specialty Risk Service" ;
+    hf:executedByProcess hf:ProcCustomSurplusLineRating ;
+    hf:mapsToOntologyConcept hf:ConceptHighHazardRisk ;
+    hf:enablesCapability hf:CapUnderwriteRisk , hf:CapEnsureCompliance ;
+    hf:assignedToPersona hf:PersonaUnderwriter .
+
+hf:ProcCustomSurplusLineRating a hf:BusinessProcess ;
+    rdfs:label "Surplus Line Non-Standard Pricing Process" ;
+    hf:supportedByOperation hf:OpUnderwriting ,
+                            hf:OpLegalCompliance ;
+    hf:performedByRole hf:RoleUnderwriter ;
+    hf:createsAsset hf:AssetPolicyDocument ;
+    hf:implementedBySystem hf:SysPolicyAdminPlatform .
+
+
+# --- Service: Ocean Marine (fleshed out from stub) ---
+hf:OceanMarineRiskService a hf:DomainService ;
+    rdfs:label "Ocean & Inland Marine Cargo Risk Service" ;
+    rdfs:comment "Voyage and warehouse-to-warehouse cargo risk underwriting and claims surveying." ;
+    hf:executedByProcess hf:ProcCargoVoyageRiskAssessment ,
+                         hf:ProcMarineClaimsSurveying ;
+    hf:mapsToOntologyConcept hf:ConceptCargoExposureProfile ,
+                             hf:ConceptHighHazardRisk ;
+    hf:enablesCapability hf:CapUnderwriteRisk , hf:CapEngineerRisk ;
+    hf:assignedToPersona hf:PersonaRiskEngineer .
+
+hf:ProcCargoVoyageRiskAssessment a hf:BusinessProcess ;
+    rdfs:label "Cargo Voyage Risk Assessment Process" ;
+    hf:supportedByOperation hf:OpUnderwriting ,
+                            hf:OpRiskEngineering ;
+    hf:performedByRole hf:RoleUnderwriter ;
+    hf:createsAsset hf:AssetPolicyDocument ;
+    hf:implementedBySystem hf:SysPolicyAdminPlatform ;
+    hf:precedesProcess hf:ProcMarineClaimsSurveying .
+
+
+hf:ProcMarineClaimsSurveying a hf:BusinessProcess ;
+    rdfs:label "Marine Claims Surveying & Adjustment Process" ;
+    hf:supportedByOperation hf:OpClaimsManagement ,
+                            hf:OpRiskEngineering ;
+    hf:performedByRole hf:RoleClaimsAdjuster ;
+    hf:createsAsset hf:AssetClaimsFile ;
+    hf:initiatesEvent hf:EventInspectionCompleted ;
+    hf:implementedBySystem hf:SysClaimsManagementPlatform ;
+    hf:consumesAsset hf:AssetPolicyDocument .
+
+
+# --- Service: Financial Lines Directors & Officers (fleshed out from stub) ---
+hf:FinancialLinesDirectorsService a hf:DomainService ;
+    rdfs:label "Directors & Officers (D&O) Financial Lines Liability Service" ;
+    rdfs:comment "Management liability coverage for executive decision-making exposure, including securities claims defense." ;
+    hf:executedByProcess hf:ProcExecutiveRiskUnderwriting ,
+                         hf:ProcSecuritiesClaimsDefense ;
+    hf:mapsToOntologyConcept hf:ConceptExecutiveLiabilityExposure ,
+                             hf:ConceptLitigationExposure ;
+    hf:enablesCapability hf:CapUnderwriteRisk , hf:CapEnsureCompliance ;
+    hf:assignedToPersona hf:PersonaComplianceOfficer .
+
+hf:ProcExecutiveRiskUnderwriting a hf:BusinessProcess ;
+    rdfs:label "Executive Risk Underwriting Process" ;
+    hf:supportedByOperation hf:OpUnderwriting ,
+                            hf:OpLegalCompliance ;
+    hf:performedByRole hf:RoleUnderwriter ;
+    hf:createsAsset hf:AssetPolicyDocument ;
+    hf:implementedBySystem hf:SysPolicyAdminPlatform ;
+    hf:precedesProcess hf:ProcSecuritiesClaimsDefense .
+
+
+hf:ProcSecuritiesClaimsDefense a hf:BusinessProcess ;
+    rdfs:label "Securities Claims Defense Coordination Process" ;
+    hf:supportedByOperation hf:OpLegalCompliance ,
+                            hf:OpClaimsManagement ;
+    hf:performedByRole hf:RoleComplianceOfficer ;
+    hf:modifiesAsset hf:AssetClaimsFile ;
+    hf:implementedBySystem hf:SysClaimsManagementPlatform ;
+    hf:consumesAsset hf:AssetPolicyDocument .
+
+
+# --- Service: Cyber & Technology E&O Specialty (new, v1.1) ---
+hf:CyberSpecialtyRiskService a hf:DomainService ;
+    rdfs:label "Enterprise Cyber & Technology E&O Specialty Service" ;
+    rdfs:comment "New v1.1 service: large-account cyber and tech errors & omissions coverage with breach response coordination." ;
+    hf:executedByProcess hf:ProcBreachIncidentResponseCoordination ;
+    hf:mapsToOntologyConcept hf:ConceptCyberExposureProfile ;
+    hf:enablesCapability hf:CapUnderwriteRisk , hf:CapAdjudicateClaims ;
+    hf:assignedToPersona hf:PersonaClaimsAdjuster .
+
+hf:ProcBreachIncidentResponseCoordination a hf:BusinessProcess ;
+    rdfs:label "Data Breach Incident Response Coordination Process" ;
+    hf:supportedByOperation hf:OpITInnovation ,
+                            hf:OpClaimsManagement ,
+                            hf:OpLegalCompliance ;
+    hf:performedByRole hf:RoleClaimsAdjuster ;
+    hf:modifiesAsset hf:AssetClaimsFile ;
+    hf:initiatesEvent hf:EventClaimSettled ;
+    hf:implementedBySystem hf:SysClaimsManagementPlatform .
+
+
+# -----------------------------------------------------------------
+# 3.4 AARP Partnership Bounded Context
+# -----------------------------------------------------------------
+
+# --- Service: AARP Auto Policy (v1.0, extended) ---
+hf:AARPAutoPolicyService a hf:DomainService ;
+    rdfs:label "AARP Branded Direct Auto Policy Service" ;
+    hf:executedByProcess hf:ProcAffinityChannelIntake ,
+                         hf:ProcAutoClaimsAdjudication ;
+    hf:mapsToOntologyConcept hf:ConceptAffinityAgreement ,
+                             hf:ConceptAutoLossEvent ;
+    hf:enablesCapability hf:CapUnderwriteRisk , hf:CapManageDistribution ;
+    hf:enablesValueStream hf:VSPersonalLinesQuoteToRenewal ;
+    hf:assignedToPersona hf:PersonaAgencyPartner .
+
+hf:ProcAffinityChannelIntake a hf:BusinessProcess ;
+    rdfs:label "Affinity Partner Portal Intake & Rating Process" ;
+    hf:supportedByOperation hf:OpDistributionSales ,
+                            hf:OpHRMarketingCustomer ;
+    hf:performedByRole hf:RoleDistributionPartner ;
+    hf:createsAsset hf:AssetPolicyDocument ;
+    hf:initiatesEvent hf:EventPolicyBound ;
+    hf:implementedBySystem hf:SysAffinityPartnerPortal ;
+    hf:precedesProcess hf:ProcAutoClaimsAdjudication .
+
+
+hf:ProcAutoClaimsAdjudication a hf:BusinessProcess ;
+    rdfs:label "First Notice of Loss (FNOL) & Auto Claims Settlement" ;
+    hf:supportedByOperation hf:OpClaimsManagement ;
+    hf:performedByRole hf:RoleClaimsAdjuster ;
+    hf:modifiesAsset hf:AssetClaimsFile ;
+    hf:initiatesEvent hf:EventFNOLReceived ;
+    hf:implementedBySystem hf:SysClaimsManagementPlatform ;
+    hf:consumesAsset hf:AssetPolicyDocument .
+
+
+# --- Service: AARP Homeowners (fleshed out from stub) ---
+hf:AARPHomeownersService a hf:DomainService ;
+    rdfs:label "AARP Branded Direct Homeowners Policy Service" ;
+    rdfs:comment "Direct-to-consumer homeowners coverage distributed through the AARP affinity partnership." ;
+    hf:executedByProcess hf:ProcHomeUnderwritingAutomation ,
+                         hf:ProcPropertyClaimsAdjustment ;
+    hf:mapsToOntologyConcept hf:ConceptAffinityAgreement ,
+                             hf:ConceptPropertyLossExposure ;
+    hf:enablesCapability hf:CapUnderwriteRisk , hf:CapManageDistribution ;
+    hf:assignedToPersona hf:PersonaAgencyPartner .
+
+hf:ProcHomeUnderwritingAutomation a hf:BusinessProcess ;
+    rdfs:label "Automated Home Underwriting Process" ;
+    hf:supportedByOperation hf:OpUnderwriting ,
+                            hf:OpITInnovation ;
+    hf:performedByRole hf:RoleUnderwriter ;
+    hf:createsAsset hf:AssetPolicyDocument ;
+    hf:initiatesEvent hf:EventPolicyBound ;
+    hf:implementedBySystem hf:SysPolicyAdminPlatform ;
+    hf:precedesProcess hf:ProcPropertyClaimsAdjustment .
+
+
+hf:ProcPropertyClaimsAdjustment a hf:BusinessProcess ;
+    rdfs:label "Property Claims Adjustment Process" ;
+    hf:supportedByOperation hf:OpClaimsManagement ;
+    hf:performedByRole hf:RoleClaimsAdjuster ;
+    hf:modifiesAsset hf:AssetClaimsFile ;
+    hf:initiatesEvent hf:EventClaimSettled ;
+    hf:implementedBySystem hf:SysClaimsManagementPlatform ;
+    hf:consumesAsset hf:AssetPolicyDocument .
+
+
+# --- Service: AARP Umbrella (new, v1.1) ---
+hf:AARPUmbrellaService a hf:DomainService ;
+    rdfs:label "AARP Branded Personal Excess Umbrella Service" ;
+    rdfs:comment "New v1.1 service: personal excess liability layered over AARP auto/home primary policies." ;
+    hf:executedByProcess hf:ProcPersonalUmbrellaEligibilityReview ;
+    hf:mapsToOntologyConcept hf:ConceptExcessLayerTower ;
+    hf:enablesCapability hf:CapUnderwriteRisk , hf:CapManageDistribution ;
+    hf:assignedToPersona hf:PersonaAgencyPartner .
+
+hf:ProcPersonalUmbrellaEligibilityReview a hf:BusinessProcess ;
+    rdfs:label "Personal Umbrella Eligibility & Underlying Coverage Review Process" ;
+    hf:supportedByOperation hf:OpUnderwriting ,
+                            hf:OpDistributionSales ;
+    hf:performedByRole hf:RoleUnderwriter ;
+    hf:createsAsset hf:AssetPolicyDocument ;
+    hf:implementedBySystem hf:SysPolicyAdminPlatform .
+
+
+# -----------------------------------------------------------------
+# 3.5 Standard Personal Lines Bounded Context
+# -----------------------------------------------------------------
+
+# --- Service: Renters Coverage (fleshed out from stub) ---
+hf:RentersCoverageService a hf:DomainService ;
+    rdfs:label "Standard Renters Insurance Policy Service" ;
+    rdfs:comment "Self-service personal property and liability coverage for renters." ;
+    hf:executedByProcess hf:ProcRentersSelfServiceQuoting ;
+    hf:mapsToOntologyConcept hf:ConceptPersonalPropertyInventory ;
+    hf:enablesCapability hf:CapUnderwriteRisk , hf:CapManageDistribution ;
+    hf:assignedToPersona hf:PersonaCustomerServiceRep .
+
+hf:ProcRentersSelfServiceQuoting a hf:BusinessProcess ;
+    rdfs:label "Renters Self-Service Digital Quoting Process" ;
+    hf:supportedByOperation hf:OpDistributionSales ,
+                            hf:OpCustomerExperienceDesign ;
+    hf:performedByRole hf:RoleCustomerServiceRep ;
+    hf:createsAsset hf:AssetPolicyDocument ;
+    hf:initiatesEvent hf:EventPolicyBound ;
+    hf:implementedBySystem hf:SysPolicyAdminPlatform .
+
+
+# --- Service: Personal Auto (new, v1.1) ---
+hf:PersonalAutoService a hf:DomainService ;
+    rdfs:label "Standard Personal Auto Insurance Service" ;
+    rdfs:comment "New v1.1 service: standard-market personal auto liability and physical damage coverage." ;
+    hf:executedByProcess hf:ProcPersonalAutoTelematicsRating ,
+                         hf:ProcPersonalAutoClaimsSettlement ;
+    hf:mapsToOntologyConcept hf:ConceptAutoLossEvent ;
+    hf:enablesCapability hf:CapUnderwriteRisk , hf:CapPriceRisk ;
+    hf:enablesValueStream hf:VSPersonalLinesQuoteToRenewal ;
+    hf:assignedToPersona hf:PersonaUnderwriter .
+
+hf:ProcPersonalAutoTelematicsRating a hf:BusinessProcess ;
+    rdfs:label "Personal Auto Telematics-Based Rating Process" ;
+    hf:supportedByOperation hf:OpUnderwriting ,
+                            hf:OpDataGovernancePlatform ;
+    hf:performedByRole hf:RoleUnderwriter ;
+    hf:createsAsset hf:AssetPolicyDocument ;
+    hf:modifiesAsset hf:AssetInsuredVehiclePhysical ;
+    hf:implementedBySystem hf:SysTelematicsIoTPlatform ;
+    hf:precedesProcess hf:ProcPersonalAutoClaimsSettlement .
+
+
+hf:ProcPersonalAutoClaimsSettlement a hf:BusinessProcess ;
+    rdfs:label "Personal Auto Claims Settlement Process" ;
+    hf:supportedByOperation hf:OpClaimsManagement ;
+    hf:performedByRole hf:RoleClaimsAdjuster ;
+    hf:modifiesAsset hf:AssetClaimsFile ;
+    hf:initiatesEvent hf:EventClaimSettled ;
+    hf:implementedBySystem hf:SysClaimsManagementPlatform ;
+    hf:consumesAsset hf:AssetPolicyDocument .
+
+
+# --- Service: Homeowners (new, v1.1) ---
+hf:HomeownersInsuranceService a hf:DomainService ;
+    rdfs:label "Standard Homeowners Insurance Service" ;
+    rdfs:comment "New v1.1 service: standard-market homeowners property and liability coverage." ;
+    hf:executedByProcess hf:ProcHomeownersUnderwriting ,
+                         hf:ProcCatClaimsResponse ;
+    hf:mapsToOntologyConcept hf:ConceptPropertyLossExposure ;
+    hf:enablesCapability hf:CapUnderwriteRisk , hf:CapPriceRisk ;
+    hf:enablesValueStream hf:VSPersonalLinesQuoteToRenewal ;
+    hf:assignedToPersona hf:PersonaUnderwriter .
+
+hf:ProcHomeownersUnderwriting a hf:BusinessProcess ;
+    rdfs:label "Homeowners Underwriting & Rating Process" ;
+    hf:supportedByOperation hf:OpUnderwriting ,
+                            hf:OpActuarialAnalytics ;
+    hf:performedByRole hf:RoleUnderwriter ;
+    hf:createsAsset hf:AssetPolicyDocument ;
+    hf:implementedBySystem hf:SysPolicyAdminPlatform ;
+    hf:precedesProcess hf:ProcCatClaimsResponse .
+
+
+hf:ProcCatClaimsResponse a hf:BusinessProcess ;
+    rdfs:label "Catastrophe Claims Surge Response Process" ;
+    hf:supportedByOperation hf:OpClaimsManagement ;
+    hf:performedByRole hf:RoleClaimsAdjuster ;
+    hf:modifiesAsset hf:AssetClaimsFile ;
+    hf:initiatesEvent hf:EventClaimSettled ;
+    hf:implementedBySystem hf:SysClaimsManagementPlatform ;
+    hf:consumesAsset hf:AssetPolicyDocument .
+
+
+# -----------------------------------------------------------------
+# 3.6 Employer Group Benefits Bounded Context
+# -----------------------------------------------------------------
+
+# --- Service: Group Life (fleshed out from stub) ---
+hf:GroupLifeService a hf:DomainService ;
+    rdfs:label "Employer Group Term Life Insurance Service" ;
+    rdfs:comment "Employer-sponsored group term life coverage with beneficiary claims payout." ;
+    hf:executedByProcess hf:ProcGroupEnrollmentAdministration ,
+                         hf:ProcLifeClaimsBeneficiaryPayout ;
+    hf:mapsToOntologyConcept hf:ConceptGroupCensusData ,
+                             hf:ConceptActuarialReserve ;
+    hf:enablesCapability hf:CapManageMemberBenefits ;
+    hf:enablesValueStream hf:VSGroupBenefitsEnrollToClaim ;
+    hf:assignedToPersona hf:PersonaClaimsAdjuster .
+
+hf:ProcGroupEnrollmentAdministration a hf:BusinessProcess ;
+    rdfs:label "Group Census & Enrollment Administration Process" ;
+    hf:supportedByOperation hf:OpHRMarketingCustomer ,
+                            hf:OpFinanceCapital ;
+    hf:performedByRole hf:RoleCustomerServiceRep ;
+    hf:createsAsset hf:AssetPolicyDocument ;
+    hf:implementedBySystem hf:SysBenefitsAdminPlatform ;
+    hf:precedesProcess hf:ProcLifeClaimsBeneficiaryPayout .
+
+
+hf:ProcLifeClaimsBeneficiaryPayout a hf:BusinessProcess ;
+    rdfs:label "Life Claims Beneficiary Verification & Payout Process" ;
+    hf:supportedByOperation hf:OpClaimsManagement ,
+                            hf:OpFinanceCapital ;
+    hf:performedByRole hf:RoleClaimsAdjuster ;
+    hf:modifiesAsset hf:AssetClaimsFile ;
+    hf:initiatesEvent hf:EventClaimSettled ;
+    hf:implementedBySystem hf:SysClaimsManagementPlatform ;
+    hf:consumesAsset hf:AssetPolicyDocument .
+
+
+# --- Service: Short-Term Disability (fleshed out from stub) ---
+hf:ShortTermDisabilityService a hf:DomainService ;
+    rdfs:label "Group Short-Term Disability (STD) Income Protection Service" ;
+    rdfs:comment "Short-duration income replacement benefit with clinical eligibility adjudication; shares the Return-to-Work process with LTD." ;
+    hf:executedByProcess hf:ProcSTDEligibilityAdjudication ,
+                         hf:ProcReturnToWorkConsulting ;
+    hf:mapsToOntologyConcept hf:ConceptDisabilityBenefitClaim ;
+    hf:enablesCapability hf:CapManageMemberBenefits , hf:CapAdjudicateClaims ;
+    hf:enablesValueStream hf:VSGroupBenefitsEnrollToClaim ;
+    hf:assignedToPersona hf:PersonaClaimsAdjuster .
+
+hf:ProcSTDEligibilityAdjudication a hf:BusinessProcess ;
+    rdfs:label "STD Clinical Eligibility Adjudication Process" ;
+    hf:supportedByOperation hf:OpClaimsManagement ;
+    hf:performedByRole hf:RoleClaimsAdjuster ;
+    hf:createsAsset hf:AssetClaimsFile ;
+    hf:initiatesEvent hf:EventDisabilityClaimApproved ;
+    hf:implementedBySystem hf:SysClaimsManagementPlatform ;
+    hf:consumesAsset hf:AssetPolicyDocument ;
+    hf:precedesProcess hf:ProcReturnToWorkConsulting .
+
+
+# --- Service: Long-Term Disability (v1.0, extended) ---
+hf:LongTermDisabilityService a hf:DomainService ;
+    rdfs:label "Group Long-Term Disability (LTD) Service" ;
+    hf:executedByProcess hf:ProcClinicalClaimsReview ,
+                         hf:ProcReturnToWorkConsulting ;
+    hf:mapsToOntologyConcept hf:ConceptDisabilityBenefitClaim ,
+                             hf:ConceptActuarialReserve ;
+    hf:enablesCapability hf:CapManageMemberBenefits , hf:CapAdjudicateClaims ;
+    hf:enablesValueStream hf:VSGroupBenefitsEnrollToClaim ;
+    hf:assignedToPersona hf:PersonaClaimsAdjuster .
+
+hf:ProcClinicalClaimsReview a hf:BusinessProcess ;
+    rdfs:label "Medical Claims Investigation & Clinical Evaluation" ;
+    hf:supportedByOperation hf:OpClaimsManagement ;
+    hf:performedByRole hf:RoleClaimsAdjuster ;
+    hf:createsAsset hf:AssetClaimsFile ;
+    hf:initiatesEvent hf:EventDisabilityClaimApproved ;
+    hf:implementedBySystem hf:SysClaimsManagementPlatform ;
+    hf:consumesAsset hf:AssetPolicyDocument ;
+    hf:precedesProcess hf:ProcReturnToWorkConsulting .
+
+
+hf:ProcReturnToWorkConsulting a hf:BusinessProcess ;
+    rdfs:label "Vocational Rehabilitation & Ergonomic Consulting Process" ;
+    hf:supportedByOperation hf:OpRiskEngineering ,
+                            hf:OpClaimsManagement ;
+    hf:performedByRole hf:RoleRiskEngineer ;
+    hf:modifiesAsset hf:AssetClaimsFile .
+
+# --- Service: Voluntary AD&D (fleshed out from stub) ---
+hf:VoluntaryAccidentalDeathService a hf:DomainService ;
+    rdfs:label "Voluntary Accidental Death & Dismemberment (AD&D) Service" ;
+    rdfs:comment "Employee-elected supplemental accidental death and dismemberment coverage." ;
+    hf:executedByProcess hf:ProcVoluntaryElectionProcessing ,
+                         hf:ProcAccidentalDeathClaimsInvestigation ;
+    hf:mapsToOntologyConcept hf:ConceptAccidentalLossEvent ;
+    hf:enablesCapability hf:CapManageMemberBenefits ;
+    hf:assignedToPersona hf:PersonaClaimsAdjuster .
+
+hf:ProcVoluntaryElectionProcessing a hf:BusinessProcess ;
+    rdfs:label "Voluntary Benefit Election Processing Process" ;
+    hf:supportedByOperation hf:OpHRMarketingCustomer ;
+    hf:performedByRole hf:RoleCustomerServiceRep ;
+    hf:createsAsset hf:AssetPolicyDocument ;
+    hf:implementedBySystem hf:SysBenefitsAdminPlatform ;
+    hf:precedesProcess hf:ProcAccidentalDeathClaimsInvestigation .
+
+
+hf:ProcAccidentalDeathClaimsInvestigation a hf:BusinessProcess ;
+    rdfs:label "Accidental Death Claims Investigation Process" ;
+    hf:supportedByOperation hf:OpClaimsManagement ;
+    hf:performedByRole hf:RoleClaimsAdjuster ;
+    hf:modifiesAsset hf:AssetClaimsFile ;
+    hf:initiatesEvent hf:EventClaimSettled ;
+    hf:implementedBySystem hf:SysClaimsManagementPlatform ;
+    hf:consumesAsset hf:AssetPolicyDocument .
+
+
+# --- Service: Absence Management (new, v1.1) ---
+hf:AbsenceManagementService a hf:DomainService ;
+    rdfs:label "Leave & Absence Management (FMLA) Administration Service" ;
+    rdfs:comment "New v1.1 service: statutory and employer leave-of-absence tracking, integrated with STD/LTD claims." ;
+    hf:executedByProcess hf:ProcFMLAEligibilityTracking ;
+    hf:mapsToOntologyConcept hf:ConceptGroupCensusData ;
+    hf:enablesCapability hf:CapManageMemberBenefits ;
+    hf:assignedToPersona hf:PersonaCustomerServiceRep .
+
+hf:ProcFMLAEligibilityTracking a hf:BusinessProcess ;
+    rdfs:label "FMLA/State Leave Eligibility Tracking Process" ;
+    hf:supportedByOperation hf:OpHRMarketingCustomer ,
+                            hf:OpLegalCompliance ;
+    hf:performedByRole hf:RoleCustomerServiceRep ;
+    hf:createsAsset hf:AssetClaimsFile ;
+    hf:implementedBySystem hf:SysBenefitsAdminPlatform .
+
+
+# -----------------------------------------------------------------
+# 3.7 Asset Management & Investment Bounded Context
+# -----------------------------------------------------------------
+
+# --- Service: Hartford Mutual Funds (v1.0, extended) ---
+hf:MutualFundManagementService a hf:DomainService ;
+    rdfs:label "Retail & Institutional Mutual Fund Asset Management" ;
+    hf:executedByProcess hf:ProcPortfolioRebalancing ,
+                         hf:ProcSECRegulatoryReporting ;
+    hf:mapsToOntologyConcept hf:ConceptInvestmentPortfolio ,
+                             hf:ConceptNAVCalculation ;
+    hf:enablesCapability hf:CapManageInvestments ;
+    hf:enablesValueStream hf:VSAssetMgmtInvestToReport ;
+    hf:assignedToPersona hf:PersonaPortfolioManager .
+
+hf:ProcPortfolioRebalancing a hf:BusinessProcess ;
+    rdfs:label "Asset Allocation & Dynamic Rebalancing Process" ;
+    hf:supportedByOperation hf:OpFinanceCapital ;
+    hf:performedByRole hf:RoleInvestmentManager ;
+    hf:modifiesAsset hf:AssetInvestmentPortfolioRecord ;
+    hf:initiatesEvent hf:EventPortfolioRebalanced ;
+    hf:implementedBySystem hf:SysInvestmentPortfolioPlatform .
+
+
+hf:ProcSECRegulatoryReporting a hf:BusinessProcess ;
+    rdfs:label "SEC Compliance & Fund Regulatory Audit Process" ;
+    hf:supportedByOperation hf:OpLegalCompliance ,
+                            hf:OpFinanceCapital ;
+    hf:performedByRole hf:RoleComplianceOfficer ;
+    hf:createsAsset hf:AssetInvestmentPortfolioRecord ;
+    hf:initiatesEvent hf:EventRegulatoryFilingSubmitted ;
+    hf:implementedBySystem hf:SysRegulatoryFilingPlatform .
+
+
+# --- Service: ETF Strategy (fleshed out from stub) ---
+hf:ETFStrategyService a hf:DomainService ;
+    rdfs:label "Exchange-Traded Fund (ETF) Strategy & Index Management Service" ;
+    rdfs:comment "Index-tracking and active ETF strategy management, including authorized-participant creation/redemption." ;
+    hf:executedByProcess hf:ProcIndexTrackingOptimization ,
+                         hf:ProcAuthorizedParticipantCreationRedemption ;
+    hf:mapsToOntologyConcept hf:ConceptInvestmentPortfolio ,
+                             hf:ConceptNAVCalculation ;
+    hf:enablesCapability hf:CapManageInvestments ;
+    hf:enablesValueStream hf:VSAssetMgmtInvestToReport ;
+    hf:assignedToPersona hf:PersonaPortfolioManager .
+
+hf:ProcIndexTrackingOptimization a hf:BusinessProcess ;
+    rdfs:label "Index Tracking & Tracking-Error Optimization Process" ;
+    hf:supportedByOperation hf:OpFinanceCapital ,
+                            hf:OpActuarialAnalytics ;
+    hf:performedByRole hf:RoleInvestmentManager ;
+    hf:modifiesAsset hf:AssetInvestmentPortfolioRecord ;
+    hf:implementedBySystem hf:SysInvestmentPortfolioPlatform ;
+    hf:precedesProcess hf:ProcAuthorizedParticipantCreationRedemption .
+
+
+hf:ProcAuthorizedParticipantCreationRedemption a hf:BusinessProcess ;
+    rdfs:label "Authorized Participant Creation/Redemption Basket Process" ;
+    hf:supportedByOperation hf:OpFinanceCapital ;
+    hf:performedByRole hf:RoleInvestmentManager ;
+    hf:modifiesAsset hf:AssetInvestmentPortfolioRecord ;
+    hf:initiatesEvent hf:EventPortfolioRebalanced ;
+    hf:implementedBySystem hf:SysInvestmentPortfolioPlatform .
+
+
+# --- Service: Institutional Separate Account (new, v1.1) ---
+hf:InstitutionalSeparateAccountService a hf:DomainService ;
+    rdfs:label "Institutional Separate Account Management Service" ;
+    rdfs:comment "New v1.1 service: custom institutional mandates managed outside the pooled mutual fund/ETF structure." ;
+    hf:executedByProcess hf:ProcInstitutionalMandateOnboarding ;
+    hf:mapsToOntologyConcept hf:ConceptInvestmentPortfolio ;
+    hf:enablesCapability hf:CapManageInvestments ;
+    hf:assignedToPersona hf:PersonaPortfolioManager .
+
+hf:ProcInstitutionalMandateOnboarding a hf:BusinessProcess ;
+    rdfs:label "Institutional Mandate Onboarding & IPS Configuration Process" ;
+    hf:supportedByOperation hf:OpFinanceCapital ,
+                            hf:OpLegalCompliance ;
+    hf:performedByRole hf:RoleInvestmentManager ;
+    hf:createsAsset hf:AssetInvestmentPortfolioRecord ;
+    hf:implementedBySystem hf:SysInvestmentPortfolioPlatform .
+
+
+# =================================================================
+# 4. SHARED DOMAIN ONTOLOGY CONCEPTS
+# =================================================================
+
+# --- v1.0 concepts ---
+hf:ConceptPolicyContract a hf:OntologyConcept ;
+    rdfs:label "Policy Contract Entity" .
+
+hf:ConceptCommercialRiskProfile a hf:OntologyConcept ;
+    rdfs:label "Commercial Risk Assessment Profile" .
+
+hf:ConceptPropertyLossExposure a hf:OntologyConcept ;
+    rdfs:label "Property Loss Exposure Model" .
+
+hf:ConceptReinsuranceStructure a hf:OntologyConcept ;
+    rdfs:label "Reinsurance Treaty Structure" .
+
+hf:ConceptHighHazardRisk a hf:OntologyConcept ;
+    rdfs:label "High-Hazard Specialty Risk Specification" .
+
+hf:ConceptAffinityAgreement a hf:OntologyConcept ;
+    rdfs:label "Affinity Partnership Distribution Agreement" .
+
+hf:ConceptAutoLossEvent a hf:OntologyConcept ;
+    rdfs:label "Auto Collision/Loss Event Record" .
+
+hf:ConceptDisabilityBenefitClaim a hf:OntologyConcept ;
+    rdfs:label "Disability Benefit Claim Context" .
+
+hf:ConceptActuarialReserve a hf:OntologyConcept ;
+    rdfs:label "Actuarial Claim Loss Reserve" .
+
+hf:ConceptInvestmentPortfolio a hf:OntologyConcept ;
+    rdfs:label "Fund Investment Asset Portfolio" .
+
+hf:ConceptNAVCalculation a hf:OntologyConcept ;
+    rdfs:label "Net Asset Value (NAV) Valuation Model" .
+
+# --- v1.1 new concepts ---
+hf:ConceptCyberExposureProfile a hf:OntologyConcept ;
+    rdfs:label "Cyber & Technology Exposure Profile" .
+
+hf:ConceptFleetRiskProfile a hf:OntologyConcept ;
+    rdfs:label "Commercial Fleet Risk Profile" .
+
+hf:ConceptExcessLayerTower a hf:OntologyConcept ;
+    rdfs:label "Excess/Umbrella Layered Tower Structure" .
+
+hf:ConceptLitigationExposure a hf:OntologyConcept ;
+    rdfs:label "Litigation & Legal Defense Exposure" .
+
+hf:ConceptCargoExposureProfile a hf:OntologyConcept ;
+    rdfs:label "Marine Cargo Exposure Profile" .
+
+hf:ConceptExecutiveLiabilityExposure a hf:OntologyConcept ;
+    rdfs:label "Executive/Management Liability Exposure" .
+
+hf:ConceptPersonalPropertyInventory a hf:OntologyConcept ;
+    rdfs:label "Personal Property Inventory Schedule" .
+
+hf:ConceptGroupCensusData a hf:OntologyConcept ;
+    rdfs:label "Employer Group Census Data" .
+
+hf:ConceptAccidentalLossEvent a hf:OntologyConcept ;
+    rdfs:label "Accidental Death/Dismemberment Loss Event" .
+
+hf:ConceptStatutoryBenefitSchedule a hf:OntologyConcept ;
+    rdfs:label "State Statutory Workers' Comp Benefit Schedule" .
+
+hf:ConceptExperienceModRating a hf:OntologyConcept ;
+    rdfs:label "Experience Modification Rating Factor" .
+
+# =================================================================
+# 5. CAPABILITIES  (mirrors Ontology_Core_Capability)
+# =================================================================
+
+hf:CapUnderwriteRisk a hf:Capability ;
+    rdfs:label "Risk Underwriting Capability" .
+
+hf:CapAdjudicateClaims a hf:Capability ;
+    rdfs:label "Claims Adjudication Capability" .
+
+hf:CapPriceRisk a hf:Capability ;
+    rdfs:label "Risk Pricing & Actuarial Capability" .
+
+hf:CapManageDistribution a hf:Capability ;
+    rdfs:label "Distribution Channel Management Capability" .
+
+hf:CapManageInvestments a hf:Capability ;
+    rdfs:label "Investment Portfolio Management Capability" .
+
+hf:CapManageMemberBenefits a hf:Capability ;
+    rdfs:label "Benefits Administration Capability" .
+
+hf:CapEngineerRisk a hf:Capability ;
+    rdfs:label "Loss Control & Risk Engineering Capability" .
+
+hf:CapEnsureCompliance a hf:Capability ;
+    rdfs:label "Regulatory Compliance Capability" .
+
+# =================================================================
+# 6. VALUE STREAMS
+# =================================================================
+
+hf:VSCommercialLinesPolicyToClaim a hf:ValueStream ;
+    rdfs:label "Commercial Lines Policy-to-Claim Value Stream" ;
+    hf:enabledByService hf:BOPIssuanceService ,
+                        hf:ComplexPropertyUnderwritingService ,
+                        hf:ExcessAndSurplusService .
+
+hf:VSPersonalLinesQuoteToRenewal a hf:ValueStream ;
+    rdfs:label "Personal Lines Quote-to-Renewal Value Stream" ;
+    hf:enabledByService hf:AARPAutoPolicyService ,
+                        hf:PersonalAutoService ,
+                        hf:HomeownersInsuranceService .
+
+hf:VSGroupBenefitsEnrollToClaim a hf:ValueStream ;
+    rdfs:label "Group Benefits Enrollment-to-Claim Value Stream" ;
+    hf:enabledByService hf:GroupLifeService ,
+                        hf:ShortTermDisabilityService ,
+                        hf:LongTermDisabilityService .
+
+hf:VSAssetMgmtInvestToReport a hf:ValueStream ;
+    rdfs:label "Investment Management Invest-to-Report Value Stream" ;
+    hf:enabledByService hf:MutualFundManagementService ,
+                        hf:ETFStrategyService .
+
+# =================================================================
+# 7. PERSONAS & ROLES  (mirrors PersonaShape / RoleShape)
+# =================================================================
+
+hf:RoleUnderwriter a hf:Role ;
+    rdfs:label "Underwriter Role" .
+
+hf:RoleClaimsAdjuster a hf:Role ;
+    rdfs:label "Claims Adjuster Role" .
+
+hf:RoleRiskEngineer a hf:Role ;
+    rdfs:label "Risk Engineer Role" .
+
+hf:RoleActuary a hf:Role ;
+    rdfs:label "Actuary Role" .
+
+hf:RoleDistributionPartner a hf:Role ;
+    rdfs:label "Distribution Partner Role" .
+
+hf:RoleInvestmentManager a hf:Role ;
+    rdfs:label "Investment Manager Role" .
+
+hf:RoleComplianceOfficer a hf:Role ;
+    rdfs:label "Compliance Officer Role" .
+
+hf:RoleCustomerServiceRep a hf:Role ;
+    rdfs:label "Customer Service Representative Role" .
+
+hf:PersonaUnderwriter a hf:Persona ;
+    rdfs:label "Underwriter Persona" ;
+    hf:assignedToRole hf:RoleUnderwriter .
+
+hf:PersonaClaimsAdjuster a hf:Persona ;
+    rdfs:label "Claims Adjuster Persona" ;
+    hf:assignedToRole hf:RoleClaimsAdjuster .
+
+hf:PersonaRiskEngineer a hf:Persona ;
+    rdfs:label "Risk Engineer Persona" ;
+    hf:assignedToRole hf:RoleRiskEngineer .
+
+hf:PersonaActuary a hf:Persona ;
+    rdfs:label "Actuary Persona" ;
+    hf:assignedToRole hf:RoleActuary .
+
+hf:PersonaAgencyPartner a hf:Persona ;
+    rdfs:label "Independent Agency/Affinity Partner Persona" ;
+    hf:assignedToRole hf:RoleDistributionPartner .
+
+hf:PersonaPortfolioManager a hf:Persona ;
+    rdfs:label "Portfolio Manager Persona" ;
+    hf:assignedToRole hf:RoleInvestmentManager .
+
+hf:PersonaComplianceOfficer a hf:Persona ;
+    rdfs:label "Compliance Officer Persona" ;
+    hf:assignedToRole hf:RoleComplianceOfficer .
+
+hf:PersonaCustomerServiceRep a hf:Persona ;
+    rdfs:label "Customer Service Representative Persona" ;
+    hf:assignedToRole hf:RoleCustomerServiceRep .
+
+# =================================================================
+# 8. EVENTS  (mirrors Ontology_Core_Event)
+# =================================================================
+
+hf:EventPolicyBound a hf:Event ;
+    rdfs:label "Policy Bound Event" .
+
+hf:EventFNOLReceived a hf:Event ;
+    rdfs:label "First Notice of Loss (FNOL) Received Event" .
+
+hf:EventClaimSettled a hf:Event ;
+    rdfs:label "Claim Settled Event" .
+
+hf:EventPolicyRenewed a hf:Event ;
+    rdfs:label "Policy Renewal Event" .
+
+hf:EventInspectionCompleted a hf:Event ;
+    rdfs:label "Risk Inspection Completed Event" .
+
+hf:EventDisabilityClaimApproved a hf:Event ;
+    rdfs:label "Disability Claim Approved Event" .
+
+hf:EventPortfolioRebalanced a hf:Event ;
+    rdfs:label "Portfolio Rebalanced Event" .
+
+hf:EventRegulatoryFilingSubmitted a hf:Event ;
+    rdfs:label "Regulatory Filing Submitted Event" .
+
+# =================================================================
+# 9. ASSETS  (mirrors Ontology_Core_Asset)
+# =================================================================
+
+hf:AssetPolicyDocument a hf:DigitalAsset ;
+    rdfs:label "Policy Document" .
+
+hf:AssetClaimsFile a hf:DigitalAsset ;
+    rdfs:label "Claims File" .
+
+hf:AssetRiskInspectionReport a hf:DigitalAsset ;
+    rdfs:label "Risk Inspection Report" .
+
+hf:AssetActuarialModel a hf:DigitalAsset ;
+    rdfs:label "Actuarial Pricing Model" .
+
+hf:AssetInvestmentPortfolioRecord a hf:DigitalAsset ;
+    rdfs:label "Investment Portfolio Record" .
+
+hf:AssetInsuredCommercialProperty a hf:PhysicalAsset ;
+    rdfs:label "Insured Commercial Property" .
+
+hf:AssetInsuredVehiclePhysical a hf:PhysicalAsset ;
+    rdfs:label "Insured Vehicle" .
+
+# =================================================================
+# 10. RULES & COMPLIANCE  (mirrors RulesShape / ComplianceShape)
+# =================================================================
+
+hf:RuleStateInsuranceRateFilingRequirement a hf:Rules ;
+    rdfs:label "State Insurance Rate & Form Filing Requirement" ;
+    hf:guidesProcess hf:ProcCustomSurplusLineRating ,
+                     hf:ProcHomeownersUnderwriting ,
+                     hf:ProcLitigationStrategyManagement .
+
+hf:RuleStatutoryWorkersCompBenefitSchedule a hf:Rules ;
+    rdfs:label "Statutory Workers' Comp Benefit Schedule Rule" ;
+    hf:constrainsProcess hf:ProcPayrollExposureRating ,
+                         hf:ProcClaimsIntakeTriage ,
+                         hf:ProcFMLAEligibilityTracking .
+
+hf:ComplianceNAICSolvencyStandard a hf:Compliance ;
+    rdfs:label "NAIC Solvency & Capital Adequacy Standard" ;
+    hf:controlsProcess hf:ProcSECRegulatoryReporting ,
+                       hf:ProcExecutiveRiskUnderwriting .
+
+# =================================================================
+# 11. SYSTEMS  (v1.2 -- distinct from OperationalArea; the thing a
+#      design-time decision usually actually changes)
+# =================================================================
+
+hf:SysPolicyAdminPlatform a hf:System ;
+    rdfs:label "Policy Administration & Rating Platform" ;
+    rdfs:comment "Shared straight-through underwriting/rating/binding engine underlying most commercial and personal lines new-business processes." .
+
+hf:SysClaimsManagementPlatform a hf:System ;
+    rdfs:label "Enterprise Claims Management Platform (ClaimPlus)" ;
+    rdfs:comment "Shared claims intake, adjudication, and litigation-support system referenced across nearly every claims-handling process in the model." .
+
+hf:SysTelematicsIoTPlatform a hf:System ;
+    rdfs:label "Telematics & IoT Ingestion Platform" ;
+    rdfs:comment "Usage-based rating data platform for fleet and personal auto." .
+
+hf:SysActuarialModelingPlatform a hf:System ;
+    rdfs:label "Actuarial & Catastrophe Modeling Platform" .
+
+hf:SysInvestmentPortfolioPlatform a hf:System ;
+    rdfs:label "Investment Portfolio Management Platform" ;
+    rdfs:comment "Order management, rebalancing, and creation/redemption system shared by Hartford Funds mutual fund, ETF, and institutional separate account services." .
+
+hf:SysRegulatoryFilingPlatform a hf:System ;
+    rdfs:label "Regulatory & Statutory Filing Platform" .
+
+hf:SysAffinityPartnerPortal a hf:System ;
+    rdfs:label "Affinity Partner Distribution Portal" .
+
+hf:SysBenefitsAdminPlatform a hf:System ;
+    rdfs:label "Group Benefits Administration Platform" .
+
+# =================================================================
+# 12. RISK / ISSUE / OBSERVATION  (v1.2 worked examples of the
+#      design-time impact-analysis pattern this file was validated against)
+# =================================================================
+
+# --- Example 1: shared-system concentration risk, discoverable by fan-in ---
+hf:RiskClaimsPlatformConcentration a hf:Risk ;
+    rdfs:label "Claims Management Platform Concentration Risk" ;
+    rdfs:comment "hf:SysClaimsManagementPlatform implements 15 processes across 6 bounded contexts (query it via hf:systemImplementsProcess); an outage, defect, or replatforming decision has enterprise-wide blast radius." ;
+    hf:riskSeverity "High" ;
+    hf:riskLikelihood "Medium" ;
+    hf:impactsSystem hf:SysClaimsManagementPlatform .
+
+# --- Example 2: cross-process asset-shape-change risk (the gap consumesAsset closes) ---
+hf:RiskPolicyDocumentSchemaChange a hf:Risk ;
+    rdfs:label "Policy Document Schema Change Risk" ;
+    rdfs:comment "hf:AssetPolicyDocument is consumed by claims-handling processes (hf:consumesAsset) that did not create it; a design-time change to its schema in the policy admin platform can silently break downstream claims processes unless traced via hf:assetConsumedBy." ;
+    hf:riskSeverity "Medium" ;
+    hf:riskLikelihood "Medium" ;
+    hf:impactsSystem hf:SysPolicyAdminPlatform ;
+    hf:impactsProcess hf:ProcCommercialAutoClaimsHandling , hf:ProcAutoClaimsAdjudication .
+
+# --- Example 3: regulatory process, with the Issue -> Observation causal chain the Core ontology defines ---
+hf:IssueSurplusLineFilingDelay a hf:Issue ;
+    rdfs:label "Surplus Line Rate Filing Delay Issue" ;
+    hf:occursInProcess hf:ProcCustomSurplusLineRating ;
+    hf:issueGeneratesObservation hf:ObsFilingTurnaroundBreach .
+
+hf:ObsFilingTurnaroundBreach a hf:Observation ;
+    rdfs:label "State Filing Turnaround SLA Breach Observation" .
+
+hf:RiskSurplusLinesComplianceDrift a hf:Risk ;
+    rdfs:label "Surplus Lines Compliance Drift Risk" ;
+    rdfs:comment "Generated from hf:IssueSurplusLineFilingDelay; governed by hf:RuleStateInsuranceRateFilingRequirement, which already guidesProcess this same process -- the Rule, Issue, Observation, and Risk all resolve onto one Process node, which is exactly the causal join a design-time impact query needs." ;
+    hf:riskSeverity "Medium" ;
+    hf:riskLikelihood "Low" ;
+    hf:impactsProcess hf:ProcCustomSurplusLineRating ;
+    hf:impactsService hf:ExcessAndSurplusService .
