@@ -37,6 +37,10 @@ body{font-family:"IBM Plex Sans",sans-serif;background:var(--paper);color:var(--
 .leg-item{display:flex;align-items:center;gap:7px;padding:2.5px 0;font-size:9.5px;color:#8AAECC;}
 .leg-sw{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
 .leg-sw.sq{border-radius:2px;}
+.layout-row{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+.layout-btn{font-family:"IBM Plex Sans",sans-serif;font-size:9.5px;font-weight:600;padding:7px 4px;border-radius:4px;cursor:pointer;border:1px solid #2A4A70;background:rgba(255,255,255,.04);color:#B9CCE0;transition:all .14s;text-align:center;}
+.layout-btn:hover{background:rgba(255,255,255,.09);border-color:#4D9BF8;}
+.layout-btn.active{background:var(--cobalt);border-color:#4D9BF8;color:#fff;}
 .main{display:flex;flex-direction:column;overflow:hidden;}
 .topbar{background:var(--white);border-bottom:1px solid #E2E8F0;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:14px;flex-wrap:wrap;}
 .tt{font-size:14px;font-weight:600;color:var(--navy);}
@@ -66,7 +70,7 @@ svg:active{cursor:grabbing;}
 .zoomctl{position:absolute;bottom:16px;right:16px;display:flex;flex-direction:column;gap:5px;z-index:5;}
 .zbtn{width:28px;height:28px;background:#fff;border:1px solid #CBD5E0;border-radius:5px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;color:var(--cobalt);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.08);}
 .zbtn:hover{background:var(--sky);}
-.hintbadge{position:absolute;top:14px;left:14px;background:rgba(255,255,255,.94);border:1px solid #E2E8F0;border-radius:6px;padding:8px 12px;font-size:10px;color:var(--fog);max-width:260px;line-height:1.6;box-shadow:0 1px 4px rgba(0,0,0,.06);z-index:5;}
+.hintbadge{position:absolute;top:14px;left:14px;background:rgba(255,255,255,.94);border:1px solid #E2E8F0;border-radius:6px;padding:8px 12px;font-size:10px;color:var(--fog);max-width:280px;line-height:1.6;box-shadow:0 1px 4px rgba(0,0,0,.06);z-index:5;}
 .hintbadge b{color:var(--navy);}
 .inspector{width:340px;border-left:1px solid #E2E8F0;background:var(--white);overflow-y:auto;flex-shrink:0;display:none;}
 .inspector.open{display:block;}
@@ -111,6 +115,16 @@ svg:active{cursor:grabbing;}
   </div>
 
   <div class="sb-sec">
+    <div class="sb-sec-t">Layout</div>
+    <div class="layout-row">
+      <button class="layout-btn active" data-mode="force" onclick="setLayout('force')">&#9679; Force</button>
+      <button class="layout-btn" data-mode="radial" onclick="setLayout('radial')">&#9678; Radial</button>
+      <button class="layout-btn" data-mode="cluster" onclick="setLayout('cluster')">&#10022; Cluster</button>
+      <button class="layout-btn" data-mode="hier" onclick="setLayout('hier')">&#8942; Hierarchical</button>
+    </div>
+  </div>
+
+  <div class="sb-sec">
     <div class="sb-sec-t">Lifecycle Stage <a onclick="setAllStage(true)">all</a></div>
     <div id="flt-stage"></div>
   </div>
@@ -147,7 +161,7 @@ svg:active{cursor:grabbing;}
   </div>
   <div class="stage">
     <div class="graph-wrap" id="graph-wrap">
-      <div class="hintbadge" id="hintbadge">Drag nodes to rearrange &middot; scroll/pinch to zoom &middot; drag background to pan. The three large anchor nodes are <b>Planet</b>, <b>People</b>, and <b>Profit</b> &mdash; every requirement in the store is linked back to one of them via <span style="font-family:'IBM Plex Mono',monospace;">req:rightValueAlignment</span>.</div>
+      <div class="hintbadge" id="hintbadge">Drag nodes to rearrange &middot; scroll/pinch to zoom &middot; drag background to pan. The three large anchor nodes are <b>Planet</b>, <b>People</b>, and <b>Profit</b> &mdash; every requirement in the store is linked back to one of them via <span style="font-family:'IBM Plex Mono',monospace;">req:rightValueAlignment</span>. Try the four <b>Layout</b> buttons in the sidebar.</div>
       <svg id="svg"></svg>
       <div class="zoomctl">
         <div class="zbtn" onclick="zoomBy(1.3)">+</div>
@@ -308,105 +322,104 @@ const NODES = [
    desc:'Right Value Anchor — economic generation, resilience, reinvestment. One requirement (consistent risk scoring) is anchored here: it keeps the risk function auditable and durable over time.'},
 ];
 
+// EDGES use source/target (not s/t) so d3.forceLink can resolve them directly —
+// this is the same convention d3-force uses internally, so after the simulation's
+// link force initializes, e.source and e.target become the actual node objects.
 const EDGES = [
   // context
-  {s:'persona:SeniorConsultant', p:'req:hasRBACDomain', t:'domain:RiskManagement', g:'context'},
-  {s:'domain:RiskManagement', p:'req:hasSubDomain', t:'subdomain:EnterpriseRiskAssessment', g:'context'},
-  {s:'persona:SeniorConsultant', p:'req:initiatesJob', t:'job:EnterpriseRiskAssessment', g:'context'},
-  {s:'job:EnterpriseRiskAssessment', p:'req:hasScenarioContext', t:'scenario:Q4BoardReportingCycle', g:'context'},
-  {s:'job:EnterpriseRiskAssessment', p:'req:seedsUCAProfile', t:'uca:Missing', g:'context'},
-  {s:'job:EnterpriseRiskAssessment', p:'req:seedsUCAProfile', t:'uca:Hazardous', g:'context'},
-  {s:'job:EnterpriseRiskAssessment', p:'req:seedsUCAProfile', t:'uca:MisTimed', g:'context'},
-  {s:'job:EnterpriseRiskAssessment', p:'req:seedsUCAProfile', t:'uca:WrongDuration', g:'context'},
-  {s:'job:EnterpriseRiskAssessment', p:'req:expressedAs', t:'needs:NS-001', g:'generation'},
+  {source:'persona:SeniorConsultant', p:'req:hasRBACDomain', target:'domain:RiskManagement', g:'context'},
+  {source:'domain:RiskManagement', p:'req:hasSubDomain', target:'subdomain:EnterpriseRiskAssessment', g:'context'},
+  {source:'persona:SeniorConsultant', p:'req:initiatesJob', target:'job:EnterpriseRiskAssessment', g:'context'},
+  {source:'job:EnterpriseRiskAssessment', p:'req:hasScenarioContext', target:'scenario:Q4BoardReportingCycle', g:'context'},
+  {source:'job:EnterpriseRiskAssessment', p:'req:seedsUCAProfile', target:'uca:Missing', g:'context'},
+  {source:'job:EnterpriseRiskAssessment', p:'req:seedsUCAProfile', target:'uca:Hazardous', g:'context'},
+  {source:'job:EnterpriseRiskAssessment', p:'req:seedsUCAProfile', target:'uca:MisTimed', g:'context'},
+  {source:'job:EnterpriseRiskAssessment', p:'req:seedsUCAProfile', target:'uca:WrongDuration', g:'context'},
+  {source:'job:EnterpriseRiskAssessment', p:'req:expressedAs', target:'needs:NS-001', g:'generation'},
   // generation
-  {s:'needs:NS-001', p:'req:triggersGenerationRequest', t:'genreq:GR-001', g:'generation'},
-  {s:'genreq:GR-001', p:'gen:produces', t:'draft:FR-RISK-001', g:'generation'},
-  {s:'genreq:GR-001', p:'gen:produces', t:'draft:FR-RISK-002', g:'generation'},
-  {s:'genreq:GR-001', p:'gen:produces', t:'draft:FR-RISK-003', g:'generation'},
-  {s:'genreq:GR-001', p:'gen:produces', t:'draft:FR-RISK-004', g:'generation'},
-  {s:'genreq:GR-001', p:'gen:produces', t:'draft:FR-RISK-005', g:'generation'},
-  {s:'genreq:GR-001', p:'gen:produces', t:'draft:FR-RISK-006', g:'generation'},
-  {s:'draft:FR-RISK-001', p:'gen:promotedTo', t:'req:FR-RISK-001', g:'generation'},
-  {s:'draft:FR-RISK-002', p:'gen:promotedTo', t:'req:FR-RISK-002', g:'generation'},
-  {s:'draft:FR-RISK-003', p:'gen:promotedTo', t:'req:FR-RISK-003', g:'generation'},
-  {s:'draft:FR-RISK-004', p:'gen:promotedTo', t:'req:FR-RISK-004', g:'generation'},
-  {s:'draft:FR-RISK-005', p:'gen:promotedTo', t:'req:FR-RISK-005', g:'generation'},
-  {s:'draft:FR-RISK-006', p:'req:hasStatus', t:'status:Rejected', g:'generation'},
+  {source:'needs:NS-001', p:'req:triggersGenerationRequest', target:'genreq:GR-001', g:'generation'},
+  {source:'genreq:GR-001', p:'gen:produces', target:'draft:FR-RISK-001', g:'generation'},
+  {source:'genreq:GR-001', p:'gen:produces', target:'draft:FR-RISK-002', g:'generation'},
+  {source:'genreq:GR-001', p:'gen:produces', target:'draft:FR-RISK-003', g:'generation'},
+  {source:'genreq:GR-001', p:'gen:produces', target:'draft:FR-RISK-004', g:'generation'},
+  {source:'genreq:GR-001', p:'gen:produces', target:'draft:FR-RISK-005', g:'generation'},
+  {source:'genreq:GR-001', p:'gen:produces', target:'draft:FR-RISK-006', g:'generation'},
+  {source:'draft:FR-RISK-001', p:'gen:promotedTo', target:'req:FR-RISK-001', g:'generation'},
+  {source:'draft:FR-RISK-002', p:'gen:promotedTo', target:'req:FR-RISK-002', g:'generation'},
+  {source:'draft:FR-RISK-003', p:'gen:promotedTo', target:'req:FR-RISK-003', g:'generation'},
+  {source:'draft:FR-RISK-004', p:'gen:promotedTo', target:'req:FR-RISK-004', g:'generation'},
+  {source:'draft:FR-RISK-005', p:'gen:promotedTo', target:'req:FR-RISK-005', g:'generation'},
+  {source:'draft:FR-RISK-006', p:'req:hasStatus', target:'status:Rejected', g:'generation'},
   // ontology binding
-  {s:'req:FR-RISK-001', p:'req:classifiedAs', t:'bfo:GenericallyDependentContinuant', g:'ontology'},
-  {s:'req:FR-RISK-002', p:'req:classifiedAs', t:'bfo:Process', g:'ontology'},
-  {s:'req:FR-RISK-003', p:'req:classifiedAs', t:'bfo:TemporalRegion', g:'ontology'},
-  {s:'req:FR-RISK-004', p:'req:classifiedAs', t:'bfo:GenericallyDependentContinuant', g:'ontology'},
-  {s:'req:FR-RISK-005', p:'req:classifiedAs', t:'bfo:Process', g:'ontology'},
-  {s:'req:FR-RISK-001', p:'req:mapsToConcept', t:'concept:ISO31000ComplianceItem', g:'ontology'},
-  {s:'req:FR-RISK-005', p:'req:mapsToConcept', t:'concept:RiskFinding', g:'ontology'},
-  {s:'req:FR-RISK-001', p:'req:satisfiedBy', t:'dp:ISO31000Shape', g:'ontology'},
-  {s:'req:FR-RISK-002', p:'req:satisfiedBy', t:'dp:RiskScoringShape', g:'ontology'},
-  {s:'req:FR-RISK-003', p:'req:satisfiedBy', t:'dp:TMP001TimeoutRule', g:'ontology'},
-  {s:'req:FR-RISK-004', p:'req:satisfiedBy', t:'dp:ScopeBoundaryShape', g:'ontology'},
-  {s:'req:FR-RISK-005', p:'req:satisfiedBy', t:'dp:OntologyResolutionShape', g:'ontology'},
-  {s:'req:FR-RISK-001', p:'req:enforcedBy', t:'shape:RequirementCompleteness', g:'ontology'},
-  {s:'req:FR-RISK-002', p:'req:enforcedBy', t:'shape:RequirementCompleteness', g:'ontology'},
-  {s:'req:FR-RISK-003', p:'req:enforcedBy', t:'shape:RequirementCompleteness', g:'ontology'},
-  {s:'req:FR-RISK-004', p:'req:enforcedBy', t:'shape:RequirementCompleteness', g:'ontology'},
-  {s:'req:FR-RISK-005', p:'req:enforcedBy', t:'shape:RequirementCompleteness', g:'ontology'},
-  {s:'req:FR-RISK-001', p:'req:enforcedBy', t:'shape:ISO31000Shape', g:'ontology'},
-  {s:'req:FR-RISK-003', p:'req:enforcedBy', t:'shape:INCOSEQualityShape', g:'ontology'},
-  {s:'req:FR-RISK-001', p:'req:enforcedBy', t:'shape:IndependenceAxiomShape', g:'ontology'},
-  {s:'req:FR-RISK-001', p:'req:enforcedBy', t:'shape:RightValueAlignmentShape', g:'ontology'},
-  {s:'req:FR-RISK-002', p:'req:enforcedBy', t:'shape:RightValueAlignmentShape', g:'ontology'},
-  {s:'req:FR-RISK-003', p:'req:enforcedBy', t:'shape:RightValueAlignmentShape', g:'ontology'},
-  {s:'req:FR-RISK-004', p:'req:enforcedBy', t:'shape:RightValueAlignmentShape', g:'ontology'},
-  {s:'req:FR-RISK-005', p:'req:enforcedBy', t:'shape:RightValueAlignmentShape', g:'ontology'},
-  {s:'req:FR-RISK-002', p:'req:ucaSuggestion', t:'uca:Hazardous', g:'ontology'},
-  {s:'req:FR-RISK-003', p:'req:ucaSuggestion', t:'uca:MisTimed', g:'ontology'},
-  {s:'req:FR-RISK-004', p:'req:ucaSuggestion', t:'uca:WrongDuration', g:'ontology'},
-  {s:'req:FR-RISK-005', p:'req:ucaSuggestion', t:'uca:Hazardous', g:'ontology'},
+  {source:'req:FR-RISK-001', p:'req:classifiedAs', target:'bfo:GenericallyDependentContinuant', g:'ontology'},
+  {source:'req:FR-RISK-002', p:'req:classifiedAs', target:'bfo:Process', g:'ontology'},
+  {source:'req:FR-RISK-003', p:'req:classifiedAs', target:'bfo:TemporalRegion', g:'ontology'},
+  {source:'req:FR-RISK-004', p:'req:classifiedAs', target:'bfo:GenericallyDependentContinuant', g:'ontology'},
+  {source:'req:FR-RISK-005', p:'req:classifiedAs', target:'bfo:Process', g:'ontology'},
+  {source:'req:FR-RISK-001', p:'req:mapsToConcept', target:'concept:ISO31000ComplianceItem', g:'ontology'},
+  {source:'req:FR-RISK-005', p:'req:mapsToConcept', target:'concept:RiskFinding', g:'ontology'},
+  {source:'req:FR-RISK-001', p:'req:satisfiedBy', target:'dp:ISO31000Shape', g:'ontology'},
+  {source:'req:FR-RISK-002', p:'req:satisfiedBy', target:'dp:RiskScoringShape', g:'ontology'},
+  {source:'req:FR-RISK-003', p:'req:satisfiedBy', target:'dp:TMP001TimeoutRule', g:'ontology'},
+  {source:'req:FR-RISK-004', p:'req:satisfiedBy', target:'dp:ScopeBoundaryShape', g:'ontology'},
+  {source:'req:FR-RISK-005', p:'req:satisfiedBy', target:'dp:OntologyResolutionShape', g:'ontology'},
+  {source:'req:FR-RISK-001', p:'req:enforcedBy', target:'shape:RequirementCompleteness', g:'ontology'},
+  {source:'req:FR-RISK-002', p:'req:enforcedBy', target:'shape:RequirementCompleteness', g:'ontology'},
+  {source:'req:FR-RISK-003', p:'req:enforcedBy', target:'shape:RequirementCompleteness', g:'ontology'},
+  {source:'req:FR-RISK-004', p:'req:enforcedBy', target:'shape:RequirementCompleteness', g:'ontology'},
+  {source:'req:FR-RISK-005', p:'req:enforcedBy', target:'shape:RequirementCompleteness', g:'ontology'},
+  {source:'req:FR-RISK-001', p:'req:enforcedBy', target:'shape:ISO31000Shape', g:'ontology'},
+  {source:'req:FR-RISK-003', p:'req:enforcedBy', target:'shape:INCOSEQualityShape', g:'ontology'},
+  {source:'req:FR-RISK-001', p:'req:enforcedBy', target:'shape:IndependenceAxiomShape', g:'ontology'},
+  {source:'req:FR-RISK-001', p:'req:enforcedBy', target:'shape:RightValueAlignmentShape', g:'ontology'},
+  {source:'req:FR-RISK-002', p:'req:enforcedBy', target:'shape:RightValueAlignmentShape', g:'ontology'},
+  {source:'req:FR-RISK-003', p:'req:enforcedBy', target:'shape:RightValueAlignmentShape', g:'ontology'},
+  {source:'req:FR-RISK-004', p:'req:enforcedBy', target:'shape:RightValueAlignmentShape', g:'ontology'},
+  {source:'req:FR-RISK-005', p:'req:enforcedBy', target:'shape:RightValueAlignmentShape', g:'ontology'},
+  {source:'req:FR-RISK-002', p:'req:ucaSuggestion', target:'uca:Hazardous', g:'ontology'},
+  {source:'req:FR-RISK-003', p:'req:ucaSuggestion', target:'uca:MisTimed', g:'ontology'},
+  {source:'req:FR-RISK-004', p:'req:ucaSuggestion', target:'uca:WrongDuration', g:'ontology'},
+  {source:'req:FR-RISK-005', p:'req:ucaSuggestion', target:'uca:Hazardous', g:'ontology'},
   // child decomposition (Step 7)
-  {s:'req:FR-RISK-001.1', p:'req:dependsOn', t:'req:FR-RISK-001', g:'quality'},
-  {s:'req:FR-RISK-001.2', p:'req:dependsOn', t:'req:FR-RISK-001', g:'quality'},
-  {s:'req:FR-RISK-001.3', p:'req:dependsOn', t:'req:FR-RISK-001', g:'quality'},
-  {s:'req:FR-RISK-001.4', p:'req:dependsOn', t:'req:FR-RISK-001', g:'quality'},
+  {source:'req:FR-RISK-001.1', p:'req:dependsOn', target:'req:FR-RISK-001', g:'quality'},
+  {source:'req:FR-RISK-001.2', p:'req:dependsOn', target:'req:FR-RISK-001', g:'quality'},
+  {source:'req:FR-RISK-001.3', p:'req:dependsOn', target:'req:FR-RISK-001', g:'quality'},
+  {source:'req:FR-RISK-001.4', p:'req:dependsOn', target:'req:FR-RISK-001', g:'quality'},
   // right value anchors
-  {s:'req:FR-RISK-001', p:'req:rightValueAlignment', t:'rv:People', g:'anchor'},
-  {s:'req:FR-RISK-002', p:'req:rightValueAlignment', t:'rv:Profit', g:'anchor'},
-  {s:'req:FR-RISK-003', p:'req:rightValueAlignment', t:'rv:People', g:'anchor'},
-  {s:'req:FR-RISK-004', p:'req:rightValueAlignment', t:'rv:People', g:'anchor'},
-  {s:'req:FR-RISK-005', p:'req:rightValueAlignment', t:'rv:People', g:'anchor'},
-  {s:'req:FR-RISK-001.1', p:'req:rightValueAlignment', t:'rv:People', g:'anchor'},
-  {s:'req:FR-RISK-001.2', p:'req:rightValueAlignment', t:'rv:People', g:'anchor'},
-  {s:'req:FR-RISK-001.3', p:'req:rightValueAlignment', t:'rv:People', g:'anchor'},
-  {s:'req:FR-RISK-001.4', p:'req:rightValueAlignment', t:'rv:People', g:'anchor'},
+  {source:'req:FR-RISK-001', p:'req:rightValueAlignment', target:'rv:People', g:'anchor'},
+  {source:'req:FR-RISK-002', p:'req:rightValueAlignment', target:'rv:Profit', g:'anchor'},
+  {source:'req:FR-RISK-003', p:'req:rightValueAlignment', target:'rv:People', g:'anchor'},
+  {source:'req:FR-RISK-004', p:'req:rightValueAlignment', target:'rv:People', g:'anchor'},
+  {source:'req:FR-RISK-005', p:'req:rightValueAlignment', target:'rv:People', g:'anchor'},
+  {source:'req:FR-RISK-001.1', p:'req:rightValueAlignment', target:'rv:People', g:'anchor'},
+  {source:'req:FR-RISK-001.2', p:'req:rightValueAlignment', target:'rv:People', g:'anchor'},
+  {source:'req:FR-RISK-001.3', p:'req:rightValueAlignment', target:'rv:People', g:'anchor'},
+  {source:'req:FR-RISK-001.4', p:'req:rightValueAlignment', target:'rv:People', g:'anchor'},
   // quality (Step 8)
-  {s:'req:FR-RISK-001', p:'req:evaluatedBy', t:'finding:F-Verif-001', g:'quality'},
-  {s:'req:FR-RISK-001', p:'req:evaluatedBy', t:'finding:F-SSE-001', g:'quality'},
-  {s:'req:FR-RISK-002', p:'req:evaluatedBy', t:'finding:F-Unamb-002', g:'quality'},
-  {s:'req:FR-RISK-003', p:'req:evaluatedBy', t:'finding:F-Sing-003', g:'quality'},
-  {s:'req:FR-RISK-004', p:'req:evaluatedBy', t:'finding:F-Sing-004', g:'quality'},
-  {s:'req:FR-RISK-005', p:'req:evaluatedBy', t:'finding:F-Verif-005', g:'quality'},
+  {source:'req:FR-RISK-001', p:'req:evaluatedBy', target:'finding:F-Verif-001', g:'quality'},
+  {source:'req:FR-RISK-001', p:'req:evaluatedBy', target:'finding:F-SSE-001', g:'quality'},
+  {source:'req:FR-RISK-002', p:'req:evaluatedBy', target:'finding:F-Unamb-002', g:'quality'},
+  {source:'req:FR-RISK-003', p:'req:evaluatedBy', target:'finding:F-Sing-003', g:'quality'},
+  {source:'req:FR-RISK-004', p:'req:evaluatedBy', target:'finding:F-Sing-004', g:'quality'},
+  {source:'req:FR-RISK-005', p:'req:evaluatedBy', target:'finding:F-Verif-005', g:'quality'},
   // approval (Step 9)
-  {s:'req:FR-RISK-001', p:'req:hasStatus', t:'status:Validated', g:'approval'},
-  {s:'req:FR-RISK-002', p:'req:hasStatus', t:'status:Validated', g:'approval'},
-  {s:'req:FR-RISK-003', p:'req:hasStatus', t:'status:Validated', g:'approval'},
-  {s:'req:FR-RISK-004', p:'req:hasStatus', t:'status:Validated', g:'approval'},
-  {s:'req:FR-RISK-005', p:'req:hasStatus', t:'status:Validated', g:'approval'},
-  {s:'req:FR-RISK-001.1', p:'req:hasStatus', t:'status:Draft', g:'approval'},
-  {s:'req:FR-RISK-001.2', p:'req:hasStatus', t:'status:Draft', g:'approval'},
-  {s:'req:FR-RISK-001.3', p:'req:hasStatus', t:'status:Draft', g:'approval'},
-  {s:'req:FR-RISK-001.4', p:'req:hasStatus', t:'status:Draft', g:'approval'},
-  {s:'status:Validated', p:'status:activatesIn', t:'rcb:RCB-Active', g:'approval'},
-  {s:'status:Validated', p:'req:exportedTo', t:'orsd:ORSD-Q4Board', g:'approval'},
+  {source:'req:FR-RISK-001', p:'req:hasStatus', target:'status:Validated', g:'approval'},
+  {source:'req:FR-RISK-002', p:'req:hasStatus', target:'status:Validated', g:'approval'},
+  {source:'req:FR-RISK-003', p:'req:hasStatus', target:'status:Validated', g:'approval'},
+  {source:'req:FR-RISK-004', p:'req:hasStatus', target:'status:Validated', g:'approval'},
+  {source:'req:FR-RISK-005', p:'req:hasStatus', target:'status:Validated', g:'approval'},
+  {source:'req:FR-RISK-001.1', p:'req:hasStatus', target:'status:Draft', g:'approval'},
+  {source:'req:FR-RISK-001.2', p:'req:hasStatus', target:'status:Draft', g:'approval'},
+  {source:'req:FR-RISK-001.3', p:'req:hasStatus', target:'status:Draft', g:'approval'},
+  {source:'req:FR-RISK-001.4', p:'req:hasStatus', target:'status:Draft', g:'approval'},
+  {source:'status:Validated', p:'status:activatesIn', target:'rcb:RCB-Active', g:'approval'},
+  {source:'status:Validated', p:'req:exportedTo', target:'orsd:ORSD-Q4Board', g:'approval'},
 ];
 
 // ══════════════════════════════════════════════════════════════════════════
 // SETUP
 // ══════════════════════════════════════════════════════════════════════════
 const byId = new Map(NODES.map(n=>[n.id,n]));
-const outAdj = new Map(), inAdj = new Map();
-NODES.forEach(n=>{outAdj.set(n.id,[]);inAdj.set(n.id,[]);});
-EDGES.forEach(e=>{outAdj.get(e.s).push(e); inAdj.get(e.t).push(e);});
-
 document.getElementById('stat-nodes').textContent = NODES.length;
 document.getElementById('stat-edges').textContent = EDGES.length;
 
@@ -418,6 +431,7 @@ const state = {
   selected: null,
   traceOn: false,
 };
+let currentLayout = 'force';
 
 // ── filter panels ──
 function buildFilterPanel(containerId, dict, colorMap, stateKey, labelMap){
@@ -456,7 +470,6 @@ refreshAllPanels();
 function resetFilters(){
   setAllStage(true); setAllRV(true); setAllReqType(true); setAllStatus(true);
   document.getElementById('search-box').value='';
-  clearTrace();
   applyFilters();
 }
 
@@ -473,48 +486,65 @@ document.getElementById('legend').innerHTML = `
 `;
 
 // ══════════════════════════════════════════════════════════════════════════
-// D3 FORCE GRAPH
+// D3 SCAFFOLD (svg, zoom, simulation)
 // ══════════════════════════════════════════════════════════════════════════
 const wrap = document.getElementById('graph-wrap');
-let W = wrap.clientWidth, H = wrap.clientHeight;
-const svg = d3.select('#svg').attr('viewBox',[0,0,W,H]);
+let W = wrap.clientWidth || 900, H = wrap.clientHeight || 600;
+const svg = d3.select('#svg').attr('viewBox', '0 0 ' + W + ' ' + H);
 const zoomLayer = svg.append('g');
 const linkLayer = zoomLayer.append('g').attr('class','links');
 const nodeLayer = zoomLayer.append('g').attr('class','nodes');
 const tooltip = document.getElementById('tooltip');
-
-const zoom = d3.zoom().scaleExtent([.25,3]).on('zoom', (ev)=>{ zoomLayer.attr('transform', ev.transform); });
-svg.call(zoom);
-function zoomBy(f){ svg.transition().duration(200).call(zoom.scaleBy, f); }
-function fitToScreen(){ svg.transition().duration(400).call(zoom.transform, d3.zoomIdentity.translate(W*0.06,H*0.02).scale(.82)); }
-
-// pin the three Right Value anchors in a fixed triangle so the whole store visibly orbits them
-byId.get('rv:People').fx = W*0.5;  byId.get('rv:People').fy = H*0.18;
-byId.get('rv:Planet').fx = W*0.18; byId.get('rv:Planet').fy = H*0.62;
-byId.get('rv:Profit').fx = W*0.82; byId.get('rv:Profit').fy = H*0.62;
-
-const sim = d3.forceSimulation(NODES)
-  .force('link', d3.forceLink(EDGES).id(d=>d.id).distance(e=> e.g==='anchor' ? 150 : 62).strength(e=> e.g==='anchor'?.35:.55))
-  .force('charge', d3.forceManyBody().strength(-190))
-  .force('collide', d3.forceCollide().radius(d=>d.r+13))
-  .force('center', d3.forceCenter(W/2, H/2).strength(.02))
-  .on('tick', ticked);
-
-const link = linkLayer.selectAll('line').data(EDGES).join('line')
-  .attr('class','lnk')
-  .attr('marker-end','url(#arrow)');
 
 svg.append('defs').append('marker')
   .attr('id','arrow').attr('viewBox','0 -4 8 8').attr('refX',9).attr('refY',0)
   .attr('markerWidth',6).attr('markerHeight',6).attr('orient','auto')
   .append('path').attr('d','M0,-4L8,0L0,4').attr('fill','#C3CFDB');
 
+const zoom = d3.zoom().scaleExtent([.2,3]).on('zoom', (ev)=>{ zoomLayer.attr('transform', ev.transform); });
+svg.call(zoom);
+function zoomBy(f){ svg.transition().duration(200).call(zoom.scaleBy, f); }
+function fitToScreen(){ svg.transition().duration(400).call(zoom.transform, d3.zoomIdentity.translate(W*0.03,H*0.02).scale(.8)); }
+
+function pinAnchorsTriangle(){
+  byId.get('rv:People').fx = W*0.5;  byId.get('rv:People').fy = H*0.16;
+  byId.get('rv:Planet').fx = W*0.2;  byId.get('rv:Planet').fy = H*0.64;
+  byId.get('rv:Profit').fx = W*0.8;  byId.get('rv:Profit').fy = H*0.64;
+}
+pinAnchorsTriangle();
+
+// forceLink resolves EDGES[i].source/target (strings) into real node object references
+// the FIRST time it initializes — which happens synchronously the moment it is
+// attached via .force(). From then on e.source / e.target are node objects.
+const sim = d3.forceSimulation(NODES)
+  .force('link', d3.forceLink(EDGES).id(d=>d.id).distance(e=> e.g==='anchor' ? 150 : 62).strength(e=> e.g==='anchor'?.35:.55))
+  .force('charge', d3.forceManyBody().strength(-190))
+  .force('collide', d3.forceCollide().radius(d=>d.r+13))
+  .force('center', d3.forceCenter(W/2, H/2).strength(.02))
+  .on('tick', renderPositions);
+
+// build adjacency AFTER the link force has resolved source/target into node objects
+const outAdj = new Map(), inAdj = new Map();
+NODES.forEach(n=>{outAdj.set(n.id,[]);inAdj.set(n.id,[]);});
+EDGES.forEach(e=>{ outAdj.get(e.source.id).push(e); inAdj.get(e.target.id).push(e); });
+
+const link = linkLayer.selectAll('line').data(EDGES).join('line')
+  .attr('class','lnk')
+  .attr('marker-end','url(#arrow)');
+
 const nodeG = nodeLayer.selectAll('g').data(NODES).join('g')
   .attr('class', d=> 'node-g' + (d.kind==='anchor'?' anchor-node':''))
   .call(d3.drag()
-    .on('start',(ev,d)=>{ if(!ev.active) sim.alphaTarget(.25).restart(); if(d.kind!=='anchor'){d.fx=d.x;d.fy=d.y;} })
-    .on('drag',(ev,d)=>{ if(d.kind!=='anchor'){d.fx=ev.x;d.fy=ev.y;} })
-    .on('end',(ev,d)=>{ if(!ev.active) sim.alphaTarget(0); if(d.kind!=='anchor'){d.fx=null;d.fy=null;} }))
+    .on('start',(ev,d)=>{
+      if(currentLayout==='force'){ if(!ev.active) sim.alphaTarget(.25).restart(); if(d.kind!=='anchor'){d.fx=d.x;d.fy=d.y;} }
+    })
+    .on('drag',(ev,d)=>{
+      d.fx=ev.x; d.fy=ev.y; d.x=ev.x; d.y=ev.y;
+      if(currentLayout!=='force') renderPositions();
+    })
+    .on('end',(ev,d)=>{
+      if(currentLayout==='force'){ if(!ev.active) sim.alphaTarget(0); if(d.kind!=='anchor'){d.fx=null;d.fy=null;} }
+    }))
   .on('click',(ev,d)=>{ ev.stopPropagation(); selectNode(d.id); })
   .on('mouseenter',(ev,d)=>{ showTip(ev,d); })
   .on('mousemove',(ev)=>{ moveTip(ev); })
@@ -527,18 +557,18 @@ nodeG.append('circle').attr('class','node-circ')
 nodeG.append('text').attr('class', d=> 'node-lbl' + (d.kind==='anchor'?' anchor-lbl':''))
   .attr('text-anchor','middle')
   .attr('dy', d=> d.kind==='anchor' ? 4 : (d.r+10))
-  .text(d=> d.kind==='anchor' ? d.label : d.label);
+  .text(d=> d.label);
 
 svg.on('click', ()=>{ closeInspector(); });
 
-function ticked(){
+function renderPositions(){
   link.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
   nodeG.attr('transform', d=>`translate(${d.x},${d.y})`);
 }
 
 window.addEventListener('resize', ()=>{
   W = wrap.clientWidth; H = wrap.clientHeight;
-  svg.attr('viewBox',[0,0,W,H]);
+  svg.attr('viewBox', '0 0 ' + W + ' ' + H);
 });
 
 function showTip(ev,d){
@@ -550,6 +580,97 @@ function moveTip(ev){
   const r = wrap.getBoundingClientRect();
   tooltip.style.left = (ev.clientX - r.left + 14) + 'px';
   tooltip.style.top = (ev.clientY - r.top + 10) + 'px';
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// LAYOUTS — Force (physics) · Radial (rings from Right Value) · Cluster
+// (blobs by lifecycle stage) · Hierarchical (layered Step 1 → Step 9)
+// ══════════════════════════════════════════════════════════════════════════
+function sortKey(n){ return n.kind+'::'+n.id; }
+
+function computeRadial(){
+  // 0 = anchors at the centre, 1 = requirement backbone, then outward by stage
+  const order = {context:2, generation:3, ontology:4, quality:5, approval:6};
+  const levelOf = n => n.kind==='anchor' ? 0 : (n.kind==='requirement'||n.kind==='child') ? 1 : (order[n.stage] ?? 1);
+  const groups = {};
+  NODES.forEach(n=>{ const lv=levelOf(n); (groups[lv]=groups[lv]||[]).push(n); });
+  const cx=W*0.5, cy=H*0.52;
+  const ringGap = Math.max(52, Math.min(W,H)*0.5/7);
+  Object.keys(groups).forEach(lvKey=>{
+    const lv = Number(lvKey);
+    const arr = groups[lv].slice().sort((a,b)=> sortKey(a).localeCompare(sortKey(b)));
+    const r = lv===0 ? ringGap*0.85 : (lv+0.55)*ringGap;
+    arr.forEach((n,i)=>{
+      const ang = (i/arr.length)*Math.PI*2 - Math.PI/2;
+      n.x = n.fx = cx + r*Math.cos(ang);
+      n.y = n.fy = cy + r*Math.sin(ang);
+    });
+  });
+}
+
+function computeHierarchical(){
+  // top → bottom, Step 1 (context) down to Step 9 (approval), Right Value anchors as the final row
+  const order = {context:0, generation:1, ontology:3, quality:4, approval:5};
+  const levelOf = n => n.kind==='anchor' ? 6 : (n.kind==='requirement'||n.kind==='child') ? 2 : (order[n.stage] ?? 2);
+  const groups = {};
+  NODES.forEach(n=>{ const lv=levelOf(n); (groups[lv]=groups[lv]||[]).push(n); });
+  const levels = Object.keys(groups).map(Number).sort((a,b)=>a-b);
+  const topPad=64, botPad=48;
+  const gapY = levels.length>1 ? (H-topPad-botPad)/(levels.length-1) : 0;
+  levels.forEach((lv,li)=>{
+    const arr = groups[lv].slice().sort((a,b)=> sortKey(a).localeCompare(sortKey(b)));
+    const y = topPad + li*gapY;
+    const gapX = W/(arr.length+1);
+    arr.forEach((n,i)=>{ n.x = n.fx = gapX*(i+1); n.y = n.fy = y; });
+  });
+}
+
+function computeCluster(){
+  const keyOf = n => n.kind==='anchor' ? 'anchor' : (n.kind==='requirement'||n.kind==='child') ? 'requirement' : n.stage;
+  const groups = {};
+  NODES.forEach(n=>{ const k=keyOf(n); (groups[k]=groups[k]||[]).push(n); });
+  const outerKeys = Object.keys(groups).filter(k=>k!=='requirement');
+  const cx=W*0.5, cy=H*0.52, R=Math.max(120, Math.min(W,H)*0.34);
+  const centers = {requirement:{x:cx,y:cy}};
+  outerKeys.forEach((k,i)=>{
+    const ang = (i/outerKeys.length)*Math.PI*2 - Math.PI/2;
+    centers[k] = {x:cx+R*Math.cos(ang), y:cy+R*Math.sin(ang)};
+  });
+  const golden = 2.399963;
+  Object.keys(groups).forEach(k=>{
+    const arr = groups[k].slice().sort((a,b)=> sortKey(a).localeCompare(sortKey(b)));
+    const c = centers[k];
+    const pack = k==='requirement' ? 16 : 13;
+    arr.forEach((n,i)=>{
+      const r = pack*Math.sqrt(i+0.5);
+      const ang = i*golden;
+      n.x = n.fx = c.x + r*Math.cos(ang);
+      n.y = n.fy = c.y + r*Math.sin(ang);
+    });
+  });
+}
+
+function setLayout(mode){
+  currentLayout = mode;
+  document.querySelectorAll('.layout-btn').forEach(b=> b.classList.toggle('active', b.dataset.mode===mode));
+
+  if(mode==='force'){
+    sim.stop();
+    NODES.forEach(n=>{ if(n.kind!=='anchor'){ n.fx=null; n.fy=null; } });
+    pinAnchorsTriangle();
+    sim.alpha(1).restart();
+    return;
+  }
+
+  sim.stop();
+  if(mode==='radial') computeRadial();
+  else if(mode==='cluster') computeCluster();
+  else if(mode==='hier') computeHierarchical();
+
+  nodeG.transition().duration(650).attr('transform', d=>`translate(${d.x},${d.y})`);
+  link.transition().duration(650)
+    .attr('x1',d=>d.source.x).attr('y1',d=>d.source.y)
+    .attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
 }
 
 // ══════════════════════════════════════════════════════════════════════════
@@ -572,31 +693,33 @@ function applyFilters(){
   nodeG.each(function(d){
     const base = nodeVisible(d);
     const hit = q!=='' && (d.id.toLowerCase().includes(q) || d.label.toLowerCase().includes(q));
-    const dim = !base || (q!=='' && !hit);
-    d3.select(this).classed('dim', dim && !(state.traceOn && d._inTrace));
+    const inTrace = state.traceOn && d._inTrace;
+    const dim = (!base || (q!=='' && !hit)) && !inTrace;
+    d3.select(this).classed('dim', dim);
     d3.select(this).classed('searchhit', q!=='' && hit);
+    d3.select(this).classed('lineage', !!inTrace);
     if(!dim) visibleCount++;
   });
   link.each(function(e){
-    const sv = nodeVisible(e.source.id?e.source:byId.get(e.source));
-    const tv = nodeVisible(e.target.id?e.target:byId.get(e.target));
-    const q2 = q;
-    const sOk = q2==='' || e.source.id.toLowerCase().includes(q2) || e.source.label.toLowerCase().includes(q2) || e.target.id.toLowerCase().includes(q2) || e.target.label.toLowerCase().includes(q2);
-    const dim = !(sv && tv) || (q2!=='' && !sOk);
-    d3.select(this).classed('dim', dim && !(state.traceOn && e._inTrace));
+    const sv = nodeVisible(e.source), tv = nodeVisible(e.target);
+    const sOk = q==='' || e.source.id.toLowerCase().includes(q) || e.source.label.toLowerCase().includes(q) || e.target.id.toLowerCase().includes(q) || e.target.label.toLowerCase().includes(q);
+    const inTrace = state.traceOn && e._inTrace;
+    const dim = (!(sv && tv) || (q!=='' && !sOk)) && !inTrace;
+    d3.select(this).classed('dim', dim);
+    d3.select(this).classed('lineage', !!inTrace);
   });
   document.getElementById('stat-visible').textContent = visibleCount;
 }
 applyFilters();
-fitToScreen();
+setTimeout(fitToScreen, 250);
 
 // ══════════════════════════════════════════════════════════════════════════
 // SELECTION / INSPECTOR / LINEAGE TRACE
 // ══════════════════════════════════════════════════════════════════════════
 function selectNode(id){
   state.selected = id;
+  if(state.traceOn) clearTrace();
   nodeG.classed('selected', d=>d.id===id);
-  clearTrace(false);
   renderInspector(id);
 }
 function closeInspector(){
@@ -607,7 +730,7 @@ function closeInspector(){
 }
 
 function edgesOf(id){
-  return [...outAdj.get(id).map(e=>({...e, dir:'out'})), ...inAdj.get(id).map(e=>({...e, dir:'in'}))];
+  return [...outAdj.get(id).map(e=>({e, dir:'out'})), ...inAdj.get(id).map(e=>({e, dir:'in'}))];
 }
 
 function renderInspector(id){
@@ -620,15 +743,14 @@ function renderInspector(id){
   if(n.rv) chips.push(`<span class="insp-chip" style="background:${RVCOL[n.rv]}22;color:${RVCOL[n.rv]};">Right Value: ${n.rv}</span>`);
   if(n.status) chips.push(`<span class="insp-chip" style="background:${STATCOL[n.status]}22;color:${STATCOL[n.status]};">${n.status}</span>`);
 
-  const edges = edgesOf(id);
-  const triples = edges.map(e=>{
-    const subj = byId.get(e.s), obj = byId.get(e.t);
-    return `<div class="triple" onclick="selectNode('${e.dir==='out'?e.t:e.s}')">
-      <div class="tline"><span class="tsubj">${subj.label}</span> <span class="tpred">${e.p}</span> <span class="tobj">${obj.label}</span> .</div>
+  const pairs = edgesOf(id);
+  const triples = pairs.map(({e,dir})=>{
+    return `<div class="triple" onclick="selectNode('${dir==='out'?e.target.id:e.source.id}')">
+      <div class="tline"><span class="tsubj">${e.source.label}</span> <span class="tpred">${e.p}</span> <span class="tobj">${e.target.label}</span> .</div>
     </div>`;
   }).join('') || '<div style="font-size:10px;color:var(--mist);font-style:italic;">No triples reference this individual.</div>';
 
-  const nt = edges.map(e=> `${e.s} ${e.p} ${e.t} .`).join('\n');
+  const nt = pairs.map(({e})=> `${e.source.id} ${e.p} ${e.target.id} .`).join('\n');
 
   insp.innerHTML = `
     <div class="insp-hdr">
@@ -640,7 +762,7 @@ function renderInspector(id){
       <div class="insp-sec"><div class="insp-sec-t">Description</div><div class="insp-desc">${n.desc||''}</div></div>
       ${chips.length?`<div class="insp-sec"><div class="insp-sec-t">Properties</div><div class="insp-chips">${chips.join('')}</div></div>`:''}
       <div class="insp-sec"><button class="trace-btn ${state.traceOn?'active':''}" id="trace-btn" onclick="traceLineage('${id}')">${state.traceOn?'Clear Lineage Trace':'Trace Full Lineage (Step 1 → 9)'}</button></div>
-      <div class="insp-sec"><div class="insp-sec-t">Triples (${edges.length})</div>${triples}</div>
+      <div class="insp-sec"><div class="insp-sec-t">Triples (${pairs.length})</div>${triples}</div>
       <div class="insp-sec"><div class="insp-sec-t">N-Triples</div><pre class="nt-pre">${nt || '# none'}</pre></div>
     </div>`;
   insp.classList.add('open');
@@ -655,32 +777,25 @@ function traceLineage(id){
   while(frontier.length){
     const next = [];
     frontier.forEach(cur=>{
-      inAdj.get(cur).forEach(e=>{ tripSet.add(e); if(!visited.has(e.s)){visited.add(e.s); next.push(e.s);} });
-      outAdj.get(cur).forEach(e=>{ tripSet.add(e); if(!visited.has(e.t)){visited.add(e.t); next.push(e.t);} });
+      inAdj.get(cur).forEach(e=>{ tripSet.add(e); if(!visited.has(e.source.id)){visited.add(e.source.id); next.push(e.source.id);} });
+      outAdj.get(cur).forEach(e=>{ tripSet.add(e); if(!visited.has(e.target.id)){visited.add(e.target.id); next.push(e.target.id);} });
     });
     frontier = next;
   }
   NODES.forEach(n=> n._inTrace = visited.has(n.id));
   EDGES.forEach(e=> e._inTrace = tripSet.has(e));
   state.traceOn = true;
-  nodeG.classed('lineage', d=>d._inTrace);
-  nodeG.classed('dim', d=> !d._inTrace);
-  link.classed('lineage', d=>d._inTrace);
-  link.classed('dim', d=> !d._inTrace);
-  document.getElementById('hintbadge').innerHTML = `<b>Lineage trace active</b> for <span style="font-family:'IBM Plex Mono',monospace;">${id}</span> — ${visited.size} individuals and ${tripSet.size} triples span every stage from Step 1 (Persona &amp; Domain) to Step 9 (Review &amp; Approve). Click the node again or "Clear Lineage Trace" to exit.`;
+  applyFilters();
+  document.getElementById('hintbadge').innerHTML = `<b>Lineage trace active</b> for <span style="font-family:'IBM Plex Mono',monospace;">${id}</span> — ${visited.size} individuals and ${tripSet.size} triples span every stage from Step 1 (Persona &amp; Domain) to Step 9 (Review &amp; Approve). Click "Clear Lineage Trace" to exit.`;
   renderInspector(id);
 }
-function clearTrace(rerender){
-  if(!state.traceOn && rerender===false) return;
+function clearTrace(){
+  if(!state.traceOn) return;
   state.traceOn = false;
   NODES.forEach(n=> n._inTrace=false);
   EDGES.forEach(e=> e._inTrace=false);
-  nodeG.classed('lineage', false);
-  link.classed('lineage', false);
-  document.getElementById('hintbadge').innerHTML = `Drag nodes to rearrange &middot; scroll/pinch to zoom &middot; drag background to pan. The three large anchor nodes are <b>Planet</b>, <b>People</b>, and <b>Profit</b> &mdash; every requirement in the store is linked back to one of them via <span style="font-family:'IBM Plex Mono',monospace;">req:rightValueAlignment</span>.`;
+  document.getElementById('hintbadge').innerHTML = `Drag nodes to rearrange &middot; scroll/pinch to zoom &middot; drag background to pan. The three large anchor nodes are <b>Planet</b>, <b>People</b>, and <b>Profit</b> &mdash; every requirement in the store is linked back to one of them via <span style="font-family:'IBM Plex Mono',monospace;">req:rightValueAlignment</span>. Try the four <b>Layout</b> buttons in the sidebar.`;
   applyFilters();
 }
-
-setTimeout(fitToScreen, 300);
 </script>
 </body></html>
