@@ -304,6 +304,11 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 </div>
 <div id="review-panel"><div style="text-align:center;padding:26px;color:var(--mist);font-size:12px;">Complete the generation and quality steps to populate the review panel.</div></div>
 <div id="aprv-sum" style="display:none;margin-top:16px;"><div class="dl"><span>Approval Actions</span></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;"><button class="btn be" onclick="approveAll()">Approve All Selected</button><button class="btn bg" onclick="exportORSD()">Export as ORSD Draft</button><button class="btn bg" onclick="activateRCB()">Activate in Triplestore</button></div></div>
+<div class="card" style="margin-top:16px;background:var(--ltsse);border-color:#9FD9BC;">
+<div class="card-t" style="color:var(--sse);">See the Full Lifecycle as a Graph</div>
+<p style="font-size:11px;color:var(--ink2);line-height:1.65;margin-bottom:10px;">Everything captured across all 9 steps &mdash; persona, JTBD, UCA profile, generated drafts, ontology bindings, SHACL enforcement, child decomposition, NLP findings, and approval status &mdash; is the same triplestore, not nine separate documents. The lineage graph makes that explicit: every Requirement individual traces back through every step to the Persona that initiated it, and forward to the Right Value Anchor (Planet &gt; People &gt; Profit) it serves.</p>
+<a class="btn bt" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;" href="RDSG%20Requirements%20Lineage%20Graph.html" target="_blank" rel="noopener">Open Requirements Lineage Graph &#8599;</a>
+</div>
 </div>
 </div></div></div>
 <script>

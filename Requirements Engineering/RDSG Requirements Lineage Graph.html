@@ -1,0 +1,686 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>RDSG · Requirements Lineage Graph — Triplestore Explorer</title>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap");
+:root{--ink:#0D1117;--ink2:#1E2733;--fog:#546374;--mist:#8A9BAD;--paper:#F0F3F6;--white:#FFFFFF;--navy:#0A2540;--cobalt:#1652A6;--sky:#D6E8FF;--teal:#086B6B;--lteal:#D1F0F0;--emerald:#0A6640;--ltemer:#D1F0E0;--amber:#994000;--ltamb:#FDECD6;--violet:#5B21B6;--ltviolet:#EDE9FE;--red:#9B1C1C;--ltred:#FEE2E2;--gold:#B45309;--ltgold:#FEF3C7;--bfo:#2D4A8A;--ltbfo:#E0E8FF;--sse:#0F7A4E;--ltsse:#D9F2E4;--rvplanet:#0F7A4E;--rvpeople:#9B2C5E;--rvprofit:#8A5A0A;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:"IBM Plex Sans",sans-serif;background:var(--paper);color:var(--ink);font-size:13px;min-height:100vh;overflow:hidden;}
+.chrome{display:grid;grid-template-columns:266px 1fr;height:100vh;}
+.sidebar{background:var(--navy);color:#fff;display:flex;flex-direction:column;overflow-y:auto;}
+.sb-brand{padding:16px 16px 12px;border-bottom:1px solid rgba(255,255,255,.08);}
+.sb-brand h1{font-size:12.5px;font-weight:600;color:#fff;}
+.sb-brand p{font-size:9.5px;color:#6B85A0;margin-top:2px;}
+.sb-rv{margin-top:8px;font-size:9px;color:#7ECFB0;line-height:1.5;}
+.sb-rv b{color:#fff;}
+.sb-back{display:inline-block;margin-top:9px;font-size:9.5px;color:#7BAADD;text-decoration:none;border:1px solid #2A4A70;border-radius:4px;padding:3px 8px;transition:all .14s;}
+.sb-back:hover{background:rgba(255,255,255,.06);border-color:#4D9BF8;}
+.sb-stats{display:flex;gap:6px;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.08);}
+.sb-stat{flex:1;background:rgba(255,255,255,.05);border-radius:5px;padding:7px 6px;text-align:center;}
+.sb-stat b{display:block;font-size:16px;font-weight:700;color:#fff;font-family:"IBM Plex Mono",monospace;}
+.sb-stat span{font-size:7.5px;color:#7BAADD;text-transform:uppercase;letter-spacing:.5px;}
+.sb-sec{padding:11px 16px 4px;}
+.sb-sec-t{font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.1px;color:#4D7099;margin-bottom:7px;display:flex;align-items:center;justify-content:space-between;}
+.sb-sec-t a{font-size:8px;color:#4D9BF8;cursor:pointer;text-transform:none;letter-spacing:0;font-weight:500;}
+.flt{display:flex;align-items:center;gap:7px;padding:4px 2px;cursor:pointer;border-radius:4px;transition:background .12s;}
+.flt:hover{background:rgba(255,255,255,.05);}
+.flt input{width:12px;height:12px;cursor:pointer;accent-color:#4D9BF8;}
+.flt .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.flt label{font-size:10.5px;color:#B9CCE0;cursor:pointer;flex:1;}
+.flt .ct{font-size:8.5px;color:#4D7099;font-family:"IBM Plex Mono",monospace;}
+.sb-search{margin:0 16px 4px;position:relative;}
+.sb-search input{width:100%;font-family:"IBM Plex Sans",sans-serif;font-size:11px;color:#fff;background:rgba(255,255,255,.06);border:1px solid #2A4A70;border-radius:5px;padding:6px 9px;outline:none;}
+.sb-search input:focus{border-color:#4D9BF8;}
+.sb-search input::placeholder{color:#5A7DA0;}
+.sb-btnrow{display:flex;gap:6px;padding:10px 16px;}
+.sbtn{flex:1;font-family:"IBM Plex Sans",sans-serif;font-size:10px;font-weight:500;padding:6px 4px;border-radius:4px;cursor:pointer;border:1px solid #2A4A70;background:rgba(255,255,255,.04);color:#B9CCE0;transition:all .14s;}
+.sbtn:hover{background:rgba(255,255,255,.09);border-color:#4D9BF8;color:#fff;}
+.sb-legend{padding:10px 16px 16px;margin-top:auto;border-top:1px solid rgba(255,255,255,.08);}
+.leg-item{display:flex;align-items:center;gap:7px;padding:2.5px 0;font-size:9.5px;color:#8AAECC;}
+.leg-sw{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.leg-sw.sq{border-radius:2px;}
+.main{display:flex;flex-direction:column;overflow:hidden;}
+.topbar{background:var(--white);border-bottom:1px solid #E2E8F0;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:14px;flex-wrap:wrap;}
+.tt{font-size:14px;font-weight:600;color:var(--navy);}
+.ts{font-size:10px;color:var(--mist);margin-top:1px;}
+.thint{font-size:10px;color:var(--cobalt);background:var(--sky);border-radius:12px;padding:4px 11px;display:flex;align-items:center;gap:5px;}
+.stage{flex:1;display:flex;overflow:hidden;position:relative;}
+.graph-wrap{flex:1;position:relative;overflow:hidden;background:
+  radial-gradient(circle at 20% 20%, rgba(15,122,78,.05) 0%, transparent 45%),
+  radial-gradient(circle at 80% 15%, rgba(155,44,94,.05) 0%, transparent 45%),
+  radial-gradient(circle at 50% 85%, rgba(138,90,10,.05) 0%, transparent 45%),
+  var(--paper);}
+svg{width:100%;height:100%;cursor:grab;}
+svg:active{cursor:grabbing;}
+.lnk{stroke:#C3CFDB;stroke-width:1.1;transition:stroke-opacity .2s,stroke .2s,stroke-width .2s;}
+.lnk.dim{stroke-opacity:.08;}
+.lnk.lineage{stroke:#1652A6;stroke-width:2.2;stroke-opacity:.9;}
+.node-g{cursor:pointer;}
+.node-circ{stroke:#fff;stroke-width:1.6;transition:opacity .2s,stroke-width .2s;}
+.node-g.dim .node-circ{opacity:.1;}
+.node-g.dim .node-lbl{opacity:.08;}
+.node-g.selected .node-circ{stroke:var(--navy);stroke-width:3.5;}
+.node-g.lineage .node-circ{stroke:#1652A6;stroke-width:2.6;}
+.node-g.searchhit .node-circ{stroke:#B45309;stroke-width:3;}
+.node-lbl{font-size:8.5px;font-weight:600;fill:#1E2733;paint-order:stroke;stroke:#F0F3F6;stroke-width:3;pointer-events:none;transition:opacity .2s;}
+.node-lbl.anchor-lbl{font-size:11px;font-weight:700;fill:#fff;stroke:none;}
+.tooltip{position:absolute;pointer-events:none;background:var(--navy);color:#fff;font-size:10px;padding:6px 10px;border-radius:5px;box-shadow:0 4px 14px rgba(0,0,0,.25);max-width:230px;line-height:1.5;z-index:20;opacity:0;transition:opacity .1s;}
+.zoomctl{position:absolute;bottom:16px;right:16px;display:flex;flex-direction:column;gap:5px;z-index:5;}
+.zbtn{width:28px;height:28px;background:#fff;border:1px solid #CBD5E0;border-radius:5px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;color:var(--cobalt);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.08);}
+.zbtn:hover{background:var(--sky);}
+.hintbadge{position:absolute;top:14px;left:14px;background:rgba(255,255,255,.94);border:1px solid #E2E8F0;border-radius:6px;padding:8px 12px;font-size:10px;color:var(--fog);max-width:260px;line-height:1.6;box-shadow:0 1px 4px rgba(0,0,0,.06);z-index:5;}
+.hintbadge b{color:var(--navy);}
+.inspector{width:340px;border-left:1px solid #E2E8F0;background:var(--white);overflow-y:auto;flex-shrink:0;display:none;}
+.inspector.open{display:block;}
+.insp-hdr{padding:14px 16px 12px;border-bottom:1px solid #E2E8F0;position:sticky;top:0;background:var(--white);}
+.insp-close{float:right;cursor:pointer;color:var(--mist);font-size:15px;line-height:1;}
+.insp-close:hover{color:var(--red);}
+.insp-kind{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;padding:2px 7px;border-radius:8px;display:inline-block;margin-bottom:6px;}
+.insp-id{font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-weight:600;color:var(--navy);line-height:1.4;word-break:break-word;}
+.insp-body{padding:12px 16px;}
+.insp-sec{margin-bottom:14px;}
+.insp-sec-t{font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--mist);margin-bottom:6px;}
+.insp-desc{font-size:11px;color:var(--ink2);line-height:1.6;}
+.insp-chips{display:flex;flex-wrap:wrap;gap:5px;}
+.insp-chip{font-size:9px;font-weight:600;padding:2px 8px;border-radius:9px;}
+.triple{display:flex;flex-direction:column;gap:1px;padding:6px 8px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:4px;margin-bottom:5px;cursor:pointer;transition:border-color .12s;}
+.triple:hover{border-color:var(--cobalt);}
+.triple .tline{font-family:"IBM Plex Mono",monospace;font-size:9.5px;color:var(--ink2);line-height:1.5;}
+.triple .tsubj{color:var(--cobalt);font-weight:600;}
+.triple .tpred{color:var(--gold);}
+.triple .tobj{color:var(--emerald);font-weight:600;}
+.nt-pre{background:var(--navy);color:#9BC9AE;font-family:"IBM Plex Mono",monospace;font-size:9px;line-height:1.7;padding:10px 11px;border-radius:5px;white-space:pre-wrap;word-break:break-all;max-height:180px;overflow-y:auto;}
+.trace-btn{width:100%;background:var(--cobalt);color:#fff;border:none;border-radius:5px;padding:8px;font-size:11px;font-weight:600;cursor:pointer;font-family:"IBM Plex Sans",sans-serif;transition:background .14s;}
+.trace-btn:hover{background:#1244C4;}
+.trace-btn.active{background:var(--sse);}
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-thumb{background:#CBD5E0;border-radius:3px;}
+.sidebar::-webkit-scrollbar-thumb{background:#2A4A70;}
+</style>
+</head><body>
+<div class="chrome">
+<div class="sidebar">
+  <div class="sb-brand">
+    <h1>RDSG &middot; Lineage Graph</h1>
+    <p>Live triplestore &middot; Steps 1&ndash;9 provenance</p>
+    <div class="sb-rv">Anchored on the Right Value: <b>Planet &gt; People &gt; Profit</b> &mdash; every requirement in this graph traces back to one of the three anchor nodes below.</div>
+    <a class="sb-back" href="RDSG%20Authoring.html">&larr; Back to Authoring Suite</a>
+  </div>
+  <div class="sb-stats">
+    <div class="sb-stat"><b id="stat-nodes">0</b><span>Individuals</span></div>
+    <div class="sb-stat"><b id="stat-edges">0</b><span>Triples</span></div>
+    <div class="sb-stat"><b id="stat-visible">0</b><span>In View</span></div>
+  </div>
+
+  <div class="sb-sec">
+    <div class="sb-sec-t">Lifecycle Stage <a onclick="setAllStage(true)">all</a></div>
+    <div id="flt-stage"></div>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-sec-t">Right Value Anchor <a onclick="setAllRV(true)">all</a></div>
+    <div id="flt-rv"></div>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-sec-t">Requirement Type <a onclick="setAllReqType(true)">all</a></div>
+    <div id="flt-reqtype"></div>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-sec-t">Lifecycle Status <a onclick="setAllStatus(true)">all</a></div>
+    <div id="flt-status"></div>
+  </div>
+  <div class="sb-sec" style="padding-bottom:0;">
+    <div class="sb-sec-t">Search</div>
+  </div>
+  <div class="sb-search"><input type="text" id="search-box" placeholder="Search by ID or label&hellip;" oninput="applyFilters()"/></div>
+  <div class="sb-btnrow">
+    <button class="sbtn" onclick="resetFilters()">Reset Filters</button>
+    <button class="sbtn" onclick="fitToScreen()">Fit to Screen</button>
+  </div>
+  <div class="sb-legend" id="legend"></div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="tt">Requirement Context Bundle &middot; Full Lifecycle Triplestore</div>
+      <div class="ts">Enterprise Risk Assessment &middot; Senior Consultant &middot; Risk Management &middot; Q4 Board Reporting Cycle</div>
+    </div>
+    <div class="thint">&#128269;&nbsp; Click any node to inspect its triples &middot; use <b style="margin:0 3px;">Trace Full Lineage</b> to walk Step 1 &rarr; Step 9</div>
+  </div>
+  <div class="stage">
+    <div class="graph-wrap" id="graph-wrap">
+      <div class="hintbadge" id="hintbadge">Drag nodes to rearrange &middot; scroll/pinch to zoom &middot; drag background to pan. The three large anchor nodes are <b>Planet</b>, <b>People</b>, and <b>Profit</b> &mdash; every requirement in the store is linked back to one of them via <span style="font-family:'IBM Plex Mono',monospace;">req:rightValueAlignment</span>.</div>
+      <svg id="svg"></svg>
+      <div class="zoomctl">
+        <div class="zbtn" onclick="zoomBy(1.3)">+</div>
+        <div class="zbtn" onclick="zoomBy(.77)">&minus;</div>
+        <div class="zbtn" onclick="fitToScreen()" style="font-size:11px;">&#8663;</div>
+      </div>
+      <div class="tooltip" id="tooltip"></div>
+    </div>
+    <div class="inspector" id="inspector"></div>
+  </div>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script>
+// ══════════════════════════════════════════════════════════════════════════
+// TRIPLESTORE SNAPSHOT — Enterprise Risk Assessment / Senior Consultant demo
+// The exact individuals produced by the 9-step RDSG Authoring Suite wizard.
+// ══════════════════════════════════════════════════════════════════════════
+
+const STAGES = {
+  context:    {label:'Context',              sub:'Steps 1&ndash;2', color:'#1652A6'},
+  generation: {label:'Generation',           sub:'Steps 3&ndash;4', color:'#086B6B'},
+  ontology:   {label:'Ontology Binding',     sub:'Steps 5&ndash;6', color:'#2D4A8A'},
+  quality:    {label:'Quality & Decomp.',    sub:'Steps 7&ndash;8', color:'#B45309'},
+  approval:   {label:'Approval',             sub:'Step 9',          color:'#0A2540'},
+};
+const RVCOL   = {Planet:'#0F7A4E', People:'#9B2C5E', Profit:'#8A5A0A', Multiple:'#2D4A8A'};
+const REQCOL  = {ComplianceRequirement:'#92400E', FunctionalRequirement:'#0369A1', NonFunctionalRequirement:'#5B21B6', ControlRequirement:'#9B1C1C'};
+const REQLBL  = {ComplianceRequirement:'Compliance', FunctionalRequirement:'Functional', NonFunctionalRequirement:'Non-Functional', ControlRequirement:'Control'};
+const UCACOL  = {Missing:'#9B1C1C', Hazardous:'#994000', MisTimed:'#086B6B', WrongDuration:'#5B21B6'};
+const SEVCOL  = {Violation:'#9B1C1C', Warning:'#B45309', Pass:'#0A6640'};
+const STATCOL = {Draft:'#8A9BAD', Validated:'#0A6640', Rejected:'#9B1C1C'};
+
+const NODES = [
+  // ── CONTEXT (Steps 1–2) ──────────────────────────────────────────────
+  {id:'persona:SeniorConsultant', label:'Senior Consultant', kind:'persona', stage:'context', r:12, color:'#1652A6',
+   desc:'PersonaHolon OWL individual. RE Gateway Team-owned RBAC permission bindings and MTBH_WHO monitoring thresholds attach here.'},
+  {id:'domain:RiskManagement', label:'Risk Mgmt', kind:'domain', stage:'context', r:10, color:'#1652A6',
+   desc:'Primary business domain. Activates domain SHACL shapes, vector DB partitions, and ComplianceRequirements.'},
+  {id:'subdomain:EnterpriseRiskAssessment', label:'Enterprise Risk', kind:'subdomain', stage:'context', r:8, color:'#1652A6',
+   desc:'Sub-domain scoping this requirement set within Risk Management.'},
+  {id:'scenario:Q4BoardReportingCycle', label:'Q4 Board Cycle', kind:'scenario', stage:'context', r:8, color:'#1652A6',
+   desc:'ScenarioRequirement. When matched, REQ-006 fires and scenario-pinned chunks are retrieved as priority context in Zone 5.'},
+  {id:'job:EnterpriseRiskAssessment', label:'Job: Enterprise Risk Assessment', kind:'job', stage:'context', r:13, color:'#1652A6',
+   desc:'FunctionalJob — "When preparing the Q4 board risk report, I want to assess and rank all enterprise risks, so I can present a board-ready risk view with ISO 31000 citations." Right Value Consideration: protects People (board, risk owners) and supports Profit (Resilience) through auditability.'},
+  {id:'uca:Missing', label:'UCA · Missing', kind:'uca', stage:'context', r:8, color:UCACOL.Missing,
+   desc:'Board report delivered with no risk tier classification, no ISO 31000 references, no recommended actions. Timeout PT4H → PARTIAL_RESPONSE.'},
+  {id:'uca:Hazardous', label:'UCA · Hazardous', kind:'uca', stage:'context', r:8, color:UCACOL.Hazardous,
+   desc:'Agent provides output with unresolved terminology or entities outside authorized scope → ONTOLOGY_RESOLUTION_FAILURE, routed to steward.'},
+  {id:'uca:MisTimed', label:'UCA · MisTimed', kind:'uca', stage:'context', r:8, color:UCACOL.MisTimed,
+   desc:'Risk assessment published before legal review, or delivered after board deadline → hold delivery, alert legal review queue.'},
+  {id:'uca:WrongDuration', label:'UCA · WrongDuration', kind:'uca', stage:'context', r:8, color:UCACOL.WrongDuration,
+   desc:'Assessment covers only Tier 1 risks without marking partial, or continues into unauthorized regulatory territory.'},
+
+  // ── GENERATION (Steps 3–4) ───────────────────────────────────────────
+  {id:'needs:NS-001', label:'Needs Statement', kind:'needs', stage:'generation', r:9, color:'#086B6B',
+   desc:'Free-text stakeholder needs statement. Seeds the Generation Governance Envelope (ontology class hierarchy, domain vocabulary, RBAC scope, rejection anti-patterns, scenario exemplars).'},
+  {id:'genreq:GR-001', label:'GenerationRequest', kind:'genreq', stage:'generation', r:9, color:'#086B6B',
+   desc:'GenerationRequest audit individual — records the LLM call, persona, envelope constraints, and every candidate produced (kept and rejected).'},
+  {id:'draft:FR-RISK-001', label:'Draft 001', kind:'draft', stage:'generation', r:7, color:'#086B6B', reqType:'ComplianceRequirement',
+   desc:'GeneratedDraft candidate — ISO 31000 clause reference per finding. Promoted to Requirement.'},
+  {id:'draft:FR-RISK-002', label:'Draft 002', kind:'draft', stage:'generation', r:7, color:'#086B6B', reqType:'FunctionalRequirement',
+   desc:'GeneratedDraft candidate — 5x5 likelihood-impact scoring. Promoted to Requirement.'},
+  {id:'draft:FR-RISK-003', label:'Draft 003', kind:'draft', stage:'generation', r:7, color:'#086B6B', reqType:'NonFunctionalRequirement',
+   desc:'GeneratedDraft candidate — 4-hour delivery SLA. Promoted to Requirement.'},
+  {id:'draft:FR-RISK-004', label:'Draft 004', kind:'draft', stage:'generation', r:7, color:'#086B6B', reqType:'ComplianceRequirement',
+   desc:'GeneratedDraft candidate — 2-page executive summary limit. Promoted to Requirement.'},
+  {id:'draft:FR-RISK-005', label:'Draft 005', kind:'draft', stage:'generation', r:7, color:'#086B6B', reqType:'ControlRequirement',
+   desc:'GeneratedDraft candidate — entity resolution before tier classification. Promoted to Requirement.'},
+  {id:'draft:FR-RISK-006', label:'Draft 006', kind:'draft', stage:'generation', r:7, color:'#8A9BAD', status:'Rejected',
+   desc:'GeneratedDraft(status=Rejected) — duplicate of FR-RISK-002 with a looser scoring threshold. Rejected by the Senior Consultant in Step 4; retained in the triplestore as audit provenance under GenerationRequest GR-001, never promoted to a Requirement individual.'},
+
+  // ── REQUIREMENT BACKBONE (always visible — spans Steps 4, 6, 7, 9) ──
+  {id:'req:FR-RISK-001', label:'FR-RISK-001', kind:'requirement', reqType:'ComplianceRequirement', rv:'People', status:'Validated', r:12,
+   desc:'"The risk assessment output shall include an ISO 31000 clause reference for each identified risk finding." Must-priority. Right Value: protects the board’s ability to trust and audit what it is told (People).'},
+  {id:'req:FR-RISK-002', label:'FR-RISK-002', kind:'requirement', reqType:'FunctionalRequirement', rv:'Profit', status:'Validated', r:11,
+   desc:'"The risk assessment system shall score each identified enterprise risk on a 5x5 likelihood-impact matrix using the approved taxonomy." Right Value: consistent scoring is how the enterprise risk function lasts across reporting periods (Profit — Resilience).'},
+  {id:'req:FR-RISK-003', label:'FR-RISK-003', kind:'requirement', reqType:'NonFunctionalRequirement', rv:'People', status:'Validated', r:11,
+   desc:'"The complete output shall be delivered within 4 hours of the request." Right Value: a deterministic delivery window protects the board’s ability to review before the deadline (People).'},
+  {id:'req:FR-RISK-004', label:'FR-RISK-004', kind:'requirement', reqType:'ComplianceRequirement', rv:'People', status:'Validated', r:11,
+   desc:'"The executive summary shall not exceed 2 pages." Right Value: protects board members’ limited review time (People).'},
+  {id:'req:FR-RISK-005', label:'FR-RISK-005', kind:'requirement', reqType:'ControlRequirement', rv:'People', status:'Validated', r:11,
+   desc:'"The system shall resolve all entity references before generating any risk tier classification." Right Value: prevents misleading tier classification that could under-report risk to the board (People).'},
+  {id:'req:FR-RISK-001.1', label:'FR-RISK-001.1', kind:'child', reqType:'ComplianceRequirement', rv:'People', status:'Draft', r:7,
+   desc:'Child of FR-RISK-001 — "shall include the ISO 31000:2018 section number for each risk finding." req:dependsOn FR-RISK-001. Generated in Step 7, not yet through NLP Quality Gate.'},
+  {id:'req:FR-RISK-001.2', label:'FR-RISK-001.2', kind:'child', reqType:'ComplianceRequirement', rv:'People', status:'Draft', r:7,
+   desc:'Child of FR-RISK-001 — "shall include the principle or guideline title corresponding to the cited clause." Should-priority.'},
+  {id:'req:FR-RISK-001.3', label:'FR-RISK-001.3', kind:'child', reqType:'ComplianceRequirement', rv:'People', status:'Draft', r:7,
+   desc:'Child of FR-RISK-001 — "shall verify each cited clause URI resolves to an active clause individual before delivery."'},
+  {id:'req:FR-RISK-001.4', label:'FR-RISK-001.4', kind:'child', reqType:'ComplianceRequirement', rv:'People', status:'Draft', r:7,
+   desc:'Child of FR-RISK-001 — "shall flag any finding with no applicable clause for manual steward classification."'},
+
+  // ── ONTOLOGY BINDING (Steps 5–6) ─────────────────────────────────────
+  {id:'bfo:GenericallyDependentContinuant', label:'bfo:GDC', kind:'bfo', stage:'ontology', r:10, color:'#2D4A8A',
+   desc:'BFO 2.0 class — entities that can be copied and concretized in multiple bearers. Most requirement statements are GenericallyDependentContinuants.'},
+  {id:'bfo:Process', label:'bfo:Process', kind:'bfo', stage:'ontology', r:9, color:'#2D4A8A',
+   desc:'BFO 2.0 class — occurrents with proper temporal parts: assessment processes, review cycles.'},
+  {id:'bfo:TemporalRegion', label:'bfo:TemporalRegion', kind:'bfo', stage:'ontology', r:8, color:'#2D4A8A',
+   desc:'BFO 2.0 class — regions of time. Used for timing/SLA requirements referencing a time window.'},
+  {id:'concept:ISO31000ComplianceItem', label:'ISO31000ComplianceItem', kind:'concept', stage:'ontology', r:8, color:'#2D4A8A',
+   desc:'Domain concept. Activates sh:ISO31000Shape in the gateway pipeline.'},
+  {id:'concept:RiskFinding', label:'RiskFinding', kind:'concept', stage:'ontology', r:8, color:'#2D4A8A',
+   desc:'Domain concept representing an individual identified risk within the assessment.'},
+  {id:'shape:RequirementCompleteness', label:'sh:ReqCompleteness', kind:'shape', stage:'ontology', r:11, color:'#0A2540',
+   desc:'Core SHACL shape — enforces sh:RequirementCompleteness for all Must-priority requirements.'},
+  {id:'shape:ISO31000Shape', label:'sh:ISO31000Shape', kind:'shape', stage:'ontology', r:9, color:'#0A2540',
+   desc:'Domain SHACL shape enforcing ISO 31000 clause citation structure.'},
+  {id:'shape:INCOSEQualityShape', label:'sh:INCOSEQuality', kind:'shape', stage:'ontology', r:8, color:'#0A2540',
+   desc:'Addendum C shape — enforces INCOSE Guide v4 quality characteristics at the ontology layer.'},
+  {id:'shape:IndependenceAxiomShape', label:'sh:IndepAxiom', kind:'shape', stage:'ontology', r:8, color:'#0A2540',
+   desc:'Addendum B (AD/DSM) shape — fires when one DesignParameter satisfies multiple FunctionalRequirements (Independence Axiom violation).'},
+  {id:'shape:RightValueAlignmentShape', label:'sh:RightValueAlignment', kind:'shape', stage:'ontology', r:10, color:'#0F7A4E',
+   desc:'SSE shape — requires req:rightValueAlignment + a Right Value justification on every Must-priority requirement. New in the SSE-integrated edition of RDSG.'},
+  {id:'dp:ISO31000Shape', label:'dp:ISO31000', kind:'dp', stage:'ontology', r:7, color:'#1652A6',
+   desc:'DesignParameter satisfying FR-RISK-001 (req:satisfiedBy). The [A] matrix cell linking the FR to its implementing control.'},
+  {id:'dp:RiskScoringShape', label:'dp:RiskScoring', kind:'dp', stage:'ontology', r:7, color:'#1652A6',
+   desc:'DesignParameter satisfying FR-RISK-002.'},
+  {id:'dp:TMP001TimeoutRule', label:'dp:TMP001Timeout', kind:'dp', stage:'ontology', r:7, color:'#1652A6',
+   desc:'DesignParameter satisfying FR-RISK-003 — the Step 3 SWRL temporal monitor enforcing the 4-hour SLA.'},
+  {id:'dp:ScopeBoundaryShape', label:'dp:ScopeBoundary', kind:'dp', stage:'ontology', r:7, color:'#1652A6',
+   desc:'DesignParameter satisfying FR-RISK-004 — enforces the 2-page executive summary scope boundary.'},
+  {id:'dp:OntologyResolutionShape', label:'dp:OntologyResolution', kind:'dp', stage:'ontology', r:7, color:'#1652A6',
+   desc:'DesignParameter satisfying FR-RISK-005 — entity resolution gate before tier classification.'},
+
+  // ── QUALITY & DECOMPOSITION (Steps 7–8) ──────────────────────────────
+  {id:'finding:F-Verif-001', label:'Verifiability · Pass', kind:'finding', stage:'quality', r:7, color:SEVCOL.Pass,
+   desc:'NLPFinding on FR-RISK-001 — fully verifiable by SPARQL ASK query against the domain ontology.'},
+  {id:'finding:F-Unamb-002', label:'Unambiguousness · Warn', kind:'finding', stage:'quality', r:7, color:SEVCOL.Warning,
+   desc:'NLPFinding on FR-RISK-002 — "approved risk scoring taxonomy" is ambiguous; recommend citing the taxonomy version explicitly.'},
+  {id:'finding:F-Sing-003', label:'Singularity · Pass', kind:'finding', stage:'quality', r:7, color:SEVCOL.Pass,
+   desc:'NLPFinding on FR-RISK-003 — states exactly one timing constraint with a clear trigger and threshold.'},
+  {id:'finding:F-Sing-004', label:'Singularity · Violation', kind:'finding', stage:'quality', r:7, color:SEVCOL.Violation,
+   desc:'NLPFinding on FR-RISK-004 — bundles the page-limit condition with a CRO-notification condition; recommend splitting into 004a/004b.'},
+  {id:'finding:F-Verif-005', label:'Verifiability · Pass', kind:'finding', stage:'quality', r:7, color:SEVCOL.Pass,
+   desc:'NLPFinding on FR-RISK-005 — verifiable via the UCA-002 Watch Record mechanism at Step 1 of the gateway pipeline.'},
+  {id:'finding:F-SSE-001', label:'Socio-Tech. Alignment · Pass', kind:'finding', stage:'quality', r:8, color:'#0F7A4E',
+   desc:'SSE Socio-Technical Alignment finding on FR-RISK-001 — statement, rationale, and Right Value justification are mutually consistent; no unaddressed Planet or Profit externality. The 9th NLP quality dimension added by the SSE-integrated edition.'},
+
+  // ── APPROVAL (Step 9) ────────────────────────────────────────────────
+  {id:'status:Draft', label:'status: Draft', kind:'status', stage:'approval', r:9, color:STATCOL.Draft,
+   desc:'Lifecycle status individual. Requirements sit here until the NLP Quality Gate and Review & Approve steps clear them.'},
+  {id:'status:Validated', label:'status: Validated', kind:'status', stage:'approval', r:11, color:STATCOL.Validated,
+   desc:'Lifecycle status individual. Set by human approval in Step 9; activates the requirement in the RCB for the next gateway interaction.'},
+  {id:'status:Rejected', label:'status: Rejected', kind:'status', stage:'approval', r:8, color:STATCOL.Rejected,
+   desc:'Lifecycle status individual. Terminal state for candidates excluded from triplestore activation, retained for audit provenance.'},
+  {id:'rcb:RCB-Active', label:'RCB (Active)', kind:'artifact', stage:'approval', r:10, color:'#0A2540',
+   desc:'Requirement Context Bundle — the live set of Active requirement individuals the gateway pipeline resolves against on the next interaction.'},
+  {id:'orsd:ORSD-Q4Board', label:'ORSD Draft', kind:'artifact', stage:'approval', r:8, color:'#0A2540',
+   desc:'Operational Requirements Specification Document export — gateway-visible sections (PEP scope, 5D context surface, AcceptanceCriteria stubs, Right Value Alignment).'},
+
+  // ── RIGHT VALUE ANCHORS (always visible, gravitational) ──────────────
+  {id:'rv:Planet', label:'PLANET', kind:'anchor', rv:'Planet', r:26, color:RVCOL.Planet,
+   desc:'Right Value Anchor — inputs, operations, or outputs with ecological impact. No requirement in this demonstration set is anchored here: the Enterprise Risk Assessment job has no Planet-layer input, operation, or output, and the graph makes that absence visible rather than hiding it.'},
+  {id:'rv:People', label:'PEOPLE', kind:'anchor', rv:'People', r:30, color:RVCOL.People,
+   desc:'Right Value Anchor — who we serve, who we employ, who we affect. The dominant anchor in this requirement set: the board, risk owners, and downstream regulators.'},
+  {id:'rv:Profit', label:'PROFIT', kind:'anchor', rv:'Profit', r:26, color:RVCOL.Profit,
+   desc:'Right Value Anchor — economic generation, resilience, reinvestment. One requirement (consistent risk scoring) is anchored here: it keeps the risk function auditable and durable over time.'},
+];
+
+const EDGES = [
+  // context
+  {s:'persona:SeniorConsultant', p:'req:hasRBACDomain', t:'domain:RiskManagement', g:'context'},
+  {s:'domain:RiskManagement', p:'req:hasSubDomain', t:'subdomain:EnterpriseRiskAssessment', g:'context'},
+  {s:'persona:SeniorConsultant', p:'req:initiatesJob', t:'job:EnterpriseRiskAssessment', g:'context'},
+  {s:'job:EnterpriseRiskAssessment', p:'req:hasScenarioContext', t:'scenario:Q4BoardReportingCycle', g:'context'},
+  {s:'job:EnterpriseRiskAssessment', p:'req:seedsUCAProfile', t:'uca:Missing', g:'context'},
+  {s:'job:EnterpriseRiskAssessment', p:'req:seedsUCAProfile', t:'uca:Hazardous', g:'context'},
+  {s:'job:EnterpriseRiskAssessment', p:'req:seedsUCAProfile', t:'uca:MisTimed', g:'context'},
+  {s:'job:EnterpriseRiskAssessment', p:'req:seedsUCAProfile', t:'uca:WrongDuration', g:'context'},
+  {s:'job:EnterpriseRiskAssessment', p:'req:expressedAs', t:'needs:NS-001', g:'generation'},
+  // generation
+  {s:'needs:NS-001', p:'req:triggersGenerationRequest', t:'genreq:GR-001', g:'generation'},
+  {s:'genreq:GR-001', p:'gen:produces', t:'draft:FR-RISK-001', g:'generation'},
+  {s:'genreq:GR-001', p:'gen:produces', t:'draft:FR-RISK-002', g:'generation'},
+  {s:'genreq:GR-001', p:'gen:produces', t:'draft:FR-RISK-003', g:'generation'},
+  {s:'genreq:GR-001', p:'gen:produces', t:'draft:FR-RISK-004', g:'generation'},
+  {s:'genreq:GR-001', p:'gen:produces', t:'draft:FR-RISK-005', g:'generation'},
+  {s:'genreq:GR-001', p:'gen:produces', t:'draft:FR-RISK-006', g:'generation'},
+  {s:'draft:FR-RISK-001', p:'gen:promotedTo', t:'req:FR-RISK-001', g:'generation'},
+  {s:'draft:FR-RISK-002', p:'gen:promotedTo', t:'req:FR-RISK-002', g:'generation'},
+  {s:'draft:FR-RISK-003', p:'gen:promotedTo', t:'req:FR-RISK-003', g:'generation'},
+  {s:'draft:FR-RISK-004', p:'gen:promotedTo', t:'req:FR-RISK-004', g:'generation'},
+  {s:'draft:FR-RISK-005', p:'gen:promotedTo', t:'req:FR-RISK-005', g:'generation'},
+  {s:'draft:FR-RISK-006', p:'req:hasStatus', t:'status:Rejected', g:'generation'},
+  // ontology binding
+  {s:'req:FR-RISK-001', p:'req:classifiedAs', t:'bfo:GenericallyDependentContinuant', g:'ontology'},
+  {s:'req:FR-RISK-002', p:'req:classifiedAs', t:'bfo:Process', g:'ontology'},
+  {s:'req:FR-RISK-003', p:'req:classifiedAs', t:'bfo:TemporalRegion', g:'ontology'},
+  {s:'req:FR-RISK-004', p:'req:classifiedAs', t:'bfo:GenericallyDependentContinuant', g:'ontology'},
+  {s:'req:FR-RISK-005', p:'req:classifiedAs', t:'bfo:Process', g:'ontology'},
+  {s:'req:FR-RISK-001', p:'req:mapsToConcept', t:'concept:ISO31000ComplianceItem', g:'ontology'},
+  {s:'req:FR-RISK-005', p:'req:mapsToConcept', t:'concept:RiskFinding', g:'ontology'},
+  {s:'req:FR-RISK-001', p:'req:satisfiedBy', t:'dp:ISO31000Shape', g:'ontology'},
+  {s:'req:FR-RISK-002', p:'req:satisfiedBy', t:'dp:RiskScoringShape', g:'ontology'},
+  {s:'req:FR-RISK-003', p:'req:satisfiedBy', t:'dp:TMP001TimeoutRule', g:'ontology'},
+  {s:'req:FR-RISK-004', p:'req:satisfiedBy', t:'dp:ScopeBoundaryShape', g:'ontology'},
+  {s:'req:FR-RISK-005', p:'req:satisfiedBy', t:'dp:OntologyResolutionShape', g:'ontology'},
+  {s:'req:FR-RISK-001', p:'req:enforcedBy', t:'shape:RequirementCompleteness', g:'ontology'},
+  {s:'req:FR-RISK-002', p:'req:enforcedBy', t:'shape:RequirementCompleteness', g:'ontology'},
+  {s:'req:FR-RISK-003', p:'req:enforcedBy', t:'shape:RequirementCompleteness', g:'ontology'},
+  {s:'req:FR-RISK-004', p:'req:enforcedBy', t:'shape:RequirementCompleteness', g:'ontology'},
+  {s:'req:FR-RISK-005', p:'req:enforcedBy', t:'shape:RequirementCompleteness', g:'ontology'},
+  {s:'req:FR-RISK-001', p:'req:enforcedBy', t:'shape:ISO31000Shape', g:'ontology'},
+  {s:'req:FR-RISK-003', p:'req:enforcedBy', t:'shape:INCOSEQualityShape', g:'ontology'},
+  {s:'req:FR-RISK-001', p:'req:enforcedBy', t:'shape:IndependenceAxiomShape', g:'ontology'},
+  {s:'req:FR-RISK-001', p:'req:enforcedBy', t:'shape:RightValueAlignmentShape', g:'ontology'},
+  {s:'req:FR-RISK-002', p:'req:enforcedBy', t:'shape:RightValueAlignmentShape', g:'ontology'},
+  {s:'req:FR-RISK-003', p:'req:enforcedBy', t:'shape:RightValueAlignmentShape', g:'ontology'},
+  {s:'req:FR-RISK-004', p:'req:enforcedBy', t:'shape:RightValueAlignmentShape', g:'ontology'},
+  {s:'req:FR-RISK-005', p:'req:enforcedBy', t:'shape:RightValueAlignmentShape', g:'ontology'},
+  {s:'req:FR-RISK-002', p:'req:ucaSuggestion', t:'uca:Hazardous', g:'ontology'},
+  {s:'req:FR-RISK-003', p:'req:ucaSuggestion', t:'uca:MisTimed', g:'ontology'},
+  {s:'req:FR-RISK-004', p:'req:ucaSuggestion', t:'uca:WrongDuration', g:'ontology'},
+  {s:'req:FR-RISK-005', p:'req:ucaSuggestion', t:'uca:Hazardous', g:'ontology'},
+  // child decomposition (Step 7)
+  {s:'req:FR-RISK-001.1', p:'req:dependsOn', t:'req:FR-RISK-001', g:'quality'},
+  {s:'req:FR-RISK-001.2', p:'req:dependsOn', t:'req:FR-RISK-001', g:'quality'},
+  {s:'req:FR-RISK-001.3', p:'req:dependsOn', t:'req:FR-RISK-001', g:'quality'},
+  {s:'req:FR-RISK-001.4', p:'req:dependsOn', t:'req:FR-RISK-001', g:'quality'},
+  // right value anchors
+  {s:'req:FR-RISK-001', p:'req:rightValueAlignment', t:'rv:People', g:'anchor'},
+  {s:'req:FR-RISK-002', p:'req:rightValueAlignment', t:'rv:Profit', g:'anchor'},
+  {s:'req:FR-RISK-003', p:'req:rightValueAlignment', t:'rv:People', g:'anchor'},
+  {s:'req:FR-RISK-004', p:'req:rightValueAlignment', t:'rv:People', g:'anchor'},
+  {s:'req:FR-RISK-005', p:'req:rightValueAlignment', t:'rv:People', g:'anchor'},
+  {s:'req:FR-RISK-001.1', p:'req:rightValueAlignment', t:'rv:People', g:'anchor'},
+  {s:'req:FR-RISK-001.2', p:'req:rightValueAlignment', t:'rv:People', g:'anchor'},
+  {s:'req:FR-RISK-001.3', p:'req:rightValueAlignment', t:'rv:People', g:'anchor'},
+  {s:'req:FR-RISK-001.4', p:'req:rightValueAlignment', t:'rv:People', g:'anchor'},
+  // quality (Step 8)
+  {s:'req:FR-RISK-001', p:'req:evaluatedBy', t:'finding:F-Verif-001', g:'quality'},
+  {s:'req:FR-RISK-001', p:'req:evaluatedBy', t:'finding:F-SSE-001', g:'quality'},
+  {s:'req:FR-RISK-002', p:'req:evaluatedBy', t:'finding:F-Unamb-002', g:'quality'},
+  {s:'req:FR-RISK-003', p:'req:evaluatedBy', t:'finding:F-Sing-003', g:'quality'},
+  {s:'req:FR-RISK-004', p:'req:evaluatedBy', t:'finding:F-Sing-004', g:'quality'},
+  {s:'req:FR-RISK-005', p:'req:evaluatedBy', t:'finding:F-Verif-005', g:'quality'},
+  // approval (Step 9)
+  {s:'req:FR-RISK-001', p:'req:hasStatus', t:'status:Validated', g:'approval'},
+  {s:'req:FR-RISK-002', p:'req:hasStatus', t:'status:Validated', g:'approval'},
+  {s:'req:FR-RISK-003', p:'req:hasStatus', t:'status:Validated', g:'approval'},
+  {s:'req:FR-RISK-004', p:'req:hasStatus', t:'status:Validated', g:'approval'},
+  {s:'req:FR-RISK-005', p:'req:hasStatus', t:'status:Validated', g:'approval'},
+  {s:'req:FR-RISK-001.1', p:'req:hasStatus', t:'status:Draft', g:'approval'},
+  {s:'req:FR-RISK-001.2', p:'req:hasStatus', t:'status:Draft', g:'approval'},
+  {s:'req:FR-RISK-001.3', p:'req:hasStatus', t:'status:Draft', g:'approval'},
+  {s:'req:FR-RISK-001.4', p:'req:hasStatus', t:'status:Draft', g:'approval'},
+  {s:'status:Validated', p:'status:activatesIn', t:'rcb:RCB-Active', g:'approval'},
+  {s:'status:Validated', p:'req:exportedTo', t:'orsd:ORSD-Q4Board', g:'approval'},
+];
+
+// ══════════════════════════════════════════════════════════════════════════
+// SETUP
+// ══════════════════════════════════════════════════════════════════════════
+const byId = new Map(NODES.map(n=>[n.id,n]));
+const outAdj = new Map(), inAdj = new Map();
+NODES.forEach(n=>{outAdj.set(n.id,[]);inAdj.set(n.id,[]);});
+EDGES.forEach(e=>{outAdj.get(e.s).push(e); inAdj.get(e.t).push(e);});
+
+document.getElementById('stat-nodes').textContent = NODES.length;
+document.getElementById('stat-edges').textContent = EDGES.length;
+
+const state = {
+  stage: {context:true, generation:true, ontology:true, quality:true, approval:true},
+  rv: {Planet:true, People:true, Profit:true, Multiple:true},
+  reqtype: {ComplianceRequirement:true, FunctionalRequirement:true, NonFunctionalRequirement:true, ControlRequirement:true},
+  status: {Draft:true, Validated:true, Rejected:true},
+  selected: null,
+  traceOn: false,
+};
+
+// ── filter panels ──
+function buildFilterPanel(containerId, dict, colorMap, stateKey, labelMap){
+  const el = document.getElementById(containerId);
+  el.innerHTML = Object.keys(dict).map(k=>{
+    const color = colorMap[k] || '#4D9BF8';
+    const label = (labelMap && labelMap[k]) || k;
+    const count = NODES.filter(n=>{
+      if(stateKey==='stage') return n.stage===k;
+      if(stateKey==='rv') return n.rv===k;
+      if(stateKey==='reqtype') return n.reqType===k;
+      if(stateKey==='status') return n.status===k;
+      return false;
+    }).length;
+    return `<div class="flt" onclick="toggleFilter('${stateKey}','${k}')">
+      <input type="checkbox" id="cb-${stateKey}-${k}" ${dict[k]?'checked':''} onclick="event.stopPropagation();toggleFilter('${stateKey}','${k}')"/>
+      <span class="dot" style="background:${color};"></span>
+      <label for="cb-${stateKey}-${k}">${label}</label>
+      <span class="ct">${count}</span>
+    </div>`;
+  }).join('');
+}
+function toggleFilter(key,k){ state[key][k] = !state[key][k]; document.getElementById('cb-'+key+'-'+k).checked = state[key][k]; applyFilters(); }
+function setAllStage(v){ Object.keys(state.stage).forEach(k=>state.stage[k]=v); refreshAllPanels(); applyFilters(); }
+function setAllRV(v){ Object.keys(state.rv).forEach(k=>state.rv[k]=v); refreshAllPanels(); applyFilters(); }
+function setAllReqType(v){ Object.keys(state.reqtype).forEach(k=>state.reqtype[k]=v); refreshAllPanels(); applyFilters(); }
+function setAllStatus(v){ Object.keys(state.status).forEach(k=>state.status[k]=v); refreshAllPanels(); applyFilters(); }
+function refreshAllPanels(){
+  buildFilterPanel('flt-stage', state.stage, Object.fromEntries(Object.entries(STAGES).map(([k,v])=>[k,v.color])), 'stage', Object.fromEntries(Object.entries(STAGES).map(([k,v])=>[k,v.label+' · '+v.sub])));
+  buildFilterPanel('flt-rv', state.rv, RVCOL, 'rv');
+  buildFilterPanel('flt-reqtype', state.reqtype, REQCOL, 'reqtype', REQLBL);
+  buildFilterPanel('flt-status', state.status, STATCOL, 'status');
+}
+refreshAllPanels();
+
+function resetFilters(){
+  setAllStage(true); setAllRV(true); setAllReqType(true); setAllStatus(true);
+  document.getElementById('search-box').value='';
+  clearTrace();
+  applyFilters();
+}
+
+// legend
+document.getElementById('legend').innerHTML = `
+  <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#4D7099;margin-bottom:7px;">Legend</div>
+  <div class="leg-item"><span class="leg-sw" style="background:#9B2C5E;width:14px;height:14px;"></span>Right Value anchor</div>
+  <div class="leg-item"><span class="leg-sw sq" style="background:#0A2540;"></span>SHACL shape / status / artifact</div>
+  <div class="leg-item"><span class="leg-sw sq" style="background:#2D4A8A;"></span>BFO class / domain concept / DP</div>
+  <div class="leg-item"><span class="leg-sw" style="background:#92400E;"></span>Compliance requirement</div>
+  <div class="leg-item"><span class="leg-sw" style="background:#0369A1;"></span>Functional requirement</div>
+  <div class="leg-item"><span class="leg-sw" style="background:#5B21B6;"></span>Non-functional requirement</div>
+  <div class="leg-item"><span class="leg-sw" style="background:#9B1C1C;"></span>Control requirement</div>
+`;
+
+// ══════════════════════════════════════════════════════════════════════════
+// D3 FORCE GRAPH
+// ══════════════════════════════════════════════════════════════════════════
+const wrap = document.getElementById('graph-wrap');
+let W = wrap.clientWidth, H = wrap.clientHeight;
+const svg = d3.select('#svg').attr('viewBox',[0,0,W,H]);
+const zoomLayer = svg.append('g');
+const linkLayer = zoomLayer.append('g').attr('class','links');
+const nodeLayer = zoomLayer.append('g').attr('class','nodes');
+const tooltip = document.getElementById('tooltip');
+
+const zoom = d3.zoom().scaleExtent([.25,3]).on('zoom', (ev)=>{ zoomLayer.attr('transform', ev.transform); });
+svg.call(zoom);
+function zoomBy(f){ svg.transition().duration(200).call(zoom.scaleBy, f); }
+function fitToScreen(){ svg.transition().duration(400).call(zoom.transform, d3.zoomIdentity.translate(W*0.06,H*0.02).scale(.82)); }
+
+// pin the three Right Value anchors in a fixed triangle so the whole store visibly orbits them
+byId.get('rv:People').fx = W*0.5;  byId.get('rv:People').fy = H*0.18;
+byId.get('rv:Planet').fx = W*0.18; byId.get('rv:Planet').fy = H*0.62;
+byId.get('rv:Profit').fx = W*0.82; byId.get('rv:Profit').fy = H*0.62;
+
+const sim = d3.forceSimulation(NODES)
+  .force('link', d3.forceLink(EDGES).id(d=>d.id).distance(e=> e.g==='anchor' ? 150 : 62).strength(e=> e.g==='anchor'?.35:.55))
+  .force('charge', d3.forceManyBody().strength(-190))
+  .force('collide', d3.forceCollide().radius(d=>d.r+13))
+  .force('center', d3.forceCenter(W/2, H/2).strength(.02))
+  .on('tick', ticked);
+
+const link = linkLayer.selectAll('line').data(EDGES).join('line')
+  .attr('class','lnk')
+  .attr('marker-end','url(#arrow)');
+
+svg.append('defs').append('marker')
+  .attr('id','arrow').attr('viewBox','0 -4 8 8').attr('refX',9).attr('refY',0)
+  .attr('markerWidth',6).attr('markerHeight',6).attr('orient','auto')
+  .append('path').attr('d','M0,-4L8,0L0,4').attr('fill','#C3CFDB');
+
+const nodeG = nodeLayer.selectAll('g').data(NODES).join('g')
+  .attr('class', d=> 'node-g' + (d.kind==='anchor'?' anchor-node':''))
+  .call(d3.drag()
+    .on('start',(ev,d)=>{ if(!ev.active) sim.alphaTarget(.25).restart(); if(d.kind!=='anchor'){d.fx=d.x;d.fy=d.y;} })
+    .on('drag',(ev,d)=>{ if(d.kind!=='anchor'){d.fx=ev.x;d.fy=ev.y;} })
+    .on('end',(ev,d)=>{ if(!ev.active) sim.alphaTarget(0); if(d.kind!=='anchor'){d.fx=null;d.fy=null;} }))
+  .on('click',(ev,d)=>{ ev.stopPropagation(); selectNode(d.id); })
+  .on('mouseenter',(ev,d)=>{ showTip(ev,d); })
+  .on('mousemove',(ev)=>{ moveTip(ev); })
+  .on('mouseleave',()=>{ tooltip.style.opacity=0; });
+
+nodeG.append('circle').attr('class','node-circ')
+  .attr('r', d=>d.r)
+  .attr('fill', d=> d.color || (STAGES[d.stage]&&STAGES[d.stage].color) || '#8A9BAD');
+
+nodeG.append('text').attr('class', d=> 'node-lbl' + (d.kind==='anchor'?' anchor-lbl':''))
+  .attr('text-anchor','middle')
+  .attr('dy', d=> d.kind==='anchor' ? 4 : (d.r+10))
+  .text(d=> d.kind==='anchor' ? d.label : d.label);
+
+svg.on('click', ()=>{ closeInspector(); });
+
+function ticked(){
+  link.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
+  nodeG.attr('transform', d=>`translate(${d.x},${d.y})`);
+}
+
+window.addEventListener('resize', ()=>{
+  W = wrap.clientWidth; H = wrap.clientHeight;
+  svg.attr('viewBox',[0,0,W,H]);
+});
+
+function showTip(ev,d){
+  tooltip.innerHTML = `<b>${d.label}</b><br/><span style="opacity:.75;">${d.id}</span>`;
+  tooltip.style.opacity = 1;
+  moveTip(ev);
+}
+function moveTip(ev){
+  const r = wrap.getBoundingClientRect();
+  tooltip.style.left = (ev.clientX - r.left + 14) + 'px';
+  tooltip.style.top = (ev.clientY - r.top + 10) + 'px';
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// FILTERING
+// ══════════════════════════════════════════════════════════════════════════
+function nodeVisible(n){
+  if(n.kind!=='requirement' && n.kind!=='child' && n.kind!=='anchor'){
+    if(n.stage && !state.stage[n.stage]) return false;
+    if(n.status && !state.status[n.status]) return false;
+    return true;
+  }
+  if(n.reqType && !state.reqtype[n.reqType]) return false;
+  if(n.rv && n.kind!=='anchor' && !state.rv[n.rv]) return false;
+  if(n.status && !state.status[n.status]) return false;
+  return true;
+}
+function applyFilters(){
+  const q = document.getElementById('search-box').value.trim().toLowerCase();
+  let visibleCount = 0;
+  nodeG.each(function(d){
+    const base = nodeVisible(d);
+    const hit = q!=='' && (d.id.toLowerCase().includes(q) || d.label.toLowerCase().includes(q));
+    const dim = !base || (q!=='' && !hit);
+    d3.select(this).classed('dim', dim && !(state.traceOn && d._inTrace));
+    d3.select(this).classed('searchhit', q!=='' && hit);
+    if(!dim) visibleCount++;
+  });
+  link.each(function(e){
+    const sv = nodeVisible(e.source.id?e.source:byId.get(e.source));
+    const tv = nodeVisible(e.target.id?e.target:byId.get(e.target));
+    const q2 = q;
+    const sOk = q2==='' || e.source.id.toLowerCase().includes(q2) || e.source.label.toLowerCase().includes(q2) || e.target.id.toLowerCase().includes(q2) || e.target.label.toLowerCase().includes(q2);
+    const dim = !(sv && tv) || (q2!=='' && !sOk);
+    d3.select(this).classed('dim', dim && !(state.traceOn && e._inTrace));
+  });
+  document.getElementById('stat-visible').textContent = visibleCount;
+}
+applyFilters();
+fitToScreen();
+
+// ══════════════════════════════════════════════════════════════════════════
+// SELECTION / INSPECTOR / LINEAGE TRACE
+// ══════════════════════════════════════════════════════════════════════════
+function selectNode(id){
+  state.selected = id;
+  nodeG.classed('selected', d=>d.id===id);
+  clearTrace(false);
+  renderInspector(id);
+}
+function closeInspector(){
+  state.selected = null;
+  nodeG.classed('selected', false);
+  document.getElementById('inspector').classList.remove('open');
+  clearTrace();
+}
+
+function edgesOf(id){
+  return [...outAdj.get(id).map(e=>({...e, dir:'out'})), ...inAdj.get(id).map(e=>({...e, dir:'in'}))];
+}
+
+function renderInspector(id){
+  const n = byId.get(id);
+  const insp = document.getElementById('inspector');
+  const kindColor = n.color || (STAGES[n.stage]&&STAGES[n.stage].color) || '#8A9BAD';
+  const chips = [];
+  if(n.stage) chips.push(`<span class="insp-chip" style="background:${STAGES[n.stage].color}22;color:${STAGES[n.stage].color};">${STAGES[n.stage].label}</span>`);
+  if(n.reqType) chips.push(`<span class="insp-chip" style="background:${REQCOL[n.reqType]}22;color:${REQCOL[n.reqType]};">${REQLBL[n.reqType]}</span>`);
+  if(n.rv) chips.push(`<span class="insp-chip" style="background:${RVCOL[n.rv]}22;color:${RVCOL[n.rv]};">Right Value: ${n.rv}</span>`);
+  if(n.status) chips.push(`<span class="insp-chip" style="background:${STATCOL[n.status]}22;color:${STATCOL[n.status]};">${n.status}</span>`);
+
+  const edges = edgesOf(id);
+  const triples = edges.map(e=>{
+    const subj = byId.get(e.s), obj = byId.get(e.t);
+    return `<div class="triple" onclick="selectNode('${e.dir==='out'?e.t:e.s}')">
+      <div class="tline"><span class="tsubj">${subj.label}</span> <span class="tpred">${e.p}</span> <span class="tobj">${obj.label}</span> .</div>
+    </div>`;
+  }).join('') || '<div style="font-size:10px;color:var(--mist);font-style:italic;">No triples reference this individual.</div>';
+
+  const nt = edges.map(e=> `${e.s} ${e.p} ${e.t} .`).join('\n');
+
+  insp.innerHTML = `
+    <div class="insp-hdr">
+      <span class="insp-close" onclick="closeInspector()">&times;</span>
+      <div class="insp-kind" style="background:${kindColor}22;color:${kindColor};">${n.kind}</div>
+      <div class="insp-id">${n.id}</div>
+    </div>
+    <div class="insp-body">
+      <div class="insp-sec"><div class="insp-sec-t">Description</div><div class="insp-desc">${n.desc||''}</div></div>
+      ${chips.length?`<div class="insp-sec"><div class="insp-sec-t">Properties</div><div class="insp-chips">${chips.join('')}</div></div>`:''}
+      <div class="insp-sec"><button class="trace-btn ${state.traceOn?'active':''}" id="trace-btn" onclick="traceLineage('${id}')">${state.traceOn?'Clear Lineage Trace':'Trace Full Lineage (Step 1 → 9)'}</button></div>
+      <div class="insp-sec"><div class="insp-sec-t">Triples (${edges.length})</div>${triples}</div>
+      <div class="insp-sec"><div class="insp-sec-t">N-Triples</div><pre class="nt-pre">${nt || '# none'}</pre></div>
+    </div>`;
+  insp.classList.add('open');
+}
+
+function traceLineage(id){
+  if(state.traceOn){ clearTrace(); renderInspector(id); return; }
+  // BFS ancestors (incoming) and descendants (outgoing) from id, unbounded hops
+  const visited = new Set([id]);
+  const tripSet = new Set();
+  let frontier = [id];
+  while(frontier.length){
+    const next = [];
+    frontier.forEach(cur=>{
+      inAdj.get(cur).forEach(e=>{ tripSet.add(e); if(!visited.has(e.s)){visited.add(e.s); next.push(e.s);} });
+      outAdj.get(cur).forEach(e=>{ tripSet.add(e); if(!visited.has(e.t)){visited.add(e.t); next.push(e.t);} });
+    });
+    frontier = next;
+  }
+  NODES.forEach(n=> n._inTrace = visited.has(n.id));
+  EDGES.forEach(e=> e._inTrace = tripSet.has(e));
+  state.traceOn = true;
+  nodeG.classed('lineage', d=>d._inTrace);
+  nodeG.classed('dim', d=> !d._inTrace);
+  link.classed('lineage', d=>d._inTrace);
+  link.classed('dim', d=> !d._inTrace);
+  document.getElementById('hintbadge').innerHTML = `<b>Lineage trace active</b> for <span style="font-family:'IBM Plex Mono',monospace;">${id}</span> — ${visited.size} individuals and ${tripSet.size} triples span every stage from Step 1 (Persona &amp; Domain) to Step 9 (Review &amp; Approve). Click the node again or "Clear Lineage Trace" to exit.`;
+  renderInspector(id);
+}
+function clearTrace(rerender){
+  if(!state.traceOn && rerender===false) return;
+  state.traceOn = false;
+  NODES.forEach(n=> n._inTrace=false);
+  EDGES.forEach(e=> e._inTrace=false);
+  nodeG.classed('lineage', false);
+  link.classed('lineage', false);
+  document.getElementById('hintbadge').innerHTML = `Drag nodes to rearrange &middot; scroll/pinch to zoom &middot; drag background to pan. The three large anchor nodes are <b>Planet</b>, <b>People</b>, and <b>Profit</b> &mdash; every requirement in the store is linked back to one of them via <span style="font-family:'IBM Plex Mono',monospace;">req:rightValueAlignment</span>.`;
+  applyFilters();
+}
+
+setTimeout(fitToScreen, 300);
+</script>
+</body></html>
