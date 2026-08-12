@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Baxter International Enterprise DDD Map</title>
+    <title>Baxter International Enterprise DDD Architecture Map</title>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -17,14 +17,14 @@
             --primary-light: #f0f9ff;
             
             /* Baxter Domain Brand Colors */
-            --renal-color: #0284c7;      /* Sky/Cyan Blue */
+            --renal-color: #0284c7;      /* Sky Blue */
             --renal-bg: rgba(2, 132, 199, 0.1);
             --med-color: #2563eb;        /* Royal Blue */
             --med-bg: rgba(37, 99, 235, 0.1);
-            --pharma-color: #059669;     /* Emerald Green */
-            --pharma-bg: rgba(5, 150, 105, 0.1);
-            --surgery-color: #7c3aed;    /* Deep Purple */
-            --surgery-bg: rgba(124, 58, 237, 0.1);
+            --health-color: #059669;     /* Emerald Green */
+            --health-bg: rgba(5, 150, 105, 0.1);
+            --pharma-color: #7c3aed;     /* Deep Purple */
+            --pharma-bg: rgba(124, 58, 237, 0.1);
             --ops-color: #dc2626;        /* Deep Red */
             --ops-bg: rgba(220, 38, 38, 0.1);
             --corp-color: #4f46e5;       /* Indigo */
@@ -272,7 +272,7 @@
 
         /* Right Inspector Panel */
         .inspector-panel {
-            width: 380px;
+            width: 400px;
             background: var(--panel-bg);
             border-left: 1px solid var(--border-color);
             display: flex;
@@ -468,7 +468,7 @@
     <header>
         <div class="header-title">
             <i data-lucide="cross"></i>
-            <span>Baxter International Inc. - Enterprise Pharma & MedTech DDD Map</span>
+            <span>Baxter International Inc. - Full Enterprise DDD Architecture Topology</span>
         </div>
         <div class="header-actions">
             <i data-lucide="help-circle" style="cursor:pointer"></i>
@@ -480,16 +480,16 @@
     <div class="controls-bar">
         <div class="search-box">
             <i data-lucide="search"></i>
-            <input type="text" id="search-input" placeholder="Search Domains, Devices, Drugs, Ops...">
+            <input type="text" id="search-input" placeholder="Search 40+ Services, Domains, Devices, Ops...">
         </div>
 
         <div class="control-group">
             <label>Domain Type</label>
             <select id="domain-type-filter">
-                <option value="all">All Types</option>
-                <option value="Core">Core Business</option>
+                <option value="all">All Domain Types</option>
+                <option value="Core">Core Business (L1)</option>
                 <option value="Supporting">Supporting Ops</option>
-                <option value="Generic">Corporate Support</option>
+                <option value="Generic">Digital & Corporate</option>
             </select>
         </div>
 
@@ -501,13 +501,13 @@
         <div class="slider-container">
             <div class="slider-labels">
                 <span>Detail Level</span>
-                <span id="slider-value-label">Services</span>
+                <span id="slider-value-label">Services (L3)</span>
             </div>
             <input type="range" id="detail-slider" min="1" max="4" value="3" step="1" oninput="updateDetailLevel(this.value)">
             <div class="slider-labels" style="font-size: 9px; color: #94a3b8;">
-                <span>Domains</span>
-                <span>Bounded Contexts</span>
-                <span>Services</span>
+                <span>Domains (L1)</span>
+                <span>Contexts (L2)</span>
+                <span>Services (L3)</span>
                 <span>Processes</span>
             </div>
         </div>
@@ -534,7 +534,7 @@
             <!-- Full Page Tree View (Hidden by Default) -->
             <div id="view-tree">
                 <div class="tree-full-container">
-                    <h2 style="margin-bottom: 1rem; font-size: 1.1rem; color: #0f172a;">Baxter Enterprise Domain Hierarchy</h2>
+                    <h2 style="margin-bottom: 1rem; font-size: 1.1rem; color: #0f172a;">Baxter Full Enterprise Domain Hierarchy (L1 - L3)</h2>
                     <div id="full-tree-target"></div>
                 </div>
             </div>
@@ -549,31 +549,32 @@
 
             <!-- Expandable Tree Section -->
             <div class="panel-section">
-                <div class="panel-section-title">Expandable Tree</div>
-                <div style="font-size: 0.875rem; font-weight: 700; margin-bottom: 0.5rem; color: #1e293b;">Baxter Enterprise DDD Tree</div>
+                <div class="panel-section-title">Expandable Tree Navigation</div>
+                <div style="font-size: 0.875rem; font-weight: 700; margin-bottom: 0.5rem; color: #1e293b;">Enterprise Domain Tree</div>
                 <div id="inspector-tree-target"></div>
             </div>
 
             <!-- Context Details Section -->
             <div class="panel-section">
-                <div class="panel-section-title">Context Details</div>
+                <div class="panel-section-title">Context & Node Details</div>
                 
                 <div class="detail-card">
-                    <div class="detail-label">Bounded Context / Unit</div>
-                    <div class="detail-value" id="ctx-bounded-context">Select a domain, drug, or device context</div>
+                    <div class="detail-label">Selected Bounded Context / Service</div>
+                    <div class="detail-value" id="ctx-bounded-context">Select any node on graph or tree</div>
                 </div>
 
                 <div class="detail-card">
-                    <div class="detail-label">Domain Ontology Concepts</div>
+                    <div class="detail-label">Mapped Ontology Concepts</div>
                     <div class="badge-list" id="ctx-terms">
-                        <span class="badge">-</span>
+                        <span class="badge">ConceptKshareSync</span>
+                        <span class="badge">DrugLibraryDoseLimit</span>
                     </div>
                 </div>
 
                 <div class="detail-card">
-                    <div class="detail-label">Underlying Processes / Ops</div>
+                    <div class="detail-label">Executing Business Processes</div>
                     <div class="detail-value" id="ctx-processes" style="font-weight: 500; font-size: 0.8rem; color: #475569;">
-                        Select a node to view mapped processes, clinical workflows, and compliance mechanisms.
+                        Select a domain service to inspect underlying business process execution and operational mappings.
                     </div>
                 </div>
             </div>
@@ -605,14 +606,14 @@
     </div>
 
     <script>
-        // Domain Structure built for Baxter International (Pharma & Medical Devices)
+        // Full Domain Topology Structure for Baxter International
         const domainData = {
             id: "root",
             name: "Baxter Enterprise System",
             children: [
                 {
                     id: "renal",
-                    name: "Renal Care & Dialysis Domain",
+                    name: "Renal Care & Dialysis Domain (L1)",
                     type: "Core",
                     color: "var(--renal-color)",
                     bg: "var(--renal-bg)",
@@ -620,37 +621,133 @@
                     children: [
                         {
                             id: "home-dialysis",
-                            name: "Home Peritoneal Dialysis (PD) Context",
-                            terms: ["HomeChoiceClaria", "KshareTelehealth", "PDDialysateBag", "PeritonealMembrane"],
-                            processes: ["Remote Patient Therapy Monitoring", "Dialysate Solution Batch Prep", "Therapy Prescription Sync"],
+                            name: "Home Peritoneal Dialysis (PD) Context (L2)",
+                            terms: ["HomeChoiceClaria", "SharesourceTelehealth", "PDDialysateBag"],
+                            processes: ["Remote Patient Therapy Monitoring", "Direct-to-Home Supply Optimization"],
                             children: [
                                 { 
                                     id: "pd-telehealth", 
-                                    name: "Automated PD Telehealth Service",
+                                    name: "1. Automated PD Telehealth & Connectivity Service",
                                     terms: ["ConceptKshareSync", "ConceptPatientTherapyRecord"],
                                     processes: ["ProcRemoteDataIngestion", "ProcTherapyAdjustmentSync"],
                                     children: [
-                                        { name: "Remote Patient Telehealth Ingestion Process" },
-                                        { name: "Automated Therapy Adjustment Sync" }
+                                        { name: "Remote Patient Dialysis Data Ingestion Process" },
+                                        { name: "Automated Therapy Prescription Adjustment Sync" }
                                     ]
                                 },
-                                { id: "hd-fluid-prep", name: "Hemodialysis Fluid Preparation Service" }
+                                { 
+                                    id: "dialysate-formulation", 
+                                    name: "2. Dialysate Solution Formulation Service",
+                                    terms: ["ConceptOsmolalityControl", "ConceptSterileBagFill"],
+                                    processes: ["ProcMultiChamberBagSteril", "ProcOsmolalityQualityInspect"],
+                                    children: [
+                                        { name: "Multi-Chamber Bag Sterilization Process" },
+                                        { name: "Glucose/Icodextrin Osmolality Quality Inspection" }
+                                    ]
+                                },
+                                { 
+                                    id: "cycler-diagnostics", 
+                                    name: "3. Cycler Hardware Diagnostics & Telemetry Service",
+                                    terms: ["ConceptPumpingCassette", "ConceptRemoteFirmware"],
+                                    processes: ["ProcPressureSensorCalib", "ProcRemoteFirmwareFaultDetect"],
+                                    children: [
+                                        { name: "Pumping Cassette Pressure Sensor Calibration" },
+                                        { name: "Remote Firmware Fault Detection Process" }
+                                    ]
+                                },
+                                { 
+                                    id: "patient-resupply", 
+                                    name: "4. Patient Inventory & Automated Resupply Service",
+                                    terms: ["ConceptConsumablesForecast", "ConceptHomeDeliveryRoute"],
+                                    processes: ["ProcConsumablesUsageForecast", "ProcDirectToHomeRouteOpt"],
+                                    children: [
+                                        { name: "Consumables Usage Forecasting Process" },
+                                        { name: "Direct-to-Home Delivery Route Optimization" }
+                                    ]
+                                }
                             ]
                         },
                         {
                             id: "acute-renal",
-                            name: "Acute Renal & CRRT Context",
-                            terms: ["PrisMaxSystem", "EffluentFluid", "SepsisFilter"],
-                            processes: ["Continuous Renal Replacement Therapy (CRRT)", "Cytokine Removal Adsorption"],
+                            name: "Acute Renal & Critical Care Context (L2)",
+                            terms: ["PrisMaxCRRT", "EffluentGravimetric", "SepsisFilter"],
+                            processes: ["Continuous Ultrafiltration Rate Control", "Gravimetric Fluid Balance"],
                             children: [
-                                { id: "crrt-service", name: "CRRT System Control & Fluid Service" }
+                                { 
+                                    id: "crrt-control", 
+                                    name: "5. CRRT System Control & Fluid Balancing Service",
+                                    terms: ["ConceptCRRTUltrafiltration", "ConceptEffluentBalancing"],
+                                    processes: ["ProcUltrafiltrationRateCtrl", "ProcEffluentGravimetricBal"],
+                                    children: [
+                                        { name: "Continuous Ultrafiltration Rate Control Process" },
+                                        { name: "Effluent Real-Time Gravimetric Balancing Process" }
+                                    ]
+                                },
+                                { 
+                                    id: "cytokine-adsorption", 
+                                    name: "6. Cytokine & Sepsis Adsorption Service",
+                                    terms: ["ConceptAdsorptionCartridge", "ConceptSepsisClearance"],
+                                    processes: ["ProcAdsorptionBiocompatibility", "ProcMediatorClearanceTrack"],
+                                    children: [
+                                        { name: "Adsorption Cartridge Biocompatibility Verification" },
+                                        { name: "Inflammatory Mediator Clearance Tracking" }
+                                    ]
+                                },
+                                { 
+                                    id: "hemo-concentrate", 
+                                    name: "7. Hemodialysis Concentrate Production Service",
+                                    terms: ["ConceptBicarbonatePurity", "ConceptEndotoxinFiltration"],
+                                    processes: ["ProcBicarbonateCompounding", "ProcEndotoxinMembraneFiltr"],
+                                    children: [
+                                        { name: "High-Purity Bicarbonate Compounding Process" },
+                                        { name: "Endotoxin Membrane Filtration Process" }
+                                    ]
+                                },
+                                { 
+                                    id: "extracorporeal-safety", 
+                                    name: "8. Extracorporeal Blood Circuit Safety Service",
+                                    terms: ["ConceptAirBubbleDetection", "ConceptVenousPressureLimit"],
+                                    processes: ["ProcAirBubbleDetectionSafeguard", "ProcVenousPressureLimitMon"],
+                                    children: [
+                                        { name: "Air Bubble Detection Safeguard Process" },
+                                        { name: "Venous Pressure Limit Monitoring Process" }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            id: "organ-support",
+                            name: "Organ Support & Innovation Context (L2)",
+                            terms: ["ECCO2RCoordinating", "WaterPurificationRO"],
+                            processes: ["Multi-Organ Flow Coordination", "Reverse Osmosis Deionization"],
+                            children: [
+                                { 
+                                    id: "multi-organ-orchestration", 
+                                    name: "9. Multi-Organ Therapy Orchestration Service",
+                                    terms: ["ConceptCRRT_ECCO2R_Sync", "ConceptAnticoagulationDosing"],
+                                    processes: ["ProcCRRT_ECCO2R_Coordination", "ProcAnticoagulationDosingEnforce"],
+                                    children: [
+                                        { name: "Simultaneous CRRT & ECCO2R Blood Flow Coordination" },
+                                        { name: "Anticoagulation Dosing Protocol Enforcement" }
+                                    ]
+                                },
+                                { 
+                                    id: "water-purification", 
+                                    name: "10. Dialysis Water Purification Control Service",
+                                    terms: ["ConceptRODeionization", "ConceptMicrobialColonyAudit"],
+                                    processes: ["ProcReverseOsmosisDeionMon", "ProcMicrobialColonyCountAudit"],
+                                    children: [
+                                        { name: "Reverse Osmosis Deionization Monitoring Process" },
+                                        { name: "Microbial Colony Count Audit Process" }
+                                    ]
+                                }
                             ]
                         }
                     ]
                 },
                 {
                     id: "med-delivery",
-                    name: "Medication Delivery & Infusion Domain",
+                    name: "Medication Delivery & Infusion Domain (L1)",
                     type: "Core",
                     color: "var(--med-color)",
                     bg: "var(--med-bg)",
@@ -658,37 +755,267 @@
                     children: [
                         {
                             id: "smart-infusion",
-                            name: "Smart Infusion Systems & Devices Context",
-                            terms: ["SpectrumIQ", "NovumIQ", "DoseErrorReductionSystem", "DrugLibrary"],
-                            processes: ["Wireless Drug Library OTA Update", "Infusion Rate Safeguard Verification"],
+                            name: "Smart Infusion Systems Context (L2)",
+                            terms: ["SpectrumIQ", "NovumIQ", "DoseGuardrails"],
+                            processes: ["Wireless Drug Library OTA Sync", "Peristaltic Step Calibration"],
                             children: [
-                                {
-                                    id: "ders-service",
-                                    name: "Dose Error Reduction System (DERS) Service",
-                                    terms: ["ConceptDrugLibraryDoseLimit", "ConceptEHRInfusionAutoProgram"],
-                                    processes: ["ProcDrugLibraryOTAUpdate", "ProcInfusionEHRIntegration"],
+                                { 
+                                    id: "ders-service", 
+                                    name: "1. Dose Error Reduction System (DERS) Service",
+                                    terms: ["ConceptDrugLibraryDoseLimit", "ConceptGuardrailHardBoundary"],
+                                    processes: ["ProcDrugLibraryOTAUpdate", "ProcDoseBoundaryVerif"],
                                     children: [
-                                        { name: "Wireless Drug Library Over-The-Air Update" },
-                                        { name: "EHR Infusion Auto-Programming Sync" }
+                                        { name: "Wireless Drug Library Over-The-Air (OTA) Sync Process" },
+                                        { name: "Hard/Soft Dose Boundary Verification Process" }
                                     ]
                                 },
-                                { id: "large-volume-pump", name: "Large Volume Pump Hardware Control Service" }
+                                { 
+                                    id: "lvp-motor", 
+                                    name: "2. Large Volume Pump (LVP) Motor Control Service",
+                                    terms: ["ConceptPeristalticDrive", "ConceptOcclusionSensor"],
+                                    processes: ["ProcPeristalticStepCalib", "ProcOcclusionAlarmResolution"],
+                                    children: [
+                                        { name: "Peristaltic Drive Step Calibration Process" },
+                                        { name: "Upstream/Downstream Occlusion Alarm Resolution" }
+                                    ]
+                                },
+                                { 
+                                    id: "syringe-micro-rate", 
+                                    name: "3. Syringe & Micro-Rate Delivery Service",
+                                    terms: ["ConceptPlungerOpticalSensor", "ConceptMicroInfusionSmoothness"],
+                                    processes: ["ProcPlungerOpticalVerif", "ProcMicroInfusionSmoothnessCtrl"],
+                                    children: [
+                                        { name: "Plunger Travel Optical Verification Process" },
+                                        { name: "Micro-Infusion Rate Smoothness Control Process" }
+                                    ]
+                                },
+                                { 
+                                    id: "ambulatory-pca", 
+                                    name: "4. Ambulatory & PCA Pump Safety Service",
+                                    terms: ["ConceptPCALockout", "ConceptBolusAuditTrail"],
+                                    processes: ["ProcPCALockoutEnforce", "ProcBolusAuditTrailLog"],
+                                    children: [
+                                        { name: "Patient-Controlled Analgesia Lockout Enforcement" },
+                                        { name: "Bolus Request Audit Trail Logging Process" }
+                                    ]
+                                }
                             ]
                         },
                         {
                             id: "iv-solutions",
-                            name: "IV Solutions & Premix Context",
-                            terms: ["VIAFLEXBag", "PremixedInjectable", "OsmolalityControl"],
-                            processes: ["Aseptic Solution Compounding", "Pyrogen & Endotoxin Testing"],
+                            name: "IV Solutions & Parenteral Context (L2)",
+                            terms: ["VIAFLEXBag", "CleanroomISOClass5", "PremixInjectable"],
+                            processes: ["ISO Class 5 Cleanroom Fill", "Container Closure Integrity Test"],
                             children: [
-                                { id: "aseptic-iv-service", name: "Aseptic IV Compounding & Sterile Fill Service" }
+                                { 
+                                    id: "aseptic-parenteral", 
+                                    name: "5. Aseptic Parenteral Solution Service",
+                                    terms: ["ConceptClass5Fill", "ConceptParticulateLaserInspect"],
+                                    processes: ["ProcClass5CleanroomFill", "ProcParticulateLaserInspect"],
+                                    children: [
+                                        { name: "ISO Class 5 Cleanroom Automated Fill Process" },
+                                        { name: "High-Speed Laser Particulate Inspection Process" }
+                                    ]
+                                },
+                                { 
+                                    id: "premixed-injectable", 
+                                    name: "6. Ready-to-Administer Premixed Service",
+                                    terms: ["ConceptContainerIntegrity", "ConceptPremixChemicalStability"],
+                                    processes: ["ProcContainerClosureIntegrityTest", "ProcPremixStabilityAssess"],
+                                    children: [
+                                        { name: "Container Closure Integrity Testing (CCIT) Process" },
+                                        { name: "Premix Chemical Stability Assessment" }
+                                    ]
+                                },
+                                { 
+                                    id: "clinical-tpn", 
+                                    name: "7. Clinical Total Parenteral Nutrition (TPN) Service",
+                                    terms: ["ConceptCompounderMixing", "ConceptOsmolalityVerification"],
+                                    processes: ["ProcCompounderMixing", "ProcOsmolalityElectrolyteVerif"],
+                                    children: [
+                                        { name: "Automated Multi-Ingredient Compounder Mixing Process" },
+                                        { name: "Osmolality & Electrolyte Verification Process" }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            id: "med-interop",
+                            name: "Medication Admin Interoperability Context (L2)",
+                            terms: ["BCMAAutoProgramming", "FleetLocationUWB", "CSTDContainment"],
+                            processes: ["EHR-to-Pump Parameter Translation", "Hazardous Drug Vapor Containment"],
+                            children: [
+                                { 
+                                    id: "ehr-auto-prog", 
+                                    name: "8. Smart Pump EHR Auto-Programming Service",
+                                    terms: ["ConceptBCMAMatch", "ConceptEHRToPumpTranslation"],
+                                    processes: ["ProcBCMAOrderMatch", "ProcEHRToPumpTranslation"],
+                                    children: [
+                                        { name: "Barcode Medication Administration (BCMA) Order Match" },
+                                        { name: "EHR-to-Pump Parameter Translation Process" }
+                                    ]
+                                },
+                                { 
+                                    id: "infusion-fleet", 
+                                    name: "9. Infusion Analytics & Fleet Telemetry Service",
+                                    terms: ["ConceptPumpBatteryLocation", "ConceptGuardrailReport"],
+                                    processes: ["ProcPumpLocationBatteryTrack", "ProcGuardrailComplianceReport"],
+                                    children: [
+                                        { name: "Real-Time Pump Location & Battery Health Tracking" },
+                                        { name: "Guardrail Compliance Reporting Process" }
+                                    ]
+                                },
+                                { 
+                                    id: "cstd-safety", 
+                                    name: "10. Closed-System Transfer Device (CSTD) Service",
+                                    terms: ["ConceptVaporContainment", "ConceptLuerLockEngagement"],
+                                    processes: ["ProcVaporContainmentVerif", "ProcLuerLockEngagementInspect"],
+                                    children: [
+                                        { name: "Hazardous Drug Vapor Containment Verification" },
+                                        { name: "Luer-Lock Mechanical Engagement Inspection" }
+                                    ]
+                                }
                             ]
                         }
                     ]
                 },
                 {
-                    id: "pharma",
-                    name: "Pharmaceuticals & Anesthesia Domain",
+                    id: "healthcare-systems",
+                    name: "Healthcare Systems & Connected Care Domain (L1)",
+                    type: "Core",
+                    color: "var(--health-color)",
+                    bg: "var(--health-bg)",
+                    shape: "polygon",
+                    children: [
+                        {
+                            id: "care-environment",
+                            name: "Care Environment & Smart Bed Context (L2)",
+                            terms: ["CentrellaSmartBed", "PressureRedistribution", "ContactlessVitals"],
+                            processes: ["Bed Exit Sensor Sensitivity Calibration", "Under-Mattress Signal Ingestion"],
+                            children: [
+                                { 
+                                    id: "smart-bed-kinematics", 
+                                    name: "1. Smart Hospital Bed Kinematics & Safety Service",
+                                    terms: ["ConceptBedExitSensor", "ConceptMotorizedArticulation"],
+                                    processes: ["ProcBedExitSensorCalib", "ProcMotorizedArticulationCtrl"],
+                                    children: [
+                                        { name: "Bed Exit Sensor Sensitivity Calibration Process" },
+                                        { name: "Motorized Articulation Safety Control Process" }
+                                    ]
+                                },
+                                { 
+                                    id: "pressure-injury-prevention", 
+                                    name: "2. Pressure Injury Prevention Service",
+                                    terms: ["ConceptAirPressureRedistribution", "ConceptPatientTurningSchedule"],
+                                    processes: ["ProcAirPressureRedistribution", "ProcPatientTurningScheduleTrack"],
+                                    children: [
+                                        { name: "Dynamic Air Surface Pressure Redistribution Process" },
+                                        { name: "Patient Turning Schedule Compliance Tracking" }
+                                    ]
+                                },
+                                { 
+                                    id: "contactless-vital-signs", 
+                                    name: "3. Contactless Vital Signs Monitoring Service",
+                                    terms: ["ConceptUnderMattressIngestion", "ConceptEWSTriggering"],
+                                    processes: ["ProcUnderMattressSignalIngest", "ProcEWSTriggering"],
+                                    children: [
+                                        { name: "Under-Mattress Heart & Respiratory Signal Ingestion" },
+                                        { name: "Early Warning Score (EWS) Triggering" }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            id: "diagnostics-frontline",
+                            name: "Diagnostics & Front Line Care Context (L2)",
+                            terms: ["ConnexSpotMonitor", "Cardiology12Lead", "RetinalScreening"],
+                            processes: ["ECG Waveform Digital Filtering", "Retinal Image Quality Validation"],
+                            children: [
+                                { 
+                                    id: "vital-signs-integration", 
+                                    name: "4. Vital Signs Monitor Integration Service",
+                                    terms: ["ConceptNIBP_SpO2_Norm", "ConceptSpotCheckDocSync"],
+                                    processes: ["ProcNIBP_SpO2_Normalization", "ProcSpotCheckClinicalDocSync"],
+                                    children: [
+                                        { name: "NIBP, SpO2, and Temperature Data Normalization Process" },
+                                        { name: "Spot-Check Clinical Documentation Sync" }
+                                    ]
+                                },
+                                { 
+                                    id: "cardiology-ecg", 
+                                    name: "5. Cardiology Diagnostic & 12-Lead ECG Service",
+                                    terms: ["ConceptECGWaveformFilter", "ConceptArrhythmiaDetect"],
+                                    processes: ["ProcECGWaveformFiltering", "ProcArrhythmiaPatternDetect"],
+                                    children: [
+                                        { name: "ECG Waveform Digital Filtering Process" },
+                                        { name: "Automated Arrhythmia Pattern Detection Process" }
+                                    ]
+                                },
+                                { 
+                                    id: "vision-pulmonary", 
+                                    name: "6. Vision & Pulmonary Screening Diagnostic Service",
+                                    terms: ["ConceptRetinalImageQuality", "ConceptSpirometryAirflow"],
+                                    processes: ["ProcRetinalImageQualityValidate", "ProcSpirometryAirflowCurveAnalyze"],
+                                    children: [
+                                        { name: "Retinal Image Quality Validation Process" },
+                                        { name: "Spirometry Airflow Curve Analysis Process" }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            id: "clinical-workflow",
+                            name: "Clinical Workflow & Communications Context (L2)",
+                            terms: ["NurseCallDispatch", "VoalteEncryptedMessage", "UWBAssetTracking"],
+                            processes: ["HIPAA-Compliant Encrypted Dispatch", "Ultra-Wideband Asset Triangulation"],
+                            children: [
+                                { 
+                                    id: "nurse-call-routing", 
+                                    name: "7. Nurse Call & Alarm Routing Service",
+                                    terms: ["ConceptNurseCallDispatch", "ConceptCaregiverEscalation"],
+                                    processes: ["ProcNurseCallDispatch", "ProcCaregiverEscalationMatrixEnforce"],
+                                    children: [
+                                        { name: "Priority Nurse Call Dispatching Process" },
+                                        { name: "Caregiver Escalation Matrix Enforcement Process" }
+                                    ]
+                                },
+                                { 
+                                    id: "voalte-messaging", 
+                                    name: "8. Digital Health Secure Messaging (Voalte) Service",
+                                    terms: ["ConceptEncryptedMessaging", "ConceptEHRPatientBinding"],
+                                    processes: ["ProcEncryptedMessagingDispatch", "ProcEHRPatientContextBinding"],
+                                    children: [
+                                        { name: "HIPAA-Compliant Voice/Text Encrypted Dispatch Process" },
+                                        { name: "EHR Patient Context Binding Process" }
+                                    ]
+                                },
+                                { 
+                                    id: "rtls-asset-tracking", 
+                                    name: "9. RTLS Asset Tracking Service",
+                                    terms: ["ConceptUWBAssetTriangulation", "ConceptSterilizationStatus"],
+                                    processes: ["ProcUWBAssetTriangulation", "ProcSterilizationStatusUpdate"],
+                                    children: [
+                                        { name: "Ultra-Wideband (UWB) Asset Triangulation Process" },
+                                        { name: "Equipment Sterilization Status Update" }
+                                    ]
+                                },
+                                { 
+                                    id: "clinical-decision-support", 
+                                    name: "10. Clinical Decision Support & EWS Service",
+                                    terms: ["ConceptMultiParameterTrend", "ConceptSepsisEarlyAlert"],
+                                    processes: ["ProcMultiParameterTrendAnalyze", "ProcSepsisEarlyAlerting"],
+                                    children: [
+                                        { name: "Multi-Parameter Vital Sign Trend Analysis Process" },
+                                        { name: "Sepsis Early Deterioration Alerting Process" }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: "pharma-surgery",
+                    name: "Pharmaceuticals & Advanced Surgery Domain (L1)",
                     type: "Core",
                     color: "var(--pharma-color)",
                     bg: "var(--pharma-bg)",
@@ -696,47 +1023,124 @@
                     children: [
                         {
                             id: "inhaled-anesthetics",
-                            name: "Inhaled Anesthetics & Vaporizers Context",
-                            terms: ["SupraneDesflurane", "Sevoflurane", "VaporizerSafetyFill"],
-                            processes: ["Inhalation Anesthetic Synthesis", "Vaporizer Precision Filling"],
+                            name: "Inhaled Anesthetics & Respiratory Context (L2)",
+                            terms: ["SupraneDesflurane", "VaporizerSafetyFilling", "FluorinationReaction"],
+                            processes: ["Volatile Anesthetic Vapor Calibration", "Keyed Filler Interlock Engagement"],
                             children: [
-                                {
-                                    id: "vap-service",
-                                    name: "Vaporizer Safety & Vapor Delivery Service",
-                                    terms: ["ConceptAnestheticConcentration", "ConceptVaporizerCalibration"],
-                                    processes: ["ProcVaporizerCalibrationCheck", "ProcHalogenatedGasSynthesis"],
+                                { 
+                                    id: "vaporizer-precision", 
+                                    name: "1. Vaporizer Precision Control Service",
+                                    terms: ["ConceptVaporizerOutputCalib", "ConceptTempPressureCompensate"],
+                                    processes: ["ProcVaporizerOutputCalib", "ProcTempPressureCompensate"],
                                     children: [
-                                        { name: "Vaporizer Precision Calibration Process" },
-                                        { name: "Halogenated Gas Distillation Workflow" }
+                                        { name: "Volatile Anesthetic Vapor Output Calibration Process" },
+                                        { name: "Temperature/Pressure Compensation Control" }
                                     ]
                                 },
-                                { id: "injectable-pharma", name: "Specialty Parenteral Injectable Service" }
-                            ]
-                        }
-                    ]
-                },
-                {
-                    id: "surgery",
-                    name: "Advanced Surgery & BioSurgery Domain",
-                    type: "Core",
-                    color: "var(--surgery-color)",
-                    bg: "var(--surgery-bg)",
-                    shape: "polygon",
-                    children: [
-                        {
-                            id: "hemostats",
-                            name: "Hemostats & BioSurgery Context",
-                            terms: ["FLOSEAL", "TISSEEL", "ThrombinMatrix", "FibrinSealant"],
-                            processes: ["Gelatin-Thrombin Matrix Prep", "Tissue Sealant Polymerization"],
-                            children: [
-                                {
-                                    id: "floseal-service",
-                                    name: "FLOSEAL Hemostatic Matrix Delivery Service",
-                                    terms: ["ConceptHemostasisMatrix", "ConceptBovineGelatinPurity"],
-                                    processes: ["ProcAsepticThrombinCompounding", "ProcBiocompatibilityValidation"],
+                                { 
+                                    id: "halogenated-gas", 
+                                    name: "2. Halogenated Gas Synthesis Service",
+                                    terms: ["ConceptFluorinationReaction", "ConceptFractionalDistillPurity"],
+                                    processes: ["ProcFluorinationReactionCtrl", "ProcFractionalDistillPurityVerif"],
                                     children: [
-                                        { name: "Aseptic Thrombin-Gelatin Compounding" },
-                                        { name: "Surgical Biocompatibility Validation" }
+                                        { name: "Fluorination Chemical Reaction Control Process" },
+                                        { name: "Fractional Distillation Purity Verification" }
+                                    ]
+                                },
+                                { 
+                                    id: "vaporizer-safety-fill", 
+                                    name: "3. Vaporizer Safety Filling System Service",
+                                    terms: ["ConceptKeyedFillerInterlock", "ConceptVOCVaporRecovery"],
+                                    processes: ["ProcKeyedFillerInterlockEngage", "ProcVOCVaporRecovery"],
+                                    children: [
+                                        { name: "Keyed Filler Bottle Interlock Engagement Process" },
+                                        { name: "Volatile Organic Compound (VOC) Vapor Recovery" }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            id: "biosurgery-hemostasis",
+                            name: "Advanced BioSurgery & Hemostasis Context (L2)",
+                            terms: ["FLOSEALHemostatic", "TISSEELFibrinSealant", "ThrombinCrossLink"],
+                            processes: ["Aseptic Thrombin Compounding", "Cryoprecipitate Fibrinogen Purification"],
+                            children: [
+                                { 
+                                    id: "floseal-hemostatic", 
+                                    name: "4. FLOSEAL Active Hemostatic Matrix Service",
+                                    terms: ["ConceptAsepticThrombinCompounding", "ConceptGelatinCrossLinkQC"],
+                                    processes: ["ProcAsepticThrombinCompounding", "ProcGelatinCrossLinkQC"],
+                                    children: [
+                                        { name: "Aseptic Thrombin Compounding Process" },
+                                        { name: "Bovine Gelatin Cross-Linking Quality Control" }
+                                    ]
+                                },
+                                { 
+                                    id: "tisseel-preparation", 
+                                    name: "5. TISSEEL Fibrin Tissue Sealant Service",
+                                    terms: ["ConceptCryoprecipitatePurification", "ConceptDualSyringeMixing"],
+                                    processes: ["ProcCryoprecipitatePurification", "ProcDualSyringeMixingOpt"],
+                                    children: [
+                                        { name: "Cryoprecipitate Fibrinogen Purification Process" },
+                                        { name: "Dual-Syringe Mixing Optimization" }
+                                    ]
+                                },
+                                { 
+                                    id: "synthetic-adhesion", 
+                                    name: "6. Synthetic Adhesion Barrier Service",
+                                    terms: ["ConceptPolymerCrossLinking", "ConceptInVivoDegradation"],
+                                    processes: ["ProcPolymerCrossLinking", "ProcInVivoDegradationTesting"],
+                                    children: [
+                                        { name: "Polymer Cross-Linking Polymerization Process" },
+                                        { name: "In-Vivo Degradation Rate Testing" }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            id: "critical-care-injectables",
+                            name: "Critical Care Injectables & Specialty Context (L2)",
+                            terms: ["HighAlertParenteral", "LyophilizationCycle", "OrganPreservationColdChain"],
+                            processes: ["Aseptic Ampule/Vial Filling", "Post-Market Adverse Event Signal Detection"],
+                            children: [
+                                { 
+                                    id: "high-alert-injectables", 
+                                    name: "7. High-Alert Critical Care Injectable Service",
+                                    terms: ["ConceptAmpuleVialLiquidFill", "ConceptLyophilizationExecute"],
+                                    processes: ["ProcAmpuleVialLiquidFill", "ProcLyophilizationCycleExecute"],
+                                    children: [
+                                        { name: "Aseptic Ampule/Vial Liquid Filling Process" },
+                                        { name: "Lyophilization (Freeze-Drying) Cycle Execution" }
+                                    ]
+                                },
+                                { 
+                                    id: "rta-syringe", 
+                                    name: "8. Ready-to-Administer Syringe Mfg Service",
+                                    terms: ["ConceptSyringeSiliconization", "ConceptOpticalTipCapInspect"],
+                                    processes: ["ProcSyringeSiliconizationFill", "ProcOpticalTipCapInspect"],
+                                    children: [
+                                        { name: "Automated Syringe Siliconization & Filling Process" },
+                                        { name: "Optical Tip Cap Integrity Inspection" }
+                                    ]
+                                },
+                                { 
+                                    id: "organ-preservation", 
+                                    name: "9. Organ Preservation Solution Service",
+                                    terms: ["ConceptHypothermicSolutionFormulate", "ConceptColdChainQuality"],
+                                    processes: ["ProcHypothermicSolutionFormulate", "ProcColdChainQualityPreserve"],
+                                    children: [
+                                        { name: "Hypothermic Preservation Solution Formulation" },
+                                        { name: "Cold-Chain Quality Preservation Process" }
+                                    ]
+                                },
+                                { 
+                                    id: "pharmacovigilance-adverse-event", 
+                                    name: "10. Pharmacovigilance & Adverse Event Service",
+                                    terms: ["ConceptAdverseEventDetect", "ConceptFDAMedWatchDossier"],
+                                    processes: ["ProcAdverseEventSignalDetect", "ProcFDAMedWatchDossierSubmit"],
+                                    children: [
+                                        { name: "Post-Market Adverse Event Signal Detection Process" },
+                                        { name: "Mandatory FDA MedWatch Safety Dossier Submission" }
                                     ]
                                 }
                             ]
@@ -751,7 +1155,7 @@
                     bg: "var(--ops-bg)",
                     shape: "circle",
                     children: [
-                        { id: "op-cgmp", name: "cGMP Quality & Regulatory Compliance", terms: ["FDA21CDRPart11", "EUMDR", "ISO13485"], processes: ["Batch Record Audit", "Sterility Assurance"] },
+                        { id: "op-cgmp", name: "cGMP Quality & Regulatory Compliance", terms: ["FDA21CFRPart11", "EUMDR", "ISO13485"], processes: ["Batch Record Audit", "Sterility Assurance"] },
                         { id: "op-supply", name: "Cold-Chain Supply Logistics", terms: ["TemperatureLogger", "LyophilizedStorage"], processes: ["Biologics Cold Storage Tracking"] },
                         { id: "op-mfg-eng", name: "Sterile Packaging & Cleanroom Ops", terms: ["ISOClass5Cleanroom", "AutoclaveCycle"], processes: ["Continuous Sterilization Control"] }
                     ]
@@ -772,34 +1176,44 @@
             ]
         };
 
-        // Graph canvas visual positioning parameters
+        // Graph visual placement layout
         const layoutNodes = [
-            // Core Domains (Level 1)
-            { id: "renal", name: "Renal Care & Dialysis Domain", type: "Core", x: 300, y: 200, color: "var(--renal-color)", r: 42, level: 1 },
-            { id: "med-delivery", name: "Medication Delivery Domain", type: "Core", x: 500, y: 200, color: "var(--med-color)", r: 42, level: 1 },
-            { id: "pharma", name: "Pharmaceuticals & Anesthesia", type: "Core", x: 250, y: 350, color: "var(--pharma-color)", r: 38, level: 1 },
-            { id: "surgery", name: "Advanced Surgery Domain", type: "Core", x: 450, y: 350, color: "var(--surgery-color)", r: 38, level: 1 },
-            { id: "ops-mfg", name: "Global Manufacturing & Quality Ops", type: "Supporting", x: 150, y: 270, color: "var(--ops-color)", r: 36, level: 1 },
-            { id: "corp-support", name: "Digital Health & Corporate Support", type: "Generic", x: 600, y: 280, color: "var(--corp-color)", r: 36, level: 1 },
+            // Level 1 Core Domains
+            { id: "renal", name: "Renal Care & Dialysis Domain", type: "Core", x: 260, y: 180, color: "var(--renal-color)", r: 40, level: 1 },
+            { id: "med-delivery", name: "Medication Delivery Domain", type: "Core", x: 500, y: 180, color: "var(--med-color)", r: 40, level: 1 },
+            { id: "healthcare-systems", name: "Healthcare Systems & Connected Care", type: "Core", x: 260, y: 380, color: "var(--health-color)", r: 40, level: 1 },
+            { id: "pharma-surgery", name: "Pharmaceuticals & Advanced Surgery", type: "Core", x: 500, y: 380, color: "var(--pharma-color)", r: 40, level: 1 },
+            { id: "ops-mfg", name: "Global Manufacturing & Quality", type: "Supporting", x: 120, y: 280, color: "var(--ops-color)", r: 34, level: 1 },
+            { id: "corp-support", name: "Digital Health & Corporate Support", type: "Generic", x: 640, y: 280, color: "var(--corp-color)", r: 34, level: 1 },
 
-            // Bounded Contexts (Level 2)
-            { id: "home-dialysis", name: "Home PD Dialysis Context", parent: "renal", x: 210, y: 130, color: "var(--renal-color)", r: 24, level: 2 },
-            { id: "acute-renal", name: "Acute CRRT Context", parent: "renal", x: 340, y: 100, color: "var(--renal-color)", r: 22, level: 2 },
-            { id: "smart-infusion", name: "Smart Infusion Pumps Context", parent: "med-delivery", x: 590, y: 130, color: "var(--med-color)", r: 24, level: 2 },
-            { id: "iv-solutions", name: "IV Solutions Context", parent: "med-delivery", x: 460, y: 100, color: "var(--med-color)", r: 22, level: 2 },
-            { id: "inhaled-anesthetics", name: "Inhaled Anesthetics Context", parent: "pharma", x: 160, y: 420, color: "var(--pharma-color)", r: 24, level: 2 },
-            { id: "hemostats", name: "BioSurgery Context", parent: "surgery", x: 510, y: 440, color: "var(--surgery-color)", r: 24, level: 2 },
+            // Level 2 Bounded Contexts
+            { id: "home-dialysis", name: "Home PD Context", parent: "renal", x: 180, y: 110, color: "var(--renal-color)", r: 22, level: 2 },
+            { id: "acute-renal", name: "Acute CRRT Context", parent: "renal", x: 280, y: 80, color: "var(--renal-color)", r: 22, level: 2 },
+            { id: "organ-support", name: "Organ Support Context", parent: "renal", x: 360, y: 120, color: "var(--renal-color)", r: 20, level: 2 },
 
-            // Services (Level 3)
-            { id: "pd-telehealth", name: "Automated PD Telehealth Service", parent: "home-dialysis", x: 120, y: 90, color: "var(--renal-color)", r: 16, level: 3 },
-            { id: "ders-service", name: "Dose Error Reduction Service (DERS)", parent: "smart-infusion", x: 670, y: 90, color: "var(--med-color)", r: 16, level: 3 },
-            { id: "vap-service", name: "Vaporizer Safety Service", parent: "inhaled-anesthetics", x: 80, y: 460, color: "var(--pharma-color)", r: 16, level: 3 },
-            { id: "floseal-service", name: "FLOSEAL Matrix Delivery Service", parent: "hemostats", x: 590, y: 500, color: "var(--surgery-color)", r: 16, level: 3 },
+            { id: "smart-infusion", name: "Smart Infusion Context", parent: "med-delivery", x: 580, y: 110, color: "var(--med-color)", r: 22, level: 2 },
+            { id: "iv-solutions", name: "IV Solutions Context", parent: "med-delivery", x: 480, y: 80, color: "var(--med-color)", r: 22, level: 2 },
+            { id: "med-interop", name: "Med Admin Interop Context", parent: "med-delivery", x: 400, y: 120, color: "var(--med-color)", r: 20, level: 2 },
 
-            // Processes (Level 4)
-            { id: "proc-1", name: "Remote Patient Telehealth Ingestion", parent: "pd-telehealth", x: 50, y: 50, color: "var(--renal-color)", r: 8, level: 4 },
-            { id: "proc-2", name: "Wireless Drug Library OTA Sync", parent: "ders-service", x: 740, y: 60, color: "var(--med-color)", r: 8, level: 4 },
-            { id: "proc-3", name: "Aseptic Thrombin Compounding", parent: "floseal-service", x: 670, y: 530, color: "var(--surgery-color)", r: 8, level: 4 }
+            { id: "care-environment", name: "Care Environment Context", parent: "healthcare-systems", x: 180, y: 440, color: "var(--health-color)", r: 22, level: 2 },
+            { id: "diagnostics-frontline", name: "Diagnostics Context", parent: "healthcare-systems", x: 280, y: 470, color: "var(--health-color)", r: 22, level: 2 },
+            { id: "clinical-workflow", name: "Clinical Workflow Context", parent: "healthcare-systems", x: 360, y: 430, color: "var(--health-color)", r: 20, level: 2 },
+
+            { id: "inhaled-anesthetics", name: "Inhaled Anesthetics Context", parent: "pharma-surgery", x: 580, y: 440, color: "var(--pharma-color)", r: 22, level: 2 },
+            { id: "biosurgery-hemostasis", name: "BioSurgery Context", parent: "pharma-surgery", x: 480, y: 470, color: "var(--pharma-color)", r: 22, level: 2 },
+            { id: "critical-care-injectables", name: "Critical Care Context", parent: "pharma-surgery", x: 400, y: 430, color: "var(--pharma-color)", r: 20, level: 2 },
+
+            // Level 3 Services (Sampled visual nodes for primary topology representation)
+            { id: "pd-telehealth", name: "PD Telehealth Service", parent: "home-dialysis", x: 110, y: 60, color: "var(--renal-color)", r: 14, level: 3 },
+            { id: "crrt-control", name: "CRRT System Control Service", parent: "acute-renal", x: 280, y: 20, color: "var(--renal-color)", r: 14, level: 3 },
+            { id: "ders-service", name: "DERS Guardrails Service", parent: "smart-infusion", x: 660, y: 60, color: "var(--med-color)", r: 14, level: 3 },
+            { id: "aseptic-parenteral", name: "Aseptic Parenteral Service", parent: "iv-solutions", x: 480, y: 20, color: "var(--med-color)", r: 14, level: 3 },
+            { id: "smart-bed-kinematics", name: "Smart Bed Kinematics Service", parent: "care-environment", x: 110, y: 490, color: "var(--health-color)", r: 14, level: 3 },
+            { id: "floseal-hemostatic", name: "FLOSEAL Matrix Service", parent: "biosurgery-hemostasis", x: 520, y: 530, color: "var(--pharma-color)", r: 14, level: 3 },
+
+            // Level 4 Processes
+            { id: "proc-1", name: "Remote Patient Data Ingestion", parent: "pd-telehealth", x: 50, y: 30, color: "var(--renal-color)", r: 8, level: 4 },
+            { id: "proc-2", name: "Wireless Drug Library OTA Sync", parent: "ders-service", x: 730, y: 30, color: "var(--med-color)", r: 8, level: 4 }
         ];
 
         let currentZoom = 1;
@@ -991,20 +1405,20 @@
                 if (selectedItem.terms && selectedItem.terms.length > 0) {
                     termsBox.innerHTML = selectedItem.terms.map(t => `<span class="badge">${t}</span>`).join('');
                 } else {
-                    termsBox.innerHTML = `<span class="badge">Enterprise Pharma & Device Standard</span>`;
+                    termsBox.innerHTML = `<span class="badge">Enterprise Domain Standard</span>`;
                 }
 
                 const procBox = document.getElementById('ctx-processes');
                 if (selectedItem.processes && selectedItem.processes.length > 0) {
                     procBox.textContent = selectedItem.processes.join(" • ");
                 } else {
-                    procBox.textContent = "cGMP Manufacturing, Device Quality Control, FDA Regulatory Filings & Clinical Operations";
+                    procBox.textContent = "cGMP Manufacturing, Quality Control, Device Interoperability & Medical Affairs Reporting";
                 }
             }
         }
 
         function updateDetailLevel(val) {
-            const labels = ["Domains", "Bounded Contexts", "Services", "Processes"];
+            const labels = ["Domains (L1)", "Contexts (L2)", "Services (L3)", "Processes"];
             document.getElementById('slider-value-label').textContent = labels[val - 1];
             renderGraph();
         }
