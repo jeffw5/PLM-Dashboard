@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baxter FABRIC — Enterprise Intelligence Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#06101F;--s1:#0A1828;--s2:#0F2035;--s3:#152840;--s4:#1C3352;
+  --blue:#0055CC;--accent:#0099FF;--gold:#F0A500;--green:#00C87A;
+  --red:#E84545;--violet:#9B72F0;--teal:#00B4A0;--orange:#F07030;
+  --sie:#00B4A0;--thread:#00D4FF;
+  --t1:#D8ECFF;--t2:#7AADD0;--t3:#3D6A8A;--t4:#1E3D58;
+  --f-head:'Exo 2',sans-serif;--f-body:'DM Sans',sans-serif;--f-mono:'JetBrains Mono',monospace;
+}
+html,body{height:100%;background:var(--bg);color:var(--t1);font-family:var(--f-body);overflow:hidden}
+body{display:flex;flex-direction:column}
+
+/* ── HEADER ── */
+#hdr{height:54px;background:var(--s1);border-bottom:1px solid rgba(0,153,255,.15);display:flex;align-items:center;padding:0 24px;gap:16px;flex-shrink:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-mark{width:30px;height:30px;border-radius:6px;background:linear-gradient(135deg,#0055CC,#0099FF);display:flex;align-items:center;justify-content:center;font-family:var(--f-head);font-weight:800;font-size:12px;color:#fff}
+.logo-text{font-family:var(--f-head);font-weight:700;font-size:15px;color:var(--t1);letter-spacing:.3px}
+.logo-sub{font-size:9px;color:var(--t3);margin-top:1px;letter-spacing:.4px}
+.hdiv{width:1px;height:26px;background:rgba(255,255,255,.08)}
+#nav{display:flex;gap:2px}
+.nav-btn{padding:5px 14px;border-radius:6px;font-family:var(--f-head);font-size:11px;font-weight:500;color:var(--t3);cursor:pointer;transition:all .2s;border:1px solid transparent;text-transform:uppercase;letter-spacing:.5px}
+.nav-btn:hover{color:var(--t2);background:rgba(255,255,255,.04)}
+.nav-btn.active{color:var(--accent);background:rgba(0,153,255,.1);border-color:rgba(0,153,255,.2)}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.badge{font-family:var(--f-mono);font-size:10px;padding:3px 10px;border-radius:20px;border:1px solid}
+.badge-green{background:rgba(0,200,122,.1);color:var(--green);border-color:rgba(0,200,122,.25)}
+.badge-gold{background:rgba(240,165,0,.1);color:var(--gold);border-color:rgba(240,165,0,.25)}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pdot 2s ease-in-out infinite;flex-shrink:0}
+@keyframes pdot{0%,100%{box-shadow:0 0 0 0 rgba(0,200,122,.5)}50%{box-shadow:0 0 0 5px rgba(0,200,122,0)}}
+@keyframes ring-out{0%{transform:scale(1);opacity:.5}100%{transform:scale(2);opacity:0}}
+
+/* ── VIEWS ── */
+#main{flex:1;overflow:hidden;position:relative}
+.view{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden}
+.view.active{display:flex}
+
+/* ── STATUS BAR ── */
+#sbar{height:26px;background:var(--s1);border-top:1px solid rgba(255,255,255,.05);display:flex;align-items:center;padding:0 24px;gap:20px;font-size:10px;color:var(--t3);flex-shrink:0}
+.si{display:flex;align-items:center;gap:5px}
+.sd{width:5px;height:5px;border-radius:50%}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:2px}
+
+/* ── CARD BASE ── */
+.card{background:var(--s2);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:18px}
+.card-title{font-family:var(--f-head);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--t3);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.card-title::before{content:'';width:14px;height:2px;border-radius:1px;background:currentColor}
+
+/* ══════════════════════════════════════════════
+   VIEW 1: EXECUTIVE OVERVIEW (NEW HERO)
+══════════════════════════════════════════════ */
+#view-overview{overflow-y:auto;padding:20px 28px;display:flex;flex-direction:column;gap:16px}
+.ov-hero{background:linear-gradient(135deg,var(--s2) 0%,#0A1E3A 60%,#0D2440 100%);border:1px solid rgba(0,153,255,.18);border-radius:16px;padding:32px 36px;position:relative;overflow:hidden}
+.ov-hero::before{content:'';position:absolute;top:-60px;right:-60px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(0,85,204,.18) 0%,transparent 70%);pointer-events:none}
+.ov-hero::after{content:'';position:absolute;bottom:-40px;left:40%;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(0,180,160,.08) 0%,transparent 70%);pointer-events:none}
+.ov-hero-eyebrow{font-size:10px;color:var(--accent);font-family:var(--f-head);font-weight:600;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.ov-hero-eyebrow::before{content:'';display:inline-block;width:24px;height:2px;background:var(--accent);border-radius:1px}
+.ov-hero-title{font-family:var(--f-head);font-size:32px;font-weight:700;color:var(--t1);line-height:1.15;margin-bottom:8px}
+.ov-hero-title em{color:var(--accent);font-style:normal}
+.ov-hero-sub{font-size:13px;color:var(--t2);line-height:1.65;max-width:68%;margin-bottom:24px}
+.ov-kpi-row{display:flex;gap:28px;flex-wrap:wrap}
+.ov-kpi{border-left:2px solid rgba(255,255,255,.12);padding-left:16px}
+.ov-kpi-val{font-family:var(--f-mono);font-size:26px;font-weight:500;line-height:1}
+.ov-kpi-lbl{font-size:10px;color:var(--t3);margin-top:4px;text-transform:uppercase;letter-spacing:.6px}
+/* 7-layer SVG diagram area */
+.ov-arch{background:var(--s2);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:20px;overflow:hidden}
+.ov-arch-title{font-family:var(--f-head);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--t3);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.ov-arch-title::before{content:'';width:14px;height:2px;border-radius:1px;background:var(--accent)}
+.ov-two-col{display:grid;grid-template-columns:3fr 2fr;gap:16px}
+.ov-three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.ov-stat-box{background:var(--s2);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:16px;text-align:center}
+.ov-stat-num{font-family:var(--f-mono);font-size:28px;font-weight:500;line-height:1;margin-bottom:6px}
+.ov-stat-lbl{font-size:11px;color:var(--t3);line-height:1.4}
+.pillar{border-radius:9px;padding:12px;position:relative;overflow:hidden}
+.pillar-icon{font-size:18px;margin-bottom:6px}
+.pillar-title{font-family:var(--f-head);font-size:12px;font-weight:600;margin-bottom:4px}
+.pillar-desc{font-size:10px;line-height:1.5;color:rgba(255,255,255,.6)}
+.pillar-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+/* layer strip inline */
+.layer-strip{display:flex;flex-direction:column;gap:4px;margin-top:4px}
+.ls-row{display:grid;grid-template-columns:52px 1fr auto;gap:10px;align-items:center;padding:8px 12px;border-radius:8px;border-left:3px solid transparent;background:rgba(255,255,255,.03);transition:all .2s;cursor:pointer}
+.ls-row:hover{background:rgba(255,255,255,.06)}
+.ls-num{font-family:var(--f-mono);font-size:11px;font-weight:500}
+.ls-name{font-size:12px;font-weight:500;color:var(--t1)}
+.ls-sub{font-size:10px;color:var(--t3);margin-top:1px}
+.ls-chips{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;max-width:240px}
+.ls-chip{font-size:9px;padding:2px 6px;border-radius:10px;font-family:var(--f-mono);background:rgba(255,255,255,.06);color:var(--t3);border:1px solid rgba(255,255,255,.08);white-space:nowrap}
+.sie-badge{font-size:9px;padding:2px 7px;border-radius:10px;background:rgba(0,180,160,.15);color:var(--teal);border:1px solid rgba(0,180,160,.3);font-family:var(--f-mono)}
+
+/* ══════════════════════════════════════════════
+   VIEW 2: EXECUTIVE SUMMARY
+══════════════════════════════════════════════ */
+#exec-view{overflow-y:auto;padding:20px 28px;gap:14px;display:flex;flex-direction:column}
+.exec-hero{background:linear-gradient(135deg,var(--s2) 0%,var(--s3) 100%);border:1px solid rgba(0,153,255,.15);border-radius:14px;padding:28px 32px;position:relative;overflow:hidden}
+.exec-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(0,85,204,.15) 0%,transparent 70%)}
+.exec-hero-tag{font-size:10px;color:var(--accent);font-family:var(--f-head);font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.exec-hero-tag::before{content:'';display:inline-block;width:18px;height:2px;background:var(--accent);border-radius:1px}
+.exec-hero-title{font-family:var(--f-head);font-size:26px;font-weight:700;color:var(--t1);line-height:1.2;margin-bottom:8px}
+.exec-hero-title span{color:var(--accent)}
+.exec-hero-sub{font-size:13px;color:var(--t2);line-height:1.6;max-width:72%;margin-bottom:20px}
+.exec-hero-metrics{display:flex;gap:24px;flex-wrap:wrap}
+.ehm{text-align:left}
+.ehm-val{font-family:var(--f-mono);font-size:28px;font-weight:500;line-height:1}
+.ehm-lbl{font-size:10px;color:var(--t3);margin-top:4px;text-transform:uppercase;letter-spacing:.6px}
+.exec-grid{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+.exec-grid-r{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.vd-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.vd-row:last-child{border-bottom:none}
+.vd-label{font-size:12px;color:var(--t2)}
+.vd-label span{font-size:10px;color:var(--t3);display:block;margin-top:2px}
+.vd-bar-wrap{display:flex;align-items:center;gap:8px;margin-top:4px}
+.vd-bar{flex:1;height:3px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden}
+.vd-bar-fill{height:100%;border-radius:2px;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.tco-row{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.tco-label{display:flex;justify-content:space-between;font-size:11px;color:var(--t2);margin-bottom:3px}
+.tco-track{height:22px;background:rgba(255,255,255,.05);border-radius:6px;overflow:hidden;position:relative}
+.tco-fill{height:100%;border-radius:6px;display:flex;align-items:center;padding-left:10px;font-family:var(--f-mono);font-size:10px;font-weight:500;transition:width 1.2s ease-out}
+.readiness-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.readiness-row:last-child{border-bottom:none}
+.readiness-name{font-size:11px;color:var(--t2);flex:1}
+.readiness-score{font-family:var(--f-mono);font-size:12px;font-weight:500;width:38px;text-align:right}
+.readiness-bar{flex:1;height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden}
+.readiness-fill{height:100%;border-radius:2px;transition:width 1.2s ease-out}
+
+/* ══════════════════════════════════════════════
+   VIEW 3: STAKEHOLDER IMPACT
+══════════════════════════════════════════════ */
+#stk-view{display:flex;flex-direction:column;overflow:hidden}
+#stk-tabs{display:flex;gap:0;flex-shrink:0;background:var(--s1);border-bottom:1px solid rgba(255,255,255,.07);padding:0 24px}
+.stk-tab{padding:12px 20px;font-family:var(--f-head);font-size:11px;font-weight:500;color:var(--t3);cursor:pointer;transition:all .2s;border-bottom:2px solid transparent;text-transform:uppercase;letter-spacing:.6px;display:flex;align-items:center;gap:7px}
+.stk-tab:hover{color:var(--t2)}
+.stk-tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.stk-tab-dot{width:7px;height:7px;border-radius:50%}
+#stk-body{flex:1;overflow-y:auto}
+.stk-panel{display:none;padding:24px 28px;animation:fin .25s ease-out}
+.stk-panel.active{display:block}
+@keyframes fin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.stk-hero{border-radius:12px;padding:24px 28px;margin-bottom:16px;position:relative;overflow:hidden}
+.stk-hero-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;opacity:.8;font-family:var(--f-head)}
+.stk-hero-title{font-family:var(--f-head);font-size:20px;font-weight:700;margin-bottom:8px}
+.stk-hero-sub{font-size:12px;line-height:1.65;opacity:.8;max-width:80%}
+.stk-content-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.benefit-card{background:var(--s2);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:16px}
+.bc-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;margin-bottom:10px}
+.bc-title{font-family:var(--f-head);font-size:13px;font-weight:600;margin-bottom:6px}
+.bc-desc{font-size:11px;color:var(--t2);line-height:1.6}
+.bc-metric{margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.06);font-family:var(--f-mono);font-size:12px;display:flex;align-items:baseline;gap:5px}
+.bc-metric-val{font-size:18px;font-weight:500}
+.bc-metric-lbl{font-size:10px;color:var(--t3)}
+.before-after{background:var(--s2);border:1px solid rgba(255,255,255,.07);border-radius:10px;overflow:hidden}
+.ba-header{display:grid;grid-template-columns:1fr 1fr;background:rgba(0,0,0,.2)}
+.ba-header-cell{padding:8px 14px;font-family:var(--f-head);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.6px}
+.ba-rows{display:flex;flex-direction:column}
+.ba-row{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid rgba(255,255,255,.04)}
+.ba-cell{padding:9px 14px;font-size:11px}
+.ba-before{color:rgba(232,69,69,.8)}
+.ba-after{color:rgba(0,200,122,.85)}
+.timeline-strip{background:var(--s2);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:16px}
+.ts-title{font-family:var(--f-head);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--t3);margin-bottom:12px}
+.ts-item{display:grid;grid-template-columns:80px 16px 1fr;gap:10px;align-items:start;padding:6px 0}
+.ts-when{font-family:var(--f-mono);font-size:10px;color:var(--t3);padding-top:2px}
+.ts-dot-col{display:flex;flex-direction:column;align-items:center;padding-top:4px}
+.ts-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ts-line{width:1px;background:rgba(255,255,255,.08);flex:1;min-height:16px;margin-top:3px}
+.ts-text{font-size:11px;color:var(--t2);line-height:1.5;padding-bottom:6px}
+
+/* ══════════════════════════════════════════════
+   VIEW 4: R&D INTELLIGENCE (JOURNEY + ARCH + GOV + HITL)
+══════════════════════════════════════════════ */
+#rd-view{display:flex;flex-direction:column;overflow:hidden}
+#rd-subtabs{display:flex;gap:0;flex-shrink:0;background:rgba(10,24,40,.7);border-bottom:1px solid rgba(0,153,255,.12);padding:0 24px}
+.rd-stab{padding:9px 18px;font-family:var(--f-head);font-size:11px;font-weight:500;color:var(--t3);cursor:pointer;transition:all .2s;border-bottom:2px solid transparent;text-transform:uppercase;letter-spacing:.5px}
+.rd-stab:hover{color:var(--t2)}
+.rd-stab.active{color:var(--thread);border-bottom-color:var(--thread)}
+.rd-subview{display:none;flex:1;overflow:hidden;flex-direction:column}
+.rd-subview.active{display:flex}
+/* Journey */
+#journey-svg-wrap{flex:0 0 auto;padding:14px 24px 0}
+#journey-svg-wrap svg{display:block;width:100%;cursor:default}
+@keyframes thread-flow{to{stroke-dashoffset:-52}}
+.thread-particles{stroke-dasharray:14 38;animation:thread-flow 2.2s linear infinite}
+.thread-particles2{stroke-dasharray:8 44;animation:thread-flow 3.1s linear infinite .8s}
+@keyframes hitl-ring{0%{r:16;opacity:.7}100%{r:30;opacity:0}}
+.hitl-ring{animation:hitl-ring 1.8s ease-out infinite}
+.hitl-ring2{animation:hitl-ring 1.8s ease-out infinite .6s}
+.stage-node{cursor:pointer}
+.stage-node:hover .stage-bg{filter:brightness(1.3)}
+.stage-node.selected .stage-bg{filter:brightness(1.4)}
+#panel{flex:1;overflow:hidden;display:flex;flex-direction:column;border-top:1px solid rgba(0,153,255,.15);background:linear-gradient(180deg,var(--s1) 0%,var(--bg) 100%)}
+#panel-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--t3);gap:12px}
+#panel-content{flex:1;display:none;overflow:hidden;flex-direction:column}
+#panel-content.visible{display:flex;animation:fin .3s ease-out}
+#panel-header{display:flex;align-items:flex-start;padding:14px 24px 10px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0;gap:14px}
+.panel-stage-icon{width:38px;height:38px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px}
+.panel-stage-title{font-family:var(--f-head);font-size:16px;font-weight:600;color:var(--t1);margin-bottom:2px}
+.panel-stage-sub{font-size:11px;color:var(--t2)}
+.panel-close{width:26px;height:26px;border-radius:6px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t3);font-size:14px;border:none;transition:background .2s;flex-shrink:0}
+.panel-close:hover{background:rgba(255,255,255,.12);color:var(--t1)}
+#panel-body{flex:1;overflow-y:auto;padding:14px 24px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;align-content:start}
+.metric-card{background:var(--s2);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px 14px}
+.metric-label{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
+.metric-value{font-family:var(--f-mono);font-size:20px;font-weight:500;line-height:1}
+.metric-unit{font-size:10px;color:var(--t2);margin-top:3px}
+.metric-bar{height:3px;border-radius:2px;background:rgba(255,255,255,.08);margin-top:8px;overflow:hidden}
+.metric-bar-fill{height:100%;border-radius:2px}
+.tools-card{background:var(--s2);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px 14px;grid-column:span 2}
+.tools-list{display:flex;flex-wrap:wrap;gap:6px}
+.tool-pill{font-size:10px;padding:3px 9px;border-radius:20px;font-family:var(--f-mono);background:rgba(0,153,255,.1);color:var(--accent);border:1px solid rgba(0,153,255,.2)}
+.hitl-card{background:rgba(240,165,0,.06);border:1px solid rgba(240,165,0,.2);border-radius:10px;padding:12px 14px;grid-column:span 2}
+.hitl-text{font-size:11px;color:rgba(240,165,0,.85);line-height:1.5}
+/* Arch subview */
+#rd-arch-view{overflow-y:auto;padding:12px 24px}
+.arch-layer{display:grid;grid-template-columns:80px 1fr auto;gap:16px;align-items:start;background:var(--s2);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px 16px;transition:all .2s;position:relative;margin-bottom:4px;cursor:pointer}
+.arch-layer:hover{background:var(--s3);border-color:rgba(0,153,255,.25)}
+.arch-layer::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:10px 0 0 10px}
+.arch-layer-num{font-family:var(--f-mono);font-size:22px;font-weight:500;color:rgba(255,255,255,.08)}
+.arch-layer-name{font-family:var(--f-head);font-size:14px;font-weight:600}
+.arch-layer-sub{font-size:11px;color:var(--t2)}
+.arch-layer-tools{display:flex;flex-wrap:wrap;gap:5px;justify-content:flex-end;max-width:280px}
+.arch-tool{font-size:9px;padding:2px 7px;border-radius:12px;font-family:var(--f-mono)}
+.arch-govband{background:rgba(0,153,255,.05);border:1px solid rgba(0,153,255,.12);border-radius:8px;padding:8px 16px;margin:6px 0;display:flex;align-items:center;gap:10px;font-size:10px;color:var(--t2)}
+/* Gov subview */
+#rd-gov-view{overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:10px}
+.gov-domain{background:var(--s2);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;cursor:pointer}
+.gov-domain-hdr{display:flex;align-items:flex-start;gap:10px}
+.gov-domain-icon{width:34px;height:34px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px}
+.gov-domain-title{font-family:var(--f-head);font-size:14px;font-weight:600;line-height:1.2}
+.gov-domain-sub{font-size:10px;color:var(--t3);margin-top:2px}
+.gov-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.gov-kpi{background:rgba(0,0,0,.2);border-radius:8px;padding:9px 11px}
+.gov-kpi-val{font-family:var(--f-mono);font-size:18px;font-weight:500;line-height:1}
+.gov-kpi-lbl{font-size:9px;color:var(--t3);margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+.gov-bars{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.gov-bar-row{display:flex;flex-direction:column;gap:3px}
+.gov-bar-lbl{display:flex;justify-content:space-between;font-size:10px;color:var(--t2)}
+.gov-bar-track{height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden}
+.gov-bar-fill{height:100%;border-radius:2px}
+.gov-detail{display:none;animation:fin .25s ease-out}
+.gov-detail.open{display:block}
+.gov-domain-chevron{color:var(--t3);font-size:12px;margin-left:auto;transition:transform .25s}
+.gov-domain.open .gov-domain-chevron{transform:rotate(180deg)}
+.gov-cap-grid{display:flex;flex-direction:column;gap:8px}
+.gov-cap-item{display:grid;grid-template-columns:14px 1fr;gap:8px}
+.gov-cap-dot{width:6px;height:6px;border-radius:50%;margin-top:5px}
+.gov-cap-title{font-size:12px;color:var(--t1);margin-bottom:2px}
+.gov-cap-desc{font-size:11px;color:var(--t3);line-height:1.45}
+.gov-tools-detail{display:flex;flex-wrap:wrap;gap:5px}
+.gov-tool-chip{font-size:10px;padding:3px 8px;border-radius:12px;font-family:var(--f-mono)}
+.gov-phase-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:11px}
+.gov-phase-lbl{color:var(--accent);font-weight:500}
+/* HITL subview */
+#rd-hitl-view{overflow-y:auto;padding:20px 24px;display:grid;grid-template-columns:1fr 1fr;gap:16px;align-content:start}
+.hitl-timeline{background:var(--s2);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:16px;grid-column:span 2}
+.hitl-tl-title{font-family:var(--f-head);font-size:13px;font-weight:600;margin-bottom:14px;color:var(--t1)}
+.hitl-points{display:flex;flex-direction:column;gap:2px}
+.hitl-pt{display:grid;grid-template-columns:24px 3fr 2fr 1fr 1fr;gap:12px;align-items:center;padding:8px 10px;border-radius:8px;font-size:11px;cursor:pointer;transition:background .2s}
+.hitl-pt:hover{background:rgba(255,255,255,.04)}
+.hitl-pt-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin:0 auto;position:relative}
+.hitl-pt-dot.active::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid currentColor;opacity:.5;animation:ring-out 1.5s ease-out infinite}
+.hitl-pt-stage{color:var(--t3);font-size:10px}
+.hitl-pt-status{padding:2px 8px;border-radius:10px;font-size:9px;text-align:center;font-family:var(--f-mono)}
+.hitl-pt-time{font-family:var(--f-mono);font-size:10px;color:var(--t3);text-align:right}
+.hf-card{background:var(--s2);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:16px}
+.hf-title{font-family:var(--f-head);font-size:13px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.hf-meter{position:relative;height:8px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;margin-bottom:4px}
+.hf-fill{position:absolute;left:0;top:0;height:100%;border-radius:4px}
+.trust-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:8px}
+.trust-bucket{background:rgba(0,0,0,.2);border-radius:6px;padding:6px 4px;text-align:center;cursor:pointer}
+.tb-range{font-size:9px;color:var(--t3);font-family:var(--f-mono)}
+.tb-acc{font-size:13px;font-weight:500;font-family:var(--f-mono)}
+.tb-bar{height:3px;border-radius:2px;margin-top:4px}
+
+/* ══════════════════════════════════════════════
+   VIEW 5: 7-LAYER ARCHITECTURE
+══════════════════════════════════════════════ */
+#arch-view{overflow-y:auto;padding:20px 28px;display:flex;flex-direction:column;gap:16px}
+.arch-hero{background:linear-gradient(135deg,var(--s2),var(--s3));border:1px solid rgba(0,153,255,.15);border-radius:14px;padding:24px 28px}
+.arch-hero-title{font-family:var(--f-head);font-size:22px;font-weight:700;color:var(--t1);margin-bottom:6px}
+.arch-hero-sub{font-size:12px;color:var(--t2);line-height:1.6;max-width:70%}
+.arch-layer-card{background:var(--s2);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:16px 20px;position:relative;transition:border-color .2s;cursor:pointer;overflow:hidden}
+.arch-layer-card:hover{border-color:rgba(0,153,255,.3)}
+.arch-layer-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:12px 0 0 12px}
+.alc-top{display:grid;grid-template-columns:60px 1fr auto;gap:14px;align-items:start}
+.alc-num{font-family:var(--f-mono);font-size:28px;font-weight:500;color:rgba(255,255,255,.08);line-height:1;padding-top:2px}
+.alc-name{font-family:var(--f-head);font-size:15px;font-weight:600;margin-bottom:4px}
+.alc-sub{font-size:11px;color:var(--t2);line-height:1.4}
+.alc-tools{display:flex;flex-wrap:wrap;gap:5px;justify-content:flex-end;max-width:280px}
+.alc-tool{font-size:9px;padding:2px 7px;border-radius:12px;font-family:var(--f-mono)}
+.alc-expand{margin-top:12px;display:none;animation:fin .2s ease-out}
+.alc-expand.open{display:block}
+.alc-components{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.alc-comp{background:rgba(0,0,0,.2);border-radius:8px;padding:10px 12px}
+.alc-comp-name{font-size:12px;font-weight:500;color:var(--t1);margin-bottom:3px}
+.alc-comp-desc{font-size:10px;color:var(--t3);line-height:1.45}
+.alc-comp-type{font-size:9px;padding:1px 6px;border-radius:8px;display:inline-block;margin-bottom:4px;font-family:var(--f-mono)}
+.gov-band-full{background:rgba(0,153,255,.05);border:1px solid rgba(0,153,255,.15);border-radius:10px;padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.gov-band-label{font-size:10px;color:var(--accent);font-family:var(--f-head);font-weight:600;text-transform:uppercase;letter-spacing:.8px;white-space:nowrap}
+.gov-band-item{font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(0,153,255,.1);color:var(--t2);border:1px solid rgba(0,153,255,.15)}
+
+/* ══════════════════════════════════════════════
+   VIEW 6: ROADMAP
+══════════════════════════════════════════════ */
+#road-view{display:flex;flex-direction:column;overflow:hidden}
+.road-top{flex-shrink:0;padding:18px 28px 0;display:flex;flex-direction:column;gap:12px}
+.phase-selector{display:flex;gap:8px}
+.phase-btn{flex:1;border-radius:10px;padding:14px 16px;cursor:pointer;transition:all .25s;border:1px solid rgba(255,255,255,.08);background:var(--s2);position:relative;overflow:hidden}
+.phase-btn.active{border-color:var(--phase-color,var(--accent))}
+.phase-btn:hover{background:var(--s3)}
+.phase-btn::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--phase-color,var(--accent));opacity:0;transition:opacity .25s}
+.phase-btn.active::after{opacity:1}
+.pb-num{font-family:var(--f-mono);font-size:10px;color:var(--t3);margin-bottom:4px}
+.pb-title{font-family:var(--f-head);font-size:13px;font-weight:600;margin-bottom:2px}
+.pb-sub{font-size:10px;color:var(--t3)}
+.pb-invest{font-family:var(--f-mono);font-size:11px;margin-top:8px;padding:4px 8px;border-radius:6px;display:inline-block}
+.pb-active-ind{position:absolute;top:10px;right:10px;width:8px;height:8px;border-radius:50%;background:var(--phase-color,var(--accent));opacity:0;transition:opacity .25s}
+.phase-btn.active .pb-active-ind{opacity:1}
+.road-detail{flex:1;overflow-y:auto;padding:16px 28px 20px}
+.phase-panel{display:none;animation:fin .25s ease-out}
+.phase-panel.active{display:block}
+.phase-layout{display:grid;grid-template-columns:1fr 340px;gap:16px}
+.phase-timeline{background:var(--s2);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:18px}
+.pt-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+.pt-title{font-family:var(--f-head);font-size:14px;font-weight:600}
+.pt-sub{font-size:11px;color:var(--t3);margin-top:3px}
+.pt-gate{padding:4px 12px;border-radius:20px;font-family:var(--f-mono);font-size:10px;border:1px solid;text-align:center;flex-shrink:0}
+.month-group{margin-bottom:14px}
+.mg-label{font-family:var(--f-mono);font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;padding-left:24px}
+.task-row{display:grid;grid-template-columns:16px 1fr auto;gap:10px;align-items:start;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.task-row:last-child{border-bottom:none}
+.task-dot{width:8px;height:8px;border-radius:50%;margin-top:3px;flex-shrink:0}
+.task-name{font-size:12px;color:var(--t1);margin-bottom:2px}
+.task-desc{font-size:10px;color:var(--t3);line-height:1.4}
+.task-badge{font-size:9px;padding:2px 7px;border-radius:10px;font-family:var(--f-mono);flex-shrink:0;align-self:start;margin-top:2px}
+.milestone-row{display:grid;grid-template-columns:16px 1fr;gap:10px;align-items:start;padding:8px 0;border-top:1px solid rgba(255,255,255,.08);margin-top:6px}
+.ms-diamond{width:10px;height:10px;transform:rotate(45deg);margin-top:2px;flex-shrink:0;border:1.5px solid}
+.ms-name{font-size:12px;font-weight:600;font-family:var(--f-head);margin-bottom:2px}
+.ms-gate-criteria{font-size:10px;color:var(--t3);line-height:1.5}
+.phase-sidebar{display:flex;flex-direction:column;gap:12px}
+.invest-card,.results-card,.rationalization-card{background:var(--s2);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:16px}
+.ic-title{font-family:var(--f-head);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--t3);margin-bottom:12px}
+.invest-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.invest-row:last-child{border-bottom:none}
+.ir-label{font-size:11px;color:var(--t2)}
+.ir-val{font-family:var(--f-mono);font-size:13px;font-weight:500}
+.ir-total{margin-top:10px;padding:10px;border-radius:8px;display:flex;justify-content:space-between;align-items:center}
+.ir-total-label{font-family:var(--f-head);font-size:12px;font-weight:600}
+.ir-total-val{font-family:var(--f-mono);font-size:18px;font-weight:500}
+.result-item{display:grid;grid-template-columns:auto 1fr;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.result-item:last-child{border-bottom:none}
+.ri-metric{font-family:var(--f-mono);font-size:18px;font-weight:500;line-height:1;padding-right:10px;border-right:1px solid rgba(255,255,255,.06);white-space:nowrap}
+.ri-label{font-size:11px;color:var(--t1);margin-bottom:2px}
+.ri-target{font-size:10px;color:var(--t3)}
+.rat-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.rat-row:last-child{border-bottom:none}
+.rat-system{font-size:11px;color:var(--t2)}
+.rat-system span{display:block;font-size:9px;color:var(--t3);margin-top:1px}
+.rat-action{font-size:9px;padding:2px 8px;border-radius:10px;font-family:var(--f-mono)}
+</style>
+</head>
+<body>
+
+<div id="hdr">
+  <div class="logo">
+    <div class="logo-mark">F</div>
+    <div>
+      <div class="logo-text">Baxter FABRIC</div>
+      <div class="logo-sub">Federated Analytics &amp; Business Resource Intelligence Core</div>
+    </div>
+  </div>
+  <div class="hdiv"></div>
+  <div id="nav">
+    <div class="nav-btn active" onclick="showView('overview')">Overview</div>
+    <div class="nav-btn" onclick="showView('exec')">Exec Summary</div>
+    <div class="nav-btn" onclick="showView('stk')">Shareholder Impact</div>
+    <div class="nav-btn" onclick="showView('rd')">R&amp;D Intelligence</div>
+    <div class="nav-btn" onclick="showView('arch')">Architecture</div>
+    <div class="nav-btn" onclick="showView('road')">Roadmap</div>
+  </div>
+  <div class="hdr-right">
+    <div class="status-dot"></div>
+    <span class="badge badge-green">MTBH 97.6%</span>
+    <span class="badge badge-gold">Phase 1 Active</span>
+  </div>
+</div>
+
+<div id="main">
+
+<!-- ══ VIEW 1: OVERVIEW ══ -->
+<div id="view-overview" class="view active">
+  <div id="view-overview-scroll" style="overflow-y:auto;padding:20px 28px;display:flex;flex-direction:column;gap:16px">
+  <div class="ov-hero">
+    <div class="ov-hero-eyebrow">Baxter FABRIC · Trusted Intelligence Platform</div>
+    <div class="ov-hero-title">Palantir-grade enterprise intelligence<br>at <em>open-source economics</em></div>
+    <div class="ov-hero-sub">A seven-layer, semantically governed intelligence platform unifying Baxter's R&D, manufacturing, supply chain, and regulatory operations — anchored by Siemens AAS industrial ontologies, governed by the MTBH Circuit Breaker AI framework, and built entirely on open standards. 75–80% lower TCO than Palantir Foundry with equivalent capability and no proprietary lock-in.</div>
+    <div class="ov-kpi-row">
+      <div class="ov-kpi"><div class="ov-kpi-val" style="color:var(--green)">75–80%</div><div class="ov-kpi-lbl">TCO reduction vs Palantir</div></div>
+      <div class="ov-kpi"><div class="ov-kpi-val" style="color:var(--accent)">8–12 wk</div><div class="ov-kpi-lbl">Time to first R&D insight</div></div>
+      <div class="ov-kpi"><div class="ov-kpi-val" style="color:var(--violet)">847M</div><div class="ov-kpi-lbl">Knowledge graph triples</div></div>
+      <div class="ov-kpi"><div class="ov-kpi-val" style="color:var(--gold)">4-domain</div><div class="ov-kpi-lbl">Governance framework</div></div>
+      <div class="ov-kpi"><div class="ov-kpi-val" style="color:var(--teal)">$6–13M</div><div class="ov-kpi-lbl">Annual advantage vs Palantir</div></div>
+    </div>
+  </div>
+
+  <div class="ov-two-col">
+    <!-- 7-layer diagram -->
+    <div style="background:var(--s2);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:20px">
+      <div style="font-family:var(--f-head);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--t3);margin-bottom:4px;display:flex;align-items:center;gap:8px"><span style="width:14px;height:2px;background:var(--accent);display:inline-block;border-radius:1px"></span>Seven-Layer Architecture Stack</div>
+      <div style="font-size:10px;color:var(--t3);margin-bottom:16px">Click any layer to explore · L3 ★ is the Siemens AAS accelerator</div>
+      <!-- Inline SVG 7-layer diagram -->
+      <svg viewBox="0 0 600 430" width="100%" xmlns="http://www.w3.org/2000/svg" style="display:block">
+        <defs>
+          <style>
+            .sv-th{font-family:'Exo 2',sans-serif;font-weight:600;font-size:13px}
+            .sv-ts{font-family:'DM Sans',sans-serif;font-size:10px}
+            .sv-tm{font-family:'JetBrains Mono',monospace;font-size:10px}
+          </style>
+        </defs>
+        <!-- L7 Capability Apps -->
+        <rect x="4" y="2" width="592" height="52" rx="6" fill="#1A2E12" stroke="#3B6D11" stroke-width="1"/>
+        <text x="38" y="28" class="sv-th" fill="#5B9A2A">L7</text>
+        <line x1="72" y1="6" x2="72" y2="50" stroke="#3B6D11" stroke-width="0.5"/>
+        <text x="154" y="24" class="sv-th" fill="#6FB53A" text-anchor="middle">Capability Apps</text>
+        <text x="154" y="38" class="sv-ts" fill="#4A8020" text-anchor="middle">Biz intel · automation</text>
+        <line x1="226" y1="6" x2="226" y2="50" stroke="#3B6D11" stroke-width="0.5"/>
+        <rect x="230" y="8" width="106" height="16" rx="4" fill="rgba(59,109,17,.3)" stroke="#3B6D11" stroke-width="0.5"/>
+        <text x="283" y="19" class="sv-tm" fill="#88CC44" text-anchor="middle">R&amp;D intelligence</text>
+        <rect x="342" y="8" width="106" height="16" rx="4" fill="rgba(59,109,17,.3)" stroke="#3B6D11" stroke-width="0.5"/>
+        <text x="395" y="19" class="sv-tm" fill="#88CC44" text-anchor="middle">Batch intelligence</text>
+        <rect x="454" y="8" width="106" height="16" rx="4" fill="rgba(59,109,17,.3)" stroke="#3B6D11" stroke-width="0.5"/>
+        <text x="507" y="19" class="sv-tm" fill="#88CC44" text-anchor="middle">Supply chain</text>
+        <rect x="230" y="30" width="106" height="16" rx="4" fill="rgba(59,109,17,.3)" stroke="#3B6D11" stroke-width="0.5"/>
+        <text x="283" y="41" class="sv-tm" fill="#88CC44" text-anchor="middle">Mfg. analytics</text>
+        <rect x="342" y="30" width="106" height="16" rx="4" fill="rgba(59,109,17,.3)" stroke="#3B6D11" stroke-width="0.5"/>
+        <text x="395" y="41" class="sv-tm" fill="#88CC44" text-anchor="middle">Regulatory hub</text>
+        <rect x="454" y="30" width="106" height="16" rx="4" fill="rgba(59,109,17,.3)" stroke="#3B6D11" stroke-width="0.5"/>
+        <text x="507" y="41" class="sv-tm" fill="#88CC44" text-anchor="middle">Quality command</text>
+        <!-- L6 AI & Analytics -->
+        <rect x="4" y="60" width="592" height="52" rx="6" fill="#231210" stroke="#993C1D" stroke-width="1"/>
+        <text x="38" y="86" class="sv-th" fill="#C04822">L6</text>
+        <line x1="72" y1="64" x2="72" y2="108" stroke="#993C1D" stroke-width="0.5"/>
+        <text x="154" y="82" class="sv-th" fill="#D05030" text-anchor="middle">AI &amp; Analytics</text>
+        <text x="154" y="96" class="sv-ts" fill="#903520" text-anchor="middle">ML · LLM gateway · BI</text>
+        <line x1="226" y1="64" x2="226" y2="108" stroke="#993C1D" stroke-width="0.5"/>
+        <rect x="230" y="66" width="106" height="16" rx="4" fill="rgba(153,60,29,.3)" stroke="#993C1D" stroke-width="0.5"/>
+        <text x="283" y="77" class="sv-tm" fill="#E87050" text-anchor="middle">Apache Superset</text>
+        <rect x="342" y="66" width="106" height="16" rx="4" fill="rgba(153,60,29,.3)" stroke="#993C1D" stroke-width="0.5"/>
+        <text x="395" y="77" class="sv-tm" fill="#E87050" text-anchor="middle">MLflow</text>
+        <rect x="454" y="66" width="106" height="16" rx="4" fill="rgba(153,60,29,.3)" stroke="#993C1D" stroke-width="0.5"/>
+        <text x="507" y="77" class="sv-tm" fill="#E87050" text-anchor="middle">JupyterHub</text>
+        <rect x="230" y="88" width="106" height="16" rx="4" fill="rgba(153,60,29,.3)" stroke="#993C1D" stroke-width="0.5"/>
+        <text x="283" y="99" class="sv-tm" fill="#E87050" text-anchor="middle">vLLM / Ollama</text>
+        <rect x="342" y="88" width="106" height="16" rx="4" fill="rgba(153,60,29,.3)" stroke="#993C1D" stroke-width="0.5"/>
+        <text x="395" y="99" class="sv-tm" fill="#E87050" text-anchor="middle">LangGraph agents</text>
+        <rect x="454" y="88" width="106" height="16" rx="4" fill="rgba(153,60,29,.3)" stroke="#993C1D" stroke-width="0.5"/>
+        <text x="507" y="99" class="sv-tm" fill="#E87050" text-anchor="middle">Ray Serve</text>
+        <!-- L5 Knowledge Graph -->
+        <rect x="4" y="118" width="592" height="52" rx="6" fill="#17143A" stroke="#534AB7" stroke-width="1"/>
+        <text x="38" y="144" class="sv-th" fill="#7066CC">L5</text>
+        <line x1="72" y1="122" x2="72" y2="166" stroke="#534AB7" stroke-width="0.5"/>
+        <text x="154" y="140" class="sv-th" fill="#8070D8" text-anchor="middle">Knowledge Graph</text>
+        <text x="154" y="154" class="sv-ts" fill="#5048A0" text-anchor="middle">OWL 2 · SHACL · SPARQL</text>
+        <line x1="226" y1="122" x2="226" y2="166" stroke="#534AB7" stroke-width="0.5"/>
+        <rect x="230" y="124" width="106" height="16" rx="4" fill="rgba(83,74,183,.3)" stroke="#534AB7" stroke-width="0.5"/>
+        <text x="283" y="135" class="sv-tm" fill="#9B90E0" text-anchor="middle">Stardog/GraphDB</text>
+        <rect x="342" y="124" width="106" height="16" rx="4" fill="rgba(83,74,183,.3)" stroke="#534AB7" stroke-width="0.5"/>
+        <text x="395" y="135" class="sv-tm" fill="#9B90E0" text-anchor="middle">OWL 2 reasoner</text>
+        <rect x="454" y="124" width="106" height="16" rx="4" fill="rgba(83,74,183,.3)" stroke="#534AB7" stroke-width="0.5"/>
+        <text x="507" y="135" class="sv-tm" fill="#9B90E0" text-anchor="middle">SHACL + SPARQL</text>
+        <rect x="230" y="146" width="106" height="16" rx="4" fill="rgba(83,74,183,.3)" stroke="#534AB7" stroke-width="0.5"/>
+        <text x="283" y="157" class="sv-tm" fill="#9B90E0" text-anchor="middle">SWRL rules</text>
+        <rect x="342" y="146" width="106" height="16" rx="4" fill="rgba(83,74,183,.3)" stroke="#534AB7" stroke-width="0.5"/>
+        <text x="395" y="157" class="sv-tm" fill="#9B90E0" text-anchor="middle">FAISS search</text>
+        <rect x="454" y="146" width="106" height="16" rx="4" fill="rgba(83,74,183,.3)" stroke="#534AB7" stroke-width="0.5"/>
+        <text x="507" y="157" class="sv-tm" fill="#9B90E0" text-anchor="middle">VocBench 3</text>
+        <!-- L4 Data Fabric -->
+        <rect x="4" y="176" width="592" height="52" rx="6" fill="#0D1E38" stroke="#185FA5" stroke-width="1"/>
+        <text x="38" y="202" class="sv-th" fill="#2878CC">L4</text>
+        <line x1="72" y1="180" x2="72" y2="224" stroke="#185FA5" stroke-width="0.5"/>
+        <text x="154" y="198" class="sv-th" fill="#3080D0" text-anchor="middle">Data Fabric</text>
+        <text x="154" y="212" class="sv-ts" fill="#1E5888" text-anchor="middle">Lakehouse · transform</text>
+        <line x1="226" y1="180" x2="226" y2="224" stroke="#185FA5" stroke-width="0.5"/>
+        <rect x="230" y="182" width="106" height="16" rx="4" fill="rgba(24,95,165,.3)" stroke="#185FA5" stroke-width="0.5"/>
+        <text x="283" y="193" class="sv-tm" fill="#60A8E8" text-anchor="middle">Apache Iceberg</text>
+        <rect x="342" y="182" width="106" height="16" rx="4" fill="rgba(24,95,165,.3)" stroke="#185FA5" stroke-width="0.5"/>
+        <text x="395" y="193" class="sv-tm" fill="#60A8E8" text-anchor="middle">dbt Core</text>
+        <rect x="454" y="182" width="106" height="16" rx="4" fill="rgba(24,95,165,.3)" stroke="#185FA5" stroke-width="0.5"/>
+        <text x="507" y="193" class="sv-tm" fill="#60A8E8" text-anchor="middle">Trino / DuckDB</text>
+        <rect x="230" y="204" width="106" height="16" rx="4" fill="rgba(24,95,165,.3)" stroke="#185FA5" stroke-width="0.5"/>
+        <text x="283" y="215" class="sv-tm" fill="#60A8E8" text-anchor="middle">Great Expectations</text>
+        <rect x="342" y="204" width="106" height="16" rx="4" fill="rgba(24,95,165,.3)" stroke="#185FA5" stroke-width="0.5"/>
+        <text x="395" y="215" class="sv-tm" fill="#60A8E8" text-anchor="middle">Apache Atlas</text>
+        <rect x="454" y="204" width="106" height="16" rx="4" fill="rgba(24,95,165,.3)" stroke="#185FA5" stroke-width="0.5"/>
+        <text x="507" y="215" class="sv-tm" fill="#60A8E8" text-anchor="middle">OpenMetadata</text>
+        <!-- L3 SIEMENS - highlighted with double border -->
+        <rect x="2" y="234" width="596" height="52" rx="6" fill="#0A2020" stroke="#00B4A0" stroke-width="2.5"/>
+        <text x="38" y="256" class="sv-th" fill="#00C8B0">L3 ★</text>
+        <line x1="84" y1="238" x2="84" y2="282" stroke="#00B4A0" stroke-width="0.5"/>
+        <text x="160" y="256" class="sv-th" fill="#00C8B0" text-anchor="middle">Siemens AAS layer</text>
+        <text x="160" y="270" class="sv-ts" fill="#008878" text-anchor="middle">Industrial ontologies</text>
+        <line x1="228" y1="238" x2="228" y2="282" stroke="#00B4A0" stroke-width="0.5"/>
+        <rect x="232" y="240" width="106" height="16" rx="4" fill="rgba(0,180,160,.2)" stroke="#00B4A0" stroke-width="0.5"/>
+        <text x="285" y="251" class="sv-tm" fill="#00E0C8" text-anchor="middle">AAS / IDTA</text>
+        <rect x="344" y="240" width="106" height="16" rx="4" fill="rgba(0,180,160,.2)" stroke="#00B4A0" stroke-width="0.5"/>
+        <text x="397" y="251" class="sv-tm" fill="#00E0C8" text-anchor="middle">Industrial Ops X</text>
+        <rect x="456" y="240" width="106" height="16" rx="4" fill="rgba(0,180,160,.2)" stroke="#00B4A0" stroke-width="0.5"/>
+        <text x="509" y="251" class="sv-tm" fill="#00E0C8" text-anchor="middle">ECLASS 12.0</text>
+        <rect x="232" y="262" width="106" height="16" rx="4" fill="rgba(0,180,160,.2)" stroke="#00B4A0" stroke-width="0.5"/>
+        <text x="285" y="273" class="sv-tm" fill="#00E0C8" text-anchor="middle">VDI/VDE 3682</text>
+        <rect x="344" y="262" width="106" height="16" rx="4" fill="rgba(0,180,160,.2)" stroke="#00B4A0" stroke-width="0.5"/>
+        <text x="397" y="273" class="sv-tm" fill="#00E0C8" text-anchor="middle">OPC-UA pharma</text>
+        <rect x="456" y="262" width="106" height="16" rx="4" fill="rgba(0,180,160,.2)" stroke="#00B4A0" stroke-width="0.5"/>
+        <text x="509" y="273" class="sv-tm" fill="#00E0C8" text-anchor="middle">Teamcenter bridge</text>
+        <!-- L2 Integration Hub -->
+        <rect x="4" y="292" width="592" height="52" rx="6" fill="#1E1508" stroke="#854F0B" stroke-width="1"/>
+        <text x="38" y="318" class="sv-th" fill="#9A6010">L2</text>
+        <line x1="72" y1="296" x2="72" y2="340" stroke="#854F0B" stroke-width="0.5"/>
+        <text x="154" y="314" class="sv-th" fill="#B07020" text-anchor="middle">Integration Hub</text>
+        <text x="154" y="328" class="sv-ts" fill="#7A5010" text-anchor="middle">ETL · streaming · APIs</text>
+        <line x1="226" y1="296" x2="226" y2="340" stroke="#854F0B" stroke-width="0.5"/>
+        <rect x="230" y="298" width="106" height="16" rx="4" fill="rgba(133,79,11,.3)" stroke="#854F0B" stroke-width="0.5"/>
+        <text x="283" y="309" class="sv-tm" fill="#D09040" text-anchor="middle">Apache NiFi</text>
+        <rect x="342" y="298" width="106" height="16" rx="4" fill="rgba(133,79,11,.3)" stroke="#854F0B" stroke-width="0.5"/>
+        <text x="395" y="309" class="sv-tm" fill="#D09040" text-anchor="middle">Kafka Streams</text>
+        <rect x="454" y="298" width="106" height="16" rx="4" fill="rgba(133,79,11,.3)" stroke="#854F0B" stroke-width="0.5"/>
+        <text x="507" y="309" class="sv-tm" fill="#D09040" text-anchor="middle">Airbyte</text>
+        <rect x="230" y="320" width="106" height="16" rx="4" fill="rgba(133,79,11,.3)" stroke="#854F0B" stroke-width="0.5"/>
+        <text x="283" y="331" class="sv-tm" fill="#D09040" text-anchor="middle">Kong gateway</text>
+        <rect x="342" y="320" width="106" height="16" rx="4" fill="rgba(133,79,11,.3)" stroke="#854F0B" stroke-width="0.5"/>
+        <text x="395" y="331" class="sv-tm" fill="#D09040" text-anchor="middle">HL7 / FHIR bridge</text>
+        <rect x="454" y="320" width="106" height="16" rx="4" fill="rgba(133,79,11,.3)" stroke="#854F0B" stroke-width="0.5"/>
+        <text x="507" y="331" class="sv-tm" fill="#D09040" text-anchor="middle">SAP BAPI/RFC</text>
+        <!-- L1 Source Systems -->
+        <rect x="4" y="350" width="592" height="52" rx="6" fill="#141414" stroke="#555550" stroke-width="1"/>
+        <text x="38" y="376" class="sv-th" fill="#708090">L1</text>
+        <line x1="72" y1="354" x2="72" y2="398" stroke="#555550" stroke-width="0.5"/>
+        <text x="154" y="372" class="sv-th" fill="#809090" text-anchor="middle">Source Systems</text>
+        <text x="154" y="386" class="sv-ts" fill="#506070" text-anchor="middle">SAP · MES · PLM · LIMS</text>
+        <line x1="226" y1="354" x2="226" y2="398" stroke="#555550" stroke-width="0.5"/>
+        <rect x="230" y="356" width="106" height="16" rx="4" fill="rgba(80,80,80,.2)" stroke="#555550" stroke-width="0.5"/>
+        <text x="283" y="367" class="sv-tm" fill="#909090" text-anchor="middle">SAP S/4HANA</text>
+        <rect x="342" y="356" width="106" height="16" rx="4" fill="rgba(80,80,80,.2)" stroke="#555550" stroke-width="0.5"/>
+        <text x="395" y="367" class="sv-tm" fill="#909090" text-anchor="middle">Opcenter MES</text>
+        <rect x="454" y="356" width="106" height="16" rx="4" fill="rgba(80,80,80,.2)" stroke="#555550" stroke-width="0.5"/>
+        <text x="507" y="367" class="sv-tm" fill="#909090" text-anchor="middle">Teamcenter PLM</text>
+        <rect x="230" y="378" width="106" height="16" rx="4" fill="rgba(80,80,80,.2)" stroke="#555550" stroke-width="0.5"/>
+        <text x="283" y="389" class="sv-tm" fill="#909090" text-anchor="middle">LabVantage LIMS</text>
+        <rect x="342" y="378" width="106" height="16" rx="4" fill="rgba(80,80,80,.2)" stroke="#555550" stroke-width="0.5"/>
+        <text x="395" y="389" class="sv-tm" fill="#909090" text-anchor="middle">Veeva Vault</text>
+        <rect x="454" y="378" width="106" height="16" rx="4" fill="rgba(80,80,80,.2)" stroke="#555550" stroke-width="0.5"/>
+        <text x="507" y="389" class="sv-tm" fill="#909090" text-anchor="middle">PI Historian</text>
+        <!-- Governance band -->
+        <rect x="4" y="408" width="592" height="20" rx="4" fill="#1E1508" stroke="#854F0B" stroke-width="0.8"/>
+        <text x="300" y="421" class="sv-ts" fill="#D09040" text-anchor="middle">↔  Four-domain governance spans all layers  ·  Data  ·  Semantic  ·  Analytics  ·  AI / MTBH Circuit Breaker</text>
+      </svg>
+      <div style="font-size:10px;color:var(--t3);margin-top:10px">★ Layer 3 Siemens AAS eliminates 6–12 months of custom ontology development</div>
+    </div>
+    <!-- Right column: stats + pillars -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="ov-three-col" style="grid-template-columns:1fr 1fr">
+        <div class="ov-stat-box"><div class="ov-stat-num" style="color:var(--green)">$750K</div><div class="ov-stat-lbl">Annual platform TCO (steady state)</div></div>
+        <div class="ov-stat-box"><div class="ov-stat-num" style="color:var(--red)">$8–15M</div><div class="ov-stat-lbl">Palantir Foundry equivalent cost</div></div>
+        <div class="ov-stat-box"><div class="ov-stat-num" style="color:var(--accent)">11</div><div class="ov-stat-lbl">Capability applications roadmap</div></div>
+        <div class="ov-stat-box"><div class="ov-stat-num" style="color:var(--violet)">200+</div><div class="ov-stat-lbl">SHACL constraint shapes</div></div>
+        <div class="ov-stat-box"><div class="ov-stat-num" style="color:var(--teal)">14</div><div class="ov-stat-lbl">Manufacturing sites covered</div></div>
+        <div class="ov-stat-box"><div class="ov-stat-num" style="color:var(--gold)">97.6%</div><div class="ov-stat-lbl">MTBH avg across all AI models</div></div>
+      </div>
+      <div class="card" style="flex:1">
+        <div class="card-title" style="color:var(--violet)">Four Strategic Pillars</div>
+        <div class="pillar-grid" id="ov-pillar-grid"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:var(--teal)">Siemens AAS Acceleration</div>
+        <div style="font-size:11px;color:var(--t2);line-height:1.65;margin-bottom:10px">The Asset Administration Shell (IEC 63278 / IDTA) provides the universal entity model — every asset, batch, material, and supplier gets a typed semantic identity before any analytics or AI layer sees it. This replaces Palantir's proprietary Ontology Objects with an open international standard Baxter owns forever.</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <span class="sie-badge">Siemens IOX</span>
+          <span class="sie-badge">AAS / IDTA</span>
+          <span class="sie-badge">ECLASS 12.0</span>
+          <span class="sie-badge">VDI/VDE 3682</span>
+          <span class="sie-badge">OPC-UA pharma</span>
+          <span class="sie-badge">6–12 mo saved</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- ══ VIEW 2: EXECUTIVE SUMMARY ══ -->
+<div id="view-exec" class="view">
+  <div id="exec-view">
+    <div class="exec-hero">
+      <div class="exec-hero-tag">Executive Summary</div>
+      <div class="exec-hero-title">Baxter <span>FABRIC</span> — Strategic Investment Case</div>
+      <div class="exec-hero-sub">A phased, gated, open-standards intelligence platform delivering Palantir-equivalent enterprise capability at 75–80% lower annual cost — with no proprietary lock-in, no source system disruption, and measurable value within 12 weeks of Phase 1 kickoff.</div>
+      <div class="exec-hero-metrics">
+        <div class="ehm"><div class="ehm-val" style="color:var(--green)">$6–13M</div><div class="ehm-lbl">Annual savings vs Palantir</div></div>
+        <div class="ehm"><div class="ehm-val" style="color:var(--accent)">12 wk</div><div class="ehm-lbl">Time to first value</div></div>
+        <div class="ehm"><div class="ehm-val" style="color:var(--gold)">3-phase</div><div class="ehm-lbl">Gated investment model</div></div>
+        <div class="ehm"><div class="ehm-val" style="color:var(--violet)">$0</div><div class="ehm-lbl">Source system modifications Ph1–2</div></div>
+      </div>
+    </div>
+    <div class="exec-grid">
+      <div class="card">
+        <div class="card-title" style="color:var(--accent)">Value Drivers</div>
+        <div id="vd-list"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="card">
+          <div class="card-title" style="color:var(--red)">TCO Comparison</div>
+          <div id="tco-list"></div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color:var(--green)">Regulatory Readiness Index</div>
+          <div id="readiness-list"></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+      <div class="card">
+        <div class="card-title" style="color:var(--violet)">Four Strategic Pillars</div>
+        <div class="pillar-grid" id="exec-pillar-grid"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:var(--teal)">Phase Gate Criteria</div>
+        <div id="gate-summary"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ VIEW 3: STAKEHOLDER IMPACT ══ -->
+<div id="view-stk" class="view">
+  <div id="stk-tabs"></div>
+  <div id="stk-body"></div>
+</div>
+
+<!-- ══ VIEW 4: R&D INTELLIGENCE ══ -->
+<div id="view-rd" class="view">
+  <div id="rd-subtabs">
+    <div class="rd-stab active" onclick="showRdTab('journey',this)">Digital Thread Journey</div>
+    <div class="rd-stab" onclick="showRdTab('rdarch',this)">Architecture Layers</div>
+    <div class="rd-stab" onclick="showRdTab('gov',this)">Governance Domains</div>
+    <div class="rd-stab" onclick="showRdTab('hitl',this)">HITL Framework</div>
+  </div>
+  <!-- Journey subview -->
+  <div id="rd-journey" class="rd-subview active" style="overflow:hidden">
+    <div id="journey-svg-wrap">
+      <svg id="journey-svg" viewBox="0 0 1260 140" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <linearGradient id="thread-grad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#1E3A5A"/>
+            <stop offset="100%" stop-color="#0D2A48"/>
+          </linearGradient>
+        </defs>
+        <!-- Background bar -->
+        <rect x="0" y="0" width="1260" height="140" fill="url(#thread-grad)" rx="0"/>
+        <!-- Title -->
+        <text x="630" y="18" text-anchor="middle" font-family="'Exo 2',sans-serif" font-size="11" fill="#4A7A9B" font-weight="600" text-transform="uppercase" letter-spacing="1">R&amp;D Digital Thread — Requirements → Supply Chain · Click any stage to expand</text>
+        <!-- Thread line -->
+        <line x1="40" y1="105" x2="1220" y2="105" stroke="#1C3352" stroke-width="12" stroke-linecap="round"/>
+        <line x1="40" y1="105" x2="1220" y2="105" stroke="rgba(0,212,255,.15)" stroke-width="2" class="thread-particles"/>
+        <line x1="40" y1="105" x2="1220" y2="105" stroke="rgba(0,212,255,.08)" stroke-width="1" class="thread-particles2"/>
+        <!-- Stage nodes rendered by JS -->
+        <g id="stage-nodes"></g>
+        <!-- SREG feed labels -->
+        <text x="630" y="135" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="9" fill="#2D4A6A">
+          ← SREG feeds: Marketing requirements · Operations CI · Compliance triggers →
+        </text>
+      </svg>
+    </div>
+    <div id="panel">
+      <div id="panel-empty">
+        <div style="font-size:28px;opacity:.25">◎</div>
+        <div style="font-size:12px">Select a stage node to inspect metrics, tools, and HITL governance checkpoints</div>
+      </div>
+      <div id="panel-content">
+        <div id="panel-header">
+          <div class="panel-stage-icon" id="ph-icon"></div>
+          <div class="panel-stage-info">
+            <div class="panel-stage-title" id="ph-title"></div>
+            <div class="panel-stage-sub" id="ph-sub"></div>
+          </div>
+          <button class="panel-close" onclick="closePanel()">✕</button>
+        </div>
+        <div id="panel-body"></div>
+      </div>
+    </div>
+  </div>
+  <!-- Arch subview -->
+  <div id="rd-rdarch" class="rd-subview" style="overflow:hidden">
+    <div id="rd-arch-view"></div>
+  </div>
+  <!-- Gov subview -->
+  <div id="rd-gov" class="rd-subview" style="overflow:hidden">
+    <div id="rd-gov-view"></div>
+  </div>
+  <!-- HITL subview -->
+  <div id="rd-hitl" class="rd-subview" style="overflow:hidden">
+    <div id="rd-hitl-view">
+      <div class="hitl-timeline">
+        <div class="hitl-tl-title">Human-in-the-Loop governance checkpoints across the R&amp;D digital thread</div>
+        <div style="display:grid;grid-template-columns:24px 3fr 2fr 1fr 1fr;gap:12px;padding:0 10px 8px;font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.6px;border-bottom:1px solid rgba(255,255,255,.06);margin-bottom:4px">
+          <div></div><div>Action &amp; governance trigger</div><div>Authorized by</div><div>Status</div><div style="text-align:right">Avg time</div>
+        </div>
+        <div class="hitl-points" id="hitl-points"></div>
+      </div>
+      <div class="hf-card">
+        <div class="hf-title" style="color:var(--gold)">Team cognitive state</div>
+        <div id="hf-engineers"></div>
+      </div>
+      <div class="hf-card">
+        <div class="hf-title" style="color:var(--accent)">Trust calibration — accuracy vs. acceptance</div>
+        <div style="font-size:10px;color:var(--t3);margin-bottom:10px">How well engineers' trust matches actual AI accuracy by confidence bucket</div>
+        <div class="trust-grid" id="trust-grid"></div>
+        <div style="font-size:9px;color:var(--t3);margin-top:8px;text-align:center">Green = well-calibrated · Amber = slight over-trust · Red = significant mis-calibration</div>
+      </div>
+      <div class="hf-card" style="grid-column:span 2">
+        <div class="hf-title" style="color:var(--green)">Automation paradox defense — system reliability over time</div>
+        <div id="paradox-chart"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ VIEW 5: ARCHITECTURE ══ -->
+<div id="view-arch" class="view">
+  <div id="arch-view">
+    <div class="arch-hero">
+      <div class="arch-hero-title">Baxter FABRIC — Seven-Layer Architecture Reference</div>
+      <div class="arch-hero-sub">Open-source · Siemens AAS-accelerated · MTBH-governed · Four-domain governance · 75–80% lower TCO than Palantir Foundry. Click any layer to expand its full component inventory.</div>
+    </div>
+    <div class="gov-band-full">
+      <span class="gov-band-label">↔ Governance (all layers)</span>
+      <span class="gov-band-item">Data — OpenMetadata · Atlas</span>
+      <span class="gov-band-item">Semantic — VocBench · SHACL</span>
+      <span class="gov-band-item">Analytics — MLflow · dbt SL</span>
+      <span class="gov-band-item">AI — MTBH Circuit Breaker · OPA</span>
+      <span class="gov-band-item">21 CFR Part 11 audit trail</span>
+    </div>
+    <div id="arch-layers-list"></div>
+  </div>
+</div>
+
+<!-- ══ VIEW 6: ROADMAP ══ -->
+<div id="view-road" class="view">
+  <div class="road-top">
+    <div class="phase-selector" id="phase-selector"></div>
+  </div>
+  <div class="road-detail" id="road-detail"></div>
+</div>
+
+</div><!-- end #main -->
+
+<div id="sbar">
+  <div class="si"><div class="sd" style="background:var(--green)"></div>Knowledge Graph: 847M triples · 6 named graphs · 200+ SHACL shapes</div>
+  <div class="si"><div class="sd" style="background:var(--accent)"></div>AAS Registry: 2,847 shells · 14 manufacturing sites</div>
+  <div class="si"><div class="sd" style="background:var(--violet)"></div>LangGraph Agents: 6 active · MTBH avg 97.6% · EU AI Act Article 9 in design</div>
+  <div class="si"><div class="sd" style="background:var(--gold)"></div>HITL Queue: 3 pending · avg response 2.1h</div>
+  <div style="margin-left:auto;font-family:var(--f-mono);font-size:9px;color:var(--t3)">The Value Enablement Group, LLC · FABRIC v2.0 · RDSG · May 2026 · CONFIDENTIAL</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// SHARED DATA
+// ═══════════════════════════════════════════════════════
+const VALUE_DRIVERS=[
+  {label:'R&D cross-BL formulation query',sub:'Scientist insight latency',before:'Days of manual search',after:'< 5 minutes via KG',pct:90,color:'var(--green)'},
+  {label:'Tech transfer cycle time reduction',sub:'R&D → Manufacturing BOP',before:'8–12 weeks manual',after:'2–4 weeks (semantic)',pct:73,color:'var(--accent)'},
+  {label:'Failed experiment knowledge indexed',sub:'Institutional memory activated',before:'~0% findable',after:'2,847 records searchable',pct:85,color:'var(--violet)'},
+  {label:'eCTD section auto-population',sub:'Regulatory Affairs productivity',before:'100% manual assembly',after:'67% automated via LangGraph',pct:67,color:'var(--gold)'},
+  {label:'IMP chain-of-custody completeness',sub:'Clinical trial material governance',before:'~60% traceable',after:'100% all new programs',pct:100,color:'var(--teal)'},
+  {label:'Supplier concentration risk visibility',sub:'Supply chain anticipatory posture',before:'Discovered during shortage',after:'45-day advance warning',pct:80,color:'var(--orange)'},
+  {label:'Annual platform TCO vs. Palantir',sub:'Open standards; no lock-in',before:'$8–15M / year (Palantir)',after:'$750K–1.5M / year (FABRIC)',pct:88,color:'var(--green)'},
+];
+const TCO_DATA=[
+  {label:'Palantir Foundry (equivalent scope)',val:'$8M – $15M / yr',pct:100,color:'rgba(232,69,69,.7)',textColor:'#FF8080'},
+  {label:'FABRIC Platform (steady state)',val:'$750K – $1.5M / yr',pct:12,color:'rgba(0,200,122,.7)',textColor:'#00C87A'},
+  {label:'Year 1 rationalization savings (Wave 1–2)',val:'$70K – $160K',pct:5,color:'rgba(240,165,0,.5)',textColor:'var(--gold)'},
+];
+const READINESS=[
+  {label:'21 CFR Part 11 (Electronic Records)',pct:96,color:'var(--green)'},
+  {label:'GxP Process Governance (SHACL)',pct:94,color:'var(--green)'},
+  {label:'FDA AI/ML Guidance Readiness',pct:72,color:'var(--gold)'},
+  {label:'EU AI Act Article 9 (High-Risk AI)',pct:58,color:'var(--gold)'},
+  {label:'ICH Q10 Pharmaceutical Quality System',pct:88,color:'var(--green)'},
+  {label:'CDISC SEND/SDTM Clinical Alignment',pct:81,color:'var(--accent)'},
+];
+const PILLARS=[
+  {icon:'◎',title:'Semantic Connectivity',desc:'847M triples connecting R&D, Clinical, Manufacturing, and Supply Chain in a single governed knowledge fabric.',color:'rgba(0,153,255,.12)',border:'rgba(0,153,255,.2)',tc:'var(--accent)'},
+  {icon:'⬡',title:'Governed AI (MTBH)',desc:'MTBH Circuit Breaker, 5-dimensional trust scoring, and mandatory HITL gates for all patient-safety decisions.',color:'rgba(240,165,0,.1)',border:'rgba(240,165,0,.2)',tc:'var(--gold)'},
+  {icon:'◈',title:'Open Standards',desc:'OWL 2, SHACL, AAS/IEC 63278, W3C RDF — no proprietary lock-in. Baxter owns the semantic investment.',color:'rgba(155,114,240,.1)',border:'rgba(155,114,240,.2)',tc:'var(--violet)'},
+  {icon:'◇',title:'Zero Disruption',desc:'Read-only integration in Ph1–2. No source system displaced. No GxP validation invalidated. No lab workflow changed.',color:'rgba(0,180,160,.1)',border:'rgba(0,180,160,.2)',tc:'var(--teal)'},
+];
+const GATE_SUMMARY=[
+  {phase:'Phase 1 → 2',criteria:['20+ weekly active R&D users','DQS >90% for R&D domain','Governance baseline approved','Phase 2 Steering Committee funding'],color:'var(--accent)'},
+  {phase:'Phase 2 → 3',criteria:['All 6 apps at >60% weekly adoption','80%+ Tier 1 supplier digital twin','MTBH active for all production AI','Wave 1–2 decommissions confirmed'],color:'var(--gold)'},
+  {phase:'Phase 3 Complete',criteria:['EU AI Act readiness >85%','100% lineage completeness','$720K–$1.7M annualized savings','Full governance maturity (Level 3)'],color:'var(--green)'},
+];
+
+const STAKEHOLDERS=[
+  {id:'rd',label:'R&D',color:'#0099FF',dot:'#0099FF',heroLabel:'Research & Development',heroTitle:'From fragmented knowledge to compounding intelligence',heroBg:'linear-gradient(135deg,rgba(0,85,204,.2),rgba(0,153,255,.08))',heroBorder:'rgba(0,153,255,.2)',heroSub:'R&D gains cross-BL knowledge synthesis that didn\'t previously exist — formulation intelligence, failed experiment mining, governed AI discovery propagation, and tech transfer compressed from months to weeks.',benefits:[{icon:'◎',title:'Cross-BL Formulation Intelligence',desc:'Every prior formulation attempt across all four business lines — including failures — searchable in under 5 minutes. Failed experiments become institutional assets, not lost knowledge.',metric:'4.2 min',mlbl:'avg cross-BL query time (target <5 min)',color:'rgba(0,153,255,.12)',bc:'rgba(0,153,255,.2)',tc:'#0099FF'},{icon:'⬡',title:'Governed Emergent AI',desc:'Lab robots that discover better protocols publish new best practices to the Knowledge Graph automatically — after RDSG validation and HITL sign-off. Emergent capabilities propagate; governance doesn\'t break.',metric:'3',mlbl:'emergent behaviors detected this cycle (2 validated, 1 pending HITL)',color:'rgba(240,165,0,.1)',bc:'rgba(240,165,0,.2)',tc:'var(--gold)'},{icon:'◈',title:'Semantic Tech Transfer',desc:'SWRL inference rules map R&D parameters to manufacturing constraints automatically. AAS semantic normalization makes any Siemens-connected site ready to receive a transfer.',metric:'3.2 wks',mlbl:'avg tech transfer cycle time (target <4 weeks)',color:'rgba(0,180,160,.1)',bc:'rgba(0,180,160,.2)',tc:'var(--teal)'},{icon:'◇',title:'Regulatory-Ready Data',desc:'Every experiment is natively structured as RDF against the governed ontology. CMC evidence packages for FDA submissions are a SPARQL query, not a weeks-long assembly exercise.',metric:'96.8%',mlbl:'CMC traceability: dev batch to regulatory submission',color:'rgba(155,114,240,.1)',bc:'rgba(155,114,240,.2)',tc:'var(--violet)'}],baRows:[{b:'Days to find prior formulation work',a:'Under 5 minutes via Knowledge Graph'},{b:'Failed experiments: undiscoverable in filing cabinets',a:'2,847 records indexed and searchable'},{b:'Emergent robot protocols: informal, undocumented',a:'RDSG-validated, HITL-approved, KG-published'},{b:'Tech transfer: 8–12 weeks of manual translation',a:'2–4 weeks with SWRL parameter mapping'},{b:'FDA evidence assembly: weeks of manual cross-referencing',a:'SPARQL query over the Knowledge Graph'}],timeline:[{when:'Wk 1–4',text:'AI4RE SREG live. Scientists begin entering requirements. No workflow changes to ELN or LIMS.',color:'var(--accent)'},{when:'Wk 8–12',text:'R&D Intelligence Platform MVP delivered to 20+ pilot scientists. First cross-BL formulation queries run.',color:'var(--green)'},{when:'Mo 4–5',text:'Batch Intelligence MVP live. QC release decision support operational. HITL Intervention Pane active.',color:'var(--gold)'},{when:'Mo 7–9',text:'Clinical Trials integration. IMP chain-of-custody governance live for all new programs.',color:'var(--violet)'},{when:'Mo 10–12',text:'Tech Transfer Dashboard live. First SWRL-automated BOP delivered to Teamcenter PLM.',color:'var(--teal)'}]},
+  {id:'mkt',label:'Marketing',color:'#F07030',dot:'#F07030',heroLabel:'Marketing & Product Strategy',heroTitle:'Requirements that govern, not just inform',heroBg:'linear-gradient(135deg,rgba(240,112,48,.15),rgba(240,112,48,.05))',heroBorder:'rgba(240,112,48,.2)',heroSub:'Marketing\'s Voice of Customer inputs become formal semantic governance artifacts. Product performance targets and market requirements enter the architecture as traceable obligations enforced across every experiment and every batch.',benefits:[{icon:'◎',title:'Requirements That Drive Governance',desc:'AI4RE SREG translates Marketing product briefs into SHACL constraints and LKIF deontic obligations. Marketing\'s targets become formally enforced — not informally referenced.',metric:'47',mlbl:'requirements formalized this cycle from all three source domains',color:'rgba(240,112,48,.12)',bc:'rgba(240,112,48,.2)',tc:'var(--orange)'},{icon:'⬡',title:'Real-Time Competitive Intelligence',desc:'Patent landscape visualization connects Baxter\'s internal formulation history to external patent filings. Marketing sees what Baxter knows and what competitors have filed in the same interface.',metric:'Live',mlbl:'patent landscape integrated with internal formulation KG',color:'rgba(0,153,255,.1)',bc:'rgba(0,153,255,.2)',tc:'var(--accent)'},{icon:'◈',title:'Realistic Pipeline Visibility',desc:'Marketing can query actual Baxter historical cycle times, formulation success rates, and development timelines — not industry benchmarks. Product strategy grounded in operational reality.',metric:'<5 min',mlbl:'time to surface historical feasibility data for new program scoping',color:'rgba(0,200,122,.1)',bc:'rgba(0,200,122,.2)',tc:'var(--green)'},{icon:'◇',title:'Supply Chain Risk at Strategy Stage',desc:'When Marketing proposes a new product concept, the Supply Chain graph surfaces whether the required API has a single qualified supplier, what lead time variance looks like, and what concentration risk exists.',metric:'45 days',mlbl:'advance warning on supplier risk vs. discovery during shortage',color:'rgba(155,114,240,.1)',bc:'rgba(155,114,240,.2)',tc:'var(--violet)'}],baRows:[{b:'Requirements: slide deck content, informally interpreted',a:'Formal LKIF obligations enforced by PEP at every layer'},{b:'Competitive intelligence: manual patent searches',a:'Live patent landscape integrated with internal KG'},{b:'Feasibility timelines: industry benchmarks',a:'Baxter\'s actual historical cycle times from Knowledge Graph'},{b:'Supply chain risk: discovered at scale-up',a:'Surfaced at formulation selection stage'},{b:'Marketing influence on R&D: sporadic and informal',a:'SREG feed: continuous, traceable, governed'}],timeline:[{when:'Mo 1–2',text:'AI4RE SREG front-end live. Marketing begins entering product requirements in natural language — no new data tools required.',color:'var(--orange)'},{when:'Mo 2–4',text:'First formalized requirements visible in ORSD traceability matrix. Marketing can see how their inputs become SHACL constraints.',color:'var(--accent)'},{when:'Mo 4–6',text:'R&D Intelligence Platform delivers patent landscape view. Marketing product strategy team gains competitive intelligence access.',color:'var(--green)'},{when:'Mo 10+',text:'Supply Chain Risk Observatory live. Marketing sees supply chain constraints at product scoping stage for all new programs.',color:'var(--violet)'}]},
+  {id:'fin',label:'Finance',color:'#00C87A',dot:'#00C87A',heroLabel:'Finance & Budget Governance',heroTitle:'Accountable investment with measurable gates at every phase',heroBg:'linear-gradient(135deg,rgba(0,200,122,.15),rgba(0,200,122,.05))',heroBorder:'rgba(0,200,122,.25)',heroSub:'No big-bang commitment. Each phase is funded independently, concludes with a formal go/no-go gate requiring evidence of delivery, adoption, and governance readiness, and generates rationalization savings that partially offset the next phase\'s cost.',benefits:[{icon:'◎',title:'Phased, Gated Investment',desc:'Phase 1: $600K–$900K. Phase 2: $800K–$1.2M. Phase 3: $500K–$800K/yr. Each phase has specific, measurable gate criteria. Finance authorizes Phase 2 only after Phase 1 evidence is presented to the Steering Committee.',metric:'$600K',mlbl:'Phase 1 investment — first value delivered in 12 weeks',color:'rgba(0,200,122,.12)',bc:'rgba(0,200,122,.25)',tc:'var(--green)'},{icon:'⬡',title:'Rationalization Savings Offset',desc:'Wave 1 (Phase 1): $70K–$160K/yr from disconnected ELN analytics and duplicate ontology tooling. Wave 2 (Phase 2): $450K–$1.05M/yr from BI licenses and shadow warehouses. Net TCO-neutral or better by end of Phase 2.',metric:'$1.7M',mlbl:'cumulative annual rationalization savings at Phase 3 completion',color:'rgba(240,165,0,.12)',bc:'rgba(240,165,0,.25)',tc:'var(--gold)'},{icon:'◈',title:'Palantir Alternative ROI',desc:'A Palantir Foundry deployment of equivalent scope costs $8–15M/yr at steady state, with $3–6M in year-one SI fees. FABRIC delivers equivalent capability at $750K–$1.5M/yr. That delta — $6–13M annually — compounds every year.',metric:'$6–13M',mlbl:'annual steady-state advantage vs. Palantir Foundry',color:'rgba(0,153,255,.1)',bc:'rgba(0,153,255,.2)',tc:'var(--accent)'},{icon:'◇',title:'No Big-Bang Risk',desc:'90-day parallel operation required before any legacy system is decommissioned. Read-only integration through Phase 2 means no source system validation is at risk.',metric:'$0',mlbl:'source system modifications required in Phase 1–2',color:'rgba(155,114,240,.1)',bc:'rgba(155,114,240,.2)',tc:'var(--violet)'}],baRows:[{b:'Platform TCO: $8–15M/yr (Palantir equivalent)',a:'FABRIC steady state: $750K–1.5M/yr'},{b:'Year-1 SI fees: $3–6M (Palantir)',a:'Year-1 implementation: $600K–$900K (Phase 1)'},{b:'Spend committed upfront: full program',a:'Spend committed at each gate: phase by phase'},{b:'Savings timeline: 5-year projection only',a:'Wave 1 savings begin during Phase 1'},{b:'Legacy decommission: high-risk, big-bang',a:'90-day parallel operation; go/no-go before decommission'}],timeline:[{when:'Mo 1–6',text:'Phase 1: $600K–$900K. R&D Intelligence + Batch Intelligence delivered. Wave 1 rationalization begins.',color:'var(--green)'},{when:'Mo 6',text:'Phase 1 Gate Review. Evidence package to Steering Committee. Finance authorizes Phase 2 only on pass.',color:'var(--accent)'},{when:'Mo 7–18',text:'Phase 2: $800K–$1.2M. Wave 2 savings ($450K–$1.05M/yr) begin. TCO-neutral position achieved.',color:'var(--gold)'},{when:'Mo 18',text:'Phase 2 Gate Review. $6–10M savings demonstrated vs. Palantir equivalent. Phase 3 authorized.',color:'var(--violet)'},{when:'Mo 19–36',text:'Phase 3: $500K–$800K/yr. Full $720K–$1.7M rationalization savings realized. $6–13M/yr sustained advantage.',color:'var(--teal)'}]},
+  {id:'sc',label:'Supply Chain',color:'#9B72F0',dot:'#9B72F0',heroLabel:'Supply Chain, Sourcing & Procurement',heroTitle:'From reactive to anticipatory — at two leverage points',heroBg:'linear-gradient(135deg,rgba(155,114,240,.15),rgba(155,114,240,.05))',heroBorder:'rgba(155,114,240,.25)',heroSub:'Supply Chain gains visibility at two critical leverage points: upstream risk detection 45 days before a qualification window expires rather than during a shortage; and connection to R&D decision-making at the formulation stage where changing a material selection costs weeks, not months.',benefits:[{icon:'◎',title:'Real-Time Supplier Risk Observatory',desc:'Supplier qualification status, concentration risk, lead time accuracy, and CMO performance are live in the Knowledge Graph. Single-source API supplier alerts surface 45 days before qualification expires, not during a shortage.',metric:'94%',mlbl:'Tier 1 supplier qualification currently active',color:'rgba(155,114,240,.12)',bc:'rgba(155,114,240,.25)',tc:'var(--violet)'},{icon:'⬡',title:'R&D Formulation Influence — Upstream',desc:'When an R&D scientist selects an excipient or API for a new program, Supply Chain constraints surface automatically via the Knowledge Graph — before the formulation is locked.',metric:'1',mlbl:'active single-source API concentration risk alert (45-day window)',color:'rgba(232,69,69,.1)',bc:'rgba(232,69,69,.2)',tc:'var(--red)'},{icon:'◈',title:'CMO Performance Governance',desc:'CMO performance scoring, capacity modeling, and process visibility maintained in the Supply Chain Named Graph without requiring direct access to CMO internal systems.',metric:'88/100',mlbl:'CMO performance composite governance score',color:'rgba(0,180,160,.1)',bc:'rgba(0,180,160,.2)',tc:'var(--teal)'},{icon:'◇',title:'Multi-Tier Supplier Digital Twin',desc:'Phase 2 delivers AAS shells for all Tier 1 and Tier 2 suppliers — semantic digital identities that carry qualification records, lead time history, and geopolitical risk scoring.',metric:'80%+',mlbl:'Tier 1 digital twin coverage target by Phase 2 gate',color:'rgba(0,153,255,.1)',bc:'rgba(0,153,255,.2)',tc:'var(--accent)'}],baRows:[{b:'Supplier risk: discovered during shortage',a:'45-day advance warning via SWRL qualification rules'},{b:'Supply chain influence: at scale-up (too late)',a:'Surfaced at R&D formulation selection (leverage point)'},{b:'CMO visibility: manual audits and spreadsheets',a:'CMO Performance score in Supply Chain Observatory'},{b:'Multi-tier risk: invisible beyond Tier 1',a:'Tier 1+2 digital twins in Phase 2'},{b:'Procurement decisions: based on anecdotal lead time data',a:'96.2% lead time forecast accuracy from Knowledge Graph'}],timeline:[{when:'Mo 7–9',text:'Supply Chain data domain integrated. SAP APO/IBP, CMO portal feeds, supplier APIs flowing into FABRIC via Kong Gateway.',color:'var(--violet)'},{when:'Mo 10–12',text:'Supply Chain Risk Observatory MVP live. Real-time qualification status, concentration risk alerts, lead time intelligence.',color:'var(--accent)'},{when:'Mo 13–15',text:'Tier 1 digital twin coverage reaches 80%. SWRL qualification expiry rules active across all suppliers.',color:'var(--green)'},{when:'Mo 24–30',text:'Phase 3: AAS-based federated integration with select CMO partners. Cross-enterprise supply chain intelligence.',color:'var(--teal)'}]},
+  {id:'ops',label:'Operations',color:'#00B4A0',dot:'#00B4A0',heroLabel:'Manufacturing Operations',heroTitle:'Governed autonomy — every site, every shift, every batch',heroBg:'linear-gradient(135deg,rgba(0,180,160,.15),rgba(0,180,160,.05))',heroBorder:'rgba(0,180,160,.25)',heroSub:'Operations gains a real-time view of OEE, yield, and CPV across all sites — assembled automatically, not manually. Deviation detection cross-references the Knowledge Graph for prior resolutions, and CI findings become enforced SHACL governance rules.',benefits:[{icon:'◎',title:'Manufacturing Process Analytics',desc:'OEE, cycle time, yield, and CPV dashboards across all sites — assembled from PI Historian, Opcenter MES, and SCADA data via Siemens IOX. No custom PLC integration required.',metric:'Real-time',mlbl:'cross-site manufacturing intelligence from IOX OPC-UA integration',color:'rgba(0,180,160,.12)',bc:'rgba(0,180,160,.25)',tc:'var(--teal)'},{icon:'⬡',title:'Intelligent Deviation Resolution',desc:'When a process deviation occurs, the LangGraph Batch Investigation Agent traverses batch genealogy, LIMS results, and PI Historian data simultaneously. Prior resolutions surfaced from the Knowledge Graph in under 1 hour.',metric:'<1 hr',mlbl:'time from deviation detection to KG-sourced resolution candidates',color:'rgba(0,153,255,.1)',bc:'rgba(0,153,255,.2)',tc:'var(--accent)'},{icon:'◈',title:'CI → Governance Feedback Loop',desc:'CI findings enter the SREG as new requirements, become SHACL constraints after Governance Committee review, and are enforced at every subsequent batch at every site. CI writes rules, not SOPs.',metric:'100%',mlbl:'of CI-derived constraints enforced at all sites upon deployment',color:'rgba(240,165,0,.1)',bc:'rgba(240,165,0,.2)',tc:'var(--gold)'},{icon:'◇',title:'Zero Equipment Disruption',desc:'Siemens IOX reads OPC-UA signals the equipment already broadcasts — read-only. No PLC logic changes. No SCADA configuration changes. GxP qualification status of all equipment is unaffected.',metric:'0',mlbl:'equipment modifications required for full digital twin integration',color:'rgba(0,200,122,.1)',bc:'rgba(0,200,122,.2)',tc:'var(--green)'}],baRows:[{b:'Cross-site yield view: manual aggregation across 4 systems',a:'Real-time OEE + yield dashboard from Historian via IOX'},{b:'Deviation resolution: hours of manual root cause',a:'KG-sourced prior resolutions surfaced in <1 hour'},{b:'CI findings: SOPs that may or may not be followed',a:'SHACL constraints enforced structurally at every site'},{b:'New site integration: months of custom PLC work',a:'IOX + AAS: standard configuration, no PLC modification'},{b:'Predictive maintenance: reactive or spreadsheet-based',a:'Equipment performance trending with failure prediction via FLAML'}],timeline:[{when:'Mo 7–9',text:'Opcenter MES, PI Historian, SCADA integrated via Siemens IOX. Manufacturing data domain flowing into FABRIC.',color:'var(--teal)'},{when:'Mo 10–12',text:'Manufacturing Process Analytics MVP live. OEE, CPV, yield dashboards operational across pilot sites.',color:'var(--accent)'},{when:'Mo 13–15',text:'LangGraph Batch Investigation Agent deployed. Deviation-to-resolution cross-referencing live.',color:'var(--green)'},{when:'Mo 19–24',text:'Phase 3: FLAML predictive maintenance models. Advanced CPV analytics. MTBH-guaranteed fidelity.',color:'var(--gold)'}]},
+];
+
+const STAGES=[
+  {id:'req',label:'Requirements',sub:'AI4RE SREG',x:90,color:'#A78BFA',bg:'rgba(167,139,250,.15)',hitl:true,icon:'◎',title:'AI4RE Semantic Requirements Engineering Gateway',description:'Formalizing inputs from Marketing, Operations & Compliance into SHACL constraints, LKIF deontic norms, and RDSG Requirement Context Bundles',metrics:[{label:'Requirements Formalized',value:'47',unit:'this cycle',pct:78,color:'#A78BFA'},{label:'LKIF Obligations Active',value:'124',unit:'across all domains',pct:85,color:'#A78BFA'},{label:'SHACL Shapes Deployed',value:'89',unit:'constraint library',pct:72,color:'#A78BFA'},{label:'ORSD Coverage',value:'94%',unit:'of critical concepts',pct:94,color:'#00E08A'}],tools:['AI4RE','VocBench 3','Stardog','Neonto Editor','OPA Engine','LKIF/OWL 2'],hitlText:'Ontology Governance Committee bi-weekly review of all new LKIF obligations and SHACL constraints. Architecture Board holds tie-breaking authority. Maximum 2-cycle review window before escalation.'},
+  {id:'proj',label:'R&D Projects',sub:'Intelligence Platform',x:268,color:'#3B82F6',bg:'rgba(59,130,246,.15)',hitl:false,icon:'◈',title:'R&D Intelligence Platform',description:'Cross-BL formulation knowledge synthesis, failed experiment mining, patent landscape analysis, and prior art surfacing across all Pharma R&D research programs',metrics:[{label:'Cross-BL Query Time',value:'4.2',unit:'min (target: <5 min)',pct:84,color:'#3B82F6'},{label:'Failed Experiments Surfaced',value:'2,847',unit:'indexed in Knowledge Graph',pct:91,color:'#3B82F6'},{label:'ELN Harmonization',value:'87%',unit:'coverage across BLs',pct:87,color:'#3B82F6'},{label:'MTBH — Formulation AI',value:'98.2%',unit:'circuit breaker nominal',pct:98,color:'#00E08A'}],tools:['LangGraph Agents','Stardog KG','vLLM (BioMedLM)','FAISS Search','Apache Superset','dbt Semantic Layer'],hitlText:'R&D Director reviews formulation strategy recommendations. Competitive intelligence sign-off required before new program initiation.'},
+  {id:'exp',label:'Experiments',sub:'Lab Execution Engine',x:446,color:'#06B6D4',bg:'rgba(6,182,212,.15)',hitl:true,icon:'⬡',title:'Lab Execution & Emergent Capability Engine',description:'AI-governed lab automation with RDSG-controlled emergent behavior propagation. SHACL constraints enforce GxP boundaries; novel protocols validated before propagation across lab network',metrics:[{label:'Active SHACL Constraints',value:'156',unit:'R&D domain',pct:90,color:'#06B6D4'},{label:'Equipment Qualified',value:'34/36',unit:'IQ/OQ/PQ current',pct:94,color:'#00E08A'},{label:'Emergent Behaviors Detected',value:'3',unit:'this cycle — 2 validated, 1 pending',pct:67,color:'#FFB347'},{label:'MTBH — Lab AI',value:'97.1%',unit:'circuit breaker nominal',pct:97,color:'#00E08A'}],tools:['Siemens IOX + MindSphere','AAS Registry','OPC-UA Adapters','MTBH Circuit Breaker','Mendix HITL','Siemens Industrial Edge'],hitlText:'Protocol validation HITL gate: R&D scientists must review and approve any AI-proposed parameter change flagged by SHACL. Emergent behavior approval panel: new best practices reviewed by lab manager before propagation to Knowledge Graph.'},
+  {id:'trial',label:'Clinical Trials',sub:'Material Management',x:624,color:'#10B981',bg:'rgba(16,185,129,.15)',hitl:true,icon:'◇',title:'Clinical Trial Material Management & CDISC Governance',description:'End-to-end IMP chain-of-custody from release authorization through site dispensing, biological sample management, and bioanalytical data return with full CDISC SEND/SDTM traceability',metrics:[{label:'IMP Chain-of-Custody',value:'100%',unit:'all programs',pct:100,color:'#10B981'},{label:'Protocol Deviations',value:'2',unit:'detected & resolved this cycle',pct:50,color:'#FFB347'},{label:'CDISC Compliance',value:'99.1%',unit:'SEND/SDTM alignment',pct:99,color:'#00E08A'},{label:'CRO Data Quality',value:'94.3%',unit:'DQS score across CROs',pct:94,color:'#10B981'}],tools:['HL7/FHIR Bridge','Kong API Gateway','LangGraph Clinical Agent','AAS ColdChainRecord','CDISC SDTM Ontology','Apache Kafka'],hitlText:'IMP release authorization: Quality Manager HITL gate — SHACL validates CoA, stability data, supplier qualification before release sign-off. Dispensing approval: pharmacist confirms all protocol eligibility checks.'},
+  {id:'fda',label:'FDA Submissions',sub:'Regulatory Intelligence',x:802,color:'#F59E0B',bg:'rgba(245,158,11,.15)',hitl:true,icon:'◉',title:'Regulatory Intelligence Hub & eCTD Submission Governance',description:'CMC traceability from development batch to regulatory submission, with AI-assisted eCTD section population and real-time FDA/EMA regulatory change monitoring',metrics:[{label:'CMC Traceability',value:'96.8%',unit:'dev batch to submission',pct:97,color:'#F59E0B'},{label:'eCTD Sections Auto-Populated',value:'67%',unit:'via LangGraph Evidence Agent',pct:67,color:'#F59E0B'},{label:'Regulatory Change Impacts',value:'3',unit:'detected, under review',pct:40,color:'#FFB347'},{label:'Submission Readiness',value:'88/100',unit:'composite score',pct:88,color:'#00E08A'}],tools:['Veeva Vault RIM','LangGraph Regulatory Agent','SPARQL Federated Endpoint','NCI Thesaurus','SPL/eCTD Ontology'],hitlText:'Submission review gate: Regulatory Affairs Director approves all AI-generated eCTD sections before filing. Regulatory change impact: Legal and Regulatory sign-off required when FDA/EMA guidance changes affect active submissions.'},
+  {id:'transfer',label:'Tech Transfer',sub:'Manufacturing Scale-Up',x:980,color:'#8B5CF6',bg:'rgba(139,92,246,.15)',hitl:true,icon:'⬢',title:'Semantic Tech Transfer Engine',description:'AAS-governed digital thread from R&D parameters to manufacturing BOP and SAP BOM. SWRL rules automate R&D→manufacturing parameter mapping',metrics:[{label:'Transfer Cycle Time',value:'3.2',unit:'weeks (target: <4 weeks)',pct:80,color:'#8B5CF6'},{label:'BOP Generation Success',value:'100%',unit:'automated via SWRL',pct:100,color:'#00E08A'},{label:'Site Match Confidence',value:'97.4%',unit:'AAS semantic normalization',pct:97,color:'#00E08A'},{label:'SWRL Parameter Mappings',value:'142',unit:'active rules',pct:85,color:'#8B5CF6'}],tools:['Siemens Teamcenter PLM','SAP S/4HANA','SWRL Rules Engine','AAS Registry','OPC-UA Companion Specs'],hitlText:'Manufacturing parameter validation: Process Engineer reviews SWRL-generated parameter mappings before BOP is pushed to Teamcenter. Scale-up risk approval: Site QA Director authorizes transfer to any new facility.'},
+  {id:'sc',label:'Supply Chain',sub:'Operations Intelligence',x:1158,color:'#22C55E',bg:'rgba(34,197,94,.15)',hitl:false,icon:'◯',title:'Supply Chain Risk Observatory & Operations Intelligence',description:'Multi-tier supplier visibility with real-time qualification status, concentration risk analysis, lead time intelligence, and CMO performance governance',metrics:[{label:'Tier 1 Supplier Qualification',value:'94%',unit:'currently qualified',pct:94,color:'#22C55E'},{label:'Concentration Risk Alerts',value:'1',unit:'active — single-source API',pct:20,color:'#FF4A6E'},{label:'Lead Time Accuracy',value:'96.2%',unit:'forecast vs. actual',pct:96,color:'#22C55E'},{label:'CMO Performance Score',value:'88/100',unit:'composite governance score',pct:88,color:'#22C55E'}],tools:['Apache Superset','dbt Semantic Layer','LangGraph SC Agent','Supply Chain Graph','AAS SupplierRecord','Great Expectations'],hitlText:'Supplier deviation escalation: Procurement Director reviews when supplier DQS falls below threshold or qualification window expires. Single-source risk approval: Supply Chain VP must approve any critical API without an alternate supplier.'},
+];
+
+const ARCH_LAYERS_DATA=[
+  {num:'L7',name:'Capability Applications',sub:'Business-facing intelligence — R&D Intelligence, Batch Intelligence, Supply Chain Observatory, Mfg. Analytics, Regulatory Hub, Quality Command Center',color:'#3B6D11',tools:['R&D Intelligence','Batch Intelligence','Supply Chain Obs.','Mfg. Analytics','Regulatory Hub','Quality Command','Process Automation','Self-Service Analytics'],baxter:'Layer 7 is the surface Baxter business users interact with daily. Applications compose capabilities from the lower six layers without building net-new technology. Each app has a dedicated Product Owner and 60% weekly active usage target by Phase 2.'},
+  {num:'L6',name:'AI & Analytics',sub:'ML lifecycle, generative AI gateway, governed analytics, MTBH Circuit Breaker instrumentation at every inference endpoint',color:'#993C1D',tools:['Apache Superset','MLflow','JupyterHub','vLLM/Ollama','LangGraph Agents','FLAML AutoML','Ray Serve','Grafana'],baxter:'All LLMs are self-hosted — no Baxter data sent to external APIs. MTBH Circuit Breaker monitors every production model continuously. Phase 1 AI use cases: Formulation Knowledge Synthesis, Batch Investigation Agent, Stability Trend Forecasting.'},
+  {num:'L5',name:'Knowledge Graph',sub:'RDF/OWL triplestore, SPARQL 1.1 federated endpoint, OWL 2 reasoning, SHACL validation, FAISS semantic search — the semantic intelligence core',color:'#534AB7',tools:['Stardog Enterprise','OWL 2 Reasoner','SHACL 200+ shapes','SPARQL 1.1','SWRL Rules','FAISS+SBERT','R2RML/RML','VocBench 3'],baxter:'847M triples across 6 named graphs. A scientist can ask: "Which batches of Product A failed dissolution testing, and what raw material lots did they share with passing batches?" — answered in seconds across LIMS, MES, and SAP simultaneously. SHACL constraints serve as machine-executable GxP compliance rules.'},
+  {num:'L4',name:'Data Fabric',sub:'Apache Iceberg open lakehouse, dbt Core SQL transformation, Great Expectations quality, Apache Atlas lineage — unified substrate across all business lines',color:'#185FA5',tools:['Apache Iceberg','Delta Lake','dbt Core','Great Expectations','Apache Atlas','Trino','DuckDB','OpenMetadata'],baxter:'All FABRIC datasets stored as Iceberg tables — ACID-compliant, time-travel enabled, cloud-agnostic. Three storage tiers: hot (90d), warm (3yr), cold (regulatory archive). dbt Semantic Layer defines all canonical business metrics as version-controlled contracts — metric drift is structurally impossible for certified dashboards.'},
+  {num:'L3 ★',name:'Semantic Harmonization — Siemens AAS',sub:'Siemens Asset Administration Shell (IEC 63278 / IDTA) · Industrial Operations X · ECLASS 12.0 · VDI/VDE 3682 · OPC-UA pharma companion specs — accelerates by 6–12 months',color:'#00B4A0',tools:['Siemens AAS/IDTA','Industrial Ops X','ECLASS 12.0','VDI/VDE 3682','OPC-UA Pharma','Teamcenter bridge','OSDU Materials','BOM Harmonizer'],baxter:'The architectural accelerator. Every Baxter asset — equipment, batch, material, product, supplier, facility — gets an AAS digital twin with a typed, standardized submodel. The AAS replaces Palantir\'s proprietary ontology objects with open IEC 63278 standard that Baxter owns forever. Siemens IOX OPC-UA adapter eliminates all custom PLC integration.'},
+  {num:'L2',name:'Integration Hub',sub:'Apache NiFi, Kafka Streams, Airbyte, Kong API Gateway, Siemens IOX OPC-UA adapter, HL7/FHIR bridge, SAP BAPI/RFC — all data movement is idempotent and replayable',color:'#854F0B',tools:['Apache NiFi','Kafka Streams','Airbyte','Siemens IOX OPC-UA','Kong API Gateway','HL7/FHIR Bridge','SAP BAPI/RFC','MuleSoft/Camel'],baxter:'Read-only integration in Phase 1 and 2 — no source system is modified, preserving GxP validation status. Every NiFi flow graph is a lineage artifact readable by Apache Atlas. Kafka 30-day retention enables full replay without data loss. Siemens IOX handles all industrial protocol translation.'},
+  {num:'L1',name:'Source Systems',sub:'SAP S/4HANA, Opcenter MES, Teamcenter PLM, LabVantage LIMS, Veeva Vault, PI Historian, SCADA/DCS, ELN (Benchling/IDBS), CRO data feeds — all systems of record',color:'#555550',tools:['SAP S/4HANA','Opcenter MES','Teamcenter PLM','LabVantage LIMS','Veeva Vault','PI Historian','SCADA/DCS','ELN (Benchling)'],baxter:'Baxter operates 40+ distinct systems across four major business lines. FABRIC treats this heterogeneity as a feature — the integration and semantic layers work above the diversity without forcing source system consolidation. All source connectivity is read-only; GxP validated systems are unaffected.'},
+];
+
+const GOV_DOMAINS=[
+  {title:'Data Governance',sub:'OpenMetadata · Apache Atlas · Great Expectations · OPA Policy Engine',icon:'◎',color:'#0099FF',kpis:[{v:'95%',l:'Catalog coverage (Ph2)'},{v:'>92%',l:'R&D data quality score'},{v:'100%',l:'Lineage completeness (Ph3)'},{v:'0',l:'Unclassified PII incidents'}],bars:[{l:'Data catalog coverage (current)',v:40,c:'#0099FF'},{l:'Lineage documentation',v:60,c:'#0099FF'},{l:'DQS R&D domain',v:90,c:'#00E08A'},{l:'MDM master data coverage',v:72,c:'#0099FF'}],capabilities:[{title:'Unified Data Catalog',desc:'All source domains catalogued with automated discovery and schema profiling. OpenMetadata as primary catalog surface.'},{title:'End-to-End Automated Lineage',desc:'From SAP database table through NiFi extraction, dbt transformation, Iceberg storage, to analyst dashboard cell.'},{title:'Data Quality Scoring (DQS)',desc:'Great Expectations suites per domain. DQS calculated per dataset per business line per refresh window.'},{title:'Master Data Management',desc:'Single authoritative MDM record for product, supplier, facility, and organization across all BLs.'}],toolsDetail:['OpenMetadata','Apache Atlas','Great Expectations','OPA Policy Engine','SAP MDM'],phases:[{ph:'Phase 1',target:'R&D catalog seeded · DQS >90% R&D domain · Stewardship program chartered'},{ph:'Phase 2',target:'Full lineage graph deployed · RBAC rollout all domains · 75% catalog coverage'},{ph:'Phase 3',target:'95% catalog coverage · Predictive quality monitoring · 100% lineage'}]},
+  {title:'Semantic Governance',sub:'VocBench 3 · Protégé · OntoDB · SHACL · Git ontology repository',icon:'⬡',color:'#9B72F0',kpis:[{v:'80%',l:'Concept coverage (Ph2)'},{v:'>99.5%',l:'SHACL compliance (Ph3)'},{v:'124',l:'LKIF deontic norms'},{v:'200+',l:'SHACL shapes deployed'}],bars:[{l:'Ontology concept coverage',v:30,c:'#9B72F0'},{l:'SHACL compliance rate',v:94,c:'#00E08A'},{l:'External ontology alignments',v:60,c:'#9B72F0'},{l:'LKIF obligations active',v:85,c:'#9B72F0'}],capabilities:[{title:'Centralized Ontology Registry',desc:'Git-backed versioning with full change history. Every class, property, and axiom tracked with rationale.'},{title:'Term Lifecycle Management',desc:'Proposed → under review → approved → stable → deprecated. Every change has an owner, reviewer, and timeline.'},{title:'SHACL Constraint Library',desc:'200+ shapes enforcing GxP data integrity invariants. Pre-deployment testing mandatory. Violations block graph promotion.'},{title:'Ontology Change Impact Analysis',desc:'Automated SPARQL query identifies all downstream artifacts affected by any proposed change before deployment.'}],toolsDetail:['VocBench 3','Protégé','OntoDB','SHACL Validator (Stardog)','Git (version control)','ROBOT (ontology CI/CD)'],phases:[{ph:'Phase 1',target:'Seed ontology IDTA/ECLASS · 50+ SHACL shapes · Ontology Committee chartered'},{ph:'Phase 2',target:'Mfg + SC extensions · 200+ shapes · CDISC/NCI alignments · 65% coverage'},{ph:'Phase 3',target:'>99.5% SHACL compliance · 85% concept coverage · Self-service extension toolkit'}]},
+  {title:'Analytics Governance',sub:'MLflow · dbt Semantic Layer · Superset RBAC · Great Expectations · Audit Logs',icon:'◇',color:'#06B6D4',kpis:[{v:'100%',l:'Certified: dbt SL'},{v:'<10d',l:'Model promotion cycle'},{v:'85%',l:'Certification rate (Ph3)'},{v:'0',l:'Metric drift incidents'}],bars:[{l:'Certified dashboard coverage',v:73,c:'#06B6D4'},{l:'Model registry completeness',v:89,c:'#06B6D4'},{l:'Audit log coverage',v:97,c:'#00E08A'},{l:'RBAC via ontology roles',v:91,c:'#06B6D4'}],capabilities:[{title:'ML Experiment Registry',desc:'Every training run tracked in MLflow with full hyperparameter, code version, training data version, and evaluation metric lineage.'},{title:'Model Promotion Workflow',desc:'Four-stage gate: experiment → candidate → staging (statistical validation) → production (MTBH-monitored, auto-rollback).'},{title:'dbt Semantic Layer — Single Metric Source',desc:'"Batch yield" means the same thing in every dashboard. Defined once as a version-controlled dbt metric contract. Metric drift is structurally impossible for certified dashboards.'},{title:'Dashboard Certification Program',desc:'"Baxter Certified" badge on dashboards passing: DQS >90%, business logic peer review, and ontological RBAC verification.'}],toolsDetail:['MLflow (experiment tracking + registry)','dbt Core + Semantic Layer','Apache Superset','JupyterHub','Ray Serve','FLAML / AutoML','Grafana','Great Expectations'],phases:[{ph:'Phase 1',target:'MLflow + JupyterHub live · MTBH baselines · Superset on dbt SL · R&D dashboards certified'},{ph:'Phase 2',target:'All 6 apps >60% adoption · Circuit Breaker all models · RBAC fully ontology-driven'},{ph:'Phase 3',target:'85% dashboard certification · <10d model promotion · Advanced CPV analytics'}]},
+  {title:'AI Governance — MTBH Framework',sub:'MTBH Circuit Breaker · OPA · EU AI Act Article 9 · FDA AI/ML · Model Cards · Immutable Audit Log',icon:'⬢',color:'#FFB347',kpis:[{v:'97.6%',l:'MTBH avg across models'},{v:'100%',l:'HITL on safety decisions'},{v:'>85%',l:'EU AI Act (Ph3 target)'},{v:'0',l:'Unauthorized AI actions'}],bars:[{l:'MTBH — Formulation AI',v:98.2,c:'#00E08A'},{l:'MTBH — Clinical Agent',v:96.8,c:'#00E08A'},{l:'MTBH — Regulatory Agent',v:97.4,c:'#00E08A'},{l:'EU AI Act readiness',v:58,c:'#FFB347'}],capabilities:[{title:'MTBH Per Model — 5-Dimensional',desc:'Mean Time Between Hallucinations calculated continuously per deployed model across five dimensions: WHO, WHAT, WHEN, WHERE, WHY. Dimensional stratification enables targeted remediation without systemic shutdown.'},{title:'Circuit Breaker Architecture',desc:'Automated model suspension when MTBH falls below use-case-specific threshold. Zero-downtime failover to last stable model version. Threshold calibrated per risk class.'},{title:'Composition Theorem Enforcement',desc:'Multiplicative fidelity degradation tracked across multi-model pipelines. A LangGraph agent chain of 4 model hops: composite MTBH is the product of individual scores.'},{title:'HITL Gates — Mandatory for Safety Decisions',desc:'No autonomous action on patient-safety decisions, IMP dispensing, clinical batch release, or manufacturing process changes. HITL authorization is a formal governance record committed to the Governance Named Graph.'}],toolsDetail:['MTBH Circuit Breaker (TVE)','OPA Policy Engine','Model Cards (MLflow)','EU AI Act Readiness Scanner','Immutable Audit Log (Gov Graph)','Ray Serve (telemetry hooks)','Sanitization microservice'],phases:[{ph:'Phase 1',target:'MTBH baselines all R&D models · Circuit Breaker R&D domain · EU AI Act assessment'},{ph:'Phase 2',target:'MTBH within threshold 100% · HITL compliance 100% · All model cards published'},{ph:'Phase 3',target:'EU AI Act >85% · Predetermined change control protocols · Anti-collapse validated'}]},
+];
+
+const HITL_POINTS=[
+  {stage:'Requirements',action:'Ontology Governance Committee — LKIF obligation approval and SHACL constraint library review',who:'Architecture Board + Quality Manager',status:'active',statusColor:'#00E08A',time:'2–5 days'},
+  {stage:'R&D Projects',action:'Formulation strategy sign-off — AI-generated competitive intelligence and prior art review',who:'R&D Director + IP Counsel',status:'complete',statusColor:'#3B82F6',time:'1–3 days'},
+  {stage:'Experiments',action:'Emergent behavior validation — new protocol parameter proposed by lab robot (pH 7.5 buffer optimization)',who:'R&D Scientist + QA Manager',status:'pending',statusColor:'#FFB347',time:'4–8 hours'},
+  {stage:'Experiments',action:'STPA UCA boundary exception — robotic arm path within operator safety zone',who:'Safety Engineer + Site QA',status:'complete',statusColor:'#3B82F6',time:'2 hours'},
+  {stage:'Clinical Trials',action:'IMP batch release authorization — SHACL: CoA, stability, supplier qualification, storage all validated',who:'Quality Manager + QP',status:'active',statusColor:'#00E08A',time:'1–2 days'},
+  {stage:'Clinical Trials',action:'Protocol deviation classification — patient sample temperature excursion during transport',who:'Clinical Medical Officer',status:'complete',statusColor:'#3B82F6',time:'6 hours'},
+  {stage:'FDA Submissions',action:'AI-generated eCTD Module 3.2 section review — CMC process description auto-populated at 94% confidence',who:'Regulatory Affairs Director',status:'pending',statusColor:'#FFB347',time:'2–5 days'},
+  {stage:'Tech Transfer',action:'Manufacturing parameter validation — SWRL-mapped scale-up parameters for 200L bioreactor at Site 7',who:'Process Engineer + Site QA Director',status:'active',statusColor:'#00E08A',time:'1–2 days'},
+  {stage:'Supply Chain',action:'Concentration risk escalation — single-source API supplier qualification window expiring in 45 days',who:'Supply Chain VP + Procurement',status:'pending',statusColor:'#FFB347',time:'5–10 days'},
+];
+const ENGINEERS=[
+  {name:'K. Okafor',role:'Knowledge Engineer',fatigue:.18,accuracy:94},
+  {name:'S. Mehta',role:'Ontology Specialist',fatigue:.34,accuracy:91},
+  {name:'R. Vance',role:'R&D Data Steward',fatigue:.61,accuracy:82},
+  {name:'J. Lee',role:'Clinical Data Engineer',fatigue:.24,accuracy:96},
+];
+
+const PHASES=[
+  {id:'p1',label:'Foundation',sub:'R&D Intelligence & Core Infrastructure',months:'Months 1–6',color:'#0099FF',invest:'$600K – $900K',gate:'Phase 1 → Phase 2 Gate',gateColor:'rgba(0,153,255,.2)',gateText:'#0099FF',gateCriteria:'20+ weekly active R&D users · DQS >90% · Governance baseline approved · Steering Committee authorizes Phase 2',groups:[{label:'Month 1',tasks:[{name:'AI4RE SREG Deployment',desc:'SREG intake workflows for Marketing, Operations CI, and Compliance. First ORSD templates.',badge:'AI4RE',bc:'rgba(0,153,255,.15)',btc:'#0099FF',dot:'#0099FF'},{name:'Infrastructure Baseline',desc:'Cloud environment, network security zones, CI/CD pipeline, GitOps repository, Kafka cluster, AAS Registry.',badge:'Infrastructure',bc:'rgba(0,200,122,.12)',btc:'#00C87A',dot:'#00C87A'}]},{label:'Months 1–2',tasks:[{name:'Layer 1–2: R&D Source Integration',desc:'SAP LIMS/ELN integration via NiFi and Airbyte. Kafka topics for R&D domains. IOX pilot at R&D facility. First AAS shells for lab equipment.',badge:'Integration',bc:'rgba(0,180,160,.12)',btc:'#00B4A0',dot:'#00B4A0'}]},{label:'Months 2–4',tasks:[{name:'Layer 4–5: Data Fabric + Knowledge Graph v1.0',desc:'Iceberg table design, dbt models, Great Expectations suites. Seed ontology from IDTA/ECLASS. OWL 2 hierarchy, 50+ SHACL shapes, SPARQL endpoint live.',badge:'Semantic',bc:'rgba(155,114,240,.12)',btc:'#9B72F0',dot:'#9B72F0'},{name:'Layer 6: Analytics + MTBH Baseline',desc:'MLflow, JupyterHub, Superset deployed. MTBH service live. Circuit Breaker configured for R&D domain. Baselines set per model.',badge:'AI Gov',bc:'rgba(240,165,0,.12)',btc:'#F0A500',dot:'#F0A500'}]},{label:'Months 4–6',tasks:[{name:'R&D Intelligence Platform MVP',desc:'Cross-BL formulation query, ELN harmonization view, failed experiment search. Delivered to 20+ pilot R&D users.',badge:'Cap App',bc:'rgba(0,200,122,.12)',btc:'#00C87A',dot:'#00C87A'},{name:'Batch Intelligence MVP',desc:'LIMS–MES semantic linkage, batch genealogy graph, QC release decision support. Live for QC and Manufacturing pilot users.',badge:'Cap App',bc:'rgba(0,200,122,.12)',btc:'#00C87A',dot:'#00C87A'},{name:'Wave 1 Portfolio Rationalization',desc:'Disconnected ELN analytics, ad-hoc scripts, duplicate ontology tooling identified and migration initiated. $70K–$160K/yr savings.',badge:'Rationalize',bc:'rgba(232,69,69,.12)',btc:'#E84545',dot:'#E84545'}]}],results:[{metric:'20+',label:'Weekly active R&D users',target:'Gate criterion'},{metric:'>90%',label:'R&D domain DQS score',target:'Gate criterion'},{metric:'50+',label:'SHACL shapes deployed',target:'Governance baseline'},{metric:'12 wks',label:'Time to first R&D insight',target:'~6× faster than Palantir'},{metric:'2',label:'Capability apps live',target:'R&D Intelligence + Batch Intelligence'},{metric:'$70–160K',label:'Annual Wave 1 savings',target:'From rationalization Wave 1'}],investments:[{label:'Platform infrastructure',val:'$180K – $280K'},{label:'Integration (NiFi/Airbyte/Kafka)',val:'$120K – $180K'},{label:'Knowledge graph + semantic layer',val:'$100K – $150K'},{label:'UI + HITL development',val:'$80K – $120K'},{label:'PMO + governance setup',val:'$60K – $70K'}],rationalization:[{sys:'Disconnected ELN analytics (Excel, Access)',action:'Replace',ac:'rgba(232,69,69,.15)',at:'#E84545'},{sys:'Ad-hoc Python scripts for LIMS reporting',action:'Replace',ac:'rgba(232,69,69,.15)',at:'#E84545'},{sys:'Duplicate ontology tooling (local OWL editors)',action:'Consolidate',ac:'rgba(240,165,0,.15)',at:'#F0A500'}]},
+  {id:'p2',label:'Scale',sub:'Manufacturing, Clinical & Supply Chain Expansion',months:'Months 7–18',color:'#F0A500',invest:'$800K – $1.2M',gate:'Phase 2 → Phase 3 Gate',gateColor:'rgba(240,165,0,.2)',gateText:'#F0A500',gateCriteria:'All 6 apps at >60% weekly adoption · 80%+ Tier 1 digital twin · MTBH active all production AI · Wave 1–2 decommissions confirmed',groups:[{label:'Q3 (Mo 7–9)',tasks:[{name:'Layer 1–2: Manufacturing + Supply Chain Integration',desc:'Opcenter MES, PI Historian, SCADA via Siemens IOX. SAP APO/IBP, CMO portal feeds via Kong Gateway.',badge:'Integration',bc:'rgba(240,165,0,.12)',btc:'#F0A500',dot:'#F0A500'}]},{label:'Q3–Q4 (Mo 8–12)',tasks:[{name:'Siemens AAS Expansion — All Sites',desc:'AAS shells for all manufacturing assets across all 14 sites. IOX operational data context. Opcenter MES AAS linkage.',badge:'Siemens AAS',bc:'rgba(0,180,160,.12)',btc:'#00B4A0',dot:'#00B4A0'},{name:'Knowledge Graph Extended',desc:'Manufacturing ontology extension (batch, equipment, process). Supply chain ontology (supplier, material, logistics).',badge:'Semantic',bc:'rgba(155,114,240,.12)',btc:'#9B72F0',dot:'#9B72F0'}]},{label:'Q4–Q5 (Mo 10–15)',tasks:[{name:'Capability Apps 3 & 4',desc:'Manufacturing Process Analytics MVP. Supply Chain Risk Observatory MVP. Third and fourth capability applications live.',badge:'Cap Apps',bc:'rgba(0,200,122,.12)',btc:'#00C87A',dot:'#00C87A'},{name:'Governance Level 2',desc:'Full lineage graph deployed. RBAC rollout all domains. Circuit Breaker on all production AI models. SOPs for all governance bodies.',badge:'Governance',bc:'rgba(155,114,240,.12)',btc:'#9B72F0',dot:'#9B72F0'}]},{label:'Q5–Q6 (Mo 14–18)',tasks:[{name:'Capability Apps 5 & 6',desc:'Quality & Compliance Command Center MVP. Regulatory Intelligence Hub Phase 1. Process Automation Workflows MVP.',badge:'Cap Apps',bc:'rgba(0,200,122,.12)',btc:'#00C87A',dot:'#00C87A'},{name:'Wave 1–2 Portfolio Rationalization',desc:'Standalone BI tools consolidated to Superset. Shadow data warehouses migrated to Iceberg. $450K–$1.05M annual savings.',badge:'Rationalize',bc:'rgba(232,69,69,.12)',btc:'#E84545',dot:'#E84545'}]}],results:[{metric:'6',label:'Capability apps live',target:'>60% weekly adoption each'},{metric:'80%+',label:'Tier 1 digital twin coverage',target:'Gate criterion'},{metric:'100%',label:'IMP chain-of-custody',target:'All new programs'},{metric:'$450K–1M',label:'Annual Wave 1–2 savings',target:'Rationalization realized'},{metric:'14 sites',label:'AAS shells deployed',target:'All manufacturing facilities'},{metric:'2–4 wks',label:'Tech transfer cycle time',target:'Down from 8–12 weeks'}],investments:[{label:'Clinical + manufacturing integration',val:'$220K – $340K'},{label:'AAS multi-site expansion (Siemens)',val:'$180K – $260K'},{label:'Capability apps 3–6 development',val:'$160K – $240K'},{label:'Supply chain + Tier 1/2 digital twin',val:'$100K – $160K'},{label:'Portfolio rationalization execution',val:'$80K – $120K'},{label:'PMO + governance Level 2',val:'$60K – $80K'}],rationalization:[{sys:'Standalone BI tools (Tableau, Power BI scatter licenses)',action:'Consolidate',ac:'rgba(240,165,0,.15)',at:'#F0A500'},{sys:'Shadow data warehouses (BL-specific Redshift, Snowflake)',action:'Migrate + Retire',ac:'rgba(232,69,69,.15)',at:'#E84545'},{sys:'Disconnected ML platforms (local MLflow, Databricks)',action:'Consolidate',ac:'rgba(240,165,0,.15)',at:'#F0A500'},{sys:'Legacy reporting databases (SSRS, Crystal Reports)',action:'Migrate',ac:'rgba(240,165,0,.15)',at:'#F0A500'}]},
+  {id:'p3',label:'Optimize',sub:'AI Augmentation & Full Governance Maturity',months:'Months 19–36',color:'#00C87A',invest:'$500K – $800K / yr',gate:'Phase 3 Completion',gateColor:'rgba(0,200,122,.2)',gateText:'#00C87A',gateCriteria:'EU AI Act readiness >85% · 100% lineage completeness · $720K–$1.7M annualized savings · Full governance maturity (Level 3 all four domains)',groups:[{label:'Mo 19–24',tasks:[{name:'LangGraph Agent Suite — Production',desc:'Batch Investigation Agent, Formulation Knowledge Synthesis Agent, Regulatory Evidence Agent deployed. MTBH threshold tuning per use-case risk class. FLAML predictive models in production.',badge:'AI Agents',bc:'rgba(240,165,0,.12)',btc:'#F0A500',dot:'#F0A500'}]},{label:'Mo 21–27',tasks:[{name:'Regulatory Intelligence Hub — Full Capability',desc:'SPL/eCTD ontology development. CMC traceability graph. Veeva RIM integration. FDA/EMA regulatory change monitoring feeds. Regulatory Evidence Agent full deployment.',badge:'Regulatory',bc:'rgba(155,114,240,.12)',btc:'#9B72F0',dot:'#9B72F0'}]},{label:'Mo 24–30',tasks:[{name:'Knowledge Federation — CMO Partners',desc:'AAS-based federated integration with select CMO partners and Tier 1 API suppliers. SPARQL federation endpoint for cross-enterprise query.',badge:'Federation',bc:'rgba(0,180,160,.12)',btc:'#00B4A0',dot:'#00B4A0'}]},{label:'Mo 27–36',tasks:[{name:'Full Governance Maturity (Level 3) + EU AI Act',desc:'Self-service ontology extension toolkit. Predictive data quality monitoring. EU AI Act Article 9 compliance documentation. FDA AI/ML predetermined change control protocols.',badge:'Governance',bc:'rgba(155,114,240,.12)',btc:'#9B72F0',dot:'#9B72F0'},{name:'Wave 3 Rationalization',desc:'Legacy reporting databases decommissioned. SAP BW partial reduction. Infrastructure right-sizing. Advanced CPV analytics. Cross-BL benchmarking suite.',badge:'Rationalize',bc:'rgba(232,69,69,.12)',btc:'#E84545',dot:'#E84545'}]}],results:[{metric:'>85%',label:'EU AI Act Article 9 readiness',target:'Phase 3 completion criterion'},{metric:'100%',label:'Data lineage completeness',target:'All production reports'},{metric:'$1.7M',label:'Peak annual rationalization savings',target:'All three waves combined'},{metric:'$6–13M',label:'Annual advantage vs. Palantir',target:'Sustained steady state'},{metric:'8+',label:'Capability apps live',target:'All domains covered'},{metric:'Level 3',label:'Governance maturity',target:'All four governance domains'}],investments:[{label:'LangGraph agent suite + tuning',val:'$140K – $200K'},{label:'Regulatory Intelligence Hub completion',val:'$120K – $180K'},{label:'CMO knowledge federation',val:'$80K – $120K'},{label:'EU AI Act compliance package',val:'$60K – $100K'},{label:'Wave 3 rationalization execution',val:'$60K – $100K'},{label:'PMO + governance Level 3',val:'$40K – $60K/yr'}],rationalization:[{sys:'Legacy reporting databases (Oracle SSRS, Access, Crystal)',action:'Retire',ac:'rgba(232,69,69,.15)',at:'#E84545'},{sys:'SAP Business Warehouse (partial)',action:'Evaluate → Reduce',ac:'rgba(240,165,0,.15)',at:'#F0A500'},{sys:'Remaining scattered ML tracking tools',action:'Consolidate',ac:'rgba(240,165,0,.15)',at:'#F0A500'}]},
+];
+
+// ═══════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════
+function showView(v){
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  const idx={overview:0,exec:1,stk:2,rd:3,arch:4,road:5};
+  document.querySelectorAll('.nav-btn')[idx[v]].classList.add('active');
+  if(v==='exec') setTimeout(animExec,120);
+  if(v==='stk') setTimeout(()=>document.querySelectorAll('.gov-bar-fill').forEach(e=>{e.style.width=e.dataset.w||'0%'}),200);
+}
+
+function showRdTab(tab, btn){
+  document.querySelectorAll('.rd-stab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.rd-subview').forEach(v=>v.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('rd-'+tab).classList.add('active');
+  if(tab==='gov') setTimeout(()=>document.querySelectorAll('#rd-gov-view .gov-bar-fill').forEach(e=>{e.style.width=e.dataset.w||'0%'}),200);
+}
+
+// ═══════════════════════════════════════════════════════
+// EXEC SUMMARY
+// ═══════════════════════════════════════════════════════
+function animExec(){
+  document.querySelectorAll('.vd-bar-fill,.tco-fill,.readiness-fill').forEach(e=>{e.style.width=e.dataset.w||'0%'});
+}
+function renderExec(){
+  // Pillars (both overview and exec)
+  ['ov-pillar-grid','exec-pillar-grid'].forEach(id=>{
+    const pg=document.getElementById(id);
+    if(!pg) return;
+    PILLARS.forEach(p=>{
+      pg.innerHTML+=`<div class="pillar" style="background:${p.color};border:1px solid ${p.border}">
+        <div class="pillar-icon">${p.icon}</div>
+        <div class="pillar-title" style="color:${p.tc}">${p.title}</div>
+        <div class="pillar-desc">${p.desc}</div>
+      </div>`;
+    });
+  });
+  // Value drivers
+  const vdl=document.getElementById('vd-list');
+  VALUE_DRIVERS.forEach(d=>{
+    vdl.innerHTML+=`<div class="vd-row">
+      <div>
+        <div class="vd-label">${d.label}<span>${d.sub}</span></div>
+        <div class="vd-bar-wrap">
+          <div style="font-size:10px;color:var(--red);width:160px;flex-shrink:0">${d.before}</div>
+          <div style="font-size:12px;color:var(--t3);flex-shrink:0">→</div>
+          <div style="font-size:10px;color:var(--green);flex:1">${d.after}</div>
+        </div>
+      </div>
+      <div>
+        <div class="vd-bar" style="width:120px"><div class="vd-bar-fill" style="background:${d.color};width:0%" data-w="${d.pct}%"></div></div>
+        <div style="font-size:10px;color:${d.color};text-align:right;margin-top:2px;font-family:var(--f-mono)">${d.pct}%</div>
+      </div>
+    </div>`;
+  });
+  // TCO
+  const tco=document.getElementById('tco-list');
+  TCO_DATA.forEach(t=>{
+    tco.innerHTML+=`<div class="tco-row">
+      <div class="tco-label"><span>${t.label}</span><span style="color:${t.textColor};font-family:var(--f-mono)">${t.val}</span></div>
+      <div class="tco-track"><div class="tco-fill" style="background:${t.color};width:0%;color:${t.textColor}" data-w="${t.pct}%"></div></div>
+    </div>`;
+  });
+  // Readiness
+  const rl=document.getElementById('readiness-list');
+  READINESS.forEach(r=>{
+    rl.innerHTML+=`<div class="readiness-row">
+      <div class="readiness-name">${r.label}</div>
+      <div class="readiness-score" style="color:${r.color}">${r.pct}%</div>
+      <div class="readiness-bar" style="width:100px"><div class="readiness-fill" style="background:${r.color};width:0%" data-w="${r.pct}%"></div></div>
+    </div>`;
+  });
+  // Gate summary
+  const gs=document.getElementById('gate-summary');
+  GATE_SUMMARY.forEach(g=>{
+    const crit=g.criteria.map(c=>`<div style="display:flex;align-items:start;gap:6px;padding:3px 0"><div style="width:5px;height:5px;border-radius:50%;background:${g.color};flex-shrink:0;margin-top:4px"></div><div style="font-size:11px;color:var(--t2)">${c}</div></div>`).join('');
+    gs.innerHTML+=`<div style="margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.05)">
+      <div style="font-family:var(--f-head);font-size:11px;font-weight:600;color:${g.color};margin-bottom:6px">${g.phase}</div>${crit}</div>`;
+  });
+  setTimeout(animExec,200);
+}
+
+// ═══════════════════════════════════════════════════════
+// STAKEHOLDERS
+// ═══════════════════════════════════════════════════════
+function renderStakeholders(){
+  const tabs=document.getElementById('stk-tabs');
+  const body=document.getElementById('stk-body');
+  STAKEHOLDERS.forEach((s,i)=>{
+    tabs.innerHTML+=`<div class="stk-tab ${i===0?'active':''}" onclick="switchStk(${i})">
+      <div class="stk-tab-dot" style="background:${s.dot}"></div>${s.label}</div>`;
+    const ba=s.baRows.map(r=>`<div class="ba-row"><div class="ba-cell ba-before">✕ ${r.b}</div><div class="ba-cell ba-after">✓ ${r.a}</div></div>`).join('');
+    const tl=s.timeline.map((t,ti)=>`<div class="ts-item">
+      <div class="ts-when">${t.when}</div>
+      <div class="ts-dot-col"><div class="ts-dot" style="background:${t.color}"></div>${ti<s.timeline.length-1?'<div class="ts-line"></div>':''}</div>
+      <div class="ts-text">${t.text}</div></div>`).join('');
+    const bcs=s.benefits.map(b=>`<div class="benefit-card">
+      <div class="bc-icon" style="background:${b.color};border:1px solid ${b.bc}">${b.icon}</div>
+      <div class="bc-title" style="color:${b.tc}">${b.title}</div>
+      <div class="bc-desc">${b.desc}</div>
+      <div class="bc-metric"><div class="bc-metric-val" style="color:${b.tc}">${b.metric}</div><div class="bc-metric-lbl">${b.mlbl}</div></div>
+    </div>`).join('');
+    body.innerHTML+=`<div class="stk-panel ${i===0?'active':''}" id="stk-panel-${i}">
+      <div class="stk-hero" style="background:${s.heroBg};border:1px solid ${s.heroBorder}">
+        <div class="stk-hero-label" style="color:${s.color}">${s.heroLabel}</div>
+        <div class="stk-hero-title">${s.heroTitle}</div>
+        <div class="stk-hero-sub">${s.heroSub}</div>
+      </div>
+      <div class="stk-content-grid">${bcs}</div>
+      <div style="display:grid;grid-template-columns:1fr 280px;gap:14px">
+        <div class="before-after">
+          <div class="ba-header">
+            <div class="ba-header-cell" style="color:var(--red)">Before FABRIC</div>
+            <div class="ba-header-cell" style="color:var(--green)">After FABRIC</div>
+          </div>
+          <div class="ba-rows">${ba}</div>
+        </div>
+        <div class="timeline-strip"><div class="ts-title">Implementation timeline</div><div style="display:flex;flex-direction:column;gap:0">${tl}</div></div>
+      </div>
+    </div>`;
+  });
+}
+function switchStk(i){
+  document.querySelectorAll('.stk-tab').forEach((t,j)=>t.classList.toggle('active',j===i));
+  document.querySelectorAll('.stk-panel').forEach((p,j)=>p.classList.toggle('active',j===i));
+}
+
+// ═══════════════════════════════════════════════════════
+// R&D JOURNEY
+// ═══════════════════════════════════════════════════════
+let selectedStage=null;
+function renderStages(){
+  const g=document.getElementById('stage-nodes');
+  STAGES.forEach((s,i)=>{
+    const el=document.createElementNS('http://www.w3.org/2000/svg','g');
+    el.setAttribute('class','stage-node');
+    el.setAttribute('id','sn-'+s.id);
+    el.onclick=()=>openStage(i);
+    if(s.hitl){
+      [1,2].forEach(ri=>{
+        const r=document.createElementNS('http://www.w3.org/2000/svg','circle');
+        r.setAttribute('class','hitl-ring'+(ri===2?'2':''));
+        r.setAttribute('cx',s.x);r.setAttribute('cy',105);r.setAttribute('r',16);
+        r.setAttribute('fill','none');r.setAttribute('stroke',s.color);
+        r.setAttribute('stroke-width',ri===1?'1':'0.5');r.setAttribute('opacity',ri===1?'0.7':'0.4');
+        el.appendChild(r);
+      });
+    }
+    const cp=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    cp.setAttribute('cx',s.x);cp.setAttribute('cy',105);cp.setAttribute('r',20);
+    cp.setAttribute('fill',s.bg);cp.setAttribute('stroke',s.color);cp.setAttribute('stroke-width','1.5');
+    cp.setAttribute('class','stage-bg');el.appendChild(cp);
+    const ic=document.createElementNS('http://www.w3.org/2000/svg','text');
+    ic.setAttribute('x',s.x);ic.setAttribute('y',110);ic.setAttribute('text-anchor','middle');
+    ic.setAttribute('font-size','14');ic.setAttribute('fill',s.color);ic.textContent=s.icon;
+    el.appendChild(ic);
+    const nm=document.createElementNS('http://www.w3.org/2000/svg','text');
+    nm.setAttribute('x',s.x);nm.setAttribute('y',38);nm.setAttribute('text-anchor','middle');
+    nm.setAttribute('font-size','11');nm.setAttribute('font-weight','600');
+    nm.setAttribute('font-family',"'Exo 2',sans-serif");nm.setAttribute('fill',s.color);
+    nm.textContent=s.label;el.appendChild(nm);
+    const sb=document.createElementNS('http://www.w3.org/2000/svg','text');
+    sb.setAttribute('x',s.x);sb.setAttribute('y',52);sb.setAttribute('text-anchor','middle');
+    sb.setAttribute('font-size','9');sb.setAttribute('font-family',"'DM Sans',sans-serif");
+    sb.setAttribute('fill','#4A7A9B');sb.textContent=s.sub;el.appendChild(sb);
+    if(s.hitl){
+      const ht=document.createElementNS('http://www.w3.org/2000/svg','text');
+      ht.setAttribute('x',s.x);ht.setAttribute('y',130);ht.setAttribute('text-anchor','middle');
+      ht.setAttribute('font-size','8');ht.setAttribute('font-family',"'JetBrains Mono',monospace");
+      ht.setAttribute('fill',s.color);ht.setAttribute('opacity','.7');ht.textContent='HITL';
+      el.appendChild(ht);
+    }
+    g.appendChild(el);
+  });
+}
+function openStage(i){
+  const s=STAGES[i];
+  document.querySelectorAll('.stage-node').forEach(n=>n.classList.remove('selected'));
+  document.getElementById('sn-'+s.id).classList.add('selected');
+  document.getElementById('ph-icon').textContent=s.icon;
+  document.getElementById('ph-icon').style.background=s.bg;
+  document.getElementById('ph-icon').style.border='1px solid '+s.color;
+  document.getElementById('ph-title').textContent=s.title;
+  document.getElementById('ph-sub').textContent=s.description;
+  const pb=document.getElementById('panel-body');
+  pb.innerHTML='';
+  s.metrics.forEach(m=>{
+    pb.innerHTML+=`<div class="metric-card">
+      <div class="metric-label">${m.label}</div>
+      <div class="metric-value" style="color:${m.color}">${m.value}</div>
+      <div class="metric-unit">${m.unit}</div>
+      <div class="metric-bar"><div class="metric-bar-fill" style="background:${m.color};width:${m.pct}%"></div></div>
+    </div>`;
+  });
+  pb.innerHTML+=`<div class="tools-card">
+    <div class="tools-label">Platform &amp; tooling</div>
+    <div class="tools-list">${s.tools.map(t=>`<span class="tool-pill">${t}</span>`).join('')}</div>
+  </div>`;
+  if(s.hitlText){
+    pb.innerHTML+=`<div class="hitl-card">
+      <div class="tools-label" style="color:var(--gold)">⬡ Human-in-the-Loop governance</div>
+      <div class="hitl-text">${s.hitlText}</div>
+    </div>`;
+  }
+  document.getElementById('panel-empty').style.display='none';
+  const pc=document.getElementById('panel-content');
+  pc.classList.add('visible');
+}
+function closePanel(){
+  document.getElementById('panel-empty').style.display='';
+  document.getElementById('panel-content').classList.remove('visible');
+  document.querySelectorAll('.stage-node').forEach(n=>n.classList.remove('selected'));
+}
+
+// ═══════════════════════════════════════════════════════
+// R&D ARCH LAYERS
+// ═══════════════════════════════════════════════════════
+function renderRdArch(){
+  const cont=document.getElementById('rd-arch-view');
+  cont.innerHTML='<div style="font-family:var(--f-head);font-size:11px;color:var(--t3);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;padding:0 4px">Architecture layers — click to expand component details</div>';
+  cont.innerHTML+=`<div class="arch-govband"><span style="color:var(--accent);font-family:var(--f-head);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px">↔ Governance</span>Data · Semantic · Analytics · AI/MTBH Circuit Breaker — spans all layers</div>`;
+  ARCH_LAYERS_DATA.forEach((ly,i)=>{
+    const isSie=ly.num.includes('★');
+    const tl=ly.tools.map(t=>`<span class="arch-tool" style="background:${ly.color}22;color:${ly.color};border:1px solid ${ly.color}44">${t}</span>`).join('');
+    const div=document.createElement('div');
+    div.className='arch-layer';
+    div.style.cssText=`--lc:${ly.color};border-left-color:${ly.color}`;
+    div.style.borderWidth=isSie?'2px':'1px';
+    div.style.borderLeftWidth='3px';
+    div.setAttribute('style',div.getAttribute('style')+`;border-left-color:${ly.color}`);
+    div.onclick=()=>{
+      div.querySelector('.arch-expand').classList.toggle('open');
+    };
+    div.innerHTML=`<div class="arch-layer-num" style="color:${ly.color}88">${ly.num}</div>
+      <div class="arch-layer-main">
+        <div class="arch-layer-name" style="color:${ly.color}">${ly.name}</div>
+        <div class="arch-layer-sub">${ly.sub}</div>
+      </div>
+      <div class="arch-layer-tools">${tl}</div>
+      <div class="arch-expand" style="grid-column:1/-1;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.06)">
+        <div style="font-size:11px;color:var(--t2);line-height:1.65;margin-bottom:6px">${ly.baxter}</div>
+      </div>`;
+    cont.appendChild(div);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// GOVERNANCE DOMAINS
+// ═══════════════════════════════════════════════════════
+function renderGov(){
+  const cont=document.getElementById('rd-gov-view');
+  GOV_DOMAINS.forEach((d,i)=>{
+    const div=document.createElement('div');
+    div.className='gov-domain';
+    div.onclick=()=>{
+      div.classList.toggle('open');
+      div.querySelector('.gov-detail').classList.toggle('open');
+      setTimeout(()=>div.querySelectorAll('.gov-bar-fill').forEach(e=>{e.style.width=e.dataset.w||'0%'}),100);
+    };
+    const kpis=d.kpis.map(k=>`<div class="gov-kpi"><div class="gov-kpi-val" style="color:${d.color}">${k.v}</div><div class="gov-kpi-lbl">${k.l}</div></div>`).join('');
+    const bars=d.bars.map(b=>`<div class="gov-bar-row">
+      <div class="gov-bar-lbl"><span>${b.l}</span><span style="font-family:'JetBrains Mono';color:${b.c}">${b.v}%</span></div>
+      <div class="gov-bar-track"><div class="gov-bar-fill" style="background:${b.c};width:0%" data-w="${b.v}%"></div></div>
+    </div>`).join('');
+    const caps=d.capabilities.map(c=>`<div class="gov-cap-item">
+      <div><div class="gov-cap-dot" style="background:${d.color}"></div></div>
+      <div><div class="gov-cap-title">${c.title}</div><div class="gov-cap-desc">${c.desc}</div></div>
+    </div>`).join('');
+    const tools=d.toolsDetail.map(t=>`<span class="gov-tool-chip" style="background:${d.color}18;color:${d.color};border:1px solid ${d.color}33">${t}</span>`).join('');
+    const phases=d.phases.map(p=>`<div class="gov-phase-row"><div class="gov-phase-lbl">${p.ph}</div><div style="color:var(--t2);font-size:10px">${p.target}</div></div>`).join('');
+    div.innerHTML=`<div class="gov-domain-hdr">
+        <div class="gov-domain-icon" style="background:${d.color}22;color:${d.color}">${d.icon}</div>
+        <div style="flex:1"><div class="gov-domain-title" style="color:${d.color}">${d.title}</div><div class="gov-domain-sub">${d.sub}</div></div>
+        <div class="gov-domain-chevron">▾</div>
+      </div>
+      <div class="gov-kpis">${kpis}</div>
+      <div class="gov-bars">${bars}</div>
+      <div class="gov-detail">
+        <div style="font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px">Core capabilities</div>
+        <div class="gov-cap-grid">${caps}</div>
+        <div style="font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin:10px 0 4px">Tooling</div>
+        <div class="gov-tools-detail">${tools}</div>
+        <div style="font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin:10px 0 4px">Phase targets</div>
+        <div style="display:flex;flex-direction:column;gap:4px">${phases}</div>
+      </div>`;
+    cont.appendChild(div);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// HITL
+// ═══════════════════════════════════════════════════════
+function renderHITL(){
+  const pts=document.getElementById('hitl-points');
+  HITL_POINTS.forEach(p=>{
+    const div=document.createElement('div');
+    div.className='hitl-pt';
+    div.innerHTML=`<div class="hitl-pt-dot ${p.status==='pending'?'active':''}" style="background:${p.statusColor};color:${p.statusColor}"></div>
+      <div><div class="hitl-pt-action">${p.action}</div><div class="hitl-pt-stage">${p.stage}</div></div>
+      <div style="color:var(--t2)">${p.who}</div>
+      <div class="hitl-pt-status" style="background:${p.statusColor}22;color:${p.statusColor};border:1px solid ${p.statusColor}44">${p.status}</div>
+      <div class="hitl-pt-time">${p.time}</div>`;
+    pts.appendChild(div);
+  });
+  const eng=document.getElementById('hf-engineers');
+  ENGINEERS.forEach(e=>{
+    const sc=e.fatigue>.5?'#FFB347':'#00E08A';
+    const div=document.createElement('div');
+    div.style.cssText='display:grid;grid-template-columns:1fr 80px 80px 60px;gap:8px;align-items:center;margin-bottom:8px;font-size:11px';
+    div.innerHTML=`<div><span style="color:var(--t1)">${e.name}</span><span style="color:var(--t3);margin-left:6px;font-size:10px">${e.role}</span></div>
+      <div><div style="font-size:9px;color:var(--t3);margin-bottom:2px">Fatigue</div><div class="hf-meter"><div class="hf-fill" style="background:${sc};width:${e.fatigue*100}%"></div></div></div>
+      <div><div style="font-size:9px;color:var(--t3);margin-bottom:2px">Accuracy</div><div class="hf-meter"><div class="hf-fill" style="background:#3B82F6;width:${e.accuracy}%"></div></div></div>
+      <div style="font-family:'JetBrains Mono';font-size:11px;color:${sc};text-align:right">${e.accuracy}%</div>`;
+    eng.appendChild(div);
+  });
+  const tg=document.getElementById('trust-grid');
+  [{range:'0.60–0.69',acc:58,accept:71,c:'#FF4A6E'},{range:'0.70–0.79',acc:72,accept:79,c:'#FFB347'},{range:'0.80–0.89',acc:84,accept:88,c:'#FFB347'},{range:'0.90–0.94',acc:91,accept:90,c:'#00E08A'},{range:'0.95–1.00',acc:96,accept:94,c:'#00E08A'}].forEach(b=>{
+    const div=document.createElement('div');
+    div.className='trust-bucket';
+    div.innerHTML=`<div class="tb-range">${b.range}</div>
+      <div class="tb-acc" style="color:${b.c}">${b.acc}%</div>
+      <div style="font-size:8px;color:var(--t3)">AI accuracy</div>
+      <div class="tb-bar" style="background:${b.c}33"><div style="height:100%;border-radius:2px;background:${b.c};width:${b.accept}%"></div></div>
+      <div style="font-size:8px;color:var(--t3);margin-top:2px">${b.accept}% accepted</div>`;
+    tg.appendChild(div);
+  });
+  document.getElementById('paradox-chart').innerHTML=`
+  <div style="font-size:10px;color:var(--t3);margin-bottom:8px">Without Human-AI Teaming Framework vs. with it — system reliability over time as AI accuracy improves</div>
+  <svg width="100%" viewBox="0 0 560 100" style="overflow:visible">
+    <line x1="40" y1="10" x2="40" y2="80" stroke="rgba(255,255,255,.15)" stroke-width="0.5"/>
+    <line x1="40" y1="80" x2="540" y2="80" stroke="rgba(255,255,255,.15)" stroke-width="0.5"/>
+    <text x="36" y="14" text-anchor="end" font-size="8" fill="rgba(170,200,230,.5)" font-family="'JetBrains Mono'">100%</text>
+    <text x="36" y="46" text-anchor="end" font-size="8" fill="rgba(170,200,230,.5)" font-family="'JetBrains Mono'">85%</text>
+    <text x="36" y="80" text-anchor="end" font-size="8" fill="rgba(170,200,230,.5)" font-family="'JetBrains Mono'">70%</text>
+    <text x="90" y="92" text-anchor="middle" font-size="8" fill="rgba(170,200,230,.4)" font-family="'DM Sans'">Wk 0</text>
+    <text x="220" y="92" text-anchor="middle" font-size="8" fill="rgba(170,200,230,.4)" font-family="'DM Sans'">Wk 13</text>
+    <text x="350" y="92" text-anchor="middle" font-size="8" fill="rgba(170,200,230,.4)" font-family="'DM Sans'">Wk 26</text>
+    <text x="480" y="92" text-anchor="middle" font-size="8" fill="rgba(170,200,230,.4)" font-family="'DM Sans'">Wk 52</text>
+    <polyline points="90,16 220,22 350,36 480,46" fill="none" stroke="#FF4A6E" stroke-width="1.5" stroke-dasharray="4 3" opacity=".7"/>
+    <polyline points="90,16 220,15 350,14 480,12" fill="none" stroke="#00E08A" stroke-width="2"/>
+    <polyline points="90,60 220,36 350,22 480,14" fill="none" stroke="rgba(59,130,246,.7)" stroke-width="1.5" stroke-dasharray="2 2"/>
+    <circle cx="480" cy="46" r="4" fill="#FF4A6E"/>
+    <circle cx="480" cy="12" r="4" fill="#00E08A"/>
+    <text x="490" y="49" font-size="8" fill="#FF4A6E" font-family="'DM Sans'">85% (no framework)</text>
+    <text x="490" y="15" font-size="8" fill="#00E08A" font-family="'DM Sans'">99% (with framework)</text>
+    <text x="490" y="33" font-size="8" fill="rgba(59,130,246,.8)" font-family="'DM Sans'">AI accuracy: 92%</text>
+  </svg>`;
+}
+
+// ═══════════════════════════════════════════════════════
+// ARCHITECTURE VIEW (Layer 5)
+// ═══════════════════════════════════════════════════════
+function renderArchView(){
+  const cont=document.getElementById('arch-layers-list');
+  ARCH_LAYERS_DATA.forEach((ly,i)=>{
+    const isSie=ly.num.includes('★');
+    const tl=ly.tools.map(t=>`<span class="alc-tool" style="background:${ly.color}22;color:${ly.color};border:1px solid ${ly.color}44">${t}</span>`).join('');
+    const div=document.createElement('div');
+    div.className='arch-layer-card';
+    div.style.cssText=`border-left:4px solid ${ly.color};${isSie?'border-width:1px;border-left-width:4px;box-shadow:0 0 0 1px '+ly.color+'44':'' }`;
+    if(isSie) div.style.borderColor=ly.color;
+    div.onclick=()=>div.querySelector('.alc-expand').classList.toggle('open');
+    div.innerHTML=`<div class="alc-top">
+        <div class="alc-num">${ly.num}</div>
+        <div>
+          <div class="alc-name" style="color:${ly.color}">${ly.name}${isSie?' <span style="font-size:11px;padding:1px 7px;border-radius:8px;background:rgba(0,180,160,.2);color:#00B4A0;border:1px solid rgba(0,180,160,.3);vertical-align:middle">Siemens AAS Accelerator</span>':''}</div>
+          <div class="alc-sub">${ly.sub}</div>
+        </div>
+        <div class="alc-tools">${tl}</div>
+      </div>
+      <div class="alc-expand">
+        <div style="font-size:12px;color:var(--t2);line-height:1.65;padding-top:2px">${ly.baxter}</div>
+      </div>`;
+    cont.appendChild(div);
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// ROADMAP
+// ═══════════════════════════════════════════════════════
+function renderRoadmap(){
+  const sel=document.getElementById('phase-selector');
+  const det=document.getElementById('road-detail');
+  PHASES.forEach((ph,i)=>{
+    const btn=document.createElement('div');
+    btn.className=`phase-btn ${i===0?'active':''}`;
+    btn.style.setProperty('--phase-color',ph.color);
+    btn.onclick=()=>switchPhase(i);
+    btn.innerHTML=`<div class="pb-num">PHASE ${i+1} · ${ph.months}</div>
+      <div class="pb-title">${ph.label}</div>
+      <div class="pb-sub">${ph.sub}</div>
+      <div class="pb-invest" style="background:${ph.color}18;color:${ph.color};border:1px solid ${ph.color}33">${ph.invest}</div>
+      <div class="pb-active-ind"></div>`;
+    sel.appendChild(btn);
+    const panel=document.createElement('div');
+    panel.className=`phase-panel ${i===0?'active':''}`;
+    panel.id='phase-panel-'+i;
+    let taskHTML='';
+    ph.groups.forEach(g=>{
+      const rows=g.tasks.map(t=>`<div class="task-row">
+        <div class="task-dot" style="background:${t.dot}"></div>
+        <div><div class="task-name">${t.name}</div><div class="task-desc">${t.desc}</div></div>
+        <span class="task-badge" style="background:${t.bc};color:${t.btc};border:1px solid ${t.btc}44">${t.badge}</span>
+      </div>`).join('');
+      taskHTML+=`<div class="month-group"><div class="mg-label">${g.label}</div>${rows}</div>`;
+    });
+    taskHTML+=`<div class="milestone-row">
+      <div><div class="ms-diamond" style="background:${ph.color}22;border-color:${ph.color}"></div></div>
+      <div><div class="ms-name" style="color:${ph.color}">${ph.gate}</div>
+      <div class="ms-gate-criteria">${ph.gateCriteria}</div></div>
+    </div>`;
+    const resultHTML=ph.results.map(r=>`<div class="result-item">
+      <div class="ri-metric" style="color:${ph.color}">${r.metric}</div>
+      <div><div class="ri-label">${r.label}</div><div class="ri-target">${r.target}</div></div>
+    </div>`).join('');
+    const investRows=ph.investments.map(inv=>`<div class="invest-row">
+      <div class="ir-label">${inv.label}</div>
+      <div class="ir-val" style="color:${ph.color}">${inv.val}</div>
+    </div>`).join('');
+    const ratRows=ph.rationalization.map(r=>`<div class="rat-row">
+      <div class="rat-system">${r.sys}<span>Portfolio rationalization</span></div>
+      <span class="rat-action" style="background:${r.ac};color:${r.at};border:1px solid ${r.at}44">${r.action}</span>
+    </div>`).join('');
+    panel.innerHTML=`<div class="phase-layout">
+      <div class="phase-timeline">
+        <div class="pt-header">
+          <div><div class="pt-title" style="color:${ph.color}">Phase ${i+1}: ${ph.label}</div><div class="pt-sub">${ph.months} · ${ph.sub}</div></div>
+          <div class="pt-gate" style="background:${ph.gateColor};color:${ph.gateText};border-color:${ph.gateText}66">${ph.gate}</div>
+        </div>
+        ${taskHTML}
+      </div>
+      <div class="phase-sidebar">
+        <div class="invest-card"><div class="ic-title" style="color:${ph.color}">Investment breakdown</div>${investRows}
+          <div class="ir-total" style="background:${ph.color}15;border:1px solid ${ph.color}33;margin-top:8px">
+            <div class="ir-total-label">Total Phase ${i+1}</div>
+            <div class="ir-total-val" style="color:${ph.color}">${ph.invest}</div>
+          </div>
+        </div>
+        <div class="results-card"><div class="ic-title" style="color:${ph.color}">Phase ${i+1} results &amp; targets</div>${resultHTML}</div>
+        <div class="rationalization-card"><div class="ic-title" style="color:var(--red)">Portfolio rationalization</div>${ratRows}</div>
+      </div>
+    </div>`;
+    det.appendChild(panel);
+  });
+}
+function switchPhase(i){
+  document.querySelectorAll('.phase-btn').forEach((b,j)=>b.classList.toggle('active',j===i));
+  document.querySelectorAll('.phase-panel').forEach((p,j)=>p.classList.toggle('active',j===i));
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+renderExec();
+renderStakeholders();
+renderStages();
+renderRdArch();
+renderGov();
+renderHITL();
+renderArchView();
+renderRoadmap();
+setTimeout(animExec,300);
+</script>
+</body>
+</html>

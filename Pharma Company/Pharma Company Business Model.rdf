@@ -1,0 +1,459 @@
+@prefix bxb:      <http://example.org/baxter/ddd#> .
+@prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:     <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:      <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
+
+# =================================================================
+# ONTOLOGY & CLASS DEFINITIONS
+# =================================================================
+
+bxb:BaxterEnterpriseBusinessModel a owl:Ontology ;
+    rdfs:label "Baxter International DDD Enterprise Architecture Ontology" ;
+    rdfs:comment "A complete Domain-Driven Design ontology incorporating L1-L3 service topologies and process mappings." .
+
+# --- DDD Core Classes ---
+bxb:Domain a owl:Class ;
+    rdfs:label "Business Domain (L1)" .
+
+bxb:SubDomain a owl:Class ;
+    rdfs:subClassOf bxb:Domain ;
+    rdfs:label "Sub-Domain / Bounded Context (L2)" .
+
+bxb:DomainService a owl:Class ;
+    rdfs:label "Domain Service (L3)" .
+
+bxb:BusinessProcess a owl:Class ;
+    rdfs:label "Underlying Business Process" .
+
+bxb:OperationalArea a owl:Class ;
+    rdfs:label "Functional Operational Area" .
+
+# --- DDD Object Properties ---
+bxb:hasSubDomain a owl:ObjectProperty ;
+    rdfs:domain bxb:Domain ;
+    rdfs:range bxb:SubDomain .
+
+bxb:providesService a owl:ObjectProperty ;
+    rdfs:domain bxb:SubDomain ;
+    rdfs:range bxb:DomainService .
+
+bxb:executedByProcess a owl:ObjectProperty ;
+    rdfs:domain bxb:DomainService ;
+    rdfs:range bxb:BusinessProcess .
+
+bxb:supportedByOperation a owl:ObjectProperty ;
+    rdfs:domain bxb:BusinessProcess ;
+    rdfs:range bxb:OperationalArea .
+
+
+# =================================================================
+# OPERATIONAL AREAS
+# =================================================================
+
+bxb:OpCGMPQuality a bxb:OperationalArea ;
+    rdfs:label "cGMP Quality & Regulatory Compliance Operations" .
+
+bxb:OpColdChainSupply a bxb:OperationalArea ;
+    rdfs:label "Cold-Chain & Pharma Supply Chain Operations" .
+
+bxb:OpSterileMfg a bxb:OperationalArea ;
+    rdfs:label "Sterile Packaging & Cleanroom Operations" .
+
+bxb:OpDigitalHealthCyber a bxb:OperationalArea ;
+    rdfs:label "Digital Health Platform & Cybersecurity Operations" .
+
+bxb:OpPharmacovigilance a bxb:OperationalArea ;
+    rdfs:label "Medical Affairs & Pharmacovigilance Operations" .
+
+bxb:OpRegulatoryLegal a bxb:OperationalArea ;
+    rdfs:label "Regulatory Affairs & Legal Compliance Operations" .
+
+
+# =================================================================
+# DOMAIN 1: RENAL CARE & DIALYSIS DOMAIN (L1)
+# =================================================================
+
+bxb:RenalCareDomain a bxb:Domain ;
+    rdfs:label "Renal Care & Dialysis Domain" ;
+    bxb:hasSubDomain bxb:HomeDialysisSubDomain ,
+                    bxb:AcuteRenalSubDomain ,
+                    bxb:OrganSupportSubDomain .
+
+# --- Sub-Domain: Home Peritoneal Dialysis (PD) Bounded Context (L2) ---
+bxb:HomeDialysisSubDomain a bxb:SubDomain ;
+    rdfs:label "Home Peritoneal Dialysis (PD) Bounded Context" ;
+    bxb:providesService bxb:PDTelehealthService ,
+                       bxb:DialysateFormulationService ,
+                       bxb:CyclerDiagnosticsService ,
+                       bxb:PatientInventoryResupplyService .
+
+bxb:PDTelehealthService a bxb:DomainService ;
+    rdfs:label "Automated PD Telehealth & Connectivity Service" ;
+    bxb:executedByProcess bxb:ProcRemoteDataIngestion , bxb:ProcTherapyAdjustmentSync .
+
+bxb:DialysateFormulationService a bxb:DomainService ;
+    rdfs:label "Dialysate Solution Formulation Service" ;
+    bxb:executedByProcess bxb:ProcMultiChamberBagSteril , bxb:ProcOsmolalityQualityInspect .
+
+bxb:CyclerDiagnosticsService a bxb:DomainService ;
+    rdfs:label "Cycler Hardware Diagnostics & Telemetry Service" ;
+    bxb:executedByProcess bxb:ProcPressureSensorCalib , bxb:ProcRemoteFirmwareFaultDetect .
+
+bxb:PatientInventoryResupplyService a bxb:DomainService ;
+    rdfs:label "Patient Inventory & Automated Resupply Service" ;
+    bxb:executedByProcess bxb:ProcConsumablesUsageForecast , bxb:ProcDirectToHomeRouteOpt .
+
+# --- Sub-Domain: Acute Renal & Critical Care Support Bounded Context (L2) ---
+bxb:AcuteRenalSubDomain a bxb:SubDomain ;
+    rdfs:label "Acute Renal & Critical Care Support Bounded Context" ;
+    bxb:providesService bxb:CRRTControlService ,
+                       bxb:CytokineAdsorptionService ,
+                       bxb:HemodialysisConcentrateService ,
+                       bxb:ExtracorporealSafetyService .
+
+bxb:CRRTControlService a bxb:DomainService ;
+    rdfs:label "CRRT System Control & Fluid Balancing Service" ;
+    bxb:executedByProcess bxb:ProcUltrafiltrationRateCtrl , bxb:ProcEffluentGravimetricBal .
+
+bxb:CytokineAdsorptionService a bxb:DomainService ;
+    rdfs:label "Cytokine & Sepsis Adsorption Management Service" ;
+    bxb:executedByProcess bxb:ProcAdsorptionBiocompatibility , bxb:ProcMediatorClearanceTrack .
+
+bxb:HemodialysisConcentrateService a bxb:DomainService ;
+    rdfs:label "Hemodialysis Concentrate Production Service" ;
+    bxb:executedByProcess bxb:ProcBicarbonateCompounding , bxb:ProcEndotoxinMembraneFiltr .
+
+bxb:ExtracorporealSafetyService a bxb:DomainService ;
+    rdfs:label "Extracorporeal Blood Circuit Safety Service" ;
+    bxb:executedByProcess bxb:ProcAirBubbleDetectionSafeguard , bxb:ProcVenousPressureLimitMon .
+
+# --- Sub-Domain: Organ Support & Innovation Bounded Context (L2) ---
+bxb:OrganSupportSubDomain a bxb:SubDomain ;
+    rdfs:label "Organ Support & Innovation Bounded Context" ;
+    bxb:providesService bxb:MultiOrganOrchestrationService ,
+                       bxb:DialysisWaterPurificationService .
+
+bxb:MultiOrganOrchestrationService a bxb:DomainService ;
+    rdfs:label "Multi-Organ Therapy Orchestration Service" ;
+    bxb:executedByProcess bxb:ProcCRRT_ECCO2R_Coordination , bxb:ProcAnticoagulationDosingEnforce .
+
+bxb:DialysisWaterPurificationService a bxb:DomainService ;
+    rdfs:label "Dialysis Water Purification Control Service" ;
+    bxb:executedByProcess bxb:ProcReverseOsmosisDeionMon , bxb:ProcMicrobialColonyCountAudit .
+
+
+# =================================================================
+# DOMAIN 2: MEDICATION DELIVERY & INFUSION SYSTEMS DOMAIN (L1)
+# =================================================================
+
+bxb:MedicationDeliveryDomain a bxb:Domain ;
+    rdfs:label "Medication Delivery & Infusion Systems Domain" ;
+    bxb:hasSubDomain bxb:SmartInfusionSubDomain ,
+                    bxb:IVSolutionsSubDomain ,
+                    bxb:MedAdminInteroperabilitySubDomain .
+
+# --- Sub-Domain: Smart Infusion Systems & Connected Care Bounded Context (L2) ---
+bxb:SmartInfusionSubDomain a bxb:SubDomain ;
+    rdfs:label "Smart Infusion Systems & Connected Care Bounded Context" ;
+    bxb:providesService bxb:DERSService ,
+                       bxb:LVPMotorControlService ,
+                       bxb:SyringeMicroRateService ,
+                       bxb:AmbulatoryPCASafetyService .
+
+bxb:DERSService a bxb:DomainService ;
+    rdfs:label "Dose Error Reduction System (DERS) Service" ;
+    bxb:executedByProcess bxb:ProcDrugLibraryOTAUpdate , bxb:ProcDoseBoundaryVerif .
+
+bxb:LVPMotorControlService a bxb:DomainService ;
+    rdfs:label "Large Volume Pump (LVP) Motor Control Service" ;
+    bxb:executedByProcess bxb:ProcPeristalticStepCalib , bxb:ProcOcclusionAlarmResolution .
+
+bxb:SyringeMicroRateService a bxb:DomainService ;
+    rdfs:label "Syringe & Micro-Rate Delivery Service" ;
+    bxb:executedByProcess bxb:ProcPlungerOpticalVerif , bxb:ProcMicroInfusionSmoothnessCtrl .
+
+bxb:AmbulatoryPCASafetyService a bxb:DomainService ;
+    rdfs:label "Ambulatory & PCA Pump Safety Service" ;
+    bxb:executedByProcess bxb:ProcPCALockoutEnforce , bxb:ProcBolusAuditTrailLog .
+
+# --- Sub-Domain: IV Solutions & Parenteral Compounding Bounded Context (L2) ---
+bxb:IVSolutionsSubDomain a bxb:SubDomain ;
+    rdfs:label "IV Solutions & Parenteral Compounding Bounded Context" ;
+    bxb:providesService bxb:AsepticParenteralService ,
+                       bxb:PremixedInjectableService ,
+                       bxb:ClinicalTPNService .
+
+bxb:AsepticParenteralService a bxb:DomainService ;
+    rdfs:label "Aseptic Parenteral Solution Formulation Service" ;
+    bxb:executedByProcess bxb:ProcClass5CleanroomFill , bxb:ProcParticulateLaserInspect .
+
+bxb:PremixedInjectableService a bxb:DomainService ;
+    rdfs:label "Ready-to-Administer Premixed Injectable Service" ;
+    bxb:executedByProcess bxb:ProcContainerClosureIntegrityTest , bxb:ProcPremixStabilityAssess .
+
+bxb:ClinicalTPNService a bxb:DomainService ;
+    rdfs:label "Clinical Total Parenteral Nutrition (TPN) Service" ;
+    bxb:executedByProcess bxb:ProcCompounderMixing , bxb:ProcOsmolalityElectrolyteVerif .
+
+# --- Sub-Domain: Medication Administration Interoperability Bounded Context (L2) ---
+bxb:MedAdminInteroperabilitySubDomain a bxb:SubDomain ;
+    rdfs:label "Medication Administration Interoperability Bounded Context" ;
+    bxb:providesService bxb:SmartPumpEHRAutoProgService ,
+                       bxb:InfusionFleetAnalyticsService ,
+                       bxb:CSTDDeviceSafetyService .
+
+bxb:SmartPumpEHRAutoProgService a bxb:DomainService ;
+    rdfs:label "Smart Pump EHR Auto-Programming Service" ;
+    bxb:executedByProcess bxb:ProcBCMAOrderMatch , bxb:ProcEHRToPumpTranslation .
+
+bxb:InfusionFleetAnalyticsService a bxb:DomainService ;
+    rdfs:label "Infusion Analytics & Fleet Telemetry Service" ;
+    bxb:executedByProcess bxb:ProcPumpLocationBatteryTrack , bxb:ProcGuardrailComplianceReport .
+
+bxb:CSTDDeviceSafetyService a bxb:DomainService ;
+    rdfs:label "Closed-System Transfer Device (CSTD) Safety Service" ;
+    bxb:executedByProcess bxb:ProcVaporContainmentVerif , bxb:ProcLuerLockEngagementInspect .
+
+
+# =================================================================
+# DOMAIN 3: HEALTHCARE SYSTEMS & CONNECTED CARE DOMAIN (L1)
+# =================================================================
+
+bxb:HealthcareSystemsDomain a bxb:Domain ;
+    rdfs:label "Healthcare Systems & Connected Care Domain" ;
+    bxb:hasSubDomain bxb:CareEnvironmentSubDomain ,
+                    bxb:DiagnosticsFrontLineSubDomain ,
+                    bxb:ClinicalWorkflowSubDomain .
+
+# --- Sub-Domain: Care Environment & Smart Bed Bounded Context (L2) ---
+bxb:CareEnvironmentSubDomain a bxb:SubDomain ;
+    rdfs:label "Care Environment & Smart Bed Bounded Context" ;
+    bxb:providesService bxb:SmartBedKinematicsService ,
+                       bxb:PressureInjuryPreventionService ,
+                       bxb:ContactlessVitalSignsService .
+
+bxb:SmartBedKinematicsService a bxb:DomainService ;
+    rdfs:label "Smart Hospital Bed Kinematics & Safety Service" ;
+    bxb:executedByProcess bxb:ProcBedExitSensorCalib , bxb:ProcMotorizedArticulationCtrl .
+
+bxb:PressureInjuryPreventionService a bxb:DomainService ;
+    rdfs:label "Continuous Patient Pressure Injury Prevention Service" ;
+    bxb:executedByProcess bxb:ProcAirPressureRedistribution , bxb:ProcPatientTurningScheduleTrack .
+
+bxb:ContactlessVitalSignsService a bxb:DomainService ;
+    rdfs:label "Continuous Contactless Vital Signs Monitoring Service" ;
+    bxb:executedByProcess bxb:ProcUnderMattressSignalIngest , bxb:ProcEWSTriggering .
+
+# --- Sub-Domain: Diagnostics & Front Line Care Bounded Context (L2) ---
+bxb:DiagnosticsFrontLineSubDomain a bxb:SubDomain ;
+    rdfs:label "Diagnostics & Front Line Care Bounded Context" ;
+    bxb:providesService bxb:VitalSignsMonitorIntegrationService ,
+                       bxb:CardiologyDiagnosticECGService ,
+                       bxb:VisionPulmonaryScreeningService .
+
+bxb:VitalSignsMonitorIntegrationService a bxb:DomainService ;
+    rdfs:label "Vital Signs Monitor Integration Service" ;
+    bxb:executedByProcess bxb:ProcNIBP_SpO2_Normalization , bxb:ProcSpotCheckClinicalDocSync .
+
+bxb:CardiologyDiagnosticECGService a bxb:DomainService ;
+    rdfs:label "Cardiology Diagnostic & 12-Lead ECG Service" ;
+    bxb:executedByProcess bxb:ProcECGWaveformFiltering , bxb:ProcArrhythmiaPatternDetect .
+
+bxb:VisionPulmonaryScreeningService a bxb:DomainService ;
+    rdfs:label "Vision & Pulmonary Screening Diagnostic Service" ;
+    bxb:executedByProcess bxb:ProcRetinalImageQualityValidate , bxb:ProcSpirometryAirflowCurveAnalyze .
+
+# --- Sub-Domain: Clinical Workflow & Communications Bounded Context (L2) ---
+bxb:ClinicalWorkflowSubDomain a bxb:SubDomain ;
+    rdfs:label "Clinical Workflow & Communications Bounded Context" ;
+    bxb:providesService bxb:NurseCallAlarmRoutingService ,
+                       bxb:VoalteMessagingService ,
+                       bxb:RTLSAssetTrackingService ,
+                       bxb:ClinicalDecisionSupportService .
+
+bxb:NurseCallAlarmRoutingService a bxb:DomainService ;
+    rdfs:label "Nurse Call & Alarm Routing Service" ;
+    bxb:executedByProcess bxb:ProcNurseCallDispatch , bxb:ProcCaregiverEscalationMatrixEnforce .
+
+bxb:VoalteMessagingService a bxb:DomainService ;
+    rdfs:label "Digital Health Secure Messaging (Voalte) Service" ;
+    bxb:executedByProcess bxb:ProcEncryptedMessagingDispatch , bxb:ProcEHRPatientContextBinding .
+
+bxb:RTLSAssetTrackingService a bxb:DomainService ;
+    rdfs:label "Real-Time Location System (RTLS) Asset Tracking Service" ;
+    bxb:executedByProcess bxb:ProcUWBAssetTriangulation , bxb:ProcSterilizationStatusUpdate .
+
+bxb:ClinicalDecisionSupportService a bxb:DomainService ;
+    rdfs:label "Clinical Decision Support & EWS Aggregation Service" ;
+    bxb:executedByProcess bxb:ProcMultiParameterTrendAnalyze , bxb:ProcSepsisEarlyAlerting .
+
+
+# =================================================================
+# DOMAIN 4: PHARMACEUTICALS & ADVANCED SURGERY DOMAIN (L1)
+# =================================================================
+
+bxb:PharmaAdvancedSurgeryDomain a bxb:Domain ;
+    rdfs:label "Pharmaceuticals & Advanced Surgery Domain" ;
+    bxb:hasSubDomain bxb:InhaledAnestheticsSubDomain ,
+                    bxb:BioSurgerySubDomain ,
+                    bxb:CriticalCareInjectablesSubDomain .
+
+# --- Sub-Domain: Inhaled Anesthetics & Respiratory Therapeutics Bounded Context (L2) ---
+bxb:InhaledAnestheticsSubDomain a bxb:SubDomain ;
+    rdfs:label "Inhaled Anesthetics & Respiratory Therapeutics Bounded Context" ;
+    bxb:providesService bxb:VaporizerPrecisionControlService ,
+                       bxb:HalogenatedGasSynthesisService ,
+                       bxb:VaporizerSafetyFillingService .
+
+bxb:VaporizerPrecisionControlService a bxb:DomainService ;
+    rdfs:label "Inhalation Vaporizer Precision Control Service" ;
+    bxb:executedByProcess bxb:ProcVaporizerOutputCalib , bxb:ProcTempPressureCompensate .
+
+bxb:HalogenatedGasSynthesisService a bxb:DomainService ;
+    rdfs:label "Halogenated Gas Synthesis & Purification Service" ;
+    bxb:executedByProcess bxb:ProcFluorinationReactionCtrl , bxb:ProcFractionalDistillPurityVerif .
+
+bxb:VaporizerSafetyFillingService a bxb:DomainService ;
+    rdfs:label "Vaporizer Safety Filling System Service" ;
+    bxb:executedByProcess bxb:ProcKeyedFillerInterlockEngage , bxb:ProcVOCVaporRecovery .
+
+# --- Sub-Domain: Advanced BioSurgery & Hemostasis Bounded Context (L2) ---
+bxb:BioSurgerySubDomain a bxb:SubDomain ;
+    rdfs:label "Advanced BioSurgery & Hemostasis Bounded Context" ;
+    bxb:providesService bxb:FLOSEALDeliveryService ,
+                       bxb:TISSEELPreparationService ,
+                       bxb:SyntheticAdhesionBarrierService .
+
+bxb:FLOSEALDeliveryService a bxb:DomainService ;
+    rdfs:label "Active Hemostatic Matrix (FLOSEAL) Delivery Service" ;
+    bxb:executedByProcess bxb:ProcAsepticThrombinCompounding , bxb:ProcGelatinCrossLinkQC .
+
+bxb:TISSEELPreparationService a bxb:DomainService ;
+    rdfs:label "Fibrin Tissue Sealant (TISSEEL) Preparation Service" ;
+    bxb:executedByProcess bxb:ProcCryoprecipitatePurification , bxb:ProcDualSyringeMixingOpt .
+
+bxb:SyntheticAdhesionBarrierService a bxb:DomainService ;
+    rdfs:label "Synthetic Adhesion Barrier & Absorbable Hemostat Service" ;
+    bxb:executedByProcess bxb:ProcPolymerCrossLinking , bxb:ProcInVivoDegradationTesting .
+
+# --- Sub-Domain: Critical Care Injectables & Specialty Pharma Bounded Context (L2) ---
+bxb:CriticalCareInjectablesSubDomain a bxb:SubDomain ;
+    rdfs:label "Critical Care Injectables & Specialty Pharma Bounded Context" ;
+    bxb:providesService bxb:HighAlertInjectableService ,
+                       bxb:ReadyToAdministerSyringeService ,
+                       bxb:OrganPreservationSolutionService ,
+                       bxb:PharmacovigilanceAdverseEventService .
+
+bxb:HighAlertInjectableService a bxb:DomainService ;
+    rdfs:label "High-Alert Critical Care Parenteral Injectable Service" ;
+    bxb:executedByProcess bxb:ProcAmpuleVialLiquidFill , bxb:ProcLyophilizationCycleExecute .
+
+bxb:ReadyToAdministerSyringeService a bxb:DomainService ;
+    rdfs:label "Ready-to-Administer Syringe Manufacturing Service" ;
+    bxb:executedByProcess bxb:ProcSyringeSiliconizationFill , bxb:ProcOpticalTipCapInspect .
+
+bxb:OrganPreservationSolutionService a bxb:DomainService ;
+    rdfs:label "Organ Preservation & Transplantation Solution Service" ;
+    bxb:executedByProcess bxb:ProcHypothermicSolutionFormulate , bxb:ProcColdChainQualityPreserve .
+
+bxb:PharmacovigilanceAdverseEventService a bxb:DomainService ;
+    rdfs:label "Pharmacovigilance & Adverse Event Monitoring Service" ;
+    bxb:executedByProcess bxb:ProcAdverseEventSignalDetect , bxb:ProcFDAMedWatchDossierSubmit .
+
+
+# =================================================================
+# EXECUTED BUSINESS PROCESS MAPPINGS TO OPERATIONAL AREAS
+# =================================================================
+
+bxb:ProcRemoteDataIngestion bxb:supportedByOperation bxb:OpDigitalHealthCyber .
+bxb:ProcTherapyAdjustmentSync bxb:supportedByOperation bxb:OpDigitalHealthCyber , bxb:OpPharmacovigilance .
+bxb:ProcMultiChamberBagSteril bxb:supportedByOperation bxb:OpSterileMfg .
+bxb:ProcOsmolalityQualityInspect bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcPressureSensorCalib bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcRemoteFirmwareFaultDetect bxb:supportedByOperation bxb:OpDigitalHealthCyber .
+bxb:ProcConsumablesUsageForecast bxb:supportedByOperation bxb:OpColdChainSupply .
+bxb:ProcDirectToHomeRouteOpt bxb:supportedByOperation bxb:OpColdChainSupply .
+
+bxb:ProcUltrafiltrationRateCtrl bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcEffluentGravimetricBal bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcAdsorptionBiocompatibility bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcMediatorClearanceTrack bxb:supportedByOperation bxb:OpPharmacovigilance .
+bxb:ProcBicarbonateCompounding bxb:supportedByOperation bxb:OpSterileMfg .
+bxb:ProcEndotoxinMembraneFiltr bxb:supportedByOperation bxb:OpSterileMfg .
+bxb:ProcAirBubbleDetectionSafeguard bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcVenousPressureLimitMon bxb:supportedByOperation bxb:OpCGMPQuality .
+
+bxb:ProcCRRT_ECCO2R_Coordination bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcAnticoagulationDosingEnforce bxb:supportedByOperation bxb:OpPharmacovigilance .
+bxb:ProcReverseOsmosisDeionMon bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcMicrobialColonyCountAudit bxb:supportedByOperation bxb:OpCGMPQuality .
+
+bxb:ProcDrugLibraryOTAUpdate bxb:supportedByOperation bxb:OpDigitalHealthCyber , bxb:OpCGMPQuality .
+bxb:ProcDoseBoundaryVerif bxb:supportedByOperation bxb:OpPharmacovigilance .
+bxb:ProcPeristalticStepCalib bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcOcclusionAlarmResolution bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcPlungerOpticalVerif bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcMicroInfusionSmoothnessCtrl bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcPCALockoutEnforce bxb:supportedByOperation bxb:OpPharmacovigilance .
+bxb:ProcBolusAuditTrailLog bxb:supportedByOperation bxb:OpDigitalHealthCyber .
+
+bxb:ProcClass5CleanroomFill bxb:supportedByOperation bxb:OpSterileMfg .
+bxb:ProcParticulateLaserInspect bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcContainerClosureIntegrityTest bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcPremixStabilityAssess bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcCompounderMixing bxb:supportedByOperation bxb:OpSterileMfg .
+bxb:ProcOsmolalityElectrolyteVerif bxb:supportedByOperation bxb:OpCGMPQuality .
+
+bxb:ProcBCMAOrderMatch bxb:supportedByOperation bxb:OpDigitalHealthCyber .
+bxb:ProcEHRToPumpTranslation bxb:supportedByOperation bxb:OpDigitalHealthCyber .
+bxb:ProcPumpLocationBatteryTrack bxb:supportedByOperation bxb:OpDigitalHealthCyber .
+bxb:ProcGuardrailComplianceReport bxb:supportedByOperation bxb:OpPharmacovigilance .
+bxb:ProcVaporContainmentVerif bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcLuerLockEngagementInspect bxb:supportedByOperation bxb:OpCGMPQuality .
+
+bxb:ProcBedExitSensorCalib bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcMotorizedArticulationCtrl bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcAirPressureRedistribution bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcPatientTurningScheduleTrack bxb:supportedByOperation bxb:OpDigitalHealthCyber .
+bxb:ProcUnderMattressSignalIngest bxb:supportedByOperation bxb:OpDigitalHealthCyber .
+bxb:ProcEWSTriggering bxb:supportedByOperation bxb:OpPharmacovigilance .
+
+bxb:ProcNIBP_SpO2_Normalization bxb:supportedByOperation bxb:OpDigitalHealthCyber .
+bxb:ProcSpotCheckClinicalDocSync bxb:supportedByOperation bxb:OpDigitalHealthCyber .
+bxb:ProcECGWaveformFiltering bxb:supportedByOperation bxb:OpDigitalHealthCyber .
+bxb:ProcArrhythmiaPatternDetect bxb:supportedByOperation bxb:OpPharmacovigilance .
+bxb:ProcRetinalImageQualityValidate bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcSpirometryAirflowCurveAnalyze bxb:supportedByOperation bxb:OpCGMPQuality .
+
+bxb:ProcNurseCallDispatch bxb:supportedByOperation bxb:OpDigitalHealthCyber .
+bxb:ProcCaregiverEscalationMatrixEnforce bxb:supportedByOperation bxb:OpDigitalHealthCyber .
+bxb:ProcEncryptedMessagingDispatch bxb:supportedByOperation bxb:OpDigitalHealthCyber .
+bxb:ProcEHRPatientContextBinding bxb:supportedByOperation bxb:OpDigitalHealthCyber .
+bxb:ProcUWBAssetTriangulation bxb:supportedByOperation bxb:OpDigitalHealthCyber .
+bxb:ProcSterilizationStatusUpdate bxb:supportedByOperation bxb:OpSterileMfg .
+bxb:ProcMultiParameterTrendAnalyze bxb:supportedByOperation bxb:OpDigitalHealthCyber .
+bxb:ProcSepsisEarlyAlerting bxb:supportedByOperation bxb:OpPharmacovigilance .
+
+bxb:ProcVaporizerOutputCalib bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcTempPressureCompensate bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcFluorinationReactionCtrl bxb:supportedByOperation bxb:OpSterileMfg .
+bxb:ProcFractionalDistillPurityVerif bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcKeyedFillerInterlockEngage bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcVOCVaporRecovery bxb:supportedByOperation bxb:OpSterileMfg .
+
+bxb:ProcAsepticThrombinCompounding bxb:supportedByOperation bxb:OpSterileMfg , bxb:OpColdChainSupply .
+bxb:ProcGelatinCrossLinkQC bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcCryoprecipitatePurification bxb:supportedByOperation bxb:OpColdChainSupply .
+bxb:ProcDualSyringeMixingOpt bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcPolymerCrossLinking bxb:supportedByOperation bxb:OpSterileMfg .
+bxb:ProcInVivoDegradationTesting bxb:supportedByOperation bxb:OpCGMPQuality .
+
+bxb:ProcAmpuleVialLiquidFill bxb:supportedByOperation bxb:OpSterileMfg .
+bxb:ProcLyophilizationCycleExecute bxb:supportedByOperation bxb:OpSterileMfg .
+bxb:ProcSyringeSiliconizationFill bxb:supportedByOperation bxb:OpSterileMfg .
+bxb:ProcOpticalTipCapInspect bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcHypothermicSolutionFormulate bxb:supportedByOperation bxb:OpSterileMfg , bxb:OpColdChainSupply .
+bxb:ProcColdChainQualityPreserve bxb:supportedByOperation bxb:OpColdChainSupply .
+bxb:ProcAdverseEventSignalDetect bxb:supportedByOperation bxb:OpPharmacovigilance .
+bxb:ProcFDAMedWatchDossierSubmit bxb:supportedByOperation bxb:OpRegulatoryLegal , bxb:OpPharmacovigilance .
