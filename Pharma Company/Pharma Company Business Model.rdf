@@ -10,7 +10,12 @@
 
 bxb:BaxterEnterpriseBusinessModel a owl:Ontology ;
     rdfs:label "Baxter International DDD Enterprise Architecture Ontology" ;
-    rdfs:comment "A complete Domain-Driven Design ontology incorporating L1-L3 service topologies and process mappings." .
+    rdfs:comment "A complete Domain-Driven Design ontology incorporating the enterprise root, L1-L3 service topologies, process mappings, and their full bidirectional relationship graph." .
+
+# --- Root Enterprise Class ---
+bxb:Enterprise a owl:Class ;
+    rdfs:label "Enterprise (L0)" ;
+    rdfs:comment "The top-level organization that owns all Business Domains." .
 
 # --- DDD Core Classes ---
 bxb:Domain a owl:Class ;
@@ -29,22 +34,67 @@ bxb:BusinessProcess a owl:Class ;
 bxb:OperationalArea a owl:Class ;
     rdfs:label "Functional Operational Area" .
 
-# --- DDD Object Properties ---
+# --- DDD Object Properties (forward direction) ---
+bxb:hasDomain a owl:ObjectProperty ;
+    rdfs:domain bxb:Enterprise ;
+    rdfs:range bxb:Domain ;
+    rdfs:label "has domain" ;
+    owl:inverseOf bxb:partOfEnterprise .
+
 bxb:hasSubDomain a owl:ObjectProperty ;
     rdfs:domain bxb:Domain ;
-    rdfs:range bxb:SubDomain .
+    rdfs:range bxb:SubDomain ;
+    rdfs:label "has sub-domain" ;
+    owl:inverseOf bxb:subDomainOf .
 
 bxb:providesService a owl:ObjectProperty ;
     rdfs:domain bxb:SubDomain ;
-    rdfs:range bxb:DomainService .
+    rdfs:range bxb:DomainService ;
+    rdfs:label "provides service" ;
+    owl:inverseOf bxb:providedBySubDomain .
 
 bxb:executedByProcess a owl:ObjectProperty ;
     rdfs:domain bxb:DomainService ;
-    rdfs:range bxb:BusinessProcess .
+    rdfs:range bxb:BusinessProcess ;
+    rdfs:label "executed by process" ;
+    owl:inverseOf bxb:realizesService .
 
 bxb:supportedByOperation a owl:ObjectProperty ;
     rdfs:domain bxb:BusinessProcess ;
-    rdfs:range bxb:OperationalArea .
+    rdfs:range bxb:OperationalArea ;
+    rdfs:label "supported by operation" ;
+    owl:inverseOf bxb:supportsProcess .
+
+# --- DDD Object Properties (inverse direction, enabling full bidirectional traversal) ---
+bxb:partOfEnterprise a owl:ObjectProperty ;
+    rdfs:domain bxb:Domain ;
+    rdfs:range bxb:Enterprise ;
+    rdfs:label "part of enterprise" ;
+    owl:inverseOf bxb:hasDomain .
+
+bxb:subDomainOf a owl:ObjectProperty ;
+    rdfs:domain bxb:SubDomain ;
+    rdfs:range bxb:Domain ;
+    rdfs:label "sub-domain of" ;
+    owl:inverseOf bxb:hasSubDomain .
+
+bxb:providedBySubDomain a owl:ObjectProperty ;
+    rdfs:domain bxb:DomainService ;
+    rdfs:range bxb:SubDomain ;
+    rdfs:label "provided by sub-domain" ;
+    owl:inverseOf bxb:providesService .
+
+bxb:realizesService a owl:ObjectProperty ;
+    rdfs:domain bxb:BusinessProcess ;
+    rdfs:range bxb:DomainService ;
+    rdfs:label "realizes service" ;
+    owl:inverseOf bxb:executedByProcess .
+
+bxb:supportsProcess a owl:ObjectProperty ;
+    rdfs:domain bxb:OperationalArea ;
+    rdfs:range bxb:BusinessProcess ;
+    rdfs:label "supports process" ;
+    owl:inverseOf bxb:supportedByOperation .
 
 
 # =================================================================
@@ -68,6 +118,12 @@ bxb:OpPharmacovigilance a bxb:OperationalArea ;
 
 bxb:OpRegulatoryLegal a bxb:OperationalArea ;
     rdfs:label "Regulatory Affairs & Legal Compliance Operations" .
+
+bxb:OpCommercialMarketAccess a bxb:OperationalArea ;
+    rdfs:label "Commercial Strategy & Market Access Operations" .
+
+bxb:OpCorporateFinanceGBS a bxb:OperationalArea ;
+    rdfs:label "Corporate Finance & Global Business Services Operations" .
 
 
 # =================================================================
@@ -363,6 +419,313 @@ bxb:PharmacovigilanceAdverseEventService a bxb:DomainService ;
 
 
 # =================================================================
+# DOMAIN 5: ENTERPRISE SUPPORT & CORPORATE FUNCTIONS DOMAIN (L1)
+# =================================================================
+
+bxb:EnterpriseSupportDomain a bxb:Domain ;
+    rdfs:label "Enterprise Support & Corporate Functions Domain" ;
+    bxb:hasSubDomain bxb:GlobalManufacturingSupplyChainSubDomain ,
+                    bxb:CommercialMarketAccessSubDomain ,
+                    bxb:EnterpriseDigitalFinanceLegalSubDomain .
+
+# --- Sub-Domain: Global Manufacturing & Supply Chain Bounded Context (L2) ---
+bxb:GlobalManufacturingSupplyChainSubDomain a bxb:SubDomain ;
+    rdfs:label "Global Manufacturing & Supply Chain Bounded Context" ;
+    bxb:providesService bxb:ProductionPlanningSchedulingService ,
+                       bxb:RawMaterialProcurementService ,
+                       bxb:GlobalDistributionLogisticsService .
+
+bxb:ProductionPlanningSchedulingService a bxb:DomainService ;
+    rdfs:label "Global Production Planning & Scheduling Service" ;
+    bxb:executedByProcess bxb:ProcDemandForecastAlign , bxb:ProcMasterProductionScheduleOpt .
+
+bxb:RawMaterialProcurementService a bxb:DomainService ;
+    rdfs:label "Raw Material Procurement & Supplier Qualification Service" ;
+    bxb:executedByProcess bxb:ProcSupplierQualificationAudit , bxb:ProcRawMaterialLotRelease .
+
+bxb:GlobalDistributionLogisticsService a bxb:DomainService ;
+    rdfs:label "Global Distribution & Logistics Service" ;
+    bxb:executedByProcess bxb:ProcCrossDockConsolidation , bxb:ProcExportComplianceScreening .
+
+# --- Sub-Domain: Commercial & Market Access Bounded Context (L2) ---
+bxb:CommercialMarketAccessSubDomain a bxb:SubDomain ;
+    rdfs:label "Commercial & Market Access Bounded Context" ;
+    bxb:providesService bxb:PricingReimbursementService ,
+                       bxb:SalesForceEffectivenessService ,
+                       bxb:HealthEconomicsOutcomesService .
+
+bxb:PricingReimbursementService a bxb:DomainService ;
+    rdfs:label "Pricing & Reimbursement Contracting Service" ;
+    bxb:executedByProcess bxb:ProcPayerContractNegotiation , bxb:ProcGPORebateReconciliation .
+
+bxb:SalesForceEffectivenessService a bxb:DomainService ;
+    rdfs:label "Sales Force Effectiveness Service" ;
+    bxb:executedByProcess bxb:ProcTerritoryCallPlanOpt , bxb:ProcCRMPipelineAnalytics .
+
+bxb:HealthEconomicsOutcomesService a bxb:DomainService ;
+    rdfs:label "Health Economics & Outcomes Research Service" ;
+    bxb:executedByProcess bxb:ProcRealWorldEvidenceGather , bxb:ProcValueDossierDevelop .
+
+# --- Sub-Domain: Enterprise Digital, Finance & Legal Bounded Context (L2) ---
+bxb:EnterpriseDigitalFinanceLegalSubDomain a bxb:SubDomain ;
+    rdfs:label "Enterprise Digital, Finance & Legal Bounded Context" ;
+    bxb:providesService bxb:EnterpriseDataAnalyticsService ,
+                       bxb:FinancialPlanningAnalysisService ,
+                       bxb:CorporateRegulatoryAffairsService .
+
+bxb:EnterpriseDataAnalyticsService a bxb:DomainService ;
+    rdfs:label "Enterprise Data & Analytics Governance Service" ;
+    bxb:executedByProcess bxb:ProcMasterDataGovernance , bxb:ProcPredictiveMaintenanceModel .
+
+bxb:FinancialPlanningAnalysisService a bxb:DomainService ;
+    rdfs:label "Financial Planning & Analysis Service" ;
+    bxb:executedByProcess bxb:ProcRollingForecastConsolidate , bxb:ProcCostCenterVarianceReview .
+
+bxb:CorporateRegulatoryAffairsService a bxb:DomainService ;
+    rdfs:label "Corporate Regulatory Affairs Service" ;
+    bxb:executedByProcess bxb:ProcGlobalRegistrationDossierMgmt , bxb:ProcPostMarketSurveillanceReporting .
+
+
+# =================================================================
+# BUSINESS PROCESS NODE DEFINITIONS
+# (Explicit instantiation + labeling of every process referenced above -
+#  previously these were only referenced as objects/subjects and were
+#  never formally declared as bxb:BusinessProcess individuals.)
+# =================================================================
+
+# --- Renal Care & Dialysis Domain ---
+# Home Peritoneal Dialysis (PD) Bounded Context
+bxb:ProcRemoteDataIngestion a bxb:BusinessProcess ;
+    rdfs:label "Remote Patient Data Ingestion Process" .
+bxb:ProcTherapyAdjustmentSync a bxb:BusinessProcess ;
+    rdfs:label "Therapy Adjustment Synchronization Process" .
+bxb:ProcMultiChamberBagSteril a bxb:BusinessProcess ;
+    rdfs:label "Multi-Chamber Bag Sterilization Process" .
+bxb:ProcOsmolalityQualityInspect a bxb:BusinessProcess ;
+    rdfs:label "Osmolality Quality Inspection Process" .
+bxb:ProcPressureSensorCalib a bxb:BusinessProcess ;
+    rdfs:label "Pressure Sensor Calibration Process" .
+bxb:ProcRemoteFirmwareFaultDetect a bxb:BusinessProcess ;
+    rdfs:label "Remote Firmware Fault Detection Process" .
+bxb:ProcConsumablesUsageForecast a bxb:BusinessProcess ;
+    rdfs:label "Consumables Usage Forecasting Process" .
+bxb:ProcDirectToHomeRouteOpt a bxb:BusinessProcess ;
+    rdfs:label "Direct-to-Home Route Optimization Process" .
+
+# Acute Renal & Critical Care Support Bounded Context
+bxb:ProcUltrafiltrationRateCtrl a bxb:BusinessProcess ;
+    rdfs:label "Ultrafiltration Rate Control Process" .
+bxb:ProcEffluentGravimetricBal a bxb:BusinessProcess ;
+    rdfs:label "Effluent Gravimetric Balancing Process" .
+bxb:ProcAdsorptionBiocompatibility a bxb:BusinessProcess ;
+    rdfs:label "Adsorption Biocompatibility Verification Process" .
+bxb:ProcMediatorClearanceTrack a bxb:BusinessProcess ;
+    rdfs:label "Inflammatory Mediator Clearance Tracking Process" .
+bxb:ProcBicarbonateCompounding a bxb:BusinessProcess ;
+    rdfs:label "Bicarbonate Concentrate Compounding Process" .
+bxb:ProcEndotoxinMembraneFiltr a bxb:BusinessProcess ;
+    rdfs:label "Endotoxin Membrane Filtration Process" .
+bxb:ProcAirBubbleDetectionSafeguard a bxb:BusinessProcess ;
+    rdfs:label "Air Bubble Detection Safeguard Process" .
+bxb:ProcVenousPressureLimitMon a bxb:BusinessProcess ;
+    rdfs:label "Venous Pressure Limit Monitoring Process" .
+
+# Organ Support & Innovation Bounded Context
+bxb:ProcCRRT_ECCO2R_Coordination a bxb:BusinessProcess ;
+    rdfs:label "CRRT-ECCO2R Therapy Coordination Process" .
+bxb:ProcAnticoagulationDosingEnforce a bxb:BusinessProcess ;
+    rdfs:label "Anticoagulation Dosing Enforcement Process" .
+bxb:ProcReverseOsmosisDeionMon a bxb:BusinessProcess ;
+    rdfs:label "Reverse Osmosis Deionization Monitoring Process" .
+bxb:ProcMicrobialColonyCountAudit a bxb:BusinessProcess ;
+    rdfs:label "Microbial Colony Count Audit Process" .
+
+# --- Medication Delivery & Infusion Systems Domain ---
+# Smart Infusion Systems & Connected Care Bounded Context
+bxb:ProcDrugLibraryOTAUpdate a bxb:BusinessProcess ;
+    rdfs:label "Drug Library Over-the-Air Update Process" .
+bxb:ProcDoseBoundaryVerif a bxb:BusinessProcess ;
+    rdfs:label "Dose Boundary Verification Process" .
+bxb:ProcPeristalticStepCalib a bxb:BusinessProcess ;
+    rdfs:label "Peristaltic Step-Motor Calibration Process" .
+bxb:ProcOcclusionAlarmResolution a bxb:BusinessProcess ;
+    rdfs:label "Occlusion Alarm Resolution Process" .
+bxb:ProcPlungerOpticalVerif a bxb:BusinessProcess ;
+    rdfs:label "Plunger Position Optical Verification Process" .
+bxb:ProcMicroInfusionSmoothnessCtrl a bxb:BusinessProcess ;
+    rdfs:label "Micro-Infusion Flow Smoothness Control Process" .
+bxb:ProcPCALockoutEnforce a bxb:BusinessProcess ;
+    rdfs:label "PCA Lockout Interval Enforcement Process" .
+bxb:ProcBolusAuditTrailLog a bxb:BusinessProcess ;
+    rdfs:label "Bolus Dose Audit Trail Logging Process" .
+
+# IV Solutions & Parenteral Compounding Bounded Context
+bxb:ProcClass5CleanroomFill a bxb:BusinessProcess ;
+    rdfs:label "ISO Class 5 Cleanroom Filling Process" .
+bxb:ProcParticulateLaserInspect a bxb:BusinessProcess ;
+    rdfs:label "Particulate Laser Inspection Process" .
+bxb:ProcContainerClosureIntegrityTest a bxb:BusinessProcess ;
+    rdfs:label "Container Closure Integrity Testing Process" .
+bxb:ProcPremixStabilityAssess a bxb:BusinessProcess ;
+    rdfs:label "Premix Stability Assessment Process" .
+bxb:ProcCompounderMixing a bxb:BusinessProcess ;
+    rdfs:label "Automated Compounder Mixing Process" .
+bxb:ProcOsmolalityElectrolyteVerif a bxb:BusinessProcess ;
+    rdfs:label "Osmolality & Electrolyte Verification Process" .
+
+# Medication Administration Interoperability Bounded Context
+bxb:ProcBCMAOrderMatch a bxb:BusinessProcess ;
+    rdfs:label "Barcode Medication Administration (BCMA) Order Matching Process" .
+bxb:ProcEHRToPumpTranslation a bxb:BusinessProcess ;
+    rdfs:label "EHR-to-Pump Order Translation Process" .
+bxb:ProcPumpLocationBatteryTrack a bxb:BusinessProcess ;
+    rdfs:label "Pump Location & Battery Status Tracking Process" .
+bxb:ProcGuardrailComplianceReport a bxb:BusinessProcess ;
+    rdfs:label "Dosing Guardrail Compliance Reporting Process" .
+bxb:ProcVaporContainmentVerif a bxb:BusinessProcess ;
+    rdfs:label "Vapor Containment Verification Process" .
+bxb:ProcLuerLockEngagementInspect a bxb:BusinessProcess ;
+    rdfs:label "Luer Lock Engagement Inspection Process" .
+
+# --- Healthcare Systems & Connected Care Domain ---
+# Care Environment & Smart Bed Bounded Context
+bxb:ProcBedExitSensorCalib a bxb:BusinessProcess ;
+    rdfs:label "Bed-Exit Sensor Calibration Process" .
+bxb:ProcMotorizedArticulationCtrl a bxb:BusinessProcess ;
+    rdfs:label "Motorized Bed Articulation Control Process" .
+bxb:ProcAirPressureRedistribution a bxb:BusinessProcess ;
+    rdfs:label "Air Cell Pressure Redistribution Process" .
+bxb:ProcPatientTurningScheduleTrack a bxb:BusinessProcess ;
+    rdfs:label "Patient Turning Schedule Tracking Process" .
+bxb:ProcUnderMattressSignalIngest a bxb:BusinessProcess ;
+    rdfs:label "Under-Mattress Sensor Signal Ingestion Process" .
+bxb:ProcEWSTriggering a bxb:BusinessProcess ;
+    rdfs:label "Early Warning Score (EWS) Triggering Process" .
+
+# Diagnostics & Front Line Care Bounded Context
+bxb:ProcNIBP_SpO2_Normalization a bxb:BusinessProcess ;
+    rdfs:label "NIBP & SpO2 Signal Normalization Process" .
+bxb:ProcSpotCheckClinicalDocSync a bxb:BusinessProcess ;
+    rdfs:label "Spot-Check Clinical Documentation Sync Process" .
+bxb:ProcECGWaveformFiltering a bxb:BusinessProcess ;
+    rdfs:label "ECG Waveform Filtering Process" .
+bxb:ProcArrhythmiaPatternDetect a bxb:BusinessProcess ;
+    rdfs:label "Arrhythmia Pattern Detection Process" .
+bxb:ProcRetinalImageQualityValidate a bxb:BusinessProcess ;
+    rdfs:label "Retinal Image Quality Validation Process" .
+bxb:ProcSpirometryAirflowCurveAnalyze a bxb:BusinessProcess ;
+    rdfs:label "Spirometry Airflow Curve Analysis Process" .
+
+# Clinical Workflow & Communications Bounded Context
+bxb:ProcNurseCallDispatch a bxb:BusinessProcess ;
+    rdfs:label "Nurse Call Dispatch Process" .
+bxb:ProcCaregiverEscalationMatrixEnforce a bxb:BusinessProcess ;
+    rdfs:label "Caregiver Escalation Matrix Enforcement Process" .
+bxb:ProcEncryptedMessagingDispatch a bxb:BusinessProcess ;
+    rdfs:label "Encrypted Secure Messaging Dispatch Process" .
+bxb:ProcEHRPatientContextBinding a bxb:BusinessProcess ;
+    rdfs:label "EHR Patient Context Binding Process" .
+bxb:ProcUWBAssetTriangulation a bxb:BusinessProcess ;
+    rdfs:label "Ultra-Wideband (UWB) Asset Triangulation Process" .
+bxb:ProcSterilizationStatusUpdate a bxb:BusinessProcess ;
+    rdfs:label "Instrument Sterilization Status Update Process" .
+bxb:ProcMultiParameterTrendAnalyze a bxb:BusinessProcess ;
+    rdfs:label "Multi-Parameter Vital Sign Trend Analysis Process" .
+bxb:ProcSepsisEarlyAlerting a bxb:BusinessProcess ;
+    rdfs:label "Sepsis Early Alerting Process" .
+
+# --- Pharmaceuticals & Advanced Surgery Domain ---
+# Inhaled Anesthetics & Respiratory Therapeutics Bounded Context
+bxb:ProcVaporizerOutputCalib a bxb:BusinessProcess ;
+    rdfs:label "Vaporizer Output Concentration Calibration Process" .
+bxb:ProcTempPressureCompensate a bxb:BusinessProcess ;
+    rdfs:label "Temperature & Pressure Compensation Process" .
+bxb:ProcFluorinationReactionCtrl a bxb:BusinessProcess ;
+    rdfs:label "Fluorination Reaction Control Process" .
+bxb:ProcFractionalDistillPurityVerif a bxb:BusinessProcess ;
+    rdfs:label "Fractional Distillation Purity Verification Process" .
+bxb:ProcKeyedFillerInterlockEngage a bxb:BusinessProcess ;
+    rdfs:label "Keyed Filler Interlock Engagement Process" .
+bxb:ProcVOCVaporRecovery a bxb:BusinessProcess ;
+    rdfs:label "Volatile Organic Compound (VOC) Vapor Recovery Process" .
+
+# Advanced BioSurgery & Hemostasis Bounded Context
+bxb:ProcAsepticThrombinCompounding a bxb:BusinessProcess ;
+    rdfs:label "Aseptic Thrombin Component Compounding Process" .
+bxb:ProcGelatinCrossLinkQC a bxb:BusinessProcess ;
+    rdfs:label "Gelatin Matrix Cross-Link Quality Control Process" .
+bxb:ProcCryoprecipitatePurification a bxb:BusinessProcess ;
+    rdfs:label "Cryoprecipitate Purification Process" .
+bxb:ProcDualSyringeMixingOpt a bxb:BusinessProcess ;
+    rdfs:label "Dual-Syringe Mixing Ratio Optimization Process" .
+bxb:ProcPolymerCrossLinking a bxb:BusinessProcess ;
+    rdfs:label "Synthetic Polymer Cross-Linking Process" .
+bxb:ProcInVivoDegradationTesting a bxb:BusinessProcess ;
+    rdfs:label "In Vivo Degradation Testing Process" .
+
+# Critical Care Injectables & Specialty Pharma Bounded Context
+bxb:ProcAmpuleVialLiquidFill a bxb:BusinessProcess ;
+    rdfs:label "Ampule & Vial Liquid Filling Process" .
+bxb:ProcLyophilizationCycleExecute a bxb:BusinessProcess ;
+    rdfs:label "Lyophilization Cycle Execution Process" .
+bxb:ProcSyringeSiliconizationFill a bxb:BusinessProcess ;
+    rdfs:label "Syringe Siliconization & Filling Process" .
+bxb:ProcOpticalTipCapInspect a bxb:BusinessProcess ;
+    rdfs:label "Optical Tip-Cap Inspection Process" .
+bxb:ProcHypothermicSolutionFormulate a bxb:BusinessProcess ;
+    rdfs:label "Hypothermic Preservation Solution Formulation Process" .
+bxb:ProcColdChainQualityPreserve a bxb:BusinessProcess ;
+    rdfs:label "Cold-Chain Quality Preservation Process" .
+bxb:ProcAdverseEventSignalDetect a bxb:BusinessProcess ;
+    rdfs:label "Adverse Event Signal Detection Process" .
+bxb:ProcFDAMedWatchDossierSubmit a bxb:BusinessProcess ;
+    rdfs:label "FDA MedWatch Dossier Submission Process" .
+
+# --- Enterprise Support & Corporate Functions Domain ---
+# Global Manufacturing & Supply Chain Bounded Context
+bxb:ProcDemandForecastAlign a bxb:BusinessProcess ;
+    rdfs:label "Demand Forecast Alignment Process" .
+bxb:ProcMasterProductionScheduleOpt a bxb:BusinessProcess ;
+    rdfs:label "Master Production Schedule Optimization Process" .
+bxb:ProcSupplierQualificationAudit a bxb:BusinessProcess ;
+    rdfs:label "Supplier Qualification Audit Process" .
+bxb:ProcRawMaterialLotRelease a bxb:BusinessProcess ;
+    rdfs:label "Raw Material Lot Release Process" .
+bxb:ProcCrossDockConsolidation a bxb:BusinessProcess ;
+    rdfs:label "Cross-Dock Shipment Consolidation Process" .
+bxb:ProcExportComplianceScreening a bxb:BusinessProcess ;
+    rdfs:label "Export Compliance Screening Process" .
+
+# Commercial & Market Access Bounded Context
+bxb:ProcPayerContractNegotiation a bxb:BusinessProcess ;
+    rdfs:label "Payer Contract Negotiation Process" .
+bxb:ProcGPORebateReconciliation a bxb:BusinessProcess ;
+    rdfs:label "GPO Rebate Reconciliation Process" .
+bxb:ProcTerritoryCallPlanOpt a bxb:BusinessProcess ;
+    rdfs:label "Territory Call Plan Optimization Process" .
+bxb:ProcCRMPipelineAnalytics a bxb:BusinessProcess ;
+    rdfs:label "CRM Pipeline Analytics Process" .
+bxb:ProcRealWorldEvidenceGather a bxb:BusinessProcess ;
+    rdfs:label "Real-World Evidence Gathering Process" .
+bxb:ProcValueDossierDevelop a bxb:BusinessProcess ;
+    rdfs:label "Value Dossier Development Process" .
+
+# Enterprise Digital, Finance & Legal Bounded Context
+bxb:ProcMasterDataGovernance a bxb:BusinessProcess ;
+    rdfs:label "Master Data Governance Process" .
+bxb:ProcPredictiveMaintenanceModel a bxb:BusinessProcess ;
+    rdfs:label "Predictive Maintenance Modeling Process" .
+bxb:ProcRollingForecastConsolidate a bxb:BusinessProcess ;
+    rdfs:label "Rolling Forecast Consolidation Process" .
+bxb:ProcCostCenterVarianceReview a bxb:BusinessProcess ;
+    rdfs:label "Cost Center Variance Review Process" .
+bxb:ProcGlobalRegistrationDossierMgmt a bxb:BusinessProcess ;
+    rdfs:label "Global Registration Dossier Management Process" .
+bxb:ProcPostMarketSurveillanceReporting a bxb:BusinessProcess ;
+    rdfs:label "Post-Market Surveillance Reporting Process" .
+
+
+# =================================================================
 # EXECUTED BUSINESS PROCESS MAPPINGS TO OPERATIONAL AREAS
 # =================================================================
 
@@ -457,3 +820,35 @@ bxb:ProcHypothermicSolutionFormulate bxb:supportedByOperation bxb:OpSterileMfg ,
 bxb:ProcColdChainQualityPreserve bxb:supportedByOperation bxb:OpColdChainSupply .
 bxb:ProcAdverseEventSignalDetect bxb:supportedByOperation bxb:OpPharmacovigilance .
 bxb:ProcFDAMedWatchDossierSubmit bxb:supportedByOperation bxb:OpRegulatoryLegal , bxb:OpPharmacovigilance .
+
+# --- Enterprise Support & Corporate Functions Domain processes ---
+bxb:ProcDemandForecastAlign bxb:supportedByOperation bxb:OpColdChainSupply .
+bxb:ProcMasterProductionScheduleOpt bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcSupplierQualificationAudit bxb:supportedByOperation bxb:OpCGMPQuality , bxb:OpRegulatoryLegal .
+bxb:ProcRawMaterialLotRelease bxb:supportedByOperation bxb:OpCGMPQuality .
+bxb:ProcCrossDockConsolidation bxb:supportedByOperation bxb:OpColdChainSupply .
+bxb:ProcExportComplianceScreening bxb:supportedByOperation bxb:OpRegulatoryLegal .
+bxb:ProcPayerContractNegotiation bxb:supportedByOperation bxb:OpCommercialMarketAccess .
+bxb:ProcGPORebateReconciliation bxb:supportedByOperation bxb:OpCommercialMarketAccess , bxb:OpCorporateFinanceGBS .
+bxb:ProcTerritoryCallPlanOpt bxb:supportedByOperation bxb:OpCommercialMarketAccess .
+bxb:ProcCRMPipelineAnalytics bxb:supportedByOperation bxb:OpCommercialMarketAccess , bxb:OpDigitalHealthCyber .
+bxb:ProcRealWorldEvidenceGather bxb:supportedByOperation bxb:OpPharmacovigilance .
+bxb:ProcValueDossierDevelop bxb:supportedByOperation bxb:OpCommercialMarketAccess , bxb:OpRegulatoryLegal .
+bxb:ProcMasterDataGovernance bxb:supportedByOperation bxb:OpDigitalHealthCyber .
+bxb:ProcPredictiveMaintenanceModel bxb:supportedByOperation bxb:OpDigitalHealthCyber , bxb:OpCGMPQuality .
+bxb:ProcRollingForecastConsolidate bxb:supportedByOperation bxb:OpCorporateFinanceGBS .
+bxb:ProcCostCenterVarianceReview bxb:supportedByOperation bxb:OpCorporateFinanceGBS .
+bxb:ProcGlobalRegistrationDossierMgmt bxb:supportedByOperation bxb:OpRegulatoryLegal .
+bxb:ProcPostMarketSurveillanceReporting bxb:supportedByOperation bxb:OpRegulatoryLegal , bxb:OpPharmacovigilance .
+
+# =================================================================
+# ENTERPRISE ROOT
+# =================================================================
+
+bxb:BaxterInternational a bxb:Enterprise ;
+    rdfs:label "Baxter International Inc." ;
+    bxb:hasDomain bxb:RenalCareDomain ,
+                  bxb:MedicationDeliveryDomain ,
+                  bxb:HealthcareSystemsDomain ,
+                  bxb:PharmaAdvancedSurgeryDomain ,
+                  bxb:EnterpriseSupportDomain .

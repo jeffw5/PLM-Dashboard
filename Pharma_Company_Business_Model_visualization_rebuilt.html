@@ -95,7 +95,7 @@
             border-bottom: 1px solid var(--border-color);
             padding: 0.75rem 1.5rem;
             display: grid;
-            grid-template-columns: 220px 170px 160px 1fr 200px;
+            grid-template-columns: 280px 220px 140px 1fr;
             gap: 1.5rem;
             align-items: center;
             z-index: 9;
@@ -510,19 +510,6 @@
 
         .node-label.level0 { font-size: 12px; font-weight: 800; }
         .node-label.level4 { font-size: 8.5px; font-weight: 500; fill: #334155; }
-
-        #graph-svg { cursor: grab; touch-action: none; }
-        #graph-svg.panning { cursor: grabbing; }
-        .link-line { pointer-events: none; }
-
-        .edge-label {
-            font-size: 7px;
-            font-weight: 600;
-            fill: #64748b;
-            text-anchor: middle;
-            pointer-events: none;
-        }
-        .force-animating .edge-label { display: none; }
 </style>
 </head>
 <body>
@@ -555,15 +542,9 @@
             </select>
         </div>
 
-        <div class="control-group">
-            <label>View</label>
-            <select id="view-mode-select" onchange="switchView(this.value)">
-                <option value="list">List</option>
-                <option value="radial" selected>Radial</option>
-                <option value="hierarchical">Hierarchical</option>
-                <option value="cluster">Cluster</option>
-                <option value="force">Force</option>
-            </select>
+        <div class="toggle-btn-group">
+            <button class="toggle-btn active" id="btn-graph-view" onclick="switchView('graph')">Graph</button>
+            <button class="toggle-btn" id="btn-tree-view" onclick="switchView('tree')">Tree</button>
         </div>
 
         <div class="slider-container">
@@ -579,18 +560,6 @@
                 <span>Processes</span>
             </div>
         </div>
-
-        <div class="slider-container">
-            <div class="slider-labels">
-                <span>Node Spacing</span>
-                <span id="spacing-value-label">1.0x</span>
-            </div>
-            <input type="range" id="spacing-slider" min="50" max="300" value="100" step="10" oninput="updateSpacing(this.value)">
-            <div class="slider-labels" style="font-size: 9px; color: #94a3b8;">
-                <span>Compact</span>
-                <span>Spread out</span>
-            </div>
-        </div>
     </div>
 
     <!-- Main Workspace -->
@@ -600,10 +569,8 @@
             <!-- Graph View -->
             <div id="view-graph">
                 <svg id="graph-svg" viewBox="0 0 1600 1600" preserveAspectRatio="xMidYMid meet">
-                    <g id="viewport-g">
-                        <g id="links-layer"></g>
-                        <g id="nodes-layer"></g>
-                    </g>
+                    <g id="links-layer"></g>
+                    <g id="nodes-layer"></g>
                 </svg>
 
                 <div class="legend-panel" id="legend-panel"></div>
@@ -1789,211 +1756,6 @@ function radialLayout(root, opts) {
     return flat;
 }
 
-// ---------------------------------------------------------------------------
-// Flatten helper: walk the tree once and return every node except the L0
-// Enterprise root, in document order. Used as the canonical node set that
-// every layout mode repositions in place (same object references).
-// ---------------------------------------------------------------------------
-function flattenTree(root) {
-    const flat = [];
-    function walk(node) {
-        if (node.level > 0) flat.push(node);
-        if (node.children) node.children.forEach(walk);
-    }
-    walk(root);
-    return flat;
-}
-
-function countLeavesTree(root) {
-    function countLeaves(node) {
-        if (!node.children || node.children.length === 0) { node._leaves = 1; return 1; }
-        let total = 0;
-        node.children.forEach(c => { total += countLeaves(c); });
-        node._leaves = total;
-        return total;
-    }
-    countLeaves(root);
-}
-
-// ---------------------------------------------------------------------------
-// Hierarchical (top-down layered / dendrogram) layout: y = level * levelGap,
-// x allocated left-to-right proportional to leaf-descendant count, same
-// leaf-proportional-allocation idea as radialLayout but on a linear axis.
-// ---------------------------------------------------------------------------
-function hierarchicalLayout(root, opts) {
-    countLeavesTree(root);
-    const marginX = opts.marginX || 40;
-    const width = opts.width;
-    const marginTop = opts.marginTop || 60;
-    const levelGap = opts.levelGap;
-
-    const flat = [];
-    function place(node, xStart, xEnd, parentLayoutId) {
-        const x = (xStart + xEnd) / 2;
-        const y = marginTop + node.level * levelGap;
-        node._x = x;
-        node._y = y;
-        node._parentId = parentLayoutId;
-        if (node.level > 0) flat.push(node);
-
-        if (node.children && node.children.length > 0) {
-            let cursor = xStart;
-            const span = xEnd - xStart;
-            const GAP_FACTOR = 0.84;
-            node.children.forEach(child => {
-                const childSpan = span * (child._leaves / node._leaves);
-                const actualSpan = childSpan * GAP_FACTOR;
-                const offset = (childSpan - actualSpan) / 2;
-                place(child, cursor + offset, cursor + offset + actualSpan, node.id);
-                cursor += childSpan;
-            });
-        }
-    }
-
-    place(root, marginX, width - marginX, null);
-    return flat;
-}
-
-// ---------------------------------------------------------------------------
-// Cluster layout: each L1 domain gets its own anchor point on a ring; every
-// descendant of that domain is then packed radially around that domain's own
-// anchor (not the global center), producing visually distinct per-domain
-// "bubbles" instead of one continuous radial tree.
-// ---------------------------------------------------------------------------
-function clusterLayout(root, opts) {
-    countLeavesTree(root);
-    const cx = opts.cx, cy = opts.cy;
-    const domainRingRadius = opts.domainRingRadius;
-    const packRadii = opts.packRadii; // { 2: r, 3: r, 4: r } absolute offset from the domain's own anchor
-
-    const flat = [];
-
-    function placeWithin(node, angleStart, angleEnd, ccx, ccy, parentLayoutId) {
-        const angle = (angleStart + angleEnd) / 2;
-        const r = node.level === 1 ? 0 : (packRadii[node.level] || 0);
-        node._x = ccx + r * Math.cos(angle);
-        node._y = ccy + r * Math.sin(angle);
-        node._parentId = parentLayoutId;
-        flat.push(node);
-
-        if (node.children && node.children.length > 0) {
-            let cursor = angleStart;
-            const span = angleEnd - angleStart;
-            const GAP_FACTOR = 0.8;
-            node.children.forEach(child => {
-                const childSpan = span * (child._leaves / node._leaves);
-                const actualSpan = childSpan * GAP_FACTOR;
-                const offset = (childSpan - actualSpan) / 2;
-                placeWithin(child, cursor + offset, cursor + offset + actualSpan, ccx, ccy, node.id);
-                cursor += childSpan;
-            });
-        }
-    }
-
-    const domains = root.children;
-    const n = domains.length;
-    domains.forEach((domain, i) => {
-        const angle = (i / n) * 2 * Math.PI - Math.PI / 2;
-        const ccx = cx + domainRingRadius * Math.cos(angle);
-        const ccy = cy + domainRingRadius * Math.sin(angle);
-        placeWithin(domain, 0, 2 * Math.PI, ccx, ccy, null);
-    });
-
-    return flat;
-}
-
-// ---------------------------------------------------------------------------
-// Force-directed layout: naive O(n^2) repulsion (fine at this node count),
-// spring links pulling parent/child pairs toward a rest length, a weak
-// global centering force, and a weak per-domain "cluster anchor" attraction
-// so the simulation still settles into loosely domain-grouped regions
-// instead of one undifferentiated blob.
-// ---------------------------------------------------------------------------
-function seedForcePositions(flatNodes, opts) {
-    const cx = opts.cx, cy = opts.cy, spread = opts.spread || 400;
-    flatNodes.forEach(n => {
-        if (n._x == null || n._y == null || isNaN(n._x) || isNaN(n._y)) {
-            const a = Math.random() * 2 * Math.PI;
-            const r = Math.random() * spread;
-            n._x = cx + r * Math.cos(a);
-            n._y = cy + r * Math.sin(a);
-        }
-        n._vx = n._vx || 0;
-        n._vy = n._vy || 0;
-    });
-}
-
-function forceTick(flatNodes, linkPairs, opts, alpha) {
-    const repulsion = opts.repulsion;
-    const linkDistance = opts.linkDistance;
-    const linkStrength = opts.linkStrength;
-    const centerStrength = opts.centerStrength;
-    const clusterStrength = opts.clusterStrength;
-    const damping = opts.damping;
-    const cx = opts.cx, cy = opts.cy;
-    const clusterCenters = opts.clusterCenters || {};
-
-    const n = flatNodes.length;
-    for (let i = 0; i < n; i++) {
-        flatNodes[i]._fx = 0;
-        flatNodes[i]._fy = 0;
-    }
-
-    // Pairwise repulsion (O(n^2) - fine for a few hundred nodes)
-    for (let i = 0; i < n; i++) {
-        const a = flatNodes[i];
-        for (let j = i + 1; j < n; j++) {
-            const b = flatNodes[j];
-            let dx = a._x - b._x, dy = a._y - b._y;
-            let distSq = dx * dx + dy * dy;
-            if (distSq < 1) { dx = (Math.random() - 0.5); dy = (Math.random() - 0.5); distSq = 1; }
-            const dist = Math.sqrt(distSq);
-            const force = repulsion / distSq;
-            const fx = (dx / dist) * force, fy = (dy / dist) * force;
-            a._fx += fx; a._fy += fy;
-            b._fx -= fx; b._fy -= fy;
-        }
-    }
-
-    // Spring links toward rest length
-    linkPairs.forEach(([a, b]) => {
-        if (!a || !b) return;
-        let dx = b._x - a._x, dy = b._y - a._y;
-        const dist = Math.sqrt(dx * dx + dy * dy) || 0.01;
-        const diff = (dist - linkDistance) * linkStrength;
-        const ux = dx / dist, uy = dy / dist;
-        a._fx += ux * diff; a._fy += uy * diff;
-        b._fx -= ux * diff; b._fy -= uy * diff;
-    });
-
-    // Weak global centering + weak per-domain cluster anchor attraction
-    flatNodes.forEach(node => {
-        node._fx += (cx - node._x) * centerStrength;
-        node._fy += (cy - node._y) * centerStrength;
-        const anchor = clusterCenters[node.colorKey];
-        if (anchor) {
-            node._fx += (anchor.x - node._x) * clusterStrength;
-            node._fy += (anchor.y - node._y) * clusterStrength;
-        }
-    });
-
-    // Integrate (semi-implicit Euler with damping)
-    flatNodes.forEach(node => {
-        node._vx = (node._vx + node._fx * alpha) * damping;
-        node._vy = (node._vy + node._fy * alpha) * damping;
-        node._x += node._vx;
-        node._y += node._vy;
-    });
-}
-
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        parseTurtle, buildModel, buildTree, radialLayout, hierarchicalLayout,
-        clusterLayout, flattenTree, countLeavesTree, seedForcePositions, forceTick,
-        stripQuotes
-    };
-}
-
         // ===================================================================
         // App wiring: parse embedded RDF -> build tree + radial layout -> render
         // ===================================================================
@@ -2005,14 +1767,10 @@ if (typeof module !== 'undefined' && module.exports) {
         const MODEL = buildModel(TRIPLES);
         const domainData = buildTree(MODEL);
 
-        // "Base" (1.0x) geometry for every layout mode; each is scaled by the
-        // user-controlled Node Spacing slider (spacingFactor) in computeLayout().
-        const BASE_RADII = [0, 150, 330, 510, 680];
-        const BASE_HIER = { width: 2500, marginX: 80, marginTop: 90, levelGap: 320 };
-        const BASE_CLUSTER = { domainRingRadius: 480, packRadii: { 2: 140, 3: 230, 4: 300 } };
-        const BASE_FORCE = { linkDistance: 90, repulsion: 4200, spread: 500, clusterAnchorRadius: 500 };
-
+        const RADII = [0, 150, 330, 510, 680];
         const CENTER = { cx: 800, cy: 800 };
+        const layoutNodes = radialLayout(domainData, { cx: CENTER.cx, cy: CENTER.cy, radii: RADII });
+        const LABEL_THRESHOLD = { 1: Infinity, 2: Infinity, 3: 22, 4: 40 };
 
         const COLOR_MAP = {
             renal:  { color: 'var(--renal-color)',  bg: 'var(--renal-bg)'  },
@@ -2024,101 +1782,19 @@ if (typeof module !== 'undefined' && module.exports) {
 
         const NODE_RADIUS = { 1: 34, 2: 20, 3: 12, 4: 5 };
 
-        // Human-readable label for the RDF property connecting a node to its
-        // parent, keyed by the CHILD's level (this is what the edge represents).
-        const RELATION_LABEL = { 1: 'hasDomain', 2: 'hasSubDomain', 3: 'providesService', 4: 'executedByProcess' };
-
-        // Per-domain anchor points (used by the Cluster layout, and as weak
-        // attractors in the Force layout so the simulation still settles into
-        // loosely domain-grouped regions). Recomputed in computeLayout() since
-        // they scale with the Node Spacing control.
-        let CLUSTER_ANCHORS = {};
-
-        let layoutNodes = [];
-        let currentViewMode = 'radial';
+        let currentZoom = 1;
         let selectedNodeId = null;
         let lastSearchMatchId = null;
-        let viewTransform = { x: 0, y: 0, k: 1 };
-        let spacingFactor = 1;
-        let currentForceLinkDistance = BASE_FORCE.linkDistance;
-        let currentForceRepulsion = BASE_FORCE.repulsion;
-
-        // DOM element caches populated by the last full renderGraph() pass, so the
-        // Force simulation's animation loop can update positions every frame
-        // without rebuilding the SVG DOM (which would be far too slow at 60fps).
-        let nodeElById = {};
-        let linkElList = []; // [{ el, labelEl, parentNode, childNode }]
-        let currentLinkPairs = []; // [ [parentNode, childNode], ... ] for the visible set
-
-        function updateClusterAnchors(ringRadius) {
-            CLUSTER_ANCHORS = {};
-            domainData.children.forEach((d, i) => {
-                const angle = (i / domainData.children.length) * 2 * Math.PI - Math.PI / 2;
-                CLUSTER_ANCHORS[d.colorKey] = {
-                    x: CENTER.cx + ringRadius * Math.cos(angle),
-                    y: CENTER.cy + ringRadius * Math.sin(angle)
-                };
-            });
-        }
-
-        function computeLayout(mode) {
-            const sf = spacingFactor;
-            const svg = document.getElementById('graph-svg');
-
-            if (mode === 'hierarchical') {
-                const width = BASE_HIER.width * sf;
-                const levelGap = BASE_HIER.levelGap * sf;
-                const height = BASE_HIER.marginTop * 2 + levelGap * 3 + 120;
-                svg.setAttribute('viewBox', `0 0 ${Math.round(width + 160)} ${Math.round(height)}`);
-                layoutNodes = hierarchicalLayout(domainData, { width, marginX: BASE_HIER.marginX, marginTop: BASE_HIER.marginTop, levelGap });
-            } else if (mode === 'cluster') {
-                const ringR = BASE_CLUSTER.domainRingRadius * sf;
-                const packRadii = { 2: BASE_CLUSTER.packRadii[2] * sf, 3: BASE_CLUSTER.packRadii[3] * sf, 4: BASE_CLUSTER.packRadii[4] * sf };
-                const size = Math.round((ringR + packRadii[4] + 160) * 2);
-                CENTER.cx = size / 2; CENTER.cy = size / 2;
-                svg.setAttribute('viewBox', `0 0 ${size} ${size}`);
-                updateClusterAnchors(ringR);
-                layoutNodes = clusterLayout(domainData, { cx: CENTER.cx, cy: CENTER.cy, domainRingRadius: ringR, packRadii });
-            } else if (mode === 'force') {
-                const size = Math.round(1600 * Math.max(1, sf));
-                CENTER.cx = size / 2; CENTER.cy = size / 2;
-                svg.setAttribute('viewBox', `0 0 ${size} ${size}`);
-                updateClusterAnchors(BASE_FORCE.clusterAnchorRadius * sf);
-                currentForceLinkDistance = BASE_FORCE.linkDistance * sf;
-                currentForceRepulsion = BASE_FORCE.repulsion * sf * sf;
-                layoutNodes = flattenTree(domainData);
-                countLeavesTree(domainData);
-                seedForcePositions(layoutNodes, { cx: CENTER.cx, cy: CENTER.cy, spread: BASE_FORCE.spread * sf });
-            } else {
-                const radii = BASE_RADII.map(r => r * sf);
-                const size = Math.round((radii[4] + 160) * 2);
-                CENTER.cx = size / 2; CENTER.cy = size / 2;
-                svg.setAttribute('viewBox', `0 0 ${size} ${size}`);
-                layoutNodes = radialLayout(domainData, { cx: CENTER.cx, cy: CENTER.cy, radii });
-            }
-            return layoutNodes;
-        }
-
-        function updateSpacing(val) {
-            spacingFactor = val / 100;
-            document.getElementById('spacing-value-label').textContent = spacingFactor.toFixed(1) + 'x';
-            if (currentViewMode === 'list') return;
-            computeLayout(currentViewMode);
-            renderGraph();
-            if (currentViewMode === 'force') startForceSim();
-        }
 
         // Initialize App
         window.addEventListener('DOMContentLoaded', () => {
             safeCreateIcons();
-            computeLayout('radial');
             renderLegend();
             renderMetrics();
             renderGraph();
             renderInspectorTree();
             renderFullTree();
             setupSearch();
-            setupPanZoom();
         });
 
         function renderMetrics() {
@@ -2156,11 +1832,10 @@ if (typeof module !== 'undefined' && module.exports) {
             const byId = {};
             layoutNodes.forEach(n => { byId[n.id] = n; });
 
-            nodeElById = {};
-            linkElList = [];
-            currentLinkPairs = [];
+            const visibleCountByLevel = { 1: 0, 2: 0, 3: 0, 4: 0 };
+            visibleNodes.forEach(n => { visibleCountByLevel[n.level]++; });
 
-            // Render Links (+ a label naming the RDF relationship each edge represents)
+            // Render Links
             visibleNodes.forEach(node => {
                 if (node._parentId && (visibleIds.has(node._parentId) || node._parentId === domainData.id)) {
                     const parentNode = byId[node._parentId];
@@ -2173,15 +1848,6 @@ if (typeof module !== 'undefined' && module.exports) {
                     line.setAttribute('y2', node._y);
                     line.setAttribute('class', `link-line ${selectedNodeId === node.id || (parentNode && selectedNodeId === parentNode.id) ? 'active' : ''}`);
                     linksLayer.appendChild(line);
-
-                    const labelEl = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                    labelEl.setAttribute('class', 'edge-label');
-                    labelEl.textContent = RELATION_LABEL[node.level] || '';
-                    positionEdgeLabel(labelEl, px, py, node._x, node._y);
-                    linksLayer.appendChild(labelEl);
-
-                    linkElList.push({ el: line, labelEl, parentNode: parentNode || null, childNode: node });
-                    if (parentNode) currentLinkPairs.push([parentNode, node]);
                 }
             });
 
@@ -2233,52 +1899,18 @@ if (typeof module !== 'undefined' && module.exports) {
                     g.appendChild(ring);
                 }
 
-                // All node labels are always shown; Hierarchical mode rotates
-                // L2+ labels diagonally so they fan out instead of stacking.
-                const isHierarchical = currentViewMode === 'hierarchical';
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('class', `node-label level${node.level}`);
-                if (isHierarchical && node.level >= 2) {
-                    text.setAttribute('transform', `rotate(40) translate(${r + 8}, 3)`);
-                    text.style.textAnchor = 'start';
-                } else {
+                // Label visibility: always show L1-L3; only show L4 labels when the
+                // process-level canvas isn't overcrowded, or when it's the selected/matched node
+                const showLabel = node.level <= 2 || visibleCountByLevel[node.level] <= LABEL_THRESHOLD[node.level] || selectedNodeId === node.id || lastSearchMatchId === node.id;
+                if (showLabel) {
+                    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                     text.setAttribute('y', r + (node.level === 4 ? 10 : 14));
+                    text.setAttribute('class', `node-label level${node.level}`);
+                    text.textContent = node.name;
+                    g.appendChild(text);
                 }
-                text.textContent = node.name;
-                g.appendChild(text);
 
                 nodesLayer.appendChild(g);
-                nodeElById[node.id] = g;
-            });
-        }
-
-        // Positions + rotates an edge-relationship label at the midpoint of a
-        // line, flipping it right-side-up so it's never upside down.
-        function positionEdgeLabel(labelEl, x1, y1, x2, y2) {
-            const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
-            let angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
-            if (angle > 90 || angle < -90) angle += 180;
-            labelEl.setAttribute('transform', `translate(${mx},${my}) rotate(${angle})`);
-        }
-
-        // Lightweight per-frame position update used by the Force simulation's
-        // animation loop: mutates existing element attributes instead of
-        // rebuilding the DOM, so it stays smooth at 60fps.
-        function updateGraphPositionsOnly() {
-            const byId = {};
-            layoutNodes.forEach(n => { byId[n.id] = n; });
-            for (const id in nodeElById) {
-                const node = byId[id];
-                if (node) nodeElById[id].setAttribute('transform', `translate(${node._x}, ${node._y})`);
-            }
-            linkElList.forEach(({ el, labelEl, parentNode, childNode }) => {
-                const px = parentNode ? parentNode._x : CENTER.cx;
-                const py = parentNode ? parentNode._y : CENTER.cy;
-                el.setAttribute('x1', px);
-                el.setAttribute('y1', py);
-                el.setAttribute('x2', childNode._x);
-                el.setAttribute('y2', childNode._y);
-                if (labelEl) positionEdgeLabel(labelEl, px, py, childNode._x, childNode._y);
             });
         }
 
@@ -2391,88 +2023,20 @@ if (typeof module !== 'undefined' && module.exports) {
         function updateDetailLevel(val) {
             const labels = ["Domains", "Contexts (L2)", "Services (L3)", "Processes"];
             document.getElementById('slider-value-label').textContent = labels[val - 1];
-            refreshView();
+            renderGraph();
         }
 
-        // Re-draws the currently visible node/link set without recomputing node
-        // positions (the static layouts don't need repositioning just because the
-        // filter/detail-level changed); Force mode gets a fresh reheat so newly
-        // shown/hidden nodes settle into the new visible topology.
-        function refreshView() {
-            if (currentViewMode === 'list') return;
-            renderGraph();
-            if (currentViewMode === 'force') startForceSim();
-        }
+        function switchView(view) {
+            document.getElementById('btn-graph-view').classList.toggle('active', view === 'graph');
+            document.getElementById('btn-tree-view').classList.toggle('active', view === 'tree');
 
-        function switchView(mode) {
-            currentViewMode = mode;
-            const select = document.getElementById('view-mode-select');
-            if (select.value !== mode) select.value = mode;
-
-            const isList = mode === 'list';
-            document.getElementById('view-graph').style.display = isList ? 'none' : 'block';
-            document.getElementById('view-tree').style.display = isList ? 'block' : 'none';
-
-            if (isList) {
-                stopForceSim();
-                return;
-            }
-
-            computeLayout(mode);
-            renderGraph();
-            if (mode === 'force') {
-                startForceSim();
-            } else {
-                stopForceSim();
-            }
+            document.getElementById('view-graph').style.display = view === 'graph' ? 'block' : 'none';
+            document.getElementById('view-tree').style.display = view === 'tree' ? 'block' : 'none';
         }
 
         document.getElementById('domain-type-filter').addEventListener('change', () => {
-            refreshView();
+            renderGraph();
         });
-
-        // ===================================================================
-        // Force simulation loop
-        // ===================================================================
-        let forceRAF = null;
-        let forceAlpha = 1;
-
-        function stopForceSim() {
-            if (forceRAF) {
-                cancelAnimationFrame(forceRAF);
-                forceRAF = null;
-            }
-            document.getElementById('graph-svg').classList.remove('force-animating');
-        }
-
-        function startForceSim() {
-            stopForceSim();
-            forceAlpha = 1;
-            // Edge-relationship labels are hidden for the brief, jittery settling
-            // period (cheaper to render, and unreadable while moving anyway) and
-            // reappear automatically the instant the simulation settles.
-            document.getElementById('graph-svg').classList.add('force-animating');
-            forceRAF = requestAnimationFrame(forceStep);
-        }
-
-        function forceStep() {
-            forceTick(layoutNodes, currentLinkPairs, {
-                cx: CENTER.cx, cy: CENTER.cy,
-                repulsion: currentForceRepulsion, linkDistance: currentForceLinkDistance, linkStrength: 0.15,
-                centerStrength: 0.012, clusterStrength: 0.03, damping: 0.85,
-                clusterCenters: CLUSTER_ANCHORS
-            }, forceAlpha);
-
-            updateGraphPositionsOnly();
-
-            forceAlpha *= 0.965;
-            if (forceAlpha > 0.02) {
-                forceRAF = requestAnimationFrame(forceStep);
-            } else {
-                forceRAF = null;
-                document.getElementById('graph-svg').classList.remove('force-animating');
-            }
-        }
 
         function setupSearch() {
             document.getElementById('search-input').addEventListener('input', (e) => {
@@ -2493,90 +2057,16 @@ if (typeof module !== 'undefined' && module.exports) {
             });
         }
 
-        // ===================================================================
-        // Pan + zoom: a single {x, y, k} transform applied to the #viewport-g
-        // wrapper (which contains both the links and nodes layers), so panning
-        // and zooming stay perfectly in sync regardless of view mode.
-        // ===================================================================
-        const ZOOM_MIN = 0.2, ZOOM_MAX = 4;
-
-        function applyViewTransform() {
-            const g = document.getElementById('viewport-g');
-            g.setAttribute('transform', `translate(${viewTransform.x},${viewTransform.y}) scale(${viewTransform.k})`);
-        }
-
         function zoom(factor) {
-            viewTransform.k = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, viewTransform.k * factor));
-            applyViewTransform();
+            currentZoom *= factor;
+            document.getElementById('nodes-layer').setAttribute('transform', `translate(${CENTER.cx},${CENTER.cy}) scale(${currentZoom}) translate(${-CENTER.cx},${-CENTER.cy})`);
+            document.getElementById('links-layer').setAttribute('transform', `translate(${CENTER.cx},${CENTER.cy}) scale(${currentZoom}) translate(${-CENTER.cx},${-CENTER.cy})`);
         }
 
         function resetZoom() {
-            viewTransform = { x: 0, y: 0, k: 1 };
-            applyViewTransform();
-        }
-
-        function setupPanZoom() {
-            const svg = document.getElementById('graph-svg');
-            let dragging = false;
-            let moved = false;
-            let lastX = 0, lastY = 0;
-
-            svg.addEventListener('mousedown', (e) => {
-                dragging = true;
-                moved = false;
-                lastX = e.clientX;
-                lastY = e.clientY;
-            });
-
-            window.addEventListener('mousemove', (e) => {
-                if (!dragging) return;
-                const dx = e.clientX - lastX;
-                const dy = e.clientY - lastY;
-                if (Math.abs(dx) > 2 || Math.abs(dy) > 2) {
-                    if (!moved) { moved = true; svg.classList.add('panning'); }
-                    viewTransform.x += dx;
-                    viewTransform.y += dy;
-                    applyViewTransform();
-                    lastX = e.clientX;
-                    lastY = e.clientY;
-                }
-            });
-
-            window.addEventListener('mouseup', () => {
-                dragging = false;
-                if (moved) svg.classList.remove('panning');
-                moved = false;
-            });
-
-            // Touch support (single-finger pan)
-            svg.addEventListener('touchstart', (e) => {
-                if (e.touches.length !== 1) return;
-                dragging = true;
-                moved = false;
-                lastX = e.touches[0].clientX;
-                lastY = e.touches[0].clientY;
-            }, { passive: true });
-
-            svg.addEventListener('touchmove', (e) => {
-                if (!dragging || e.touches.length !== 1) return;
-                const dx = e.touches[0].clientX - lastX;
-                const dy = e.touches[0].clientY - lastY;
-                moved = true;
-                viewTransform.x += dx;
-                viewTransform.y += dy;
-                applyViewTransform();
-                lastX = e.touches[0].clientX;
-                lastY = e.touches[0].clientY;
-            }, { passive: true });
-
-            svg.addEventListener('touchend', () => { dragging = false; moved = false; });
-
-            // Mouse-wheel zoom
-            svg.addEventListener('wheel', (e) => {
-                e.preventDefault();
-                const factor = e.deltaY < 0 ? 1.1 : 0.9;
-                zoom(factor);
-            }, { passive: false });
+            currentZoom = 1;
+            document.getElementById('nodes-layer').removeAttribute('transform');
+            document.getElementById('links-layer').removeAttribute('transform');
         }
     </script>
 </body>
