@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Concept Graph — Core Business Model + Governance Ontologies + Asset / Capability / Event / Requirements Models</title>
+<style>
+  :root[data-theme="light"]{
+    --page-plane:#f9f9f7;
+    --surface-1:#fcfcfb;
+    --surface-2:#ffffff;
+    --text-primary:#0b0b0b;
+    --text-secondary:#52514e;
+    --muted:#898781;
+    --gridline:#e1e0d9;
+    --border: rgba(11,11,11,0.10);
+    --chip-bg:#ffffff;
+    --chip-bg-off:#f1f0ec;
+    color-scheme: light;
+  }
+  :root[data-theme="dark"]{
+    --page-plane:#0d0d0d;
+    --surface-1:#1a1a19;
+    --surface-2:#232322;
+    --text-primary:#ffffff;
+    --text-secondary:#c3c2b7;
+    --muted:#898781;
+    --gridline:#2c2c2a;
+    --border: rgba(255,255,255,0.10);
+    --chip-bg:#232322;
+    --chip-bg-off:#181817;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body{
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page-plane);
+    color: var(--text-primary);
+    display:flex;
+    flex-direction:column;
+    height:100vh;
+    overflow:hidden;
+  }
+  header{
+    padding: 12px 20px 8px;
+    border-bottom: 1px solid var(--gridline);
+    background: var(--surface-1);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  header h1{ font-size: 16px; margin:0; font-weight:600; color: var(--text-primary); }
+  header p{ margin:2px 0 0; font-size:12px; color: var(--text-secondary); max-width: 760px; }
+  .header-controls{ display:flex; align-items:center; gap:8px; }
+  .icon-btn{
+    border:1px solid var(--border);
+    background: var(--chip-bg);
+    color: var(--text-primary);
+    border-radius:8px;
+    padding:7px 12px;
+    font-size:12.5px;
+    cursor:pointer;
+    display:flex; align-items:center; gap:6px;
+    font-family:inherit;
+    white-space:nowrap;
+  }
+  .icon-btn:hover{ filter:brightness(0.96); }
+  [data-theme="dark"] .icon-btn:hover{ filter:brightness(1.15); }
+  .icon-btn.active{ background:#2a78d6; color:#fff; border-color:#2a78d6; }
+  .icon-btn.ghost{ background:transparent; }
+
+  .toolbar{
+    background: var(--surface-1);
+    border-bottom: 1px solid var(--gridline);
+    padding: 8px 20px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    align-items:center;
+  }
+  .toolbar-row{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; width:100%; }
+  .toolbar-label{ font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); flex:none; margin-right:2px; }
+  #searchBox{
+    flex: 0 0 220px;
+    padding:7px 10px;
+    border-radius:8px;
+    border:1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text-primary);
+    font-size:13px;
+    font-family:inherit;
+  }
+  .divider{ width:1px; height:22px; background:var(--gridline); margin:0 4px; flex:none; }
+  .chip-group{ display:flex; flex-wrap:wrap; gap:6px; }
+  .chip{
+    display:flex; align-items:center; gap:6px;
+    padding:5px 10px 5px 8px;
+    border-radius:999px;
+    border:1px solid var(--border);
+    background: var(--chip-bg);
+    font-size:12px;
+    cursor:pointer;
+    user-select:none;
+    color: var(--text-primary);
+    line-height:1.3;
+    white-space:nowrap;
+  }
+  .chip.off{ background:var(--chip-bg-off); color:var(--muted); }
+  .chip .dot{ width:9px; height:9px; border-radius:50%; flex:none; display:inline-block; }
+  .chip .dash{ width:14px; height:0; border-top:2px dashed var(--muted); flex:none; display:inline-block; }
+  .chip .dotted{ width:14px; height:0; border-top:2px dotted var(--muted); flex:none; display:inline-block; }
+  .chip input{ display:none; }
+  .toolbar-actions{ display:flex; gap:6px; margin-left:auto; }
+
+  .main{ flex:1; display:flex; min-height:0; }
+  #graphWrap{ flex:1; background: var(--surface-1); position:relative; overflow:hidden; }
+  svg#graph{ width:100%; height:100%; display:block; cursor:grab; }
+  svg#graph.panning{ cursor:grabbing; }
+
+  .node{ cursor:pointer; }
+  .node .shape{ stroke-width:2px; transition: opacity .15s; }
+  .node.enumNode .shape{ stroke-width:1.5px; stroke-dasharray:3,2; }
+  .node text{ pointer-events:none; user-select:none; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .node.selected .shape{ stroke-width:3.5px; }
+  .edge-line{ fill:none; }
+  .edge-hit{ fill:none; stroke:transparent; stroke-width:14px; cursor:pointer; }
+  .edge-label-bg{ opacity:0.92; }
+  .edge-label{ font-family: system-ui, -apple-system, "Segoe UI", sans-serif; pointer-events:none; }
+
+  .zoom-controls{
+    position:absolute; right:16px; bottom:16px;
+    display:flex; flex-direction:column; gap:6px; z-index:5;
+  }
+  .zoom-controls button{
+    width:34px; height:34px; border-radius:8px;
+    border:1px solid var(--border);
+    background:var(--surface-2); color:var(--text-primary);
+    font-size:16px; cursor:pointer;
+  }
+  .stats-badge{
+    position:absolute; left:16px; bottom:16px;
+    background: var(--surface-2); border:1px solid var(--border); border-radius:8px;
+    padding:6px 10px; font-size:11px; color:var(--text-secondary); z-index:5;
+    line-height:1.5;
+  }
+  #tooltip{
+    position:fixed; pointer-events:none; z-index:60;
+    max-width:280px;
+    background: var(--surface-2);
+    color: var(--text-primary);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:8px 10px;
+    font-size:12px;
+    line-height:1.45;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+    display:none;
+  }
+  #tooltip b{ display:block; margin-bottom:2px; font-size:12.5px; }
+  #tooltip .tt-mod{ font-size:10.5px; color:var(--muted); margin-bottom:4px; }
+
+  aside{
+    width: 320px; flex: none;
+    border-left: 1px solid var(--gridline);
+    background: var(--surface-1);
+    overflow-y: auto;
+    padding: 16px;
+    font-size: 13px;
+  }
+  aside h2{ font-size:13px; margin: 0 0 10px; color: var(--text-primary); text-transform: uppercase; letter-spacing: .04em; }
+  aside h3.section{ font-size:11px; margin: 16px 0 6px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; border-top:1px solid var(--gridline); padding-top:12px; }
+  .legend-row{ display:flex; align-items:flex-start; gap:8px; padding:6px 0; border-bottom:1px solid var(--gridline); }
+  .legend-row:last-child{ border-bottom:none; }
+  .legend-swatch{ width:20px; height:20px; border-radius:5px; flex:none; display:flex; align-items:center; justify-content:center; font-size:12px; margin-top:1px; }
+  .legend-text b{ display:block; font-size:12.5px; color:var(--text-primary); }
+  .legend-text span{ display:block; font-size:11.5px; color:var(--text-secondary); margin-top:1px; }
+  .legend-count{ font-size:10.5px; color:var(--muted); }
+  .legend-edge-row{ display:flex; align-items:center; gap:8px; padding:5px 0; font-size:12px; color:var(--text-secondary); }
+  .legend-edge-line{ width:26px; height:0; border-top:2px solid; flex:none; }
+  .legend-edge-line.dashed{ border-top-style:dashed; }
+  .legend-edge-line.dotted{ border-top-style:dotted; }
+
+  #infoPanel .node-title{ display:flex; align-items:center; gap:8px; font-size:15px; font-weight:600; margin-bottom:4px; }
+  #infoPanel .node-cat{ font-size:11.5px; color:var(--text-secondary); margin-bottom:10px; }
+  #infoPanel .node-desc{ font-size:12.5px; color:var(--text-primary); line-height:1.5; margin-bottom:10px; }
+  #infoPanel .node-extra{ font-size:11.5px; color:var(--text-secondary); line-height:1.5; margin-bottom:10px; background:var(--surface-2); border:1px solid var(--border); border-radius:6px; padding:8px 10px; }
+  #infoPanel .node-extra b{ color:var(--text-primary); }
+  #infoPanel .rel-heading{ font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin:10px 0 6px; }
+  .rel-item{ display:flex; justify-content:space-between; gap:6px; padding:6px 8px; border-radius:6px; background: var(--surface-2); border:1px solid var(--border); font-size:12px; margin-bottom:5px; cursor:pointer; }
+  .rel-item:hover{ border-color: var(--text-secondary); }
+  .rel-item .rel-label{ color:var(--muted); font-style:italic; }
+  #backToLegend{ margin-bottom:12px; font-size:11.5px; background:none; border:none; color:var(--text-secondary); cursor:pointer; padding:0; text-decoration:underline; }
+
+  .table-wrap{ position:fixed; inset:0; background: rgba(0,0,0,0.45); display:none; align-items:center; justify-content:center; z-index:50; }
+  .table-wrap.open{ display:flex; }
+  .table-modal{ background:var(--surface-1); color:var(--text-primary); width:min(1040px, 94vw); max-height:86vh; border-radius:12px; padding:20px 22px; overflow:auto; border:1px solid var(--border); }
+  .table-modal h2{ margin-top:0; font-size:15px; }
+  .table-modal h3{ font-size:12.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-secondary); margin:18px 0 8px; }
+  .table-modal .hint{ font-size:11.5px; color:var(--muted); margin: -4px 0 10px; }
+  table{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  th, td{ text-align:left; padding:6px 8px; border-bottom:1px solid var(--gridline); vertical-align:top; }
+  th{ color:var(--text-secondary); font-weight:600; position:sticky; top:0; background:var(--surface-1); }
+  .closeModal{ float:right; border:none; background:none; color:var(--text-secondary); font-size:18px; cursor:pointer; line-height:1; }
+  .catpill{ display:inline-flex; align-items:center; gap:5px; font-size:11.5px; white-space:nowrap; }
+  .catpill .dot{ width:8px; height:8px; border-radius:50%; flex:none; }
+
+  ::-webkit-scrollbar{ width:9px; height:9px; }
+  ::-webkit-scrollbar-thumb{ background: var(--gridline); border-radius:6px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Governance Concept Graph</h1>
+    <p>Core Business Model (SIPOC, Rules, Party, Assets, Issues, Requirements) extended with six governance ontologies (AI, Analytics, Data, Overlay, Semantic, Domain) and four business object models: Asset, Capability, Event, and Requirements (Jobs-to-be-Done).</p>
+  </div>
+  <div class="header-controls">
+    <button class="icon-btn" id="tableBtn">&#9638; Table view</button>
+    <button class="icon-btn" id="themeBtn">&#127769; Dark mode</button>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="toolbar-row">
+    <input id="searchBox" type="text" placeholder="Search all concepts (core + governance)...">
+    <div class="divider"></div>
+    <span class="toolbar-label">Core:</span>
+    <div class="chip-group" id="categoryChipsCore"></div>
+    <div class="divider"></div>
+    <div class="chip-group" id="edgeChipsCore"></div>
+  </div>
+  <div class="toolbar-row">
+    <span class="toolbar-label">Governance:</span>
+    <div class="chip-group" id="categoryChipsGov"></div>
+    <div class="divider"></div>
+    <div class="chip-group" id="edgeChipsGov"></div>
+    <div class="toolbar-actions">
+      <button class="icon-btn" id="showGovBtn">+ Show governance</button>
+      <button class="icon-btn" id="hideGovBtn">&#8722; Hide governance</button>
+    </div>
+  </div>
+  <div class="toolbar-row">
+    <span class="toolbar-label">Models:</span>
+    <div class="chip-group" id="categoryChipsModel"></div>
+    <div class="divider"></div>
+    <div class="chip-group" id="edgeChipsModel"></div>
+    <div class="toolbar-actions">
+      <button class="icon-btn" id="showModelBtn">+ Show models</button>
+      <button class="icon-btn" id="hideModelBtn">&#8722; Hide models</button>
+      <button class="icon-btn" id="resetBtn">&#8635; Reset</button>
+      <button class="icon-btn" id="physicsBtn">&#9208; Freeze layout</button>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div id="graphWrap">
+    <svg id="graph" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid meet">
+      <defs id="markerDefs"></defs>
+      <g id="viewport">
+        <g id="edgesLayer"></g>
+        <g id="nodesLayer"></g>
+      </g>
+    </svg>
+    <div class="zoom-controls">
+      <button id="zoomIn" title="Zoom in">+</button>
+      <button id="zoomOut" title="Zoom out">&#8722;</button>
+      <button id="fitBtn" title="Fit to screen">&#10530;</button>
+    </div>
+    <div class="stats-badge" id="statsBadge"></div>
+  </div>
+  <aside id="infoPanel"></aside>
+</div>
+
+<div id="tooltip"></div>
+
+<div class="table-wrap" id="tableWrap">
+  <div class="table-modal">
+    <button class="closeModal" id="closeModal">&#10005;</button>
+    <h2>Concept graph &mdash; accessible table view</h2>
+    <p class="hint">Includes the original core business model, all six governance ontologies, and all four business object models (Asset, Capability, Event, Requirements). Use your browser's find (Ctrl/Cmd+F) to search within this table.</p>
+    <h3>Concepts</h3>
+    <table id="nodesTable"><thead><tr><th>Concept</th><th>Module</th><th>Description</th></tr></thead><tbody></tbody></table>
+    <h3>Relationships</h3>
+    <table id="edgesTable"><thead><tr><th>From</th><th>Relation</th><th>To</th><th>Type</th></tr></thead><tbody></tbody></table>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+// ================= Embedded governance ontology data (parsed from 8 uploaded .ttl files) =================
+const GOV_DATA = {"classes":[{"id":"aig__AISystem","label":"AI System","comment":"A machine-based system that generates outputs such as predictions, recommendations, or decisions to influence real or virtual environments.","module":"aig","datatypeProps":["requires FRIA (boolean)","has intended purpose (string)"],"groundedIn":[],"isEnum":false},{"id":"aig__GenerativeAISystem","label":"Generative AI System","comment":"An AI system that produces novel content such as text, images, audio, or code.","module":"aig","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"aig__DecisionSupportSystem","label":"Decision Support System","comment":"An AI system that augments human decision-making with recommendations or risk scores.","module":"aig","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"aig__AutonomousSystem","label":"Autonomous System","comment":"An AI system that executes actions or decisions without direct human intervention at the point of operation.","module":"aig","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"aig__TrainingDataset","label":"Training Dataset","comment":"A data asset used to train an AI system, subject to demographic characterization, limitation documentation, and bias tracking.","module":"aig","datatypeProps":["has bias assessment (string)"],"groundedIn":[],"isEnum":false},{"id":"aig__ValidationDataset","label":"Validation Dataset","comment":"A held-out data asset used to evaluate model performance and generalization during development.","module":"aig","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"aig__TestDataset","label":"Test Dataset","comment":"An independent data asset used for final evaluation of a trained and validated model prior to deployment.","module":"aig","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"aig__RiskClassification","label":"Risk Classification","comment":"A regulatory risk tier assigned to an AI system that determines applicable compliance obligations.","module":"aig","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"aig__UnacceptableRisk","label":"Unacceptable Risk","comment":"The highest EU AI Act risk tier; systems in this class are prohibited from deployment.","module":"aig","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"aig__HighRisk","label":"High Risk","comment":"A risk tier requiring conformity assessment, technical documentation, human oversight, and EU database registration.","module":"aig","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"aig__LimitedRisk","label":"Limited Risk","comment":"A risk tier requiring transparency obligations such as disclosure that content is AI-generated.","module":"aig","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"aig__MinimalRisk","label":"Minimal Risk","comment":"A risk tier with no mandatory obligations; voluntary codes of conduct are encouraged.","module":"aig","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"aig__TechnicalDocumentation","label":"Technical Documentation","comment":"A structured record demonstrating an AI system's design, architecture, dataset characteristics, performance, and human oversight measures.","module":"aig","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"aig__ConformityAssessment","label":"Conformity Assessment","comment":"A formal procedure evaluating whether an AI system meets applicable regulatory requirements prior to market placement.","module":"aig","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"aig__FRIA","label":"Fundamental Rights Impact Assessment","comment":"An assessment evaluating potential impacts of an AI system on fundamental rights, with attention to marginalized and vulnerable groups.","module":"aig","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"aig__HumanOversightMeasure","label":"Human Oversight Measure","comment":"A mechanism enabling human operators to monitor, interrupt, override, or correct an AI system's outputs or actions.","module":"aig","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"aig__AuditLog","label":"Audit Log","comment":"An automatically generated record of AI system events, inputs, outputs, and decisions retained for traceability and anomaly detection.","module":"aig","datatypeProps":["has log retention period (duration)"],"groundedIn":[],"isEnum":false},{"id":"aig__AIGovernanceRole","label":"AI Governance Role","comment":"An accountable organizational role within an AI governance program.","module":"aig","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"aig__AIProvider","label":"AI Provider","comment":"An entity that develops or places an AI system on the market, bearing primary regulatory compliance responsibility.","module":"aig","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"aig__AIDeployer","label":"AI Deployer","comment":"An entity that puts an AI system into use within its own operations, subject to specific use-case compliance obligations.","module":"aig","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"ag__AnalyticModel","label":"Analytic Model","comment":"A statistical or machine-learning model derived from data to support business decisions.","module":"ag","datatypeProps":["has model version (string)"],"groundedIn":[],"isEnum":false},{"id":"ag__PredictiveModel","label":"Predictive Model","comment":"An analytic model that forecasts future outcomes from historical data patterns.","module":"ag","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"ag__DescriptiveModel","label":"Descriptive Model","comment":"An analytic model that summarizes historical data to describe past behavior or current state.","module":"ag","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"ag__PrescriptiveModel","label":"Prescriptive Model","comment":"An analytic model that recommends optimal actions given predicted outcomes and constraints.","module":"ag","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"ag__ModelLifecycleStage","label":"Model Lifecycle Stage","comment":"A discrete phase in the governance lifecycle of an analytic model.","module":"ag","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"ag__BuildStage","label":"Build Stage","comment":"The phase in which a model is developed, trained, and initially validated.","module":"ag","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"ag__DeployStage","label":"Deploy Stage","comment":"The phase in which a validated model is released into a production operational system.","module":"ag","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"ag__MonitorStage","label":"Monitor Stage","comment":"The phase in which a deployed model is observed for drift, degradation, or anomalous output.","module":"ag","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"ag__RefreshStage","label":"Refresh Stage","comment":"The phase in which model parameters are updated with new data without full retraining.","module":"ag","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"ag__RetireStage","label":"Retire Stage","comment":"The phase in which a model is decommissioned and removed from production.","module":"ag","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"ag__AnalyticInfrastructure","label":"Analytic Infrastructure","comment":"Technical systems and platforms supporting model development, management, and deployment.","module":"ag","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"ag__TrainingPlatform","label":"Training Platform","comment":"Infrastructure dedicated to model training, including compute resources and ML frameworks.","module":"ag","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"ag__ServingPlatform","label":"Serving Platform","comment":"Infrastructure that hosts deployed models and serves inference requests at scale.","module":"ag","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"ag__GovernanceBody","label":"Analytics Governance Body","comment":"An organizational structure with authority over analytic strategy, prioritization, and standards.","module":"ag","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"ag__AnalyticsGovernanceCommittee","label":"Analytics Governance Committee","comment":"A federated committee that prioritizes analytic projects and approves model deployment.","module":"ag","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"ag__BusinessRequirement","label":"Business Requirement","comment":"An operational or strategic goal that justifies the development and deployment of an analytic model.","module":"ag","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"ag__ModelValidationResult","label":"Model Validation Result","comment":"The documented outcome of a model validation process capturing metrics, test results, and approval status.","module":"ag","datatypeProps":["has performance score (decimal)","is approved (boolean)"],"groundedIn":[],"isEnum":false},{"id":"dgData__DataAsset","label":"Data Asset","comment":"A governed data resource \u2014 structured, semi-structured, or unstructured \u2014 subject to classification and quality management.","module":"dgData","datatypeProps":["has classification (string)","has asset description (string)"],"groundedIn":[],"isEnum":false},{"id":"dgData__StructuredDataAsset","label":"Structured Data Asset","comment":"A data asset with a defined schema such as a relational table or structured file.","module":"dgData","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"dgData__UnstructuredDataAsset","label":"Unstructured Data Asset","comment":"A data asset without a predefined schema, such as documents or images.","module":"dgData","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"dgData__SemiStructuredDataAsset","label":"Semi-Structured Data Asset","comment":"A data asset with partial structure such as JSON or XML.","module":"dgData","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"dgData__DataPolicy","label":"Data Policy","comment":"A formal directive specifying rules for accessing, storing, retaining, or disposing of data assets.","module":"dgData","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"dgData__AccessPolicy","label":"Access Policy","comment":"A policy that governs who may access a data asset and under what conditions.","module":"dgData","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"dgData__RetentionPolicy","label":"Retention Policy","comment":"A policy specifying mandatory retention periods before a data asset may be disposed of.","module":"dgData","datatypeProps":["has retention period (duration)"],"groundedIn":[],"isEnum":false},{"id":"dgData__QualityPolicy","label":"Quality Policy","comment":"A policy specifying minimum quality thresholds a data asset must satisfy to be fit for use.","module":"dgData","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"dgData__PrivacyPolicy","label":"Privacy Policy","comment":"A policy governing handling of personally identifiable information in compliance with applicable regulations.","module":"dgData","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"dgData__GovernanceBody","label":"Governance Body","comment":"An organizational unit with authority to establish and enforce data governance standards.","module":"dgData","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"dgData__DataGovernanceCouncil","label":"Data Governance Council","comment":"A senior cross-functional body that sets enterprise-wide data policy and defines governance charters.","module":"dgData","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"dgData__DomainGovernanceBoard","label":"Domain Governance Board","comment":"A domain-level body that applies enterprise policy within a specific business or data domain.","module":"dgData","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"dgData__GovernanceRole","label":"Governance Role","comment":"An accountable organizational role within a data governance program.","module":"dgData","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"dgData__DataOwner","label":"Data Owner","comment":"A role accountable for data quality and policy compliance within a business function.","module":"dgData","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"dgData__DataSteward","label":"Data Steward","comment":"A role responsible for daily governance execution within specific data domains.","module":"dgData","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"dgData__DataCustodian","label":"Data Custodian","comment":"A technical role responsible for safe storage, transport, and protection of data assets.","module":"dgData","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"dgData__DataQualityDimension","label":"Data Quality Dimension","comment":"A measurable attribute of data quality applied to evaluate a data asset.","module":"dgData","datatypeProps":["has dimension score (decimal)"],"groundedIn":[],"isEnum":false},{"id":"dgData__AccuracyDimension","label":"Accuracy Dimension","comment":"Measures the degree to which data correctly represents the real-world entity it describes.","module":"dgData","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"dgData__CompletenessDimension","label":"Completeness Dimension","comment":"Measures the proportion of required data values that are present and non-null.","module":"dgData","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"dgData__ConsistencyDimension","label":"Consistency Dimension","comment":"Measures the absence of contradictions across related data assets or representations.","module":"dgData","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"dgData__TimelinessDimension","label":"Timeliness Dimension","comment":"Measures the degree to which data is current and available when needed.","module":"dgData","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"gov__NormativeSource","label":"Normative Source","comment":"Anything that can legitimately give rise to a governance requirement.","module":"gov","datatypeProps":["citation (string)"],"groundedIn":[],"isEnum":false},{"id":"gov__Law","label":"Law","comment":"Statute or regulation with legal force (e.g. SOX, GDPR, Basel III).","module":"gov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"gov__Standard","label":"Standard","comment":"Published consensus standard (ISO, IEEE, IEC, W3C, etc.).","module":"gov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"gov__Discipline","label":"Discipline","comment":"A body of professional practice that defines methods and quality criteria (data engineering, analytic engineering, knowledge engineering, prompt engineering, systems engineering, business architecture, product management, physical/chemical/biological/industrial engineering).","module":"gov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"gov__Policy","label":"Policy","comment":"Corporate-specific rule or constraint set internally.","module":"gov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"gov__StandardsBody","label":"Standards Body","comment":"Issuing organization for a Standard (ISO, IEEE, ...).","module":"gov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"gov__WorkingGroup","label":"Working Group","comment":"A sub-unit of a Discipline that contributes guidance. Systems engineering decomposes into 52 of these.","module":"gov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"gov__Method","label":"Method","comment":"A prescribed practice emitted by a Discipline.","module":"gov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"gov__QualityCriterion","label":"Quality Criterion","comment":"A measurable 'good practice' criterion emitted by a Discipline; promotable into a NormativeRequirement.","module":"gov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"gov__NormativeRequirement","label":"Normative Requirement","comment":"A source-neutral obligation/permission/prohibition that must hold over some scope of the IPO frame.","module":"gov","datatypeProps":["requirement text (string)"],"groundedIn":[],"isEnum":false},{"id":"gov__DeonticModality","label":"Deontic Modality","comment":"The force of a requirement.","module":"gov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"gov__GovernanceArtifact","label":"Governance Artifact","comment":"Executable form of a requirement, compiled from the relational repository.","module":"gov","datatypeProps":["effective date (date)"],"groundedIn":[],"isEnum":false},{"id":"gov__Constraint","label":"Constraint","comment":"A SHACL shape that validates conformance. Aligns to your core:Compliance / core:Rules.","module":"gov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"gov__Rule","label":"Rule","comment":"A SWRL rule that derives new facts (e.g. classifies a variance as material). Aligns to your core:Rules.","module":"gov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"gov__RepositoryEntry","label":"Repository Entry","comment":"The system-of-record row in the SME-managed relational repository from which a Constraint/Rule was projected. Carries authoring lineage.","module":"gov","datatypeProps":["repo entry id (string)","authored by (string)"],"groundedIn":[],"isEnum":false},{"id":"gov__GovernanceStatus","label":"Governance Status","comment":"","module":"gov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"sg__SemanticArtefact","label":"Semantic Artefact","comment":"A machine-actionable formalization of a conceptualization, ranging from loose taxonomies to heavyweight description logics.","module":"sg","datatypeProps":["has version IRI (anyURI)"],"groundedIn":[],"isEnum":false},{"id":"sg__Taxonomy","label":"Taxonomy","comment":"A hierarchical classification of concepts organized by subsumption or parthood relationships.","module":"sg","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"sg__Thesaurus","label":"Thesaurus","comment":"A controlled vocabulary organizing terms into equivalence, hierarchical, and associative relationships.","module":"sg","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"sg__FormalOntology","label":"Formal Ontology","comment":"A formal explicit specification of a shared conceptualization expressed in a logic-based language such as OWL.","module":"sg","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"sg__KnowledgeGraph","label":"Knowledge Graph","comment":"A graph-structured knowledge base integrating entities, relationships, and semantic annotations at scale.","module":"sg","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"sg__BusinessGlossary","label":"Business Glossary","comment":"A curated collection of approved business terms, definitions, owners, and lineage aligning business language with data logic.","module":"sg","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"sg__BusinessTerm","label":"Business Term","comment":"A standardized, approved definition of a business concept bridging business language and underlying data assets.","module":"sg","datatypeProps":["has lineage (string)","has definition (string)","has effective date (date)"],"groundedIn":[],"isEnum":false},{"id":"sg__PreferredTerm","label":"Preferred Term","comment":"The authoritative approved label for a business concept within the enterprise glossary.","module":"sg","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"sg__SynonymTerm","label":"Synonym Term","comment":"An alternative label for a business concept that maps to a preferred term.","module":"sg","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"sg__DeprecatedTerm","label":"Deprecated Term","comment":"A retired business term superseded by a preferred term, retained for legacy mapping and lineage.","module":"sg","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"sg__SemanticMapping","label":"Semantic Mapping","comment":"A formal correspondence between concepts or terms across two or more semantic artefacts.","module":"sg","datatypeProps":["has mapping confidence (decimal)"],"groundedIn":[],"isEnum":false},{"id":"sg__ExactMapping","label":"Exact Mapping","comment":"A mapping asserting that two concepts from different artefacts have equivalent meaning.","module":"sg","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"sg__BroadMapping","label":"Broad Mapping","comment":"A mapping asserting that the source concept is more specific than the target concept.","module":"sg","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"sg__NarrowMapping","label":"Narrow Mapping","comment":"A mapping asserting that the source concept is broader than the target concept.","module":"sg","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"sg__MappingRepository","label":"Mapping Repository","comment":"A governed repository providing crosswalks, alignments, and translations between semantic artefacts and metadata standards.","module":"sg","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"sg__SemanticGovernanceRole","label":"Semantic Governance Role","comment":"An accountable organizational role within a semantic governance program.","module":"sg","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"sg__DomainSteward","label":"Domain Steward","comment":"A subject matter expert who validates meaning, reviews glossary definitions, and approves business terms within a domain.","module":"sg","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"sg__OntologyEngineer","label":"Ontology Engineer","comment":"A technical specialist responsible for design, development, and maintenance of semantic artefacts.","module":"sg","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"sg__SemanticGovernanceCouncil","label":"Semantic Governance Council","comment":"A cross-functional body with authority to approve semantic standards, resolve definitional conflicts, and govern the enterprise vocabulary lifecycle.","module":"sg","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__Governance","label":"Governance","comment":"Top-level concept for all governance-related structures, activities, policies, operations, and services.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataGovernanceAgent","label":"Data Governance Agent","comment":"An organizational actor that participates in or is accountable for data governance activities.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataGovernanceCouncil","label":"Data Governance Council","comment":"A senior cross-functional body accountable for enterprise-wide data governance decisions and policy ratification.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataOwners","label":"Data Owners","comment":"Roles accountable for the quality, security, and appropriate use of data assets within assigned business domains.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataStewards","label":"Data Stewards","comment":"Roles responsible for day-to-day management, quality assurance, and governance execution of data assets.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataGovernanceActivities","label":"Data Governance Activities","comment":"The full set of planned and operational activities that constitute execution of the data governance program.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__GovernanceControlActivity","label":"Governance Control Activity","comment":"An activity focused on establishing, monitoring, or enforcing governance controls across the data lifecycle.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__GovernanceDevelopmentActivity","label":"Governance Development Activity","comment":"An activity focused on designing, building, or evolving governance frameworks, standards, and capabilities.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__GovernanceOperationalActivity","label":"Governance Operational Activity","comment":"A recurring operational activity that sustains the execution of the data governance program.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__GovernancePlanningActivity","label":"Governance Planning Activity","comment":"An activity focused on assessing readiness, regulatory requirements, and strategic alignment.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__PerformDiscoveryBusinessAlignment","label":"Perform Discovery & Business Alignment","comment":"Identifying data assets, mapping business capabilities, and aligning governance priorities with enterprise strategy.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataGovernanceOperatingFramework","label":"Data Governance Operating Framework","comment":"The structured framework defining governance roles, responsibilities, processes, and decision rights.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DefineDataGovernance","label":"Define Data Governance","comment":"Establishing the foundational scope, principles, and charter of the data governance program.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DevelopGoalsPrinciplesPolicies","label":"Develop Goals, Principles & Policies","comment":"Articulating governance goals, guiding principles, and formal policies that direct data management behavior.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DevelopOrganizationalTouchpoints","label":"Develop Organizational Touchpoints","comment":"Identifying and formalizing integration points between the governance program and business units.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__Charter","label":"Charter","comment":"A formal document authorizing the governance program, defining its scope, authority, and stakeholder responsibilities.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__MissionVision","label":"Mission & Vision","comment":"Statements of purpose and long-term aspiration guiding the direction of the data governance program.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__ChangeManagement","label":"Change Management","comment":"Managing transitions in governance processes, data standards, roles, and technology platforms.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DevelopDataGovernanceStrategy","label":"Develop Data Governance Strategy","comment":"Defining and maintaining the strategic roadmap for the data governance program.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__ImplementDataGovernance","label":"Implement Data Governance","comment":"Deploying governance controls, processes, and tools into production across business and technical domains.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__ThirdPartySharing","label":"Third Party Sharing","comment":"Managing governance controls and agreements governing the sharing of data with external parties.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataManagementProjectSupportPrioritization","label":"Data Management Project Support & Prioritization","comment":"Evaluating, prioritizing, and supporting data management initiatives aligned to governance objectives.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__AssessRegulatoryComplianceRequirements","label":"Assess Regulatory Compliance Requirements","comment":"Identifying and evaluating applicable regulatory obligations the governance program must address.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__PerformReadinessAssessment","label":"Perform Readiness Assessment","comment":"Evaluating organizational capability and infrastructure readiness for governance program implementation.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__PreventativeControls","label":"Preventative Controls","comment":"Governance controls designed to prevent unauthorized access, data misuse, or policy violations.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DetectiveControls","label":"Detective Controls","comment":"Governance controls designed to identify and escalate data quality issues and policy violations.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__AccessManagement","label":"Access Management","comment":"The governance capability managing the provisioning, review, and revocation of access rights to data assets.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__SearchDiscovery","label":"Search & Discovery","comment":"The governance capability enabling authorized users to locate and evaluate data assets through catalogue interfaces.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__AssetInventoryOnboarding","label":"Asset Inventory Onboarding","comment":"Registering new data assets into the governance catalogue and applying access and classification policies.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__OnboardingManagement","label":"Onboarding Management","comment":"The governance function managing the end-to-end process of bringing data assets under governed management.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataCataloging","label":"Data Cataloging","comment":"Creating and maintaining machine-readable inventory records of data assets including metadata and lineage.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataCertification","label":"Data Certification","comment":"The formal process of validating that a data asset meets defined quality, compliance, and fitness-for-use standards.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataClassification","label":"Data Classification","comment":"Assigning sensitivity, criticality, and handling labels to data assets in accordance with enterprise policy.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataEnrichment","label":"Data Enrichment","comment":"Augmenting data assets with additional context or linked data to improve analytical value.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataProfiling","label":"Data Profiling","comment":"Automated assessment of data asset structure, completeness, and distribution to inform quality decisions.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__ArtificialIntelligenceProductsCertification","label":"Artificial Intelligence Products Certification","comment":"Formal certification validating that AI models and data products meet governance, bias, and fitness-for-use standards.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__BusinessIntelligenceDashboardCertification","label":"Business Intelligence Dashboard Certification","comment":"Formal certification confirming that BI dashboards and reports are sourced from governed, trusted data assets.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataProductsCertification","label":"Data Products Certification","comment":"Formal certification validating that data products meet defined quality, lineage, and governance standards.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__MetricsCertification","label":"Metrics Certification","comment":"Formal certification confirming that business metrics are derived from governed data with documented calculation logic.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataInvestigation","label":"Data Investigation","comment":"Analysing data anomalies, quality failures, or policy breaches to identify root causes and corrective actions.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__GovernanceDataQuality","label":"Governance Data Quality","comment":"The detective capability monitoring and enforcing data quality standards across governed assets.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__GovernanceSystemsPerformanceManagement","label":"Governance Systems Performance Management","comment":"Monitoring the operational performance, availability, and capacity of governance platform systems.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__IssueManagementService","label":"Issue Management Service","comment":"The governance service managing the intake, triage, escalation, and resolution of governance issues.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__MeasurementService","label":"Measurement Service","comment":"The governance service collecting, aggregating, and reporting governance performance metrics and KPIs.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__MonitoringService","label":"Monitoring Service","comment":"The governance service providing continuous surveillance of data assets and policy compliance.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__AvailabilityManagement","label":"Availability Management","comment":"Ensuring that data assets and governance platform services meet defined availability and reliability targets.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__CapacityManagement","label":"Capacity Management","comment":"Monitoring and planning the capacity of governance infrastructure to sustain operational demand.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__CausalFactorAnalysisService","label":"Causal Factor Analysis Service","comment":"Applying root-cause analysis techniques to identify systemic factors driving data governance issues.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__IssueMitigationService","label":"Issue Mitigation Service","comment":"Designing and applying interim controls to reduce the impact of active governance issues.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__IssueResolutionService","label":"Issue Resolution Service","comment":"Executing corrective actions that permanently address identified data governance issues.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__AccessExceptionMonitoring","label":"Access Exception Monitoring","comment":"Monitoring of access control exceptions and anomalous access patterns across governed data assets.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__ApprovalExceptionMonitoring","label":"Approval Exception Monitoring","comment":"Monitoring of governance approval workflows for deviations and policy exceptions requiring escalation.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__OnboardingExceptionMonitoring","label":"Onboarding Exception Monitoring","comment":"Monitoring of data asset onboarding workflows for failures and policy non-compliance.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataGovernanceOperations","label":"Data Governance Operations","comment":"The operational domain encompassing governance services, quality management, risk management, and value delivery.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__BusinessValue","label":"Business Value","comment":"The measurable outcomes and returns delivered by the data governance program to the enterprise.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataQuality","label":"Data Quality","comment":"The governance function responsible for defining, measuring, and improving the fitness-for-use of data assets.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataRiskManagement","label":"Data Risk Management","comment":"The governance function identifying, assessing, and mitigating risks associated with data assets.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__OperationalEfficiency","label":"Operational Efficiency","comment":"The governance capability improving the speed, cost-effectiveness, and scalability of governance operations.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataGovernancePolicy","label":"Data Governance Policy","comment":"A formal directive defining rules, standards, and obligations governing how data assets are managed and used.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__BusinessPolicy","label":"Business Policy","comment":"A governance policy derived from business rules and strategic objectives directing data handling.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataPrivacyRegulations","label":"Data Privacy Regulations","comment":"Governance policies implementing applicable data privacy laws including CCPA, GDPR, and sector-specific requirements.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataQualityStandards","label":"Data Quality Standards","comment":"Governance policies specifying minimum quality thresholds and remediation obligations for governed data assets.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__AccessControlPolicies","label":"Access Control Policies","comment":"Governance policies defining who may access data assets, under what conditions, and with what audit requirements.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataAccessPolicy","label":"Data Access Policy","comment":"A policy governing the conditions and approval workflows under which individuals may access specific data assets.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataProvenancePolicy","label":"Data Provenance Policy","comment":"A policy requiring capture and maintenance of data lineage and origin records for auditability.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataRetentionArchivalPolicy","label":"Data Retention & Archival Policy","comment":"A policy specifying mandatory retention periods, archival procedures, and disposal requirements for data assets.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataUsagePolicy","label":"Data Usage Policy","comment":"A policy defining permitted and prohibited uses of data assets including sharing and commercialisation restrictions.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataGovernanceStandards","label":"Data Governance Standards","comment":"Enterprise standards specifying required formats, naming conventions, and metadata schemas for governed data assets.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataGovernanceLifecycle","label":"Data Governance Lifecycle","comment":"The end-to-end lifecycle model governing the creation, management, quality assurance, and retirement of data assets.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataGovernanceServices","label":"Data Governance Services","comment":"The portfolio of services delivered by the data governance program to business and technology stakeholders.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__ScorecardMetrics","label":"Scorecard Metrics","comment":"Quantitative indicators used to evaluate the performance, maturity, and impact of the data governance program.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__AdoptionAwarenessMetrics","label":"Adoption & Awareness Metrics","comment":"Metrics measuring stakeholder awareness of governance policies and adoption of governed data practices.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__ComplianceMetrics","label":"Compliance Metrics","comment":"Metrics measuring conformance of data assets and processes to applicable governance policies and regulations.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataQualityMetrics","label":"Data Quality Metrics","comment":"Metrics quantifying data quality across accuracy, completeness, consistency, timeliness, and uniqueness dimensions.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__OperationalMetrics","label":"Operational Metrics","comment":"Metrics measuring the operational performance of governance processes including resolution cycle time and throughput.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__SecurityMetrics","label":"Security Metrics","comment":"Metrics measuring the effectiveness of data security controls and access management within the governance program.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataGovernanceScorecards","label":"Data Governance Scorecards","comment":"Structured dashboards aggregating governance metrics to communicate program performance to stakeholders.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataGovernanceTools","label":"Data Governance Tools","comment":"Technology platforms enabling governance capabilities including cataloguing, quality management, and policy enforcement.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__BusinessGlossary","label":"Business Glossary","comment":"A governed repository of approved business terms, definitions, owners, and lineage aligning language with data assets.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataGovernanceScorecardsTool","label":"Data Governance Scorecards Tool","comment":"A technology tool providing scorecard and dashboard capabilities for visualising governance KPIs.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DocumentManagementTools","label":"Document Management Tools","comment":"Tools supporting the creation, versioning, and lifecycle management of governance documentation.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__OnlinePresence","label":"Online Presence","comment":"Digital channels and portals through which the governance program communicates policies and engages stakeholders.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__WorkflowTools","label":"Workflow Tools","comment":"Technology tools automating governance workflows including approval routing and exception management.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataNamingConventionStandard","label":"Data Naming Convention Standard","comment":"Standards governing formation of names for data entities, attributes, datasets, and data products to ensure consistent, human-readable identification across the enterprise.","module":"domainGov","datatypeProps":[],"groundedIn":["tcc:EnterpriseStandards"],"isEnum":false},{"id":"domainGov__DataModelingStandard","label":"Data Modeling Standard","comment":"Standards specifying required notations, abstraction levels (conceptual, logical, physical), and tooling conventions for enterprise data models.","module":"domainGov","datatypeProps":[],"groundedIn":["tcc:DataModelingDesign"],"isEnum":false},{"id":"domainGov__MetadataManagementStandard","label":"Metadata Management Standard","comment":"Standards specifying mandatory and optional metadata elements, schemas, and cardinality rules that must accompany governed data assets throughout their lifecycle.","module":"domainGov","datatypeProps":[],"groundedIn":["tcc:Metadata"],"isEnum":false},{"id":"domainGov__DataFormatEncodingStandard","label":"Data Format & Encoding Standard","comment":"Standards governing acceptable file formats, encoding schemes, date and time representations, and character sets for data exchange and persistent storage.","module":"domainGov","datatypeProps":[],"groundedIn":["tcc:EnterpriseStandards"],"isEnum":false},{"id":"domainGov__DataInteroperabilityStandard","label":"Data Interoperability Standard","comment":"Standards enabling semantic and syntactic interoperability of data assets across systems, domains, and external partners, including API contracts, ontology alignment requirements, and exchange protocols.","module":"domainGov","datatypeProps":[],"groundedIn":["tcc:EnterpriseStandards"],"isEnum":false},{"id":"domainGov__DataSecurityClassificationStandard","label":"Data Security & Classification Standard","comment":"Standards defining required encryption levels, masking rules, tokenization approaches, and transmission security requirements for data assets by classification tier, aligned to tcc:DataSecurity.","module":"domainGov","datatypeProps":[],"groundedIn":["tcc:DataSecurity"],"isEnum":false},{"id":"domainGov__DataLineageProvenanceStandard","label":"Data Lineage & Provenance Standard","comment":"Standards specifying minimum provenance and transformation records that must be captured and maintained for governed data assets throughout their lifecycle.","module":"domainGov","datatypeProps":[],"groundedIn":["tcc:DataGovernance"],"isEnum":false},{"id":"domainGov__MasterDataStandard","label":"Master Data Standard","comment":"Standards defining the authoritative source, update protocols, survivorship rules, and distribution requirements for each master data domain.","module":"domainGov","datatypeProps":[],"groundedIn":["tcc:ReferenceMasterData"],"isEnum":false},{"id":"domainGov__ReferenceDataStandard","label":"Reference Data Standard","comment":"Standards governing management, versioning, approval, and distribution of enterprise reference data sets, code lists, and lookup tables.","module":"domainGov","datatypeProps":[],"groundedIn":["tcc:ReferenceMasterData"],"isEnum":false},{"id":"domainGov__OntologyTerminologyStandard","label":"Ontology & Terminology Standard","comment":"Standards requiring alignment of governed data assets to approved enterprise ontologies, controlled vocabularies, and the business glossary, grounded in ISO 25964 and enterprise vocabulary governance.","module":"domainGov","datatypeProps":[],"groundedIn":["tcc:EnterpriseStandards"],"isEnum":false},{"id":"domainGov__AIModelGovernanceStandard","label":"AI Model Governance Standard","comment":"Standards specific to AI and ML models covering training data provenance, bias assessment records, model version, performance benchmarks, explainability obligations, and deployment approvals.","module":"domainGov","datatypeProps":[],"groundedIn":["tcc:EnterpriseStandards"],"isEnum":false},{"id":"domainGov__CoreMetadataElementStandard","label":"Core Metadata Element Standard","comment":"Minimum mandatory metadata elements every governed asset must carry: data owner, steward, classification tier, lineage pointer, quality score, last-certified date, and retention schedule reference.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__ExtendedMetadataProfileStandard","label":"Extended Metadata Profile Standard","comment":"Domain-specific metadata profiles that extend the core metadata element standard with additional attributes relevant to particular business, regulatory, or analytical contexts.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__EncryptionAtRestStandard","label":"Encryption at Rest Standard","comment":"Standards specifying minimum encryption algorithms and key management requirements for data assets in storage by classification level.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataMaskingTokenizationStandard","label":"Data Masking & Tokenization Standard","comment":"Standards governing techniques and triggers for masking or tokenizing sensitive data in non-production, analytical, and third-party access contexts.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataTransmissionSecurityStandard","label":"Data Transmission Security Standard","comment":"Standards specifying required transport-layer security protocols and certificate requirements for the movement of governed data assets between systems or organizations.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__APIDataContractStandard","label":"API Data Contract Standard","comment":"Standards defining structure, versioning, backward-compatibility obligations, and governance approval process for API data contracts exposed by governed systems.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__SemanticInteroperabilityStandard","label":"Semantic Interoperability Standard","comment":"Standards requiring that data exchanged across domain boundaries carries sufficient semantic context \u2014 ontology alignment, term definitions \u2014 to be unambiguously interpreted by consuming systems.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataLifecyclePhase","label":"Data Lifecycle Phase","comment":"An ordered stage in the end-to-end lifecycle of a governed data asset, from inception through retirement. Aligns to the taxonomy-core-lifecycle phase hierarchy.","module":"domainGov","datatypeProps":[],"groundedIn":["tcl:Lifecycle"],"isEnum":false},{"id":"domainGov__LifecycleGateControl","label":"Lifecycle Gate Control","comment":"A governance checkpoint that must be satisfied before a data asset may advance to the next lifecycle phase, enforcing quality, compliance, and approval obligations.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__LifecycleTransitionEvent","label":"Lifecycle Transition Event","comment":"A recorded event marking the movement of a data asset from one lifecycle phase to the next, capturing timestamp, approver identity, and trigger condition. Relates to tcp:Observation (generated by process actions).","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataRetentionSchedule","label":"Data Retention Schedule","comment":"A governance instrument specifying mandatory retention periods, review intervals, and disposal triggers for a data asset class. Operates within tcl:Inventory and tcl:Retire phases.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataAcquisitionPhase","label":"Data Acquisition Phase","comment":"The lifecycle phase in which a data asset is obtained or generated: source identification, initial classification, ownership assignment. Maps to tcl:Acquire.","module":"domainGov","datatypeProps":[],"groundedIn":["tcl:Acquire"],"isEnum":false},{"id":"domainGov__DataDefinitionPhase","label":"Data Definition Phase","comment":"The lifecycle phase covering requirements definition, schema design, and governance policy assignment prior to data ingestion. Maps to tcl:Define.","module":"domainGov","datatypeProps":[],"groundedIn":["tcl:Define"],"isEnum":false},{"id":"domainGov__DataDesignPhase","label":"Data Design Phase","comment":"The lifecycle phase covering logical and physical data model design, integration pattern design, and quality rule specification. Maps to tcl:Design.","module":"domainGov","datatypeProps":[],"groundedIn":["tcl:Design"],"isEnum":false},{"id":"domainGov__DataDevelopmentPhase","label":"Data Development Phase","comment":"The lifecycle phase covering pipeline development, transformation rule implementation, and quality control build-out. Maps to tcl:Develop.","module":"domainGov","datatypeProps":[],"groundedIn":["tcl:Develop"],"isEnum":false},{"id":"domainGov__DataDeliveryPhase","label":"Data Delivery Phase","comment":"The lifecycle phase covering controlled delivery of data assets to authorised consumers or systems, governed by data sharing agreements and usage policies. Maps to tcl:Deliver.","module":"domainGov","datatypeProps":[],"groundedIn":["tcl:Deliver"],"isEnum":false},{"id":"domainGov__DataDeploymentPhase","label":"Data Deployment Phase","comment":"The lifecycle phase covering installation and configuration of data assets and pipelines in governed production environments. Maps to tcl:Deploy.","module":"domainGov","datatypeProps":[],"groundedIn":["tcl:Deploy"],"isEnum":false},{"id":"domainGov__DataExecutionPhase","label":"Data Execution & Operations Phase","comment":"The lifecycle phase in which governed data assets are actively consumed by analytics, applications, or AI systems, with usage tracked for access auditing and value realisation. Maps to tcl:Execute.","module":"domainGov","datatypeProps":[],"groundedIn":["tcl:Execute"],"isEnum":false},{"id":"domainGov__DataSupportImprovementPhase","label":"Data Support & Improvement Phase","comment":"The lifecycle phase covering ongoing quality monitoring, issue remediation, enrichment, and continuous improvement of governed data assets. Maps to tcl:Improve.","module":"domainGov","datatypeProps":[],"groundedIn":["tcl:Improve"],"isEnum":false},{"id":"domainGov__DataInventoryPublishingPhase","label":"Data Inventory & Publishing Phase","comment":"The lifecycle phase in which governed data assets are catalogued, certified, and published to the enterprise data catalogue for authorised discovery and consumption. Maps to tcl:Publish.","module":"domainGov","datatypeProps":[],"groundedIn":["tcl:Publish"],"isEnum":false},{"id":"domainGov__DataWarehousingArchivalPhase","label":"Data Warehousing & Archival Phase","comment":"The lifecycle phase in which data assets are moved to lower-cost governed storage in accordance with retention schedules, remaining accessible for compliance and audit purposes. Maps to tcl:Warehouse.","module":"domainGov","datatypeProps":[],"groundedIn":["tcl:Warehouse"],"isEnum":false},{"id":"domainGov__DataRemovalPhase","label":"Data Removal Phase","comment":"The lifecycle phase in which data assets are deregistered from governed environments and queued for disposal, pending legal hold clearance. Maps to tcl:Remove.","module":"domainGov","datatypeProps":[],"groundedIn":["tcl:Remove"],"isEnum":false},{"id":"domainGov__DataDestructionPhase","label":"Data Destruction & Disposal Phase","comment":"The terminal lifecycle phase in which data assets are permanently deleted or anonymised in accordance with retention schedules, disposal standards, and regulatory obligations. Maps to tcl:Destroy.","module":"domainGov","datatypeProps":[],"groundedIn":["tcl:Destroy"],"isEnum":false},{"id":"domainGov__ClassificationGateControl","label":"Classification Gate Control","comment":"Gate requiring a data asset to be classified against the enterprise data classification scheme before advancing beyond the acquisition phase.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__QualityAssuranceGateControl","label":"Quality Assurance Gate Control","comment":"Gate requiring a data asset to have passed defined quality profiling thresholds and received data steward sign-off before availability for consumption.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__CertificationGateControl","label":"Certification Gate Control","comment":"Gate requiring formal data certification before a data asset may be listed as a trusted asset in the enterprise data catalogue.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__ComplianceReviewGateControl","label":"Compliance Review Gate Control","comment":"Gate requiring applicable regulatory and policy obligations to be assessed and documented before a data asset may be shared externally or used in regulated processes.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DisposalApprovalGateControl","label":"Disposal Approval Gate Control","comment":"Gate requiring data owner sign-off and legal hold review confirmation before a data asset may be permanently deleted or anonymised.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__RegulatoryRetentionSchedule","label":"Regulatory Retention Schedule","comment":"Retention schedule derived from applicable regulatory obligations (e.g., SOX, HIPAA, GDPR) specifying minimum retention periods mandated by law.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__BusinessRetentionSchedule","label":"Business Retention Schedule","comment":"Retention schedule derived from business operational needs, typically extending beyond regulatory minimums to support audit, analytics, or historical reference requirements.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__LegalHoldSchedule","label":"Legal Hold Schedule","comment":"Retention schedule suspending normal disposal of data assets subject to active or anticipated legal proceedings or regulatory investigation.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__GovernanceAdvisoryService","label":"Governance Advisory Service","comment":"Expert advisory services through which the governance program guides business units and project teams on policy interpretation, compliance obligations, ethical AI use, and best practices.","module":"domainGov","datatypeProps":[],"groundedIn":["tcs:GovernanceServices"],"isEnum":false},{"id":"domainGov__GovernanceEnablementService","label":"Governance Enablement Service","comment":"Services that build organisational capability for governance execution: training, data literacy programmes, communication, and change management delivery.","module":"domainGov","datatypeProps":[],"groundedIn":["tcs:GovernanceServices"],"isEnum":false},{"id":"domainGov__GovernanceRequestFulfillmentService","label":"Governance Request Fulfillment Service","comment":"Services managing the intake, routing, and fulfilment of governance requests from stakeholders: access requests, exception requests, new asset onboarding, and disposal requests.","module":"domainGov","datatypeProps":[],"groundedIn":["tcs:GovernanceServices"],"isEnum":false},{"id":"domainGov__GovernanceReportingService","label":"Governance Reporting Service","comment":"Services producing governance performance reports, compliance status summaries, scorecard views, and executive dashboards for programme stakeholders.","module":"domainGov","datatypeProps":[],"groundedIn":["tcs:GovernanceServices"],"isEnum":false},{"id":"domainGov__GovernanceAssuranceService","label":"Governance Assurance Service","comment":"Services providing independent assessment and audit of governance programme effectiveness, policy adherence, control operating efficiency, and maturity progression.","module":"domainGov","datatypeProps":[],"groundedIn":["tcs:GovernanceServices"],"isEnum":false},{"id":"domainGov__GovernanceIntegrationService","label":"Governance Integration Service","comment":"Services embedding governance controls, metadata standards, and quality checks into data pipelines, MDM processes, software development lifecycles, and AI model deployment workflows.","module":"domainGov","datatypeProps":[],"groundedIn":["tcs:GovernanceServices"],"isEnum":false},{"id":"domainGov__PolicyInterpretationService","label":"Policy Interpretation Service","comment":"Advisory service providing authoritative interpretation of governance policies to resolve ambiguous or novel application scenarios raised by business and technology stakeholders.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__GovernanceConsultingService","label":"Governance Consulting Service","comment":"Advisory service providing structured governance design support for major initiatives: data platform migrations, M&A due diligence, AI deployment programmes, and regulatory remediation.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__RegulatoryGuidanceService","label":"Regulatory Guidance Service","comment":"Advisory service interpreting and communicating applicable regulatory requirements to data owners and stewards, and mapping them to specific governance controls.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataEthicsAdvisoryService","label":"Data Ethics Advisory Service","comment":"Advisory service evaluating ethical implications of proposed data uses, AI applications, and data sharing arrangements, providing recommendations aligned to enterprise values and the AI Governance Standard.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__GovernanceTrainingService","label":"Governance Training Service","comment":"Service delivering role-based training programmes for data owners, stewards, and consumers covering governance policies, tool usage, and obligations.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataLiteracyService","label":"Data Literacy Service","comment":"Service building enterprise-wide data literacy through curated learning programmes, self-service resources, and proficiency assessments aligned to the governance programme.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__GovernanceCommunicationService","label":"Governance Communication Service","comment":"Service managing dissemination of governance news, policy updates, and programme milestones to the enterprise stakeholder community.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__GovernanceOnboardingService","label":"Governance Onboarding Service","comment":"Service guiding new data owners, stewards, and business units through governance orientation, tool access provisioning, and initial obligation acknowledgement.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataAccessRequestService","label":"Data Access Request Service","comment":"Service managing the intake, review, approval, provisioning, and audit of requests for access to governed data assets.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__GovernanceExceptionRequestService","label":"Governance Exception Request Service","comment":"Service managing requests for temporary or permanent exceptions to governance policies: risk assessment, approval routing, and exception registry maintenance.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__NewAssetOnboardingRequestService","label":"New Asset Onboarding Request Service","comment":"Service managing requests to bring new data assets under governance management, guiding requestors through classification, metadata, ownership, and quality assessment requirements.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataSharingAgreementService","label":"Data Sharing Agreement Service","comment":"Service managing the negotiation, drafting, approval, and monitoring of data sharing agreements with internal and external parties.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataDisposalRequestService","label":"Data Disposal Request Service","comment":"Service managing requests to retire or dispose of governed data assets: legal hold review, owner sign-off, and certified disposal confirmation.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__ExecutiveGovernanceReportingService","label":"Executive Governance Reporting Service","comment":"Service producing board and C-suite level governance performance summaries covering programme maturity, risk posture, and business value delivery.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__OperationalGovernanceReportingService","label":"Operational Governance Reporting Service","comment":"Service producing detailed operational reports for governance councils and data stewards covering issue backlogs, quality scores, and compliance status by domain.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__RegulatoryComplianceReportingService","label":"Regulatory Compliance Reporting Service","comment":"Service producing evidence packages and attestation reports required by regulators and internal audit, demonstrating control effectiveness and policy adherence.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__GovernanceAuditService","label":"Governance Audit Service","comment":"Service conducting periodic independent audits of governance programme controls, policy adherence, and data stewardship execution.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__ControlEffectivenessTestingService","label":"Control Effectiveness Testing Service","comment":"Service testing whether preventative and detective governance controls are operating effectively through sampling, walkthrough, and evidence review.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__GovernanceMaturityAssessmentService","label":"Governance Maturity Assessment Service","comment":"Service periodically assessing governance programme maturity against a defined capability maturity model and producing gap analysis and improvement roadmaps.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__PipelineGovernanceIntegrationService","label":"Pipeline Governance Integration Service","comment":"Service embedding governance quality checks, lineage capture, and metadata tagging into data pipeline orchestration frameworks.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DevGovernanceIntegrationService","label":"Development Governance Integration Service","comment":"Service integrating governance requirements into software and data product development lifecycles, ensuring data assets comply with standards before release.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__AIGovernanceIntegrationService","label":"AI Governance Integration Service","comment":"Service integrating AI-specific governance controls \u2014 bias assessment, explainability requirements, model metadata standards \u2014 into AI model development and deployment lifecycles.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__GovernanceScorecardDimension","label":"Governance Scorecard Dimension","comment":"A strategic performance dimension along which governance programme health is evaluated in a scorecard view. Aligns to tcp:Measurement as the structural measurement container.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__GovernanceScorecardView","label":"Governance Scorecard View","comment":"A stakeholder-specific scorecard presentation aggregating selected metrics and dimensions to serve a defined audience (executive, operational, domain-level, regulatory).","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__GovernanceKPI","label":"Governance KPI","comment":"A key performance indicator quantifying a critical success factor of the governance programme. Subclasses tcp:Measurement and is consumed by tcp:MeasurementShape.","module":"domainGov","datatypeProps":[],"groundedIn":["tcp:Measurement"],"isEnum":false},{"id":"domainGov__GovernanceTarget","label":"Governance Target","comment":"A quantified performance target associated with a governance KPI, defining the threshold distinguishing acceptable from non-acceptable programme performance. Aligns to tcp:Outputs.","module":"domainGov","datatypeProps":[],"groundedIn":["tcp:Outputs"],"isEnum":false},{"id":"domainGov__GovernanceObservation","label":"Governance Observation","comment":"A qualitative or quantitative finding captured during governance monitoring, process execution, or audit activity. Subclasses tcp:Observation to align with the SIPOC process model.","module":"domainGov","datatypeProps":[],"groundedIn":["tcp:Observation"],"isEnum":false},{"id":"domainGov__GovernanceTrend","label":"Governance Trend","comment":"A time-series representation of governance KPI values enabling trajectory analysis and early identification of deteriorating programme performance.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__GovernanceBenchmark","label":"Governance Benchmark","comment":"An external or internal reference value against which governance KPI results are compared to assess relative programme maturity and performance.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__ProgrammeHealthDimension","label":"Programme Health Dimension","comment":"Scorecard dimension aggregating indicators of overall governance programme health: policy coverage, role fulfilment, tool adoption, and issue backlog trends.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataTrustDimension","label":"Data Trust Dimension","comment":"Scorecard dimension measuring the degree to which data assets are certified, catalogued, and consumed from governed authoritative sources.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__RiskComplianceDimension","label":"Risk & Compliance Dimension","comment":"Scorecard dimension reporting on policy adherence rates, open compliance findings, risk register status, and regulatory submission completeness.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__BusinessValueDimension","label":"Business Value Dimension","comment":"Scorecard dimension capturing value delivered by the governance programme: cost avoidance from quality remediation, analytics enablement, and regulatory penalty avoidance.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__OperationalEfficiencyDimension","label":"Operational Efficiency Dimension","comment":"Scorecard dimension measuring governance operational performance: request fulfilment cycle times, issue resolution velocity, and automation adoption rates.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__ExecutiveScorecardView","label":"Executive Scorecard View","comment":"High-level governance scorecard for C-suite and board stakeholders presenting top-level KPIs across programme health, risk posture, and business value dimensions.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DomainScorecardView","label":"Domain Scorecard View","comment":"Governance scorecard scoped to a specific business or data domain, enabling data owners to monitor domain-specific quality, compliance, and access governance performance.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__OperationalScorecardView","label":"Operational Scorecard View","comment":"Detailed scorecard for governance operations teams and data stewards presenting granular issue, request, and quality metrics to support day-to-day management.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__RegulatoryComplianceScorecardView","label":"Regulatory Compliance Scorecard View","comment":"Governance scorecard structured around applicable regulatory frameworks, mapping control effectiveness and compliance status to specific regulatory obligations.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__PolicyCoverageKPI","label":"Policy Coverage KPI","comment":"Measures percentage of governed data assets for which all applicable governance policies have been applied and acknowledged by accountable parties.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataQualityScoreKPI","label":"Data Quality Score KPI","comment":"Measures aggregate quality score across governed data assets, calculated from accuracy, completeness, consistency, timeliness, and uniqueness sub-scores.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__CertificationRateKPI","label":"Certification Rate KPI","comment":"Measures percentage of catalogued data assets holding a current, non-expired data certification.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__IssueResolutionCycleTimeKPI","label":"Issue Resolution Cycle Time KPI","comment":"Measures average elapsed time between governance issue identification and confirmed resolution, segmented by severity tier.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__AccessRequestFulfilmentKPI","label":"Access Request Fulfilment KPI","comment":"Measures percentage of data access requests fulfilled within agreed service level targets.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__StewardshipCoverageKPI","label":"Stewardship Coverage KPI","comment":"Measures percentage of governed data domains with an assigned, active, and trained data steward.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__PolicyAdherenceRateKPI","label":"Policy Adherence Rate KPI","comment":"Measures proportion of monitored governance activities and asset interactions that are compliant with applicable policies.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataCatalogueCompletenessKPI","label":"Data Catalogue Completeness KPI","comment":"Measures percentage of known enterprise data assets registered in the data catalogue with all mandatory metadata elements populated.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__GovernanceROIKPI","label":"Governance ROI KPI","comment":"Measures return on investment of the governance programme: quantified value delivery (cost avoidance, revenue enablement) relative to programme operating cost.","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__ValueDrivers","label":"Value Drivers","comment":"","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__AiGovernance","label":"AI Governance","comment":"","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataCatalogOperations","label":"Data Catalog Operations","comment":"","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataGovernanceControls","label":"Data Governance Controls","comment":"","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataGovernanceDesign","label":"Data Governance Design","comment":"","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataLiteracy","label":"Data Literacy","comment":"","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__DataProtection","label":"Data Protection","comment":"","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__SemanticGovernance","label":"Semantic Governance","comment":"","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"domainGov__GovernanceReportingMetrics","label":"Governance Reporting & Metrics","comment":"","module":"domainGov","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"gov__Obligation","label":"Obligation","comment":"A Deontic Modality value.","module":"gov","datatypeProps":[],"groundedIn":[],"isEnum":true},{"id":"gov__Prohibition","label":"Prohibition","comment":"A Deontic Modality value.","module":"gov","datatypeProps":[],"groundedIn":[],"isEnum":true},{"id":"gov__Permission","label":"Permission","comment":"A Deontic Modality value.","module":"gov","datatypeProps":[],"groundedIn":[],"isEnum":true},{"id":"gov__Draft","label":"Draft","comment":"A Governance Status value.","module":"gov","datatypeProps":[],"groundedIn":[],"isEnum":true},{"id":"gov__Approved","label":"Approved","comment":"A Governance Status value.","module":"gov","datatypeProps":[],"groundedIn":[],"isEnum":true},{"id":"gov__Active","label":"Active","comment":"A Governance Status value.","module":"gov","datatypeProps":[],"groundedIn":[],"isEnum":true},{"id":"gov__Retired","label":"Retired","comment":"A Governance Status value.","module":"gov","datatypeProps":[],"groundedIn":[],"isEnum":true}],"subClassEdges":[{"from":"aig__GenerativeAISystem","to":"aig__AISystem"},{"from":"aig__DecisionSupportSystem","to":"aig__AISystem"},{"from":"aig__AutonomousSystem","to":"aig__AISystem"},{"from":"aig__TrainingDataset","to":"dgData__DataAsset"},{"from":"aig__ValidationDataset","to":"dgData__DataAsset"},{"from":"aig__TestDataset","to":"dgData__DataAsset"},{"from":"aig__UnacceptableRisk","to":"aig__RiskClassification"},{"from":"aig__HighRisk","to":"aig__RiskClassification"},{"from":"aig__LimitedRisk","to":"aig__RiskClassification"},{"from":"aig__MinimalRisk","to":"aig__RiskClassification"},{"from":"aig__ConformityAssessment","to":"aig__TechnicalDocumentation"},{"from":"aig__AIProvider","to":"aig__AIGovernanceRole"},{"from":"aig__AIDeployer","to":"aig__AIGovernanceRole"},{"from":"ag__PredictiveModel","to":"ag__AnalyticModel"},{"from":"ag__DescriptiveModel","to":"ag__AnalyticModel"},{"from":"ag__PrescriptiveModel","to":"ag__AnalyticModel"},{"from":"ag__BuildStage","to":"ag__ModelLifecycleStage"},{"from":"ag__DeployStage","to":"ag__ModelLifecycleStage"},{"from":"ag__MonitorStage","to":"ag__ModelLifecycleStage"},{"from":"ag__RefreshStage","to":"ag__ModelLifecycleStage"},{"from":"ag__RetireStage","to":"ag__ModelLifecycleStage"},{"from":"ag__TrainingPlatform","to":"ag__AnalyticInfrastructure"},{"from":"ag__ServingPlatform","to":"ag__AnalyticInfrastructure"},{"from":"ag__AnalyticsGovernanceCommittee","to":"ag__GovernanceBody"},{"from":"dgData__StructuredDataAsset","to":"dgData__DataAsset"},{"from":"dgData__UnstructuredDataAsset","to":"dgData__DataAsset"},{"from":"dgData__SemiStructuredDataAsset","to":"dgData__DataAsset"},{"from":"dgData__AccessPolicy","to":"dgData__DataPolicy"},{"from":"dgData__RetentionPolicy","to":"dgData__DataPolicy"},{"from":"dgData__QualityPolicy","to":"dgData__DataPolicy"},{"from":"dgData__PrivacyPolicy","to":"dgData__DataPolicy"},{"from":"dgData__DataGovernanceCouncil","to":"dgData__GovernanceBody"},{"from":"dgData__DomainGovernanceBoard","to":"dgData__GovernanceBody"},{"from":"dgData__DataOwner","to":"dgData__GovernanceRole"},{"from":"dgData__DataSteward","to":"dgData__GovernanceRole"},{"from":"dgData__DataCustodian","to":"dgData__GovernanceRole"},{"from":"dgData__AccuracyDimension","to":"dgData__DataQualityDimension"},{"from":"dgData__CompletenessDimension","to":"dgData__DataQualityDimension"},{"from":"dgData__ConsistencyDimension","to":"dgData__DataQualityDimension"},{"from":"dgData__TimelinessDimension","to":"dgData__DataQualityDimension"},{"from":"gov__Law","to":"gov__NormativeSource"},{"from":"gov__Standard","to":"gov__NormativeSource"},{"from":"gov__Discipline","to":"gov__NormativeSource"},{"from":"gov__Policy","to":"gov__NormativeSource"},{"from":"gov__Constraint","to":"gov__GovernanceArtifact"},{"from":"gov__Rule","to":"gov__GovernanceArtifact"},{"from":"sg__Taxonomy","to":"sg__SemanticArtefact"},{"from":"sg__Thesaurus","to":"sg__SemanticArtefact"},{"from":"sg__FormalOntology","to":"sg__SemanticArtefact"},{"from":"sg__KnowledgeGraph","to":"sg__SemanticArtefact"},{"from":"sg__BusinessGlossary","to":"sg__SemanticArtefact"},{"from":"sg__PreferredTerm","to":"sg__BusinessTerm"},{"from":"sg__SynonymTerm","to":"sg__BusinessTerm"},{"from":"sg__DeprecatedTerm","to":"sg__BusinessTerm"},{"from":"sg__ExactMapping","to":"sg__SemanticMapping"},{"from":"sg__BroadMapping","to":"sg__SemanticMapping"},{"from":"sg__NarrowMapping","to":"sg__SemanticMapping"},{"from":"sg__DomainSteward","to":"sg__SemanticGovernanceRole"},{"from":"sg__OntologyEngineer","to":"sg__SemanticGovernanceRole"},{"from":"domainGov__DataGovernanceAgent","to":"domainGov__Governance"},{"from":"domainGov__DataGovernanceCouncil","to":"domainGov__DataGovernanceAgent"},{"from":"domainGov__DataOwners","to":"domainGov__DataGovernanceAgent"},{"from":"domainGov__DataStewards","to":"domainGov__DataGovernanceAgent"},{"from":"domainGov__DataGovernanceActivities","to":"domainGov__Governance"},{"from":"domainGov__GovernanceControlActivity","to":"domainGov__DataGovernanceActivities"},{"from":"domainGov__GovernanceDevelopmentActivity","to":"domainGov__DataGovernanceActivities"},{"from":"domainGov__GovernanceOperationalActivity","to":"domainGov__DataGovernanceActivities"},{"from":"domainGov__GovernancePlanningActivity","to":"domainGov__DataGovernanceActivities"},{"from":"domainGov__PerformDiscoveryBusinessAlignment","to":"domainGov__GovernanceControlActivity"},{"from":"domainGov__DataGovernanceOperatingFramework","to":"domainGov__GovernanceControlActivity"},{"from":"domainGov__DefineDataGovernance","to":"domainGov__GovernanceDevelopmentActivity"},{"from":"domainGov__DevelopGoalsPrinciplesPolicies","to":"domainGov__GovernanceDevelopmentActivity"},{"from":"domainGov__DevelopOrganizationalTouchpoints","to":"domainGov__GovernanceDevelopmentActivity"},{"from":"domainGov__Charter","to":"domainGov__DefineDataGovernance"},{"from":"domainGov__MissionVision","to":"domainGov__DefineDataGovernance"},{"from":"domainGov__ChangeManagement","to":"domainGov__GovernanceOperationalActivity"},{"from":"domainGov__DevelopDataGovernanceStrategy","to":"domainGov__GovernanceOperationalActivity"},{"from":"domainGov__ImplementDataGovernance","to":"domainGov__GovernanceOperationalActivity"},{"from":"domainGov__ThirdPartySharing","to":"domainGov__GovernanceOperationalActivity"},{"from":"domainGov__DataManagementProjectSupportPrioritization","to":"domainGov__GovernanceOperationalActivity"},{"from":"domainGov__AssessRegulatoryComplianceRequirements","to":"domainGov__GovernancePlanningActivity"},{"from":"domainGov__PerformReadinessAssessment","to":"domainGov__GovernancePlanningActivity"},{"from":"domainGov__PreventativeControls","to":"domainGov__PerformDiscoveryBusinessAlignment"},{"from":"domainGov__DetectiveControls","to":"domainGov__PerformDiscoveryBusinessAlignment"},{"from":"domainGov__AccessManagement","to":"domainGov__PreventativeControls"},{"from":"domainGov__SearchDiscovery","to":"domainGov__PreventativeControls"},{"from":"domainGov__AssetInventoryOnboarding","to":"domainGov__AccessManagement"},{"from":"domainGov__OnboardingManagement","to":"domainGov__AccessManagement"},{"from":"domainGov__DataCataloging","to":"domainGov__OnboardingManagement"},{"from":"domainGov__DataCertification","to":"domainGov__OnboardingManagement"},{"from":"domainGov__DataClassification","to":"domainGov__OnboardingManagement"},{"from":"domainGov__DataEnrichment","to":"domainGov__OnboardingManagement"},{"from":"domainGov__DataProfiling","to":"domainGov__OnboardingManagement"},{"from":"domainGov__ArtificialIntelligenceProductsCertification","to":"domainGov__DataCertification"},{"from":"domainGov__BusinessIntelligenceDashboardCertification","to":"domainGov__DataCertification"},{"from":"domainGov__DataProductsCertification","to":"domainGov__DataCertification"},{"from":"domainGov__MetricsCertification","to":"domainGov__DataCertification"},{"from":"domainGov__DataInvestigation","to":"domainGov__DetectiveControls"},{"from":"domainGov__GovernanceDataQuality","to":"domainGov__DetectiveControls"},{"from":"domainGov__GovernanceSystemsPerformanceManagement","to":"domainGov__DetectiveControls"},{"from":"domainGov__IssueManagementService","to":"domainGov__DetectiveControls"},{"from":"domainGov__MeasurementService","to":"domainGov__DetectiveControls"},{"from":"domainGov__MonitoringService","to":"domainGov__DetectiveControls"},{"from":"domainGov__AvailabilityManagement","to":"domainGov__GovernanceSystemsPerformanceManagement"},{"from":"domainGov__CapacityManagement","to":"domainGov__GovernanceSystemsPerformanceManagement"},{"from":"domainGov__CausalFactorAnalysisService","to":"domainGov__IssueManagementService"},{"from":"domainGov__IssueMitigationService","to":"domainGov__IssueManagementService"},{"from":"domainGov__IssueResolutionService","to":"domainGov__IssueManagementService"},{"from":"domainGov__AccessExceptionMonitoring","to":"domainGov__MonitoringService"},{"from":"domainGov__ApprovalExceptionMonitoring","to":"domainGov__MonitoringService"},{"from":"domainGov__OnboardingExceptionMonitoring","to":"domainGov__MonitoringService"},{"from":"domainGov__DataGovernanceOperations","to":"domainGov__Governance"},{"from":"domainGov__BusinessValue","to":"domainGov__DataGovernanceOperations"},{"from":"domainGov__DataQuality","to":"domainGov__DataGovernanceOperations"},{"from":"domainGov__DataRiskManagement","to":"domainGov__DataGovernanceOperations"},{"from":"domainGov__OperationalEfficiency","to":"domainGov__DataGovernanceOperations"},{"from":"domainGov__DataGovernancePolicy","to":"domainGov__Governance"},{"from":"domainGov__BusinessPolicy","to":"domainGov__DataGovernancePolicy"},{"from":"domainGov__DataPrivacyRegulations","to":"domainGov__DataGovernancePolicy"},{"from":"domainGov__DataQualityStandards","to":"domainGov__DataGovernancePolicy"},{"from":"domainGov__AccessControlPolicies","to":"domainGov__DataGovernancePolicy"},{"from":"domainGov__DataAccessPolicy","to":"domainGov__AccessControlPolicies"},{"from":"domainGov__DataProvenancePolicy","to":"domainGov__AccessControlPolicies"},{"from":"domainGov__DataRetentionArchivalPolicy","to":"domainGov__AccessControlPolicies"},{"from":"domainGov__DataUsagePolicy","to":"domainGov__AccessControlPolicies"},{"from":"domainGov__DataGovernanceStandards","to":"domainGov__Governance"},{"from":"domainGov__DataGovernanceLifecycle","to":"domainGov__Governance"},{"from":"domainGov__DataGovernanceServices","to":"domainGov__Governance"},{"from":"domainGov__ScorecardMetrics","to":"domainGov__Governance"},{"from":"domainGov__AdoptionAwarenessMetrics","to":"domainGov__ScorecardMetrics"},{"from":"domainGov__ComplianceMetrics","to":"domainGov__ScorecardMetrics"},{"from":"domainGov__DataQualityMetrics","to":"domainGov__ScorecardMetrics"},{"from":"domainGov__OperationalMetrics","to":"domainGov__ScorecardMetrics"},{"from":"domainGov__SecurityMetrics","to":"domainGov__ScorecardMetrics"},{"from":"domainGov__DataGovernanceScorecards","to":"domainGov__Governance"},{"from":"domainGov__DataGovernanceTools","to":"domainGov__Governance"},{"from":"domainGov__BusinessGlossary","to":"domainGov__DataGovernanceTools"},{"from":"domainGov__DataGovernanceScorecardsTool","to":"domainGov__DataGovernanceTools"},{"from":"domainGov__DocumentManagementTools","to":"domainGov__DataGovernanceTools"},{"from":"domainGov__OnlinePresence","to":"domainGov__DataGovernanceTools"},{"from":"domainGov__WorkflowTools","to":"domainGov__DataGovernanceTools"},{"from":"domainGov__DataNamingConventionStandard","to":"domainGov__DataGovernanceStandards"},{"from":"domainGov__DataModelingStandard","to":"domainGov__DataGovernanceStandards"},{"from":"domainGov__MetadataManagementStandard","to":"domainGov__DataGovernanceStandards"},{"from":"domainGov__DataFormatEncodingStandard","to":"domainGov__DataGovernanceStandards"},{"from":"domainGov__DataInteroperabilityStandard","to":"domainGov__DataGovernanceStandards"},{"from":"domainGov__DataSecurityClassificationStandard","to":"domainGov__DataGovernanceStandards"},{"from":"domainGov__DataLineageProvenanceStandard","to":"domainGov__DataGovernanceStandards"},{"from":"domainGov__MasterDataStandard","to":"domainGov__DataGovernanceStandards"},{"from":"domainGov__ReferenceDataStandard","to":"domainGov__DataGovernanceStandards"},{"from":"domainGov__OntologyTerminologyStandard","to":"domainGov__DataGovernanceStandards"},{"from":"domainGov__AIModelGovernanceStandard","to":"domainGov__DataGovernanceStandards"},{"from":"domainGov__CoreMetadataElementStandard","to":"domainGov__MetadataManagementStandard"},{"from":"domainGov__ExtendedMetadataProfileStandard","to":"domainGov__MetadataManagementStandard"},{"from":"domainGov__EncryptionAtRestStandard","to":"domainGov__DataSecurityClassificationStandard"},{"from":"domainGov__DataMaskingTokenizationStandard","to":"domainGov__DataSecurityClassificationStandard"},{"from":"domainGov__DataTransmissionSecurityStandard","to":"domainGov__DataSecurityClassificationStandard"},{"from":"domainGov__APIDataContractStandard","to":"domainGov__DataInteroperabilityStandard"},{"from":"domainGov__SemanticInteroperabilityStandard","to":"domainGov__DataInteroperabilityStandard"},{"from":"domainGov__DataLifecyclePhase","to":"domainGov__DataGovernanceLifecycle"},{"from":"domainGov__LifecycleGateControl","to":"domainGov__DataGovernanceLifecycle"},{"from":"domainGov__LifecycleTransitionEvent","to":"domainGov__DataGovernanceLifecycle"},{"from":"domainGov__DataRetentionSchedule","to":"domainGov__DataGovernanceLifecycle"},{"from":"domainGov__DataAcquisitionPhase","to":"domainGov__DataLifecyclePhase"},{"from":"domainGov__DataDefinitionPhase","to":"domainGov__DataLifecyclePhase"},{"from":"domainGov__DataDesignPhase","to":"domainGov__DataLifecyclePhase"},{"from":"domainGov__DataDevelopmentPhase","to":"domainGov__DataLifecyclePhase"},{"from":"domainGov__DataDeliveryPhase","to":"domainGov__DataLifecyclePhase"},{"from":"domainGov__DataDeploymentPhase","to":"domainGov__DataLifecyclePhase"},{"from":"domainGov__DataExecutionPhase","to":"domainGov__DataLifecyclePhase"},{"from":"domainGov__DataSupportImprovementPhase","to":"domainGov__DataLifecyclePhase"},{"from":"domainGov__DataInventoryPublishingPhase","to":"domainGov__DataLifecyclePhase"},{"from":"domainGov__DataWarehousingArchivalPhase","to":"domainGov__DataLifecyclePhase"},{"from":"domainGov__DataRemovalPhase","to":"domainGov__DataLifecyclePhase"},{"from":"domainGov__DataDestructionPhase","to":"domainGov__DataLifecyclePhase"},{"from":"domainGov__ClassificationGateControl","to":"domainGov__LifecycleGateControl"},{"from":"domainGov__QualityAssuranceGateControl","to":"domainGov__LifecycleGateControl"},{"from":"domainGov__CertificationGateControl","to":"domainGov__LifecycleGateControl"},{"from":"domainGov__ComplianceReviewGateControl","to":"domainGov__LifecycleGateControl"},{"from":"domainGov__DisposalApprovalGateControl","to":"domainGov__LifecycleGateControl"},{"from":"domainGov__RegulatoryRetentionSchedule","to":"domainGov__DataRetentionSchedule"},{"from":"domainGov__BusinessRetentionSchedule","to":"domainGov__DataRetentionSchedule"},{"from":"domainGov__LegalHoldSchedule","to":"domainGov__DataRetentionSchedule"},{"from":"domainGov__GovernanceAdvisoryService","to":"domainGov__DataGovernanceServices"},{"from":"domainGov__GovernanceEnablementService","to":"domainGov__DataGovernanceServices"},{"from":"domainGov__GovernanceRequestFulfillmentService","to":"domainGov__DataGovernanceServices"},{"from":"domainGov__GovernanceReportingService","to":"domainGov__DataGovernanceServices"},{"from":"domainGov__GovernanceAssuranceService","to":"domainGov__DataGovernanceServices"},{"from":"domainGov__GovernanceIntegrationService","to":"domainGov__DataGovernanceServices"},{"from":"domainGov__PolicyInterpretationService","to":"domainGov__GovernanceAdvisoryService"},{"from":"domainGov__GovernanceConsultingService","to":"domainGov__GovernanceAdvisoryService"},{"from":"domainGov__RegulatoryGuidanceService","to":"domainGov__GovernanceAdvisoryService"},{"from":"domainGov__DataEthicsAdvisoryService","to":"domainGov__GovernanceAdvisoryService"},{"from":"domainGov__GovernanceTrainingService","to":"domainGov__GovernanceEnablementService"},{"from":"domainGov__DataLiteracyService","to":"domainGov__GovernanceEnablementService"},{"from":"domainGov__GovernanceCommunicationService","to":"domainGov__GovernanceEnablementService"},{"from":"domainGov__GovernanceOnboardingService","to":"domainGov__GovernanceEnablementService"},{"from":"domainGov__DataAccessRequestService","to":"domainGov__GovernanceRequestFulfillmentService"},{"from":"domainGov__GovernanceExceptionRequestService","to":"domainGov__GovernanceRequestFulfillmentService"},{"from":"domainGov__NewAssetOnboardingRequestService","to":"domainGov__GovernanceRequestFulfillmentService"},{"from":"domainGov__DataSharingAgreementService","to":"domainGov__GovernanceRequestFulfillmentService"},{"from":"domainGov__DataDisposalRequestService","to":"domainGov__GovernanceRequestFulfillmentService"},{"from":"domainGov__ExecutiveGovernanceReportingService","to":"domainGov__GovernanceReportingService"},{"from":"domainGov__OperationalGovernanceReportingService","to":"domainGov__GovernanceReportingService"},{"from":"domainGov__RegulatoryComplianceReportingService","to":"domainGov__GovernanceReportingService"},{"from":"domainGov__GovernanceAuditService","to":"domainGov__GovernanceAssuranceService"},{"from":"domainGov__ControlEffectivenessTestingService","to":"domainGov__GovernanceAssuranceService"},{"from":"domainGov__GovernanceMaturityAssessmentService","to":"domainGov__GovernanceAssuranceService"},{"from":"domainGov__PipelineGovernanceIntegrationService","to":"domainGov__GovernanceIntegrationService"},{"from":"domainGov__DevGovernanceIntegrationService","to":"domainGov__GovernanceIntegrationService"},{"from":"domainGov__AIGovernanceIntegrationService","to":"domainGov__GovernanceIntegrationService"},{"from":"domainGov__GovernanceScorecardDimension","to":"domainGov__DataGovernanceScorecards"},{"from":"domainGov__GovernanceScorecardView","to":"domainGov__DataGovernanceScorecards"},{"from":"domainGov__GovernanceKPI","to":"domainGov__DataGovernanceScorecards"},{"from":"domainGov__GovernanceTarget","to":"domainGov__DataGovernanceScorecards"},{"from":"domainGov__GovernanceObservation","to":"domainGov__DataGovernanceScorecards"},{"from":"domainGov__GovernanceTrend","to":"domainGov__DataGovernanceScorecards"},{"from":"domainGov__GovernanceBenchmark","to":"domainGov__DataGovernanceScorecards"},{"from":"domainGov__ProgrammeHealthDimension","to":"domainGov__GovernanceScorecardDimension"},{"from":"domainGov__DataTrustDimension","to":"domainGov__GovernanceScorecardDimension"},{"from":"domainGov__RiskComplianceDimension","to":"domainGov__GovernanceScorecardDimension"},{"from":"domainGov__BusinessValueDimension","to":"domainGov__GovernanceScorecardDimension"},{"from":"domainGov__OperationalEfficiencyDimension","to":"domainGov__GovernanceScorecardDimension"},{"from":"domainGov__ExecutiveScorecardView","to":"domainGov__GovernanceScorecardView"},{"from":"domainGov__DomainScorecardView","to":"domainGov__GovernanceScorecardView"},{"from":"domainGov__OperationalScorecardView","to":"domainGov__GovernanceScorecardView"},{"from":"domainGov__RegulatoryComplianceScorecardView","to":"domainGov__GovernanceScorecardView"},{"from":"domainGov__PolicyCoverageKPI","to":"domainGov__GovernanceKPI"},{"from":"domainGov__DataQualityScoreKPI","to":"domainGov__GovernanceKPI"},{"from":"domainGov__CertificationRateKPI","to":"domainGov__GovernanceKPI"},{"from":"domainGov__IssueResolutionCycleTimeKPI","to":"domainGov__GovernanceKPI"},{"from":"domainGov__AccessRequestFulfilmentKPI","to":"domainGov__GovernanceKPI"},{"from":"domainGov__StewardshipCoverageKPI","to":"domainGov__GovernanceKPI"},{"from":"domainGov__PolicyAdherenceRateKPI","to":"domainGov__GovernanceKPI"},{"from":"domainGov__DataCatalogueCompletenessKPI","to":"domainGov__GovernanceKPI"},{"from":"domainGov__GovernanceROIKPI","to":"domainGov__GovernanceKPI"},{"from":"domainGov__ValueDrivers","to":"domainGov__DefineDataGovernance"},{"from":"domainGov__AiGovernance","to":"domainGov__DataGovernanceOperations"},{"from":"domainGov__DataCatalogOperations","to":"domainGov__DataGovernanceOperations"},{"from":"domainGov__DataGovernanceControls","to":"domainGov__DataGovernanceOperations"},{"from":"domainGov__DataGovernanceDesign","to":"domainGov__DataGovernanceOperations"},{"from":"domainGov__DataLiteracy","to":"domainGov__DataGovernanceOperations"},{"from":"domainGov__DataProtection","to":"domainGov__DataGovernanceOperations"},{"from":"domainGov__SemanticGovernance","to":"domainGov__DataGovernanceOperations"},{"from":"domainGov__GovernanceReportingMetrics","to":"domainGov__DataGovernanceOperations"},{"from":"gov__Obligation","to":"gov__DeonticModality"},{"from":"gov__Prohibition","to":"gov__DeonticModality"},{"from":"gov__Permission","to":"gov__DeonticModality"},{"from":"gov__Draft","to":"gov__GovernanceStatus"},{"from":"gov__Approved","to":"gov__GovernanceStatus"},{"from":"gov__Active","to":"gov__GovernanceStatus"},{"from":"gov__Retired","to":"gov__GovernanceStatus"}],"relationEdges":[{"from":"aig__AISystem","to":"aig__TrainingDataset","label":"trained on","module":"aig"},{"from":"aig__AISystem","to":"aig__ValidationDataset","label":"validated on","module":"aig"},{"from":"aig__AISystem","to":"aig__TestDataset","label":"tested on","module":"aig"},{"from":"aig__AISystem","to":"aig__TechnicalDocumentation","label":"requires documentation","module":"aig"},{"from":"aig__AISystem","to":"aig__RiskClassification","label":"has risk classification","module":"aig"},{"from":"aig__AISystem","to":"aig__FRIA","label":"subject to FRIA","module":"aig"},{"from":"aig__AISystem","to":"aig__HumanOversightMeasure","label":"has oversight measure","module":"aig"},{"from":"aig__AISystem","to":"aig__AuditLog","label":"generates log","module":"aig"},{"from":"aig__AISystem","to":"aig__AIProvider","label":"provided by","module":"aig"},{"from":"aig__AISystem","to":"aig__AIDeployer","label":"deployed by","module":"aig"},{"from":"ag__AnalyticModel","to":"ag__AnalyticInfrastructure","label":"deployed on","module":"ag"},{"from":"ag__AnalyticsGovernanceCommittee","to":"ag__AnalyticModel","label":"oversees","module":"ag"},{"from":"ag__AnalyticModel","to":"ag__BusinessRequirement","label":"aligned to","module":"ag"},{"from":"ag__AnalyticModel","to":"dgData__DataAsset","label":"trained on","module":"ag"},{"from":"ag__AnalyticModel","to":"ag__ModelLifecycleStage","label":"has lifecycle stage","module":"ag"},{"from":"ag__AnalyticModel","to":"ag__ModelValidationResult","label":"has validation result","module":"ag"},{"from":"ag__BusinessRequirement","to":"ag__AnalyticsGovernanceCommittee","label":"prioritized by","module":"ag"},{"from":"dgData__DataPolicy","to":"dgData__DataAsset","label":"governs","module":"dgData"},{"from":"dgData__GovernanceBody","to":"dgData__DataPolicy","label":"sets policy","module":"dgData"},{"from":"dgData__DataSteward","to":"dgData__DataAsset","label":"manages asset","module":"dgData"},{"from":"dgData__DataAsset","to":"dgData__DataOwner","label":"owned by","module":"dgData"},{"from":"dgData__DataAsset","to":"dgData__DataCustodian","label":"custodied by","module":"dgData"},{"from":"dgData__DataAsset","to":"dgData__DataQualityDimension","label":"has quality dimension","module":"dgData"},{"from":"dgData__DataPolicy","to":"dgData__GovernanceRole","label":"enforced by","module":"dgData"},{"from":"gov__NormativeSource","to":"gov__NormativeRequirement","label":"mandates","module":"gov"},{"from":"gov__NormativeRequirement","to":"gov__DeonticModality","label":"has modality","module":"gov"},{"from":"gov__NormativeRequirement","to":"gov__GovernanceArtifact","label":"operationalized by","module":"gov"},{"from":"gov__GovernanceArtifact","to":"gov__NormativeRequirement","label":"realizes requirement","module":"gov"},{"from":"gov__GovernanceArtifact","to":"party","label":"stewarded by","module":"gov"},{"from":"gov__GovernanceArtifact","to":"gov__RepositoryEntry","label":"sourced from repo entry","module":"gov"},{"from":"gov__GovernanceArtifact","to":"gov__GovernanceStatus","label":"has status","module":"gov"},{"from":"gov__NormativeRequirement","to":"gov__NormativeSource","label":"cites source","module":"gov"},{"from":"gov__Discipline","to":"gov__WorkingGroup","label":"has working group","module":"gov"},{"from":"gov__Discipline","to":"gov__Method","label":"emits method","module":"gov"},{"from":"gov__Discipline","to":"gov__QualityCriterion","label":"emits criterion","module":"gov"},{"from":"gov__QualityCriterion","to":"gov__NormativeRequirement","label":"promoted to requirement","module":"gov"},{"from":"gov__Standard","to":"gov__StandardsBody","label":"issued by","module":"gov"},{"from":"sg__BusinessTerm","to":"dgData__DataAsset","label":"defines meaning of","module":"sg"},{"from":"sg__BusinessTerm","to":"sg__BusinessGlossary","label":"contained in","module":"sg"},{"from":"sg__SemanticArtefact","to":"sg__MappingRepository","label":"maintained in","module":"sg"},{"from":"sg__BusinessTerm","to":"sg__DomainSteward","label":"approved by","module":"sg"},{"from":"sg__BusinessGlossary","to":"sg__SemanticGovernanceCouncil","label":"governed by","module":"sg"},{"from":"sg__SemanticArtefact","to":"sg__SemanticMapping","label":"has mapping to","module":"sg"},{"from":"sg__SemanticMapping","to":"sg__BusinessTerm","label":"mapping source","module":"sg"},{"from":"sg__SemanticMapping","to":"sg__BusinessTerm","label":"mapping target","module":"sg"},{"from":"sg__DeprecatedTerm","to":"sg__PreferredTerm","label":"replaced by","module":"sg"},{"from":"sg__SemanticArtefact","to":"sg__OntologyEngineer","label":"engineered by","module":"sg"},{"from":"domainGov__DataGovernanceAgent","to":"domainGov__DataGovernanceActivities","label":"is accountable for","module":"domainGov"},{"from":"domainGov__DataGovernanceAgent","to":"domainGov__DataGovernanceActivities","label":"is responsible for","module":"domainGov"},{"from":"domainGov__DataGovernanceActivities","to":"domainGov__DataGovernancePolicy","label":"implements policy","module":"domainGov"},{"from":"domainGov__DataGovernancePolicy","to":"domainGov__DataGovernanceStandards","label":"mandates standard","module":"domainGov"},{"from":"domainGov__DataGovernancePolicy","to":"domainGov__GovernanceControlActivity","label":"is enforced by","module":"domainGov"},{"from":"domainGov__DataGovernancePolicy","to":"domainGov__DataGovernanceStandards","label":"references standard","module":"domainGov"},{"from":"domainGov__DataGovernanceLifecycle","to":"domainGov__DataLifecyclePhase","label":"has lifecycle phase","module":"domainGov"},{"from":"domainGov__DataLifecyclePhase","to":"domainGov__DataLifecyclePhase","label":"precedes phase","module":"domainGov"},{"from":"domainGov__DataLifecyclePhase","to":"domainGov__LifecycleGateControl","label":"has gate control","module":"domainGov"},{"from":"domainGov__LifecycleGateControl","to":"domainGov__LifecycleTransitionEvent","label":"triggers transition","module":"domainGov"},{"from":"domainGov__GovernanceControlActivity","to":"domainGov__DataLifecyclePhase","label":"operates within phase","module":"domainGov"},{"from":"domainGov__GovernanceKPI","to":"domainGov__GovernanceTarget","label":"has target","module":"domainGov"},{"from":"domainGov__GovernanceKPI","to":"domainGov__GovernanceBenchmark","label":"has benchmark","module":"domainGov"},{"from":"domainGov__GovernanceKPI","to":"domainGov__GovernanceScorecardDimension","label":"populates dimension","module":"domainGov"},{"from":"domainGov__GovernanceKPI","to":"domainGov__GovernanceScorecardView","label":"reported in","module":"domainGov"},{"from":"domainGov__GovernanceScorecardView","to":"domainGov__ScorecardMetrics","label":"aggregates metric","module":"domainGov"},{"from":"domainGov__GovernanceControlActivity","to":"domainGov__GovernanceObservation","label":"generates observation","module":"domainGov"},{"from":"domainGov__DataGovernanceServices","to":"domainGov__DataGovernanceAgent","label":"delivered by","module":"domainGov"},{"from":"domainGov__DataGovernanceServices","to":"domainGov__DataGovernanceTools","label":"enabled by tool","module":"domainGov"},{"from":"domainGov__DataGovernanceServices","to":"domainGov__DataGovernanceActivities","label":"supports activity","module":"domainGov"},{"from":"domainGov__GovernanceReportingService","to":"domainGov__GovernanceScorecardView","label":"produces scorecard","module":"domainGov"},{"from":"domainGov__DetectiveControls","to":"domainGov__DataRiskManagement","label":"identifies risk","module":"domainGov"},{"from":"domainGov__PreventativeControls","to":"domainGov__DataRiskManagement","label":"mitigates risk","module":"domainGov"},{"from":"domainGov__DataGovernanceOperations","to":"domainGov__BusinessValue","label":"delivers value","module":"domainGov"}],"closeMatchEdges":[{"from":"gov__Constraint","to":"compliance","label":"closely matches"},{"from":"gov__Rule","to":"rules","label":"closely matches"}]};
+
+// ================= Embedded business object model data (parsed from 4 uploaded .ttl files) =================
+const MODEL_DATA = {"classes":[{"id":"asset__BusinessSpecification","label":"Business Specification","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__DataEngineering","label":"Data Engineering","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__DesignSpecification","label":"Design Specification","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__DesignThinking","label":"Design Thinking","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__DetectiveControls","label":"Detective Controls","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__FeatureDecomposition","label":"Feature Decomposition","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__KnowledgeEngineering","label":"Knowledge Engineering","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__OperationalReadiness","label":"Operational Readiness","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__PreventativeControls","label":"Preventative Controls","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__QualityEngineering","label":"Quality Engineering","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__ServiceLevelAgreement","label":"Service Level Agreement","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__SolutionArchitecture","label":"Solution Architecture","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__SystemEngineering","label":"System Engineering","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__ValueMap","label":"Value Map","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__AnalyticProduct","label":"Analytic Product","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__Analytics","label":"Analytics","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__DigitalAsset","label":"Digital Asset","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__Artifact","label":"Artifact","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__ArtificialIntelligenceAgent","label":"Artificial Intelligence Agent","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__AutonomousAgent","label":"Autonomous Agent","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__Asset","label":"Asset","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__DigitalAgent","label":"Digital Agent","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__BiologicalAsset","label":"Biological Asset","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__BusinessIntelligenceAgent","label":"Business Intelligence Agent","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__Data","label":"Data","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__DataProduct","label":"Data Product","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__Document","label":"Document","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__HumanAsset","label":"Human Asset","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__IntellectualProperty","label":"Intellectual Property","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__Media","label":"Media","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__OperationalStandardOperatingProcedure","label":"Operational Standard Operating Procedure","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__PhysicalAsset","label":"Physical Asset","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"asset__Semantics","label":"Semantics","comment":"","module":"asset","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"requirementsOnt__Job","label":"Job","comment":"","module":"requirementsOnt","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"requirementsOnt__Outcome","label":"Outcome","comment":"","module":"requirementsOnt","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"requirementsOnt__JobStep","label":"Job Step","comment":"","module":"requirementsOnt","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"requirementsOnt__JourneyStep","label":"Journey Step","comment":"","module":"requirementsOnt","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"requirementsOnt__Journey","label":"Journey","comment":"","module":"requirementsOnt","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"requirementsOnt__EmotionalJob","label":"Emotional Job","comment":"","module":"requirementsOnt","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"requirementsOnt__Feature","label":"Feature","comment":"","module":"requirementsOnt","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"requirementsOnt__Specification","label":"Specification","comment":"","module":"requirementsOnt","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"requirementsOnt__FunctionalFeature","label":"Functional Feature","comment":"","module":"requirementsOnt","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"requirementsOnt__FunctionalJob","label":"Functional Job","comment":"","module":"requirementsOnt","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"requirementsOnt__JobExecutor","label":"Job Executor","comment":"","module":"requirementsOnt","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"requirementsOnt__Need","label":"Need","comment":"","module":"requirementsOnt","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"requirementsOnt__Requirement","label":"Requirement","comment":"","module":"requirementsOnt","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"requirementsOnt__NonFunctionalFeature","label":"Non-Functional Feature","comment":"","module":"requirementsOnt","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"requirementsOnt__SupportingJob","label":"Supporting Job","comment":"","module":"requirementsOnt","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"requirementsOnt__Requirements","label":"Requirements","comment":"","module":"requirementsOnt","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__ArtificialIntelligenceMachineLearning","label":"Artificial Intelligence & Machine Learning","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__TechnicalCapability","label":"Technical Capability","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__BillingAccountingManagement","label":"Billing & Accounting Management","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__FunctionalCapability","label":"Functional Capability","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__BusinessCapability","label":"Business Capability","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__Capability","label":"Capability","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__BusinessIntelligence","label":"Business Intelligence","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__BusinessMarketplace","label":"Business Marketplace","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__CloudDataLakehouse","label":"Cloud Data Lakehouse","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__DataLakeManagement","label":"Data Lake Management","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__CustomerRelationshipManagement","label":"Customer Relationship Management","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__DataArchitecture","label":"Data Architecture","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__DataCatalog","label":"Data Catalog","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__DataDictionary","label":"Data Dictionary","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__DataManagement","label":"Data Management","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__DataDiscovery","label":"Data Discovery","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__DataFabric","label":"Data Fabric","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__DataIntegration","label":"Data Integration","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__Integration","label":"Integration","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__StorageManagement","label":"Storage Management","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__DataLineageManagement","label":"Data Lineage Management","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__DataMarketplace","label":"Data Marketplace","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__DataMasking","label":"Data Masking","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__DataModeling","label":"Data Modeling","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__DataPrivacy","label":"Data Privacy","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__DataProcessIntegration","label":"Data & Process Integration","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__DataQualityCapability","label":"Data Quality Capability","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__DataReporting","label":"Data Reporting","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__DataScience","label":"Data Science","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__DataSecurity","label":"Data Security","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__DataSubsetting","label":"Data Subsetting","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__TestDataManagement","label":"Test Data Management","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__DatabaseManagement","label":"Database Management","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__DigitalAssetManagement","label":"Digital Asset Management","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__MasterDataManagement","label":"Master Data Management","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__MetricManagement","label":"Metric Management","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__OnPremisesDataLakehouse","label":"On Premises Data Lakehouse","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__OrderManagement","label":"Order Management","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__ProcessIntegration","label":"Process Integration","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__ProductDataSyndication","label":"Product Data Syndication","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__ProductInformationManagement","label":"Product Information Management","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__ProductManagement","label":"Product Management","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__ResourceManagement","label":"Resource Management","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__RiskManagement","label":"Risk Management","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__ServiceActivationManagement","label":"Service Activation Management","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__ServiceAssuranceManagement","label":"Service Assurance Management","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__ServicePortfolioManagement","label":"Service Portfolio Management","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__ServiceProvisioningManagement","label":"Service Provisioning Management","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"capability__SyntheticDataGeneration","label":"Synthetic Data Generation","comment":"","module":"capability","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"event__Event","label":"Event","comment":"","module":"event","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"event__EventState","label":"Event State","comment":"","module":"event","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"event__Trigger","label":"Trigger","comment":"","module":"event","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"event__DiscreteValue","label":"Discrete Value","comment":"","module":"event","datatypeProps":[],"groundedIn":[],"isEnum":false},{"id":"event__Events","label":"Events","comment":"","module":"event","datatypeProps":[],"groundedIn":[],"isEnum":false}],"subClassEdges":[{"from":"asset__BusinessSpecification","to":"asset__Artifact"},{"from":"asset__DataEngineering","to":"asset__Artifact"},{"from":"asset__DesignSpecification","to":"asset__Artifact"},{"from":"asset__DesignThinking","to":"asset__Artifact"},{"from":"asset__DetectiveControls","to":"asset__Artifact"},{"from":"asset__FeatureDecomposition","to":"asset__Artifact"},{"from":"asset__KnowledgeEngineering","to":"asset__Artifact"},{"from":"asset__OperationalReadiness","to":"asset__Artifact"},{"from":"asset__PreventativeControls","to":"asset__Artifact"},{"from":"asset__QualityEngineering","to":"asset__Artifact"},{"from":"asset__ServiceLevelAgreement","to":"asset__Artifact"},{"from":"asset__SolutionArchitecture","to":"asset__Artifact"},{"from":"asset__SystemEngineering","to":"asset__Artifact"},{"from":"asset__ValueMap","to":"asset__Artifact"},{"from":"asset__AnalyticProduct","to":"asset__Analytics"},{"from":"asset__Analytics","to":"asset__DigitalAsset"},{"from":"asset__DigitalAsset","to":"asset__Asset"},{"from":"asset__Artifact","to":"asset__DigitalAsset"},{"from":"asset__ArtificialIntelligenceAgent","to":"asset__AutonomousAgent"},{"from":"asset__AutonomousAgent","to":"asset__DigitalAgent"},{"from":"asset__DigitalAgent","to":"asset__DigitalAsset"},{"from":"asset__BiologicalAsset","to":"asset__Asset"},{"from":"asset__BusinessIntelligenceAgent","to":"asset__AutonomousAgent"},{"from":"asset__Data","to":"asset__DigitalAsset"},{"from":"asset__DataProduct","to":"asset__Data"},{"from":"asset__Document","to":"asset__DigitalAsset"},{"from":"asset__HumanAsset","to":"asset__BiologicalAsset"},{"from":"asset__IntellectualProperty","to":"asset__DigitalAsset"},{"from":"asset__Media","to":"asset__DigitalAsset"},{"from":"asset__OperationalStandardOperatingProcedure","to":"asset__Artifact"},{"from":"asset__PhysicalAsset","to":"asset__Asset"},{"from":"asset__Semantics","to":"asset__DigitalAsset"},{"from":"requirementsOnt__Job","to":"requirementsOnt__Requirements"},{"from":"requirementsOnt__Outcome","to":"requirementsOnt__Requirements"},{"from":"requirementsOnt__JobStep","to":"requirementsOnt__FunctionalJob"},{"from":"requirementsOnt__JourneyStep","to":"requirementsOnt__Journey"},{"from":"requirementsOnt__Journey","to":"requirementsOnt__Requirements"},{"from":"requirementsOnt__EmotionalJob","to":"requirementsOnt__Job"},{"from":"requirementsOnt__Feature","to":"requirementsOnt__Specification"},{"from":"requirementsOnt__Specification","to":"requirementsOnt__Requirement"},{"from":"requirementsOnt__FunctionalFeature","to":"requirementsOnt__Feature"},{"from":"requirementsOnt__FunctionalJob","to":"requirementsOnt__Job"},{"from":"requirementsOnt__JobExecutor","to":"requirementsOnt__Need"},{"from":"requirementsOnt__Need","to":"requirementsOnt__Requirement"},{"from":"requirementsOnt__Requirement","to":"requirementsOnt__Requirements"},{"from":"requirementsOnt__NonFunctionalFeature","to":"requirementsOnt__FunctionalFeature"},{"from":"requirementsOnt__SupportingJob","to":"requirementsOnt__Job"},{"from":"capability__ArtificialIntelligenceMachineLearning","to":"capability__TechnicalCapability"},{"from":"capability__TechnicalCapability","to":"capability__Capability"},{"from":"capability__BillingAccountingManagement","to":"capability__FunctionalCapability"},{"from":"capability__FunctionalCapability","to":"capability__Capability"},{"from":"capability__BusinessCapability","to":"capability__Capability"},{"from":"capability__BusinessIntelligence","to":"capability__TechnicalCapability"},{"from":"capability__BusinessMarketplace","to":"capability__BusinessCapability"},{"from":"capability__CloudDataLakehouse","to":"capability__DataLakeManagement"},{"from":"capability__DataLakeManagement","to":"capability__StorageManagement"},{"from":"capability__CustomerRelationshipManagement","to":"capability__FunctionalCapability"},{"from":"capability__DataArchitecture","to":"capability__TechnicalCapability"},{"from":"capability__DataCatalog","to":"capability__TechnicalCapability"},{"from":"capability__DataDictionary","to":"capability__DataManagement"},{"from":"capability__DataManagement","to":"capability__TechnicalCapability"},{"from":"capability__DataDiscovery","to":"capability__TechnicalCapability"},{"from":"capability__DataFabric","to":"capability__TechnicalCapability"},{"from":"capability__DataIntegration","to":"capability__Integration"},{"from":"capability__Integration","to":"capability__TechnicalCapability"},{"from":"capability__StorageManagement","to":"capability__TechnicalCapability"},{"from":"capability__DataLineageManagement","to":"capability__TechnicalCapability"},{"from":"capability__DataMarketplace","to":"capability__TechnicalCapability"},{"from":"capability__DataMasking","to":"capability__DataManagement"},{"from":"capability__DataModeling","to":"capability__DataManagement"},{"from":"capability__DataPrivacy","to":"capability__DataManagement"},{"from":"capability__DataProcessIntegration","to":"capability__TechnicalCapability"},{"from":"capability__DataQualityCapability","to":"capability__TechnicalCapability"},{"from":"capability__DataReporting","to":"capability__TechnicalCapability"},{"from":"capability__DataScience","to":"capability__TechnicalCapability"},{"from":"capability__DataSecurity","to":"capability__DataManagement"},{"from":"capability__DataSubsetting","to":"capability__TestDataManagement"},{"from":"capability__TestDataManagement","to":"capability__TechnicalCapability"},{"from":"capability__DatabaseManagement","to":"capability__DataManagement"},{"from":"capability__DigitalAssetManagement","to":"capability__TechnicalCapability"},{"from":"capability__MasterDataManagement","to":"capability__TechnicalCapability"},{"from":"capability__MetricManagement","to":"capability__TechnicalCapability"},{"from":"capability__OnPremisesDataLakehouse","to":"capability__DataLakeManagement"},{"from":"capability__OrderManagement","to":"capability__FunctionalCapability"},{"from":"capability__ProcessIntegration","to":"capability__Integration"},{"from":"capability__ProductDataSyndication","to":"capability__FunctionalCapability"},{"from":"capability__ProductInformationManagement","to":"capability__FunctionalCapability"},{"from":"capability__ProductManagement","to":"capability__BusinessCapability"},{"from":"capability__ResourceManagement","to":"capability__FunctionalCapability"},{"from":"capability__RiskManagement","to":"capability__BusinessCapability"},{"from":"capability__ServiceActivationManagement","to":"capability__BusinessCapability"},{"from":"capability__ServiceAssuranceManagement","to":"capability__BusinessCapability"},{"from":"capability__ServicePortfolioManagement","to":"capability__FunctionalCapability"},{"from":"capability__ServiceProvisioningManagement","to":"capability__BusinessCapability"},{"from":"capability__SyntheticDataGeneration","to":"capability__TestDataManagement"},{"from":"event__Event","to":"event__Events"},{"from":"event__EventState","to":"event__Events"},{"from":"event__Trigger","to":"event__Events"},{"from":"event__DiscreteValue","to":"event__EventState"}],"relationEdges":[{"from":"requirementsOnt__EmotionalJob","to":"requirementsOnt__Outcome","label":"provides","module":"requirementsOnt"},{"from":"requirementsOnt__JobExecutor","to":"requirementsOnt__Job","label":"performs","module":"requirementsOnt"},{"from":"requirementsOnt__JobExecutor","to":"requirementsOnt__Outcome","label":"enables","module":"requirementsOnt"},{"from":"requirementsOnt__Job","to":"requirementsOnt__Journey","label":"is","module":"requirementsOnt"},{"from":"requirementsOnt__JobStep","to":"requirementsOnt__JourneyStep","label":"is","module":"requirementsOnt"},{"from":"requirementsOnt__JobStep","to":"requirementsOnt__Outcome","label":"provides","module":"requirementsOnt"},{"from":"requirementsOnt__Journey","to":"requirementsOnt__Job","label":"is","module":"requirementsOnt"},{"from":"requirementsOnt__JourneyStep","to":"requirementsOnt__JobStep","label":"is","module":"requirementsOnt"},{"from":"requirementsOnt__SupportingJob","to":"requirementsOnt__Outcome","label":"provides","module":"requirementsOnt"},{"from":"event__Event","to":"event__EventState","label":"has","module":"event"},{"from":"event__Event","to":"event__Trigger","label":"initiated by","module":"event"},{"from":"event__Trigger","to":"event__Event","label":"initiates","module":"event"}],"closeMatchEdges":[]};
+
+// ================= Category / module definitions =================
+const CORE_CATEGORIES = {
+  process:      { label:'SIPOC / Process',           icon:'⚙️', shape:'rect',    light:'#2a78d6', dark:'#3987e5', desc:'Supplier → Inputs → Process Action → Outputs → Customer flow.', section:'core' },
+  rules:        { label:'Rules, Logic & Compliance',  icon:'⚖️', shape:'diamond', light:'#4a3aa7', dark:'#9085e9', desc:'Governs, constrains and controls process behavior.', section:'core' },
+  party:        { label:'Party & Persona',            icon:'👤', shape:'ellipse', light:'#1baf7a', dark:'#199e70', desc:'Actors and their modeled representations who perform process actions.', section:'core' },
+  assets:       { label:'Assets',                     icon:'📦', shape:'hex',     light:'#008300', dark:'#008300', desc:'Digital and physical things created or modified by processes.', section:'core' },
+  issues:       { label:'Issues & Problems',          icon:'⚠️', shape:'triangle',light:'#e34948', dark:'#e66767', desc:'Problems, defects and requests tracked against processes.', section:'core' },
+  requirements: { label:'Requirements',               icon:'📋', shape:'star',    light:'#eda100', dark:'#c98500', desc:'Needs and features that define what is required.', section:'core' }
+};
+
+const GOV_CATEGORIES = {
+  aig:      { label:'AI Governance',           icon:'🤖', shape:'rect',     light:'#0e7c86', dark:'#14a3b0', desc:'Risk classification, technical documentation and EU AI Act compliance for AI systems.', section:'governance', angle:-60,  radiusBoost:1.0 },
+  ag:       { label:'Analytics Governance',    icon:'📈', shape:'diamond',  light:'#b06a1a', dark:'#d9862c', desc:'Governance of the analytic model lifecycle, infrastructure and strategic alignment.', section:'governance', angle:0,    radiusBoost:1.0 },
+  dgData:   { label:'Data Governance (Core)',  icon:'🗄️', shape:'ellipse',  light:'#3d6a99', dark:'#5a8bc4', desc:'Enterprise data governance: assets, policies, roles and quality dimensions.', section:'governance', angle:60,   radiusBoost:1.0 },
+  gov:      { label:'Governance Overlay',      icon:'📜', shape:'hex',      light:'#8a4f7d', dark:'#b56ba6', desc:'Deontic overlay binding normative sources (law, standard, discipline, policy) to constraints and rules.', section:'governance', angle:120,  radiusBoost:1.0 },
+  sg:       { label:'Semantic Governance',     icon:'🔤', shape:'triangle', light:'#2f7d4f', dark:'#3fa367', desc:'Governance of meaning, vocabularies and mappings for semantic interoperability.', section:'governance', angle:180,  radiusBoost:1.0 },
+  domainGov:{ label:'Domain Governance',       icon:'🏛️', shape:'star',     light:'#a4472f', dark:'#c65d40', desc:'Enterprise-wide governance taxonomy: agents, activities, controls, policies, services, lifecycle, standards and scorecards.', section:'governance', angle:240,  radiusBoost:1.55 }
+};
+
+const MODEL_CATEGORIES = {
+  asset:           { label:'Asset Model',           icon:'🧱', shape:'rect',    light:'#9c5b1e', dark:'#c17a2e', desc:'Digital, physical and biological asset taxonomy: what things are created, held or consumed.', section:'model', angle:-45,  radiusBoost:1.0 },
+  capability:      { label:'Capability Model',      icon:'🧩', shape:'diamond', light:'#3f5fa8', dark:'#5b7fd1', desc:'Business and technical capability taxonomy: what an organization is able to do.', section:'model', angle:45,   radiusBoost:1.0 },
+  event:           { label:'Event Model',           icon:'⚡', shape:'triangle',light:'#b6437a', dark:'#d15f99', desc:'Events, event state and triggers: what happens and what causes it.', section:'model', angle:135,  radiusBoost:1.0 },
+  requirementsOnt: { label:'Requirements Model',    icon:'🎯', shape:'star',    light:'#4a7a5e', dark:'#5f9c78', desc:'Jobs-to-be-done: jobs, journeys, outcomes, needs and features.', section:'model', angle:225,  radiusBoost:1.0 }
+};
+
+const CATEGORIES = Object.assign({}, CORE_CATEGORIES, GOV_CATEGORIES, MODEL_CATEGORIES);
+
+const EDGE_TYPES = {
+  flow:        { label:'Flow (provides)',        light:'#2a78d6', dark:'#3987e5', dashes:false, len:190, section:'core' },
+  governance:  { label:'Governs / Controls',      light:'#4a3aa7', dark:'#9085e9', dashes:false, len:170, section:'core' },
+  actor:       { label:'Assigned / Performs',     light:'#1baf7a', dark:'#199e70', dashes:false, len:170, section:'core' },
+  asset:       { label:'Creates / Modifies',      light:'#008300', dark:'#008300', dashes:false, len:170, section:'core' },
+  issue:       { label:'Occurs in / Generates',   light:'#e34948', dark:'#e66767', dashes:false, len:170, section:'core' },
+  subclass:    { label:'Is-a (subclass)',         light:'#89807a', dark:'#c3c2b7', dashes:true,  len:130, section:'shared' },
+  relation:    { label:'Relation (governance)',   light:'#6a6a66', dark:'#a8a7a0', dashes:false, len:190, section:'governance', colorByModule:true },
+  closeMatch:  { label:'Closely matches (bridge)',light:'#8a4f7d', dark:'#b56ba6', dotted:true,  len:150, section:'governance' }
+};
+
+// ================= Core nodes / edges (original hand-authored model) =================
+const CORE_NODES = [
+  { id:'supplier', name:'Supplier', group:'process', desc:'Provides Inputs to the process (SIPOC).' },
+  { id:'inputs', name:'Inputs', group:'process', desc:'Resources supplied to the Process Action.' },
+  { id:'processAction', name:'Process Action', group:'process', desc:'The core activity (Process / Process Action) that turns Inputs into Outputs. Performed by Personas and Roles; creates/modifies Assets; guided by Rules and controlled by Compliance; the site where Issues occur.' },
+  { id:'outputs', name:'Outputs', group:'process', desc:'Result of the Process Action, provided to the Customer.' },
+  { id:'customer', name:'Customer', group:'process', desc:'Receives Outputs from the process (SIPOC).' },
+
+  { id:'rules', name:'Rules', group:'rules', desc:'Govern business operations by guiding and constraining Process Actions.' },
+  { id:'decisionLogic', name:'Decision Logic', group:'rules', desc:'Logic / Decision Logic — a subclass of Rules.' },
+  { id:'constraintRule', name:'Constraint Rule', group:'rules', desc:'Constraints / Constraint Rule — a subclass of Decision Logic.' },
+  { id:'computationRule', name:'Computation Rule', group:'rules', desc:'Calcs / Computation Rule — a subclass of Decision Logic.' },
+  { id:'compliance', name:'Compliance', group:'rules', desc:'Controls / Policies / Regulations — controls the Process Action.' },
+
+  { id:'party', name:'Party', group:'party', desc:'An entity that is assigned to a Persona.' },
+  { id:'person', name:'Person', group:'party', desc:'A subclass of Party.' },
+  { id:'persona', name:'Persona', group:'party', desc:'The modeled representation that performs the Process Action; bridges a real entity to its representation.' },
+  { id:'profileData', name:'Profile Data', group:'party', desc:'Profile / Profile Data — a subclass of Persona.' },
+  { id:'role', name:'Role', group:'party', desc:'Alongside Personas, Roles perform Process Actions.' },
+
+  { id:'assets', name:'Assets', group:'assets', desc:'Digital and Physical Assets created and modified by the Process Action.' },
+  { id:'preventDetectControls', name:'Preventative / Detective Controls', group:'assets', desc:'Artifacts — a subclass of Assets — that prevent or detect issues.' },
+  { id:'digitalAsset', name:'Digital Asset', group:'assets', desc:'A subclass of Assets created and modified by processes.' },
+  { id:'physicalAsset', name:'Physical Asset', group:'assets', desc:'A subclass of Assets created and modified by processes.' },
+
+  { id:'issues', name:'Issues', group:'issues', desc:'Tracked operationally; occur within a Process Action and generate Observations.' },
+  { id:'observations', name:'Observations', group:'issues', desc:'Generated when Issues occur in a Process.' },
+  { id:'problem', name:'Problem', group:'issues', desc:'A subclass of Issues.' },
+  { id:'defect', name:'Defect', group:'issues', desc:'Fixes / Defects — a subclass of Issues; Defects require Fixes.' },
+  { id:'requests', name:'Requests', group:'issues', desc:'Requests (Needs) — specific needs organized as a subclass of Issues.' },
+
+  { id:'requirement', name:'Requirement', group:'requirements', desc:'Requirements — the base concept for Needs and Features.' },
+  { id:'needs', name:'Needs', group:'requirements', desc:'A subclass of Requirement.' },
+  { id:'features', name:'Features', group:'requirements', desc:'A subclass of Requirement.' }
+];
+
+const CORE_EDGES = [
+  { from:'supplier', to:'inputs', label:'provides', type:'flow' },
+  { from:'inputs', to:'processAction', label:'provides', type:'flow' },
+  { from:'processAction', to:'outputs', label:'provides', type:'flow' },
+  { from:'outputs', to:'customer', label:'provides', type:'flow' },
+
+  { from:'rules', to:'processAction', label:'guides / constrains', type:'governance' },
+  { from:'compliance', to:'processAction', label:'controls', type:'governance' },
+
+  { from:'party', to:'persona', label:'assigned to', type:'actor' },
+  { from:'persona', to:'processAction', label:'performs', type:'actor' },
+  { from:'role', to:'processAction', label:'performs', type:'actor' },
+
+  { from:'processAction', to:'assets', label:'creates / modifies', type:'asset' },
+
+  { from:'issues', to:'processAction', label:'occurs in', type:'issue' },
+  { from:'issues', to:'observations', label:'generates', type:'issue' },
+
+  { from:'decisionLogic', to:'rules', label:'is-a', type:'subclass' },
+  { from:'constraintRule', to:'decisionLogic', label:'is-a', type:'subclass' },
+  { from:'computationRule', to:'decisionLogic', label:'is-a', type:'subclass' },
+  { from:'person', to:'party', label:'is-a', type:'subclass' },
+  { from:'profileData', to:'persona', label:'is-a', type:'subclass' },
+  { from:'preventDetectControls', to:'assets', label:'is-a', type:'subclass' },
+  { from:'digitalAsset', to:'assets', label:'is-a', type:'subclass' },
+  { from:'physicalAsset', to:'assets', label:'is-a', type:'subclass' },
+  { from:'problem', to:'issues', label:'is-a', type:'subclass' },
+  { from:'defect', to:'issues', label:'is-a', type:'subclass' },
+  { from:'requests', to:'issues', label:'is-a', type:'subclass' },
+  { from:'needs', to:'requirement', label:'is-a', type:'subclass' },
+  { from:'features', to:'requirement', label:'is-a', type:'subclass' }
+];
+
+// ================= Governance nodes / edges (derived from GOV_DATA) =================
+const GOV_NODES = GOV_DATA.classes.map(c=>{
+  let desc = c.comment && c.comment.length ? c.comment : c.label;
+  return {
+    id: c.id, name: c.label, group: c.module, desc: desc,
+    datatypeProps: c.datatypeProps || [], groundedIn: c.groundedIn || [], isEnum: !!c.isEnum
+  };
+});
+
+const GOV_EDGES = [];
+GOV_DATA.subClassEdges.forEach(e=> GOV_EDGES.push({ from:e.from, to:e.to, label:'is-a', type:'subclass' }));
+GOV_DATA.relationEdges.forEach(e=> GOV_EDGES.push({ from:e.from, to:e.to, label:e.label, type:'relation', module:e.module }));
+GOV_DATA.closeMatchEdges.forEach(e=> GOV_EDGES.push({ from:e.from, to:e.to, label:e.label, type:'closeMatch', module:'gov' }));
+
+// ================= Business object model nodes / edges (derived from MODEL_DATA) =================
+const MODEL_NODES = MODEL_DATA.classes.map(c=>{
+  let desc = c.comment && c.comment.length ? c.comment : c.label;
+  return {
+    id: c.id, name: c.label, group: c.module, desc: desc,
+    datatypeProps: c.datatypeProps || [], groundedIn: c.groundedIn || [], isEnum: !!c.isEnum
+  };
+});
+
+const MODEL_EDGES = [];
+MODEL_DATA.subClassEdges.forEach(e=> MODEL_EDGES.push({ from:e.from, to:e.to, label:'is-a', type:'subclass' }));
+MODEL_DATA.relationEdges.forEach(e=> MODEL_EDGES.push({ from:e.from, to:e.to, label:e.label, type:'relation', module:e.module }));
+
+const RAW_NODES = CORE_NODES.concat(GOV_NODES).concat(MODEL_NODES);
+const RAW_EDGES = CORE_EDGES.concat(GOV_EDGES).concat(MODEL_EDGES).map((e,i)=>({ ...e, id:'e'+i }));
+
+// ================= Layout constants =================
+const W = 1200, H = 800, CX = 600, CY = 400;
+const SVGNS = 'http://www.w3.org/2000/svg';
+
+const moduleNodeCount = {};
+RAW_NODES.forEach(n=>{ moduleNodeCount[n.group] = (moduleNodeCount[n.group]||0) + 1; });
+
+const CAT_ANCHOR = {};
+Object.keys(CORE_CATEGORIES).forEach((key, i)=>{
+  const angle = (-90 + i*60) * Math.PI/180;
+  CAT_ANCHOR[key] = { x: CX + Math.cos(angle)*260, y: CY + Math.sin(angle)*260 };
+});
+Object.entries(GOV_CATEGORIES).forEach(([key, cat])=>{
+  const count = moduleNodeCount[key] || 10;
+  const radius = 260 + 110 + Math.sqrt(count) * 16 * cat.radiusBoost;
+  const angle = cat.angle * Math.PI/180;
+  CAT_ANCHOR[key] = { x: CX + Math.cos(angle)*radius, y: CY + Math.sin(angle)*radius, spread: 30 + Math.sqrt(count)*9 };
+});
+Object.entries(MODEL_CATEGORIES).forEach(([key, cat])=>{
+  const count = moduleNodeCount[key] || 10;
+  // outer ring, well clear of the governance ring regardless of module size
+  const radius = 260 + 110 + 340 + Math.sqrt(count) * 16 * cat.radiusBoost;
+  const angle = cat.angle * Math.PI/180;
+  CAT_ANCHOR[key] = { x: CX + Math.cos(angle)*radius, y: CY + Math.sin(angle)*radius, spread: 30 + Math.sqrt(count)*9 };
+});
+
+function nodeExtent(shape){
+  switch(shape){
+    case 'rect': return { hw:66, hh:24, r:44 };
+    case 'diamond': return { hw:66, hh:34, r:46 };
+    case 'ellipse': return { hw:62, hh:26, r:42 };
+    case 'hex': return { hw:62, hh:28, r:42 };
+    case 'triangle': return { hw:26, hh:24, r:30 };
+    case 'star': return { hw:26, hh:24, r:30 };
+    default: return { hw:60, hh:26, r:40 };
+  }
+}
+
+// ================= Simulation state =================
+const nodes = RAW_NODES.map((n, i)=>{
+  const anchor = CAT_ANCHOR[n.group];
+  const jitterAngle = Math.random()*Math.PI*2;
+  const baseSpread = anchor.spread || 60;
+  const jitterR = baseSpread*0.4 + Math.random()*baseSpread;
+  return {
+    ...n,
+    x: anchor.x + Math.cos(jitterAngle)*jitterR,
+    y: anchor.y + Math.sin(jitterAngle)*jitterR,
+    vx: 0, vy: 0, fx: null, fy: null,
+    ext: nodeExtent(CATEGORIES[n.group].shape)
+  };
+});
+const nodeById = Object.fromEntries(nodes.map(n=>[n.id, n]));
+const edges = RAW_EDGES.map(e=>({ ...e }));
+
+let theme = 'light';
+const activeCategories = new Set(Object.keys(CORE_CATEGORIES)); // governance starts OFF
+const activeEdgeTypes = new Set(Object.keys(EDGE_TYPES));
+let searchTerm = '';
+
+// ================= SVG setup =================
+const svg = document.getElementById('graph');
+const viewport = document.getElementById('viewport');
+const edgesLayer = document.getElementById('edgesLayer');
+const nodesLayer = document.getElementById('nodesLayer');
+const markerDefs = document.getElementById('markerDefs');
+const tooltip = document.getElementById('tooltip');
+
+function el(tag, attrs){
+  const e = document.createElementNS(SVGNS, tag);
+  if(attrs) for(const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+
+function edgeColor(e){
+  if(e.type === 'relation' && e.module){
+    return theme==='dark' ? CATEGORIES[e.module].dark : CATEGORIES[e.module].light;
+  }
+  const t = EDGE_TYPES[e.type];
+  return theme==='dark' ? t.dark : t.light;
+}
+
+// Arrow markers: one per edge type, plus one per module (for relation edges colored by module)
+const markerEls = {};
+function makeMarker(id, dashy){
+  const marker = el('marker', {
+    id:'arrow-'+id, viewBox:'0 0 10 10', refX:'9', refY:'5',
+    markerWidth: dashy? 6:7, markerHeight: dashy? 6:7, orient:'auto-start-reverse'
+  });
+  const path = el('path', { d:'M0,0 L10,5 L0,10 z', fill:'#888' });
+  marker.appendChild(path);
+  markerDefs.appendChild(marker);
+  markerEls[id] = path;
+  return path;
+}
+Object.entries(EDGE_TYPES).forEach(([key, t])=>{ makeMarker(key, t.dashes||t.dotted); });
+Object.keys(GOV_CATEGORIES).forEach(key=>{ makeMarker('rel-'+key, false); });
+Object.keys(MODEL_CATEGORIES).forEach(key=>{ makeMarker('rel-'+key, false); });
+
+function markerIdFor(e){
+  if(e.type === 'relation' && e.module) return 'rel-'+e.module;
+  return e.type;
+}
+
+function shapeEl(node){
+  const cat = CATEGORIES[node.group];
+  const ext = node.ext;
+  let s;
+  if(cat.shape === 'rect'){
+    s = el('rect', { class:'shape', x:-ext.hw, y:-ext.hh, width:ext.hw*2, height:ext.hh*2, rx:9, ry:9 });
+  } else if(cat.shape === 'diamond'){
+    const p = [[0,-ext.hh],[ext.hw,0],[0,ext.hh],[-ext.hw,0]].map(pt=>pt.join(',')).join(' ');
+    s = el('polygon', { class:'shape', points:p });
+  } else if(cat.shape === 'ellipse'){
+    s = el('ellipse', { class:'shape', cx:0, cy:0, rx:ext.hw, ry:ext.hh });
+  } else if(cat.shape === 'hex'){
+    const hw=ext.hw, hh=ext.hh;
+    const p = [[-hw*0.5,-hh],[hw*0.5,-hh],[hw,0],[hw*0.5,hh],[-hw*0.5,hh],[-hw,0]].map(pt=>pt.join(',')).join(' ');
+    s = el('polygon', { class:'shape', points:p });
+  } else if(cat.shape === 'triangle'){
+    const r=ext.r;
+    const p = [[0,-r],[r*0.95,r*0.8],[-r*0.95,r*0.8]].map(pt=>pt.join(',')).join(' ');
+    s = el('polygon', { class:'shape', points:p });
+  } else if(cat.shape === 'star'){
+    const spikes=5, outerR=ext.r, innerR=ext.r*0.46;
+    let pts=[];
+    for(let i=0;i<spikes*2;i++){
+      const r = i%2===0 ? outerR : innerR;
+      const a = (-90 + i*(360/(spikes*2))) * Math.PI/180;
+      pts.push([Math.cos(a)*r, Math.sin(a)*r].join(','));
+    }
+    s = el('polygon', { class:'shape', points:pts.join(' ') });
+  }
+  return s;
+}
+
+function colorFor(catKeyOrType, table){
+  const t = table[catKeyOrType];
+  return theme === 'dark' ? t.dark : t.light;
+}
+
+// Build node groups
+const nodeGroups = {};
+nodes.forEach(node=>{
+  const cat = CATEGORIES[node.group];
+  const g = el('g', { class: node.isEnum ? 'node enumNode' : 'node', 'data-id': node.id });
+  const shape = shapeEl(node);
+  const c = colorFor(node.group, CATEGORIES);
+  shape.setAttribute('fill', c);
+  shape.setAttribute('stroke', theme==='dark' ? '#0d0d0d' : '#ffffff');
+  g.appendChild(shape);
+
+  const labelInside = ['rect','diamond','ellipse','hex'].includes(cat.shape);
+  if(labelInside){
+    const icon = el('text', { x:0, y:-4, 'text-anchor':'middle', 'font-size':13, fill:'#ffffff' });
+    icon.textContent = cat.icon;
+    const name = el('text', { x:0, y:13, 'text-anchor':'middle', 'font-size':11.5, 'font-weight':600, fill:'#ffffff' });
+    name.textContent = node.name;
+    g.appendChild(icon); g.appendChild(name);
+  } else {
+    const icon = el('text', { x:0, y:5, 'text-anchor':'middle', 'font-size':15, fill:'#ffffff' });
+    icon.textContent = cat.icon;
+    g.appendChild(icon);
+    const nameOutside = el('text', { x:0, y: node.ext.r + 16, 'text-anchor':'middle', 'font-size':11.5, 'font-weight':600 });
+    nameOutside.setAttribute('fill', theme==='dark' ? '#ffffff' : '#0b0b0b');
+    nameOutside.textContent = node.name;
+    nameOutside.setAttribute('class', 'outside-label');
+    g.appendChild(nameOutside);
+  }
+  nodesLayer.appendChild(g);
+  nodeGroups[node.id] = { g, shape };
+
+  g.addEventListener('mouseenter', (ev)=>{ showTooltip(node, ev); });
+  g.addEventListener('mousemove', (ev)=>{ moveTooltip(ev); });
+  g.addEventListener('mouseleave', ()=>{ hideTooltip(); });
+  g.addEventListener('pointerdown', (ev)=> startDrag(node, ev));
+  g.addEventListener('click', (ev)=>{ ev.stopPropagation(); if(!wasDragged) selectNode(node.id); });
+});
+
+// Build edge groups
+const edgeGroups = {};
+edges.forEach(e=>{
+  const t = EDGE_TYPES[e.type];
+  const g = el('g', { class:'edge', 'data-id': e.id });
+  const line = el('path', { class:'edge-line', stroke: edgeColor(e), 'stroke-width': (t.dashes||t.dotted)?1.5:2,
+    'marker-end':'url(#arrow-'+markerIdFor(e)+')' });
+  if(t.dashes) line.setAttribute('stroke-dasharray','5,4');
+  if(t.dotted) line.setAttribute('stroke-dasharray','1.5,3.5');
+  const hit = el('path', { class:'edge-hit' });
+  const labelBg = el('rect', { class:'edge-label-bg', rx:4, ry:4 });
+  const label = el('text', { class:'edge-label', 'text-anchor':'middle', 'font-size':9.5 });
+  label.textContent = e.label;
+  g.appendChild(line); g.appendChild(hit); g.appendChild(labelBg); g.appendChild(label);
+  edgesLayer.appendChild(g);
+  edgeGroups[e.id] = { g, line, hit, labelBg, label };
+});
+
+// ================= Render =================
+function trimPoint(from, to, ext){
+  const dx = to.x-from.x, dy = to.y-from.y;
+  const dist = Math.max(1, Math.hypot(dx,dy));
+  const ux = dx/dist, uy = dy/dist;
+  const rad = Math.max(ext.hh, Math.min(ext.hw, ext.hw*Math.abs(ux) + ext.hh*Math.abs(uy) + 6));
+  return { x: from.x + ux*rad, y: from.y + uy*rad };
+}
+
+function render(){
+  nodes.forEach(n=>{
+    if(n.hidden) return;
+    nodeGroups[n.id].g.setAttribute('transform', `translate(${n.x},${n.y})`);
+  });
+  edges.forEach(e=>{
+    if(e.hidden) return;
+    const a = nodeById[e.from], b = nodeById[e.to];
+    const p1 = trimPoint(a, b, a.ext);
+    const p2 = trimPoint(b, a, b.ext);
+    const eg = edgeGroups[e.id];
+    eg.line.setAttribute('d', `M${p1.x},${p1.y} L${p2.x},${p2.y}`);
+    eg.hit.setAttribute('d', `M${p1.x},${p1.y} L${p2.x},${p2.y}`);
+    const mx = (p1.x+p2.x)/2, my = (p1.y+p2.y)/2;
+    eg.label.setAttribute('x', mx);
+    eg.label.setAttribute('y', my-3);
+    requestBBoxUpdate(eg, mx, my);
+  });
+}
+
+let bboxQueue = [];
+function requestBBoxUpdate(eg, mx, my){
+  bboxQueue.push(()=>{
+    try{
+      const bb = eg.label.getBBox();
+      eg.labelBg.setAttribute('x', bb.x-3);
+      eg.labelBg.setAttribute('y', bb.y-1);
+      eg.labelBg.setAttribute('width', bb.width+6);
+      eg.labelBg.setAttribute('height', bb.height+2);
+    }catch(err){}
+  });
+}
+function flushBBoxQueue(){ bboxQueue.forEach(fn=>fn()); bboxQueue=[]; }
+
+// ================= Physics =================
+let running = false;
+let physicsPaused = false;
+let sleepCounter = 0;
+const REPEL_K = 30000;
+const SPRING_K = 0.02;
+const CENTER_K = 0.010;
+const DAMPING = 0.80;
+
+function step(){
+  const visibleNodes = nodes.filter(n=>!n.hidden);
+  for(let i=0;i<visibleNodes.length;i++){
+    for(let j=i+1;j<visibleNodes.length;j++){
+      const a = visibleNodes[i], b = visibleNodes[j];
+      let dx = a.x-b.x, dy = a.y-b.y;
+      let distSq = dx*dx+dy*dy;
+      if(distSq < 1) { dx = (Math.random()-0.5); dy=(Math.random()-0.5); distSq=1; }
+      const dist = Math.sqrt(distSq);
+      const minDist = 56;
+      const d = Math.max(dist, minDist);
+      const force = REPEL_K / (d*d);
+      const fx = (dx/dist)*force, fy = (dy/dist)*force;
+      if(a.fx===null){ a.vx += fx; a.vy += fy; }
+      if(b.fx===null){ b.vx -= fx; b.vy -= fy; }
+    }
+  }
+  edges.forEach(e=>{
+    if(e.hidden) return;
+    const a = nodeById[e.from], b = nodeById[e.to];
+    if(a.hidden || b.hidden) return;
+    const t = EDGE_TYPES[e.type];
+    const dx = b.x-a.x, dy = b.y-a.y;
+    const dist = Math.max(1, Math.hypot(dx,dy));
+    const diff = (dist - t.len) * SPRING_K;
+    const fx = (dx/dist)*diff, fy = (dy/dist)*diff;
+    if(a.fx===null){ a.vx += fx; a.vy += fy; }
+    if(b.fx===null){ b.vx -= fx; b.vy -= fy; }
+  });
+  let totalSpeed = 0;
+  visibleNodes.forEach(n=>{
+    const anchor = CAT_ANCHOR[n.group];
+    if(n.fx!==null){ n.x=n.fx; n.y=n.fy; n.vx=0; n.vy=0; return; }
+    n.vx += (anchor.x-n.x)*CENTER_K*0.06;
+    n.vy += (anchor.y-n.y)*CENTER_K*0.06;
+    n.vx *= DAMPING; n.vy *= DAMPING;
+    n.x += n.vx; n.y += n.vy;
+    totalSpeed += Math.abs(n.vx)+Math.abs(n.vy);
+  });
+  render();
+  flushBBoxQueue();
+
+  if(totalSpeed < visibleNodes.length*0.02){ sleepCounter++; } else { sleepCounter = 0; }
+  if(sleepCounter > 30){ running = false; return; }
+  requestAnimationFrame(step);
+}
+
+function wake(){
+  if(physicsPaused) return;
+  sleepCounter = 0;
+  if(!running){ running = true; requestAnimationFrame(step); }
+}
+
+// ================= Pan / Zoom =================
+let vpx=0, vpy=0, vps=1;
+function updateTransform(){
+  viewport.setAttribute('transform', `translate(${vpx},${vpy}) scale(${vps})`);
+}
+function screenToRoot(clientX, clientY){
+  const pt = svg.createSVGPoint();
+  pt.x = clientX; pt.y = clientY;
+  const ctm = svg.getScreenCTM();
+  return pt.matrixTransform(ctm.inverse());
+}
+
+let isPanning = false, panStart=null, panOrigin=null;
+svg.addEventListener('pointerdown', (ev)=>{
+  if(ev.target === svg || ev.target.id==='viewport'){
+    isPanning = true;
+    panStart = screenToRoot(ev.clientX, ev.clientY);
+    panOrigin = { x: vpx, y: vpy };
+    svg.classList.add('panning');
+    svg.setPointerCapture(ev.pointerId);
+  }
+});
+svg.addEventListener('pointermove', (ev)=>{
+  if(isPanning){
+    const p = screenToRoot(ev.clientX, ev.clientY);
+    vpx = panOrigin.x + (p.x - panStart.x);
+    vpy = panOrigin.y + (p.y - panStart.y);
+    updateTransform();
+  }
+});
+function endPan(ev){ if(isPanning){ isPanning=false; svg.classList.remove('panning'); } }
+svg.addEventListener('pointerup', endPan);
+svg.addEventListener('pointerleave', endPan);
+
+svg.addEventListener('wheel', (ev)=>{
+  ev.preventDefault();
+  const p = screenToRoot(ev.clientX, ev.clientY);
+  const logicalX = (p.x - vpx)/vps, logicalY = (p.y - vpy)/vps;
+  const factor = ev.deltaY < 0 ? 1.12 : 1/1.12;
+  vps = Math.min(4, Math.max(0.05, vps*factor));
+  vpx = p.x - logicalX*vps;
+  vpy = p.y - logicalY*vps;
+  updateTransform();
+}, { passive:false });
+
+document.getElementById('zoomIn').addEventListener('click', ()=> zoomButton(1.25));
+document.getElementById('zoomOut').addEventListener('click', ()=> zoomButton(0.8));
+function zoomButton(factor){
+  const logicalX = (600 - vpx)/vps, logicalY = (400 - vpy)/vps;
+  vps = Math.min(4, Math.max(0.05, vps*factor));
+  vpx = 600 - logicalX*vps;
+  vpy = 400 - logicalY*vps;
+  updateTransform();
+}
+
+document.getElementById('fitBtn').addEventListener('click', ()=> fitView());
+function fitView(){
+  const vis = nodes.filter(n=>!n.hidden);
+  if(!vis.length) return;
+  let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+  vis.forEach(n=>{
+    minX = Math.min(minX, n.x-n.ext.hw-20); maxX = Math.max(maxX, n.x+n.ext.hw+20);
+    minY = Math.min(minY, n.y-n.ext.hh-20); maxY = Math.max(maxY, n.y+n.ext.hh+20);
+  });
+  const bw = Math.max(60, maxX-minX), bh = Math.max(60, maxY-minY);
+  const scale = Math.min(4, Math.max(0.05, Math.min(W/bw, H/bh)));
+  vps = scale;
+  vpx = W/2 - ((minX+maxX)/2)*scale;
+  vpy = H/2 - ((minY+maxY)/2)*scale;
+  updateTransform();
+}
+
+// ================= Node dragging =================
+let dragTarget = null, wasDragged = false;
+function startDrag(node, ev){
+  ev.stopPropagation();
+  dragTarget = node;
+  wasDragged = false;
+  const p = screenToRoot(ev.clientX, ev.clientY);
+  const logical = { x:(p.x-vpx)/vps, y:(p.y-vpy)/vps };
+  dragTarget._grabDX = node.x - logical.x;
+  dragTarget._grabDY = node.y - logical.y;
+  window.addEventListener('pointermove', onDragMove);
+  window.addEventListener('pointerup', onDragEnd);
+}
+function onDragMove(ev){
+  if(!dragTarget) return;
+  wasDragged = true;
+  const p = screenToRoot(ev.clientX, ev.clientY);
+  const logical = { x:(p.x-vpx)/vps, y:(p.y-vpy)/vps };
+  dragTarget.fx = logical.x + dragTarget._grabDX;
+  dragTarget.fy = logical.y + dragTarget._grabDY;
+  dragTarget.x = dragTarget.fx; dragTarget.y = dragTarget.fy;
+  render(); flushBBoxQueue();
+  wake();
+}
+function onDragEnd(){
+  if(dragTarget){ dragTarget.fx = null; dragTarget.fy = null; }
+  dragTarget = null;
+  window.removeEventListener('pointermove', onDragMove);
+  window.removeEventListener('pointerup', onDragEnd);
+  wake();
+}
+
+// ================= Tooltip =================
+function showTooltip(node, ev){
+  const cat = CATEGORIES[node.group];
+  tooltip.innerHTML = `<div class="tt-mod">${cat.icon} ${cat.label}${node.isEnum ? ' · value' : ''}</div><b>${node.name}</b>${node.desc}`;
+  tooltip.style.display = 'block';
+  moveTooltip(ev);
+}
+function moveTooltip(ev){
+  tooltip.style.left = (ev.clientX+16)+'px';
+  tooltip.style.top = (ev.clientY+16)+'px';
+}
+function hideTooltip(){ tooltip.style.display='none'; }
+
+// ================= Recoloring (theme / filters) =================
+function applyVisualState(){
+  nodes.forEach(n=>{
+    const catOn = activeCategories.has(n.group);
+    n.hidden = !catOn;
+    const g = nodeGroups[n.id].g;
+    g.style.display = catOn ? '' : 'none';
+    if(!catOn) return;
+    const matches = !searchTerm || n.name.toLowerCase().includes(searchTerm) || n.desc.toLowerCase().includes(searchTerm);
+    const dim = searchTerm.length>0 && !matches;
+    const c = colorFor(n.group, CATEGORIES);
+    const shape = nodeGroups[n.id].shape;
+    shape.setAttribute('fill', dim ? hexToRgba(c,0.28) : c);
+    g.style.opacity = dim ? 0.55 : 1;
+  });
+  edges.forEach(e=>{
+    const typeOn = activeEdgeTypes.has(e.type);
+    const a = nodeById[e.from], b = nodeById[e.to];
+    const endpointsOn = activeCategories.has(a.group) && activeCategories.has(b.group);
+    e.hidden = !(typeOn && endpointsOn);
+    const eg = edgeGroups[e.id];
+    eg.g.style.display = e.hidden ? 'none' : '';
+    if(e.hidden) return;
+    const c = edgeColor(e);
+    eg.line.setAttribute('stroke', c);
+    eg.label.setAttribute('fill', theme==='dark' ? '#c3c2b7' : '#52514e');
+    eg.labelBg.setAttribute('fill', theme==='dark' ? '#1a1a19' : '#fcfcfb');
+  });
+  Object.entries(EDGE_TYPES).forEach(([key,t])=>{
+    if(markerEls[key]) markerEls[key].setAttribute('fill', colorFor(key, EDGE_TYPES));
+  });
+  Object.entries(GOV_CATEGORIES).forEach(([key,cat])=>{
+    const m = markerEls['rel-'+key];
+    if(m) m.setAttribute('fill', colorFor(key, CATEGORIES));
+  });
+  Object.entries(MODEL_CATEGORIES).forEach(([key,cat])=>{
+    const m = markerEls['rel-'+key];
+    if(m) m.setAttribute('fill', colorFor(key, CATEGORIES));
+  });
+  updateStatsBadge();
+  render();
+  flushBBoxQueue();
+  wake();
+}
+function hexToRgba(hex, alpha){
+  const h = hex.replace('#','');
+  const r = parseInt(h.substring(0,2),16), g = parseInt(h.substring(2,4),16), b = parseInt(h.substring(4,6),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+function updateStatsBadge(){
+  const visN = nodes.filter(n=>!n.hidden).length;
+  const visE = edges.filter(e=>!e.hidden).length;
+  document.getElementById('statsBadge').textContent = `${visN} of ${nodes.length} concepts · ${visE} of ${edges.length} relations shown`;
+}
+
+// ================= Toolbar: chips =================
+function buildCategoryChips(container, keys){
+  keys.forEach(key=>{
+    const cat = CATEGORIES[key];
+    const chip = document.createElement('label');
+    chip.className = 'chip' + (activeCategories.has(key) ? '' : ' off');
+    chip.innerHTML = `<span class="dot" style="background:${cat.light}"></span>${cat.icon} ${cat.label}<input type="checkbox" ${activeCategories.has(key)?'checked':''} data-cat="${key}">`;
+    chip.querySelector('input').addEventListener('change', (ev)=>{
+      if(ev.target.checked){ activeCategories.add(key); chip.classList.remove('off'); }
+      else { activeCategories.delete(key); chip.classList.add('off'); }
+      applyVisualState();
+    });
+    container.appendChild(chip);
+  });
+}
+buildCategoryChips(document.getElementById('categoryChipsCore'), Object.keys(CORE_CATEGORIES));
+buildCategoryChips(document.getElementById('categoryChipsGov'), Object.keys(GOV_CATEGORIES));
+buildCategoryChips(document.getElementById('categoryChipsModel'), Object.keys(MODEL_CATEGORIES));
+
+function buildEdgeChips(container, keys){
+  keys.forEach(key=>{
+    const t = EDGE_TYPES[key];
+    const chip = document.createElement('label');
+    chip.className = 'chip';
+    const marker = t.dashes ? `<span class="dash"></span>` : (t.dotted ? `<span class="dotted"></span>` : `<span class="dot" style="background:${t.light}"></span>`);
+    chip.innerHTML = `${marker}${t.label}<input type="checkbox" checked data-edge="${key}">`;
+    chip.querySelector('input').addEventListener('change', (ev)=>{
+      if(ev.target.checked){ activeEdgeTypes.add(key); chip.classList.remove('off'); }
+      else { activeEdgeTypes.delete(key); chip.classList.add('off'); }
+      applyVisualState();
+    });
+    container.appendChild(chip);
+  });
+}
+buildEdgeChips(document.getElementById('edgeChipsCore'), ['flow','governance','actor','asset','issue']);
+buildEdgeChips(document.getElementById('edgeChipsGov'), ['subclass','relation','closeMatch']);
+buildEdgeChips(document.getElementById('edgeChipsModel'), ['subclass','relation']);
+
+// ================= Governance / Model show/hide shortcuts =================
+function setCategoriesOn(categoryObj, containerId, on){
+  Object.keys(categoryObj).forEach(key=>{
+    if(on) activeCategories.add(key); else activeCategories.delete(key);
+  });
+  document.querySelectorAll('#'+containerId+' input').forEach(inp=>{
+    inp.checked = on;
+    inp.closest('.chip').classList.toggle('off', !on);
+  });
+  applyVisualState();
+  fitView();
+}
+document.getElementById('showGovBtn').addEventListener('click', ()=> setCategoriesOn(GOV_CATEGORIES, 'categoryChipsGov', true));
+document.getElementById('hideGovBtn').addEventListener('click', ()=> setCategoriesOn(GOV_CATEGORIES, 'categoryChipsGov', false));
+document.getElementById('showModelBtn').addEventListener('click', ()=> setCategoriesOn(MODEL_CATEGORIES, 'categoryChipsModel', true));
+document.getElementById('hideModelBtn').addEventListener('click', ()=> setCategoriesOn(MODEL_CATEGORIES, 'categoryChipsModel', false));
+
+// ================= Search =================
+document.getElementById('searchBox').addEventListener('input', (ev)=>{
+  searchTerm = ev.target.value.trim().toLowerCase();
+  if(searchTerm){
+    // auto-enable any category (core or governance) containing a match, so search always finds results
+    const matchCats = new Set(nodes.filter(n=> n.name.toLowerCase().includes(searchTerm) || n.desc.toLowerCase().includes(searchTerm)).map(n=>n.group));
+    let changed = false;
+    matchCats.forEach(cat=>{
+      if(!activeCategories.has(cat)){ activeCategories.add(cat); changed = true; }
+    });
+    if(changed){
+      document.querySelectorAll('#categoryChipsCore input, #categoryChipsGov input, #categoryChipsModel input').forEach(inp=>{
+        const key = inp.dataset.cat;
+        inp.checked = activeCategories.has(key);
+        inp.closest('.chip').classList.toggle('off', !activeCategories.has(key));
+      });
+    }
+  }
+  applyVisualState();
+  if(searchTerm){
+    const matchIds = nodes.filter(n=>!n.hidden && (n.name.toLowerCase().includes(searchTerm)||n.desc.toLowerCase().includes(searchTerm))).map(n=>n.id);
+    if(matchIds.length) fitViewTo(matchIds);
+  }
+});
+function fitViewTo(ids){
+  nodes.forEach(n=>{ n._tmpHidden = n.hidden; n.hidden = !ids.includes(n.id); });
+  fitView();
+  nodes.forEach(n=>{ n.hidden = n._tmpHidden; });
+}
+
+// ================= Reset =================
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  document.getElementById('searchBox').value = '';
+  searchTerm = '';
+  activeCategories.clear(); Object.keys(CORE_CATEGORIES).forEach(k=>activeCategories.add(k));
+  activeEdgeTypes.clear(); Object.keys(EDGE_TYPES).forEach(k=>activeEdgeTypes.add(k));
+  document.querySelectorAll('#categoryChipsCore input, #categoryChipsGov input, #categoryChipsModel input').forEach(inp=>{
+    const on = activeCategories.has(inp.dataset.cat);
+    inp.checked = on; inp.closest('.chip').classList.toggle('off', !on);
+  });
+  document.querySelectorAll('#edgeChipsCore input, #edgeChipsGov input, #edgeChipsModel input').forEach(inp=>{
+    inp.checked = true; inp.closest('.chip').classList.remove('off');
+  });
+  applyVisualState();
+  clearSelection();
+  fitView();
+  showLegend();
+});
+
+// ================= Physics toggle =================
+const physicsBtn = document.getElementById('physicsBtn');
+physicsBtn.addEventListener('click', ()=>{
+  physicsPaused = !physicsPaused;
+  physicsBtn.textContent = physicsPaused ? '▶ Resume layout' : '⏸ Freeze layout';
+  physicsBtn.classList.toggle('active', physicsPaused);
+  if(!physicsPaused) wake();
+});
+
+// ================= Theme =================
+const themeBtn = document.getElementById('themeBtn');
+themeBtn.addEventListener('click', ()=>{
+  theme = theme === 'light' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', theme);
+  themeBtn.textContent = theme === 'light' ? '🌙 Dark mode' : '☀️ Light mode';
+  nodes.forEach(n=>{
+    nodeGroups[n.id].shape.setAttribute('stroke', theme==='dark' ? '#0d0d0d' : '#ffffff');
+  });
+  applyVisualState();
+  const wasNode = infoPanel.dataset.mode === 'node';
+  const priorId = infoPanel.dataset.nodeId;
+  if(wasNode && priorId){
+    showNodeInfo(priorId);
+  } else {
+    renderLegend();
+  }
+});
+
+// ================= Info panel =================
+const infoPanel = document.getElementById('infoPanel');
+let selectedId = null;
+function clearSelection(){
+  if(selectedId) nodeGroups[selectedId].g.classList.remove('selected');
+  selectedId = null;
+}
+function selectNode(id){
+  clearSelection();
+  selectedId = id;
+  nodeGroups[id].g.classList.add('selected');
+  showNodeInfo(id);
+}
+function renderLegend(){
+  let html = '<h2>Legend — Core Concepts</h2>';
+  Object.entries(CORE_CATEGORIES).forEach(([key,cat])=>{
+    const c = theme==='dark' ? cat.dark : cat.light;
+    const count = moduleNodeCount[key]||0;
+    html += `<div class="legend-row">
+      <div class="legend-swatch" style="background:${c}">${cat.icon}</div>
+      <div class="legend-text"><b>${cat.label}</b><span>${cat.desc}</span><span class="legend-count">${count} concepts</span></div>
+    </div>`;
+  });
+  html += '<h3 class="section">Governance Overlay</h3>';
+  Object.entries(GOV_CATEGORIES).forEach(([key,cat])=>{
+    const c = theme==='dark' ? cat.dark : cat.light;
+    const count = moduleNodeCount[key]||0;
+    html += `<div class="legend-row">
+      <div class="legend-swatch" style="background:${c}">${cat.icon}</div>
+      <div class="legend-text"><b>${cat.label}</b><span>${cat.desc}</span><span class="legend-count">${count} concepts</span></div>
+    </div>`;
+  });
+  html += '<h3 class="section">Business Object Models</h3>';
+  Object.entries(MODEL_CATEGORIES).forEach(([key,cat])=>{
+    const c = theme==='dark' ? cat.dark : cat.light;
+    const count = moduleNodeCount[key]||0;
+    html += `<div class="legend-row">
+      <div class="legend-swatch" style="background:${c}">${cat.icon}</div>
+      <div class="legend-text"><b>${cat.label}</b><span>${cat.desc}</span><span class="legend-count">${count} concepts</span></div>
+    </div>`;
+  });
+  html += '<h3 class="section">Relations</h3>';
+  Object.entries(EDGE_TYPES).forEach(([key,t])=>{
+    const c = theme==='dark' ? t.dark : t.light;
+    const style = t.dashes ? ' dashed' : (t.dotted ? ' dotted' : '');
+    const note = t.colorByModule ? ' <span class="legend-count">(colored by source module)</span>' : '';
+    html += `<div class="legend-edge-row"><span class="legend-edge-line${style}" style="border-color:${c}"></span>${t.label}${note}</div>`;
+  });
+  html += `<p style="margin-top:16px;font-size:11.5px;color:var(--text-secondary);line-height:1.5;">
+    Governance modules start hidden — use the <b>+ Show governance</b> button or the Governance category
+    chips above to bring them in. Click any node for its full description, attributes and relations.
+    Drag nodes to reposition, drag the background to pan, scroll to zoom, and open the table view for a
+    plain-text list of every concept and relationship.
+  </p>`;
+  infoPanel.innerHTML = html;
+  infoPanel.dataset.mode = 'legend';
+}
+function showLegend(){ clearSelection(); renderLegend(); }
+
+function showNodeInfo(nodeId){
+  const n = nodeById[nodeId];
+  if(!n) return;
+  const cat = CATEGORIES[n.group];
+  const c = theme==='dark' ? cat.dark : cat.light;
+  const outgoing = edges.filter(e=>e.from===nodeId);
+  const incoming = edges.filter(e=>e.to===nodeId);
+  let html = `<button id="backToLegend">← Back to legend</button>
+    <div class="node-title"><span style="color:${c}">${cat.icon}</span> ${n.name}${n.isEnum ? ' <span class="legend-count">(value)</span>' : ''}</div>
+    <div class="node-cat" style="color:${c}">${cat.label}</div>
+    <div class="node-desc">${n.desc}</div>`;
+  if(n.datatypeProps && n.datatypeProps.length){
+    html += `<div class="node-extra"><b>Attributes</b><br>${n.datatypeProps.join('<br>')}</div>`;
+  }
+  if(n.groundedIn && n.groundedIn.length){
+    html += `<div class="node-extra"><b>Grounded in (external, not modeled here)</b><br>${n.groundedIn.join(', ')}</div>`;
+  }
+  if(outgoing.length){
+    html += '<div class="rel-heading">Outgoing relations</div>';
+    outgoing.forEach(e=>{
+      const t = nodeById[e.to];
+      html += `<div class="rel-item" data-jump="${e.to}"><span>${n.name} → ${t.name}</span><span class="rel-label">${e.label}</span></div>`;
+    });
+  }
+  if(incoming.length){
+    html += '<div class="rel-heading">Incoming relations</div>';
+    incoming.forEach(e=>{
+      const f = nodeById[e.from];
+      html += `<div class="rel-item" data-jump="${e.from}"><span>${f.name} → ${n.name}</span><span class="rel-label">${e.label}</span></div>`;
+    });
+  }
+  infoPanel.innerHTML = html;
+  infoPanel.dataset.mode = 'node';
+  infoPanel.dataset.nodeId = nodeId;
+  document.getElementById('backToLegend').addEventListener('click', showLegend);
+  infoPanel.querySelectorAll('.rel-item').forEach(item=>{
+    item.addEventListener('click', ()=>{
+      const id = item.dataset.jump;
+      const targetCat = nodeById[id].group;
+      if(!activeCategories.has(targetCat)){
+        activeCategories.add(targetCat);
+        const inp = document.querySelector(`input[data-cat="${targetCat}"]`);
+        if(inp){ inp.checked = true; inp.closest('.chip').classList.remove('off'); }
+        applyVisualState();
+      }
+      selectNode(id);
+      fitViewTo([id, nodeId]);
+    });
+  });
+}
+svg.addEventListener('click', (ev)=>{
+  if(ev.target === svg || ev.target.id === 'viewport' || ev.target.id==='edgesLayer' || ev.target.id==='nodesLayer'){
+    showLegend();
+  }
+});
+renderLegend();
+
+// ================= Table view =================
+const nodesTableBody = document.querySelector('#nodesTable tbody');
+RAW_NODES.slice().sort((a,b)=> CATEGORIES[a.group].label.localeCompare(CATEGORIES[b.group].label) || a.name.localeCompare(b.name)).forEach(n=>{
+  const cat = CATEGORIES[n.group];
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${cat.icon} ${n.name}</td>
+    <td><span class="catpill"><span class="dot" style="background:${cat.light}"></span>${cat.label}</span></td>
+    <td>${n.desc}</td>`;
+  nodesTableBody.appendChild(tr);
+});
+const edgesTableBody = document.querySelector('#edgesTable tbody');
+RAW_EDGES.forEach(e=>{
+  const t = EDGE_TYPES[e.type];
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${nodeById[e.from].name}</td><td><em>${e.label}</em></td><td>${nodeById[e.to].name}</td>
+    <td><span class="catpill"><span class="dot" style="background:${t.light}"></span>${t.label}</span></td>`;
+  edgesTableBody.appendChild(tr);
+});
+const tableWrap = document.getElementById('tableWrap');
+document.getElementById('tableBtn').addEventListener('click', ()=> tableWrap.classList.add('open'));
+document.getElementById('closeModal').addEventListener('click', ()=> tableWrap.classList.remove('open'));
+tableWrap.addEventListener('click', (ev)=>{ if(ev.target===tableWrap) tableWrap.classList.remove('open'); });
+
+// ================= Boot =================
+document.querySelectorAll('#categoryChipsGov input, #categoryChipsModel input').forEach(inp=>{ inp.closest('.chip').classList.add('off'); });
+applyVisualState();
+render();
+flushBBoxQueue();
+wake();
+setTimeout(()=>{ fitView(); }, 500);
+
+})();
+</script>
+</body>
+</html>
