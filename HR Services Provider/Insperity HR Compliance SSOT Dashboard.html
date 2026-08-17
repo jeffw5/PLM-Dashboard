@@ -1,0 +1,1754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Insperity HR Compliance SSOT — Prototype</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --navy:#1F3A5F; --navy-bg:#EAF2FB;
+    --gold:#B8860B; --gold-bg:#FBF3E3;
+    --green:#2E7D4F; --green-bg:#E8F5EC;
+    --orange:#C0622D; --orange-bg:#FBEFE9;
+    --red:#B03A2E; --red-bg:#FBEAEA;
+    --gray:#6B7280; --gray-bg:#F2F4F7;
+    --purple:#6B4FA0; --purple-bg:#F1ECFA;
+    --border:#E2E5EA; --bg:#F7F8FA; --card:#FFFFFF; --text:#1F2937; --muted:#6B7280;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:14px;}
+  .app{display:flex;min-height:100vh;}
+  /* Sidebar */
+  .sidebar{width:230px;flex-shrink:0;background:var(--navy);color:#fff;padding:20px 0;position:fixed;top:0;bottom:0;left:0;overflow-y:auto;}
+  .sidebar h1{font-size:15px;font-weight:700;padding:0 20px 4px;margin:0;}
+  .sidebar .sub{font-size:11px;color:#A9BEDA;padding:0 20px 18px;border-bottom:1px solid rgba(255,255,255,0.15);margin-bottom:10px;}
+  .navitem{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;color:#D6E1F0;font-size:13px;border-left:3px solid transparent;}
+  .navitem:hover{background:rgba(255,255,255,0.06);color:#fff;}
+  .navitem.active{background:rgba(255,255,255,0.12);color:#fff;border-left:3px solid var(--gold);font-weight:600;}
+  .navicon{width:16px;text-align:center;opacity:0.85;}
+  .sidebar-foot{position:absolute;bottom:0;left:0;right:0;padding:14px 20px;font-size:10.5px;color:#8CA3C4;border-top:1px solid rgba(255,255,255,0.12);}
+  /* Main */
+  .main{margin-left:230px;flex:1;padding:26px 32px 60px;max-width:1400px;}
+  .topbar{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:22px;}
+  .topbar h2{margin:0;font-size:22px;color:var(--navy);}
+  .topbar p{margin:4px 0 0;color:var(--muted);font-size:13px;}
+  .section{display:none;}
+  .section.active{display:block;}
+  /* Cards */
+  .cards-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:24px;}
+  .metric-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;}
+  .metric-card .val{font-size:26px;font-weight:700;color:var(--navy);}
+  .metric-card .lbl{font-size:12px;color:var(--muted);margin-top:2px;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:20px;}
+  .card h3{margin:0 0 12px;font-size:15px;color:var(--navy);}
+  .card h4{margin:18px 0 8px;font-size:13px;color:var(--navy);}
+  /* Badges */
+  .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap;}
+  .b-constraint{background:var(--navy-bg);color:#2E5C8A;}
+  .b-rule{background:var(--gold-bg);color:var(--gold);}
+  .b-logic{background:var(--green-bg);color:var(--green);}
+  .b-draft{background:var(--gray-bg);color:var(--gray);}
+  .b-candidate{background:var(--gold-bg);color:var(--gold);}
+  .b-released{background:var(--navy);color:#fff;}
+  .b-deprecated{background:var(--orange-bg);color:var(--orange);}
+  .b-retired{background:var(--red-bg);color:var(--red);}
+  .ci-pass{color:var(--green);font-weight:700;}
+  .ci-fail{color:var(--red);font-weight:700;}
+  .ci-na{color:#B7BEC7;}
+  .sev-MAJOR{background:var(--red-bg);color:var(--red);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;}
+  .sev-MINOR{background:var(--gold-bg);color:var(--gold);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;}
+  .sev-PATCH{background:var(--gray-bg);color:var(--gray);padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;}
+  .b-math{background:var(--navy-bg);color:#2E5C8A;}
+  .b-structural{background:var(--navy);color:#fff;}
+  .b-temporal{background:var(--gray-bg);color:var(--gray);}
+  .b-association{background:var(--green-bg);color:var(--green);}
+  .b-endorsed{background:var(--green-bg);color:var(--green);}
+  .b-warned{background:var(--gold-bg);color:var(--gold);}
+  .b-deprecatedcert{background:var(--red-bg);color:var(--red);}
+  .b-svc-benefits{background:var(--navy-bg);color:#2E5C8A;}
+  .b-svc-payrolltax{background:var(--gold-bg);color:var(--gold);}
+  .b-svc-compliancerisk{background:var(--orange-bg);color:var(--orange);}
+  .b-svc-talent{background:var(--green-bg);color:var(--green);}
+  .b-svc-hrtech{background:var(--purple-bg);color:var(--purple);}
+  /* Service Domains */
+  .svc-block{margin-bottom:30px;}
+  .svc-block h3{margin:0 0 4px;font-size:15.5px;color:var(--navy);}
+  .svc-block .svc-desc{color:var(--muted);font-size:12.5px;margin:0 0 12px;}
+  .svc-phase-table td{font-size:12px;}
+  .svc-phase-table td.phase-cell{font-weight:700;color:var(--navy);white-space:nowrap;}
+  .svc-linked{margin-top:10px;}
+  .peo-standards-table td{font-size:12.3px;}
+  .codebox{background:#0F2A44;color:#CFE3FF;font-family:"SF Mono",Consolas,Monaco,monospace;font-size:12.5px;padding:10px 12px;border-radius:8px;margin:8px 0;overflow-x:auto;white-space:pre;}
+  .alation-id{font-family:"SF Mono",Consolas,Monaco,monospace;font-size:11.5px;color:var(--muted);background:var(--gray-bg);padding:2px 7px;border-radius:5px;}
+  .lineage-row td{vertical-align:middle;}
+  .clickable-term{color:var(--navy);font-weight:600;cursor:pointer;text-decoration:underline dotted;}
+  .clickable-term:hover{color:var(--gold);}
+  .used-in-list{font-size:12px;color:var(--muted);margin-top:10px;}
+  .used-in-list a{color:var(--navy);cursor:pointer;text-decoration:underline dotted;}
+  /* Explorer layout */
+  .explorer-grid{display:grid;grid-template-columns:250px 1fr;gap:18px;align-items:start;}
+  .tree{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px;}
+  .tree-node{padding:7px 10px;border-radius:6px;cursor:pointer;font-size:13px;display:flex;justify-content:space-between;align-items:center;}
+  .tree-node:hover{background:var(--gray-bg);}
+  .tree-node.active{background:var(--navy-bg);color:var(--navy);font-weight:700;}
+  .tree-sub{padding-left:20px;}
+  .tree-count{font-size:10.5px;color:var(--muted);background:var(--gray-bg);border-radius:10px;padding:1px 7px;}
+  .filter-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+  .chip{border:1px solid var(--border);background:#fff;padding:5px 12px;border-radius:20px;font-size:12px;cursor:pointer;color:var(--muted);}
+  .chip.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .artifact-list{display:flex;flex-direction:column;gap:8px;}
+  .artifact-item{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px 14px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+  .artifact-item:hover{border-color:var(--navy);}
+  .artifact-item .left strong{font-size:13.5px;}
+  .artifact-item .meta{font-size:11.5px;color:var(--muted);margin-top:2px;}
+  .artifact-item .right{display:flex;gap:6px;align-items:center;flex-shrink:0;}
+  /* Table */
+  table{width:100%;border-collapse:collapse;font-size:12.8px;}
+  th{background:var(--navy);color:#fff;text-align:left;padding:9px 12px;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;}
+  td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
+  tr:nth-child(even) td{background:#FAFBFC;}
+  .ci-row{cursor:pointer;}
+  .ci-row:hover td{background:var(--navy-bg)!important;}
+  /* Stepper */
+  .stepper{display:flex;justify-content:space-between;margin:20px 0 26px;position:relative;}
+  .stepper:before{content:"";position:absolute;top:17px;left:5%;right:5%;height:2px;background:var(--border);z-index:0;}
+  .step{flex:1;text-align:center;position:relative;z-index:1;}
+  .step .dot{width:34px;height:34px;border-radius:50%;background:#fff;border:2px solid var(--border);color:var(--muted);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-weight:700;font-size:13px;}
+  .step.done .dot{background:var(--navy);border-color:var(--navy);color:#fff;}
+  .step.current .dot{background:var(--gold);border-color:var(--gold);color:#fff;box-shadow:0 0 0 4px var(--gold-bg);}
+  .step .label{font-size:12px;font-weight:600;color:var(--text);}
+  .gov-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:16px;}
+  .gov-cell{background:var(--gray-bg);border-radius:8px;padding:12px;font-size:11.5px;color:var(--text);}
+  .gov-cell strong{display:block;color:var(--navy);font-size:12px;margin-bottom:4px;}
+  .timeline{border-left:2px solid var(--border);margin-left:8px;padding-left:18px;}
+  .tl-item{position:relative;padding-bottom:16px;}
+  .tl-item:before{content:"";position:absolute;left:-23px;top:3px;width:9px;height:9px;border-radius:50%;background:var(--navy);}
+  .tl-item .tdate{font-size:11px;color:var(--muted);}
+  .tl-item .tevent{font-size:13px;font-weight:600;}
+  .tl-item .tactor{font-size:11.5px;color:var(--muted);}
+  /* select / controls */
+  select, input[type=text]{padding:7px 10px;border-radius:6px;border:1px solid var(--border);font-size:13px;background:#fff;color:var(--text);}
+  .controls{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
+  .subtabs{display:flex;gap:6px;margin-bottom:16px;}
+  .subtab{padding:7px 16px;border-radius:8px 8px 0 0;background:var(--gray-bg);color:var(--muted);cursor:pointer;font-size:13px;font-weight:600;border:1px solid var(--border);border-bottom:none;}
+  .subtab.active{background:#fff;color:var(--navy);}
+  .subpanel{display:none;}
+  .subpanel.active{display:block;}
+  /* mapping viz */
+  .map-flow{display:flex;align-items:center;gap:16px;padding:20px;background:var(--gray-bg);border-radius:10px;margin-bottom:16px;flex-wrap:wrap;}
+  .map-box{background:#fff;border:2px solid var(--gold);border-radius:8px;padding:10px 16px;font-size:13px;font-weight:600;}
+  .map-box.core{border-color:var(--navy);background:var(--navy);color:#fff;}
+  .map-rel{font-size:12px;color:var(--muted);text-align:center;}
+  .map-rel .arrow{font-size:20px;color:var(--gray);}
+  /* bars */
+  .barchart{display:flex;align-items:flex-end;gap:14px;height:210px;padding:10px 6px 0;}
+  .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;}
+  .bar{width:100%;border-radius:6px 6px 0 0;background:var(--navy);position:relative;}
+  .bar-val{font-size:11px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+  .bar-lbl{font-size:11px;color:var(--muted);margin-top:6px;text-align:center;line-height:1.3;max-width:80px;}
+  .diff-added{background:var(--green-bg);}
+  .diff-removed{background:var(--red-bg);text-decoration:line-through;color:#8a4a44;}
+  .diff-modified{background:var(--gold-bg);}
+  .banner{padding:12px 16px;border-radius:8px;font-size:13px;margin-bottom:16px;display:flex;gap:10px;align-items:center;}
+  .banner.ok{background:var(--green-bg);color:var(--green);border:1px solid #BFE3CC;}
+  .banner.warn{background:var(--red-bg);color:var(--red);border:1px solid #F0C6C1;}
+  .legend-row{display:flex;gap:18px;flex-wrap:wrap;margin-top:8px;}
+  .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);}
+  .swatch{width:11px;height:11px;border-radius:3px;display:inline-block;}
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);z-index:50;align-items:center;justify-content:center;}
+  .modal-overlay.active{display:flex;}
+  .modal{background:#fff;border-radius:12px;width:560px;max-width:92vw;max-height:86vh;overflow-y:auto;padding:24px;}
+  .modal h3{margin:0 0 4px;color:var(--navy);}
+  .modal .close{float:right;cursor:pointer;color:var(--muted);font-size:18px;}
+  .kv{display:grid;grid-template-columns:120px 1fr;gap:6px 10px;font-size:12.8px;margin:14px 0;}
+  .kv .k{color:var(--muted);}
+  .linkbtn{display:inline-block;margin-top:4px;margin-right:8px;padding:6px 12px;border-radius:6px;background:var(--navy);color:#fff;font-size:12px;cursor:pointer;border:none;}
+  .linkbtn.secondary{background:#fff;color:var(--navy);border:1px solid var(--navy);}
+  .search-box{flex:1;min-width:180px;}
+  /* Dependency map */
+  .depmap-grid{display:grid;grid-template-columns:230px 1fr;gap:18px;align-items:start;}
+  .depmap-panel{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;}
+  .depmap-panel h4{margin:0 0 8px;font-size:12.5px;color:var(--navy);text-transform:uppercase;letter-spacing:.03em;}
+  .depmap-check{display:flex;align-items:center;gap:7px;font-size:12.5px;padding:4px 0;cursor:pointer;}
+  .depmap-check input{cursor:pointer;}
+  .legend-swatch{width:22px;height:3px;display:inline-block;border-radius:2px;}
+  .depmap-canvas-wrap{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px;overflow:auto;}
+  .depmap-node-label{font-size:10.5px;fill:#1F2937;font-family:-apple-system,Helvetica,Arial,sans-serif;pointer-events:none;}
+  .depmap-node-sublabel{font-size:8.5px;fill:#8b93a1;font-family:-apple-system,Helvetica,Arial,sans-serif;pointer-events:none;}
+  .depmap-node{cursor:pointer;stroke-width:1.5;}
+  .depmap-node.dim{opacity:.18;}
+  .depmap-edge{fill:none;stroke-width:1.6;opacity:.65;}
+  .depmap-edge.dim{opacity:.07;}
+  .depmap-edge.hi{opacity:1;stroke-width:2.6;}
+  .depmap-sel-box{margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;}
+  .depmap-sel-box .k{color:var(--muted);}
+  /* SKOS */
+  .skos-grid{display:grid;grid-template-columns:300px 1fr;gap:18px;align-items:start;}
+  .skos-tree{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px;max-height:640px;overflow-y:auto;}
+  .skos-scheme-title{font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.04em;padding:8px 8px 4px;}
+  .skos-node{padding:6px 8px;border-radius:6px;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:6px;}
+  .skos-node:hover{background:var(--gray-bg);}
+  .skos-node.active{background:var(--navy-bg);color:var(--navy);font-weight:700;}
+  .skos-node .notation{font-size:9.5px;color:#B7BEC7;font-family:monospace;}
+  .skos-children{padding-left:16px;border-left:1px dashed var(--border);margin-left:9px;}
+  .skos-detail{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:22px;}
+  .skos-prop{display:grid;grid-template-columns:150px 1fr;gap:8px 12px;font-size:13px;padding:9px 0;border-bottom:1px solid #F1F2F4;}
+  .skos-prop .p{color:var(--gold);font-family:monospace;font-size:11.5px;font-weight:700;}
+  .skos-prop .v a{color:var(--navy);cursor:pointer;text-decoration:underline dotted;margin-right:8px;}
+  .skos-chip{display:inline-block;background:var(--gray-bg);color:var(--text);border-radius:5px;padding:1px 7px;font-size:11px;margin-right:5px;}
+  /* Testing detail */
+  .test-case-row td{font-size:12px;}
+  .lint-item{padding:8px 10px;border-radius:7px;margin-bottom:6px;font-size:12.5px;}
+  .lint-item.pass{background:var(--green-bg);}
+  .lint-item.fail{background:var(--red-bg);}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="sidebar">
+    <h1>Insperity HR Compliance SSOT</h1>
+    <div class="sub">Multi-jurisdiction pipeline — synthetic data</div>
+    <div class="navitem active" data-section="overview"><span class="navicon">&#9673;</span> Overview</div>
+    <div class="navitem" data-section="svcdomains"><span class="navicon">&#9873;</span> Service Domains</div>
+    <div class="navitem" data-section="explorer"><span class="navicon">&#9776;</span> Explorer</div>
+    <div class="navitem" data-section="depmap"><span class="navicon">&#9737;</span> Dependency Map</div>
+    <div class="navitem" data-section="lifecycle"><span class="navicon">&#8635;</span> Lifecycle &amp; Governance</div>
+    <div class="navitem" data-section="diffmap"><span class="navicon">&#8646;</span> Diff &amp; Mapping</div>
+    <div class="navitem" data-section="testing"><span class="navicon">&#10003;</span> Testing &amp; Measures</div>
+    <div class="navitem" data-section="skos"><span class="navicon">&#10022;</span> SKOS Vocabulary</div>
+    <div class="navitem" data-section="components"><span class="navicon">&#9638;</span> Components</div>
+    <div class="sidebar-foot">Illustrates a Single Source of Truth architecture for multi-jurisdiction HR compliance (federal, state &amp; local). All data below is synthetic, for demonstration purposes only.</div>
+  </div>
+
+  <div class="main">
+
+    <!-- OVERVIEW -->
+    <div class="section active" id="sec-overview">
+      <div class="topbar"><div><h2>Overview</h2><p>Enterprise-wide view across Federal (Core) and every state / local jurisdiction.</p></div></div>
+      <div class="cards-row" id="ov-cards"></div>
+      <div class="card">
+        <h3>Logic classification legend</h3>
+        <p style="color:var(--muted);font-size:12.5px;margin-top:-4px;">Every artifact below is routed to the tool built for its paradigm — mixing these is the #1 driver of legacy bloat.</p>
+        <div class="legend-row">
+          <div class="legend-item"><span class="swatch" style="background:#2E5C8A"></span> Constraints — schemas / ontology (structural)</div>
+          <div class="legend-item"><span class="swatch" style="background:var(--gold)"></span> Business Rules — DMN decision tables (policy)</div>
+          <div class="legend-item"><span class="swatch" style="background:var(--green)"></span> Computational Logic — code, not SME-editable</div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Recent activity</h3>
+        <div class="timeline" id="ov-activity"></div>
+      </div>
+    </div>
+
+    <!-- SERVICE DOMAINS -->
+    <div class="section" id="sec-svcdomains">
+      <div class="topbar"><div><h2>Service Domains</h2><p>Insperity's five PEO service domains, each walked through the Discover → Define → Design → Develop → Deliver → Run capability lifecycle, plus the accreditation layer every domain operates under.</p></div></div>
+      <div class="card">
+        <h3>PEO-specific operational &amp; technical standards</h3>
+        <p style="color:var(--muted);font-size:12.5px;margin-top:-4px;">Cross-cutting accreditation and audit obligations that sit above every service domain below.</p>
+        <table class="peo-standards-table" id="peo-standards-table"><thead><tr><th>Standard / Framework</th><th>Regulatory Body / Sponsor</th><th>Core Operational Purpose</th></tr></thead><tbody></tbody></table>
+      </div>
+      <div id="svc-domain-blocks"></div>
+    </div>
+
+    <!-- EXPLORER -->
+    <div class="section" id="sec-explorer">
+      <div class="topbar"><div><h2>Explorer</h2><p>Browse constraints, rules, and logic across Federal, state, and local jurisdictions — down to the concepts, relations, and calculations each one is built from.</p></div></div>
+      <div class="subtabs">
+        <div class="subtab active" data-sub="exp-artifacts">Artifacts</div>
+        <div class="subtab" data-sub="exp-vocab">Vocabulary (Concepts)</div>
+        <div class="subtab" data-sub="exp-relations">Upper Ontology (Relations)</div>
+        <div class="subtab" data-sub="exp-calc">Calc Library (Alation)</div>
+      </div>
+
+      <div class="subpanel active" id="sub-exp-artifacts">
+        <div class="explorer-grid">
+          <div class="tree" id="exp-tree"></div>
+          <div>
+            <div class="filter-row" id="exp-cat-filter"></div>
+            <div class="filter-row" id="exp-svc-filter"></div>
+            <div class="controls">
+              <select id="exp-lifecycle-filter">
+                <option value="">All lifecycle stages</option>
+                <option>Draft</option><option>Candidate</option><option>Released</option><option>Deprecated</option><option>Retired</option>
+              </select>
+              <input type="text" id="exp-search" class="search-box" placeholder="Search by name…">
+            </div>
+            <div class="artifact-list" id="exp-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subpanel" id="sub-exp-vocab">
+        <div class="card">
+          <h3>Domain vocabulary <span style="font-weight:400;color:var(--muted);font-size:12px;">— subjects &amp; objects used across constraints, rules, and logic</span></h3>
+          <div class="filter-row" id="vocab-kind-filter"></div>
+          <table id="vocab-table"><thead><tr><th>Term</th><th>Kind</th><th>Namespace</th><th>Definition</th><th>Value constraint</th><th>Maps to Core</th></tr></thead><tbody></tbody></table>
+        </div>
+      </div>
+
+      <div class="subpanel" id="sub-exp-relations">
+        <div class="card">
+          <h3>Upper ontology relations <span style="font-weight:400;color:var(--muted);font-size:12px;">— predicates every rule/constraint's subject-predicate-object triples draw from</span></h3>
+          <div class="filter-row" id="rel-type-filter"></div>
+          <table id="rel-table"><thead><tr><th>Relation</th><th>Symbol</th><th>Type</th><th>Definition</th></tr></thead><tbody></tbody></table>
+        </div>
+      </div>
+
+      <div class="subpanel" id="sub-exp-calc">
+        <div class="card">
+          <h3>Calculation library <span style="font-weight:400;color:var(--muted);font-size:12px;">— governed in Alation; rules reference these instead of embedding formulas inline</span></h3>
+          <div class="filter-row" id="calc-cert-filter"></div>
+          <table id="calc-table"><thead><tr><th>Calculation</th><th>Formula</th><th>Version</th><th>Owner</th><th>Certification</th><th>Alation ID</th></tr></thead><tbody></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEPENDENCY MAP -->
+    <div class="section" id="sec-depmap">
+      <div class="topbar"><div><h2>Dependency Map</h2><p>Directional, color-coded causal relationships between constraints, rules, and logic across Federal and every jurisdiction.</p></div></div>
+      <div class="depmap-grid">
+        <div>
+          <div class="depmap-panel">
+            <h4>Node type</h4>
+            <div id="dm-type-filter"></div>
+          </div>
+          <div class="depmap-panel" style="margin-top:14px;">
+            <h4>Domain</h4>
+            <div id="dm-domain-filter"></div>
+          </div>
+          <div class="depmap-panel" style="margin-top:14px;">
+            <h4>Relation legend</h4>
+            <div id="dm-legend"></div>
+          </div>
+          <div class="depmap-panel" style="margin-top:14px;">
+            <h4>Selected node</h4>
+            <div class="depmap-sel-box" id="dm-selection">Click any node to see its upstream and downstream dependencies.</div>
+          </div>
+        </div>
+        <div class="depmap-canvas-wrap">
+          <svg id="dm-svg" width="900" height="720" viewBox="0 0 900 720"></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIFECYCLE -->
+    <div class="section" id="sec-lifecycle">
+      <div class="topbar"><div><h2>Lifecycle &amp; Governance</h2><p>Draft → Candidate → Released → Deprecated → Retired, gated by CI and CODEOWNERS review at each step.</p></div></div>
+      <div class="card">
+        <div class="controls"><label style="font-size:13px;color:var(--muted);">Artifact:</label>
+          <select id="lc-select"></select>
+        </div>
+        <div class="stepper" id="lc-stepper"></div>
+        <div class="gov-grid" id="lc-gov"></div>
+      </div>
+      <div class="card">
+        <h3>Audit trail</h3>
+        <div class="timeline" id="lc-history"></div>
+      </div>
+    </div>
+
+    <!-- DIFF & MAPPING -->
+    <div class="section" id="sec-diffmap">
+      <div class="topbar"><div><h2>Diff &amp; Mapping</h2><p>Automated severity classification on every spec change, and the SKOS bridge that relates domain terms back to Core.</p></div></div>
+      <div class="subtabs">
+        <div class="subtab active" data-sub="diff">Diff Viewer</div>
+        <div class="subtab" data-sub="mapping">Mapping Viewer</div>
+      </div>
+      <div class="subpanel active" id="sub-diff">
+        <div class="card">
+          <div class="controls"><label style="font-size:13px;color:var(--muted);">Artifact:</label>
+            <select id="diff-select"></select>
+          </div>
+          <div id="diff-banner"></div>
+          <table id="diff-table"><thead><tr><th>Field</th><th>Before</th><th>After</th><th>Change</th><th>Severity</th></tr></thead><tbody></tbody></table>
+        </div>
+      </div>
+      <div class="subpanel" id="sub-mapping">
+        <div class="card">
+          <div class="controls"><label style="font-size:13px;color:var(--muted);">Domain term:</label>
+            <select id="map-select"></select>
+          </div>
+          <div class="map-flow" id="map-flow"></div>
+          <div class="kv" id="map-provenance"></div>
+        </div>
+        <div class="card">
+          <h3>Published mapping registry <span style="font-weight:400;color:var(--muted);font-size:12px;">— searchable, prevents duplicate concepts across domains</span></h3>
+          <table id="map-registry"><thead><tr><th>Domain term</th><th>Relation</th><th>Core term</th><th>Owner</th><th>Review status</th></tr></thead><tbody></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TESTING & MEASURES -->
+    <div class="section" id="sec-testing">
+      <div class="topbar"><div><h2>Testing &amp; Measures</h2><p>CI results per artifact, plus rollup metrics on governance health.</p></div></div>
+      <div class="cards-row" id="tm-cards"></div>
+      <div class="card">
+        <h3>Artifacts by lifecycle stage</h3>
+        <div class="barchart" id="tm-chart-stage"></div>
+      </div>
+      <div class="card">
+        <h3>Artifacts by domain</h3>
+        <div class="barchart" id="tm-chart-domain"></div>
+      </div>
+      <div class="card">
+        <h3>CI checks by artifact</h3>
+        <div class="controls">
+          <select id="tm-filter">
+            <option value="">All namespaces</option>
+          </select>
+        </div>
+        <table id="tm-table"><thead><tr><th>Artifact</th><th>Namespace</th><th>Category</th><th>Lint</th><th>Test</th><th>Diff classifier</th><th>Closure</th></tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+
+    <!-- SKOS VOCABULARY -->
+    <div class="section" id="sec-skos">
+      <div class="topbar"><div><h2>SKOS Vocabulary</h2><p>The same governed concepts, presented as a standards-based SKOS concept scheme — prefLabel, broader/narrower, related, and cross-scheme matches.</p></div></div>
+      <div class="skos-grid">
+        <div class="skos-tree" id="skos-tree"></div>
+        <div class="skos-detail" id="skos-detail"></div>
+      </div>
+    </div>
+
+    <!-- COMPONENTS -->
+    <div class="section" id="sec-components">
+      <div class="topbar"><div><h2>Component Inventory</h2><p>Design-time and run-time components that implement this architecture.</p></div></div>
+      <div class="filter-row" id="comp-type-filter"></div>
+      <div class="filter-row" id="comp-phase-filter"></div>
+      <table id="comp-table"><thead><tr><th>Component</th><th>Type</th><th>Phase</th><th>Description</th></tr></thead><tbody></tbody></table>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+/* ============================= MOCK DATA ============================= */
+
+const DOMAINS = [
+  { id:'core', name:'Federal (Core)', owner:'Enterprise Compliance & Architecture', subdomains: [] },
+  { id:'california', name:'California', owner:'CA State Compliance Team', subdomains: [
+      { id:'ca-losangeles', name:'Los Angeles' },
+      { id:'ca-sanfrancisco', name:'San Francisco' }
+  ]},
+  { id:'newyork', name:'New York', owner:'NY State Compliance Team', subdomains: [
+      { id:'ny-nyc', name:'New York City' },
+      { id:'ny-westchester', name:'Westchester County' }
+  ]}
+];
+
+function nsLabel(ns){
+  for(const d of DOMAINS){
+    if(d.id===ns) return d.name;
+    for(const s of d.subdomains) if(s.id===ns) return d.name+' / '+s.name;
+  }
+  return ns;
+}
+function nsOwner(ns){
+  for(const d of DOMAINS){
+    if(d.id===ns) return d.owner;
+    for(const s of d.subdomains) if(s.id===ns) return d.owner;
+  }
+  return '—';
+}
+
+const ARTIFACTS = [
+  // ---- CORE / FEDERAL ----
+  { id:'core-employee', name:'Employee', namespace:'core', category:'constraint', version:'2.1.0', lifecycle:'Released', owner:'Architecture', updated:'2026-06-02',
+    description:'Canonical Employee entity: identity fields, work authorization status, employment classification.',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'n/a'},
+    history:[
+      {date:'2026-04-01', event:'Draft opened', actor:'A. Reyes (Architecture)'},
+      {date:'2026-04-06', event:'Candidate — CI diff classifier: MINOR (matches bump)', actor:'CI Bot'},
+      {date:'2026-04-09', event:'Released v2.1.0 — published to registry', actor:'Architecture review'}
+    ],
+    triples:[ { subject:'c-employee', predicate:'r-haspart', object:{ type:'concept', ref:'c-employee-classification' } } ],
+    diff:{ from:'2.0.0', to:'2.1.0', changes:[
+      {field:'payFrequency', before:'—', after:'enum[weekly,biweekly,semimonthly,monthly]', type:'added', severity:'MINOR'},
+      {field:'description', before:'"Worksite employee record"', after:'"Canonical employee entity"', type:'modified', severity:'PATCH'}
+    ]}
+  },
+  { id:'core-paycheck', name:'Paycheck', namespace:'core', category:'constraint', version:'1.4.0', lifecycle:'Released', owner:'Architecture', updated:'2026-05-14',
+    description:'A Paycheck must have at least one Earnings Line, and the Employee must exist.',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'n/a'},
+    history:[{date:'2026-05-14', event:'Released v1.4.0', actor:'Architecture review'}],
+    triples:[
+      { subject:'c-paycheck', predicate:'r-haspart', object:{ type:'concept', ref:'c-paycheck-earnings-lines' } },
+      { subject:'c-paycheck', predicate:'r-references', object:{ type:'concept', ref:'c-employee', note:'Employee must exist' } }
+    ] },
+  { id:'core-worksite', name:'Worksite', namespace:'core', category:'constraint', version:'3.0.0', lifecycle:'Released', owner:'Architecture', updated:'2026-03-22',
+    description:'Canonical Worksite entity shared by every state and local jurisdiction domain — determines which jurisdiction’s rules apply to an Employee.',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'n/a'},
+    history:[
+      {date:'2026-03-10', event:'Candidate — CI diff classifier: MAJOR (breaking — field removed)', actor:'CI Bot'},
+      {date:'2026-03-22', event:'Released v3.0.0 after architecture sign-off', actor:'Architecture review'}
+    ],
+    diff:{ from:'2.6.1', to:'3.0.0', changes:[
+      {field:'legacyWorksiteCode', before:'string', after:'—', type:'removed', severity:'MAJOR'},
+      {field:'worksiteId', before:'—', after:'uuid, required', type:'added', severity:'MAJOR'}
+    ]}
+  },
+  { id:'core-flsa-overtime-eligibility', name:'FLSA Overtime Eligibility', namespace:'core', category:'rule', version:'1.2.0', lifecycle:'Released', owner:'Architecture', updated:'2026-06-10',
+    description:'Federal overtime policy. If employee classification is Non-Exempt and hours worked > 40 in a workweek, pay 1.5x for hours over 40.',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'n/a'},
+    history:[{date:'2026-06-10', event:'Released v1.2.0', actor:'Architecture review'}],
+    triples:[
+      { subject:'c-employee-classification', predicate:'r-equals', object:{ type:'literal', value:'Non-Exempt', constraint:{datatype:'enum', enum:['Exempt','Non-Exempt']} } },
+      { subject:'c-paycheck-grosspay', predicate:'r-gt', object:{ type:'literal', value:'40', constraint:{datatype:'decimal', min:0, unit:'hours/week'} } },
+      { subject:'c-paycheck-grosspay', predicate:'r-appliesTo', object:{ type:'calc', ref:'calc-flsa-ot-pay' } }
+    ] },
+  { id:'core-i9-verification', name:'Form I-9 Verification Rule', namespace:'core', category:'rule', version:'1.0.0', lifecycle:'Candidate', owner:'Architecture', updated:'2026-07-20',
+    description:'Federal employment-eligibility verification decision table, in CI review.',
+    ci:{lint:'pass',test:'fail',diff:'pass',closure:'n/a'},
+    history:[{date:'2026-07-20', event:'Candidate — scenario test failing on E-Verify tentative-nonconfirmation edge case', actor:'CI Bot'}] },
+  { id:'core-payroll-tax-engine', name:'Payroll Tax Withholding Engine', namespace:'core', category:'logic', version:'4.2.1', lifecycle:'Released', owner:'Platform Engineering', updated:'2026-05-30',
+    description:'Procedural computation — not SME editable. Federal + state + local tax withholding engine spanning every jurisdiction an employee is paid in.', ci:{lint:'n/a',test:'pass',diff:'n/a',closure:'n/a'},
+    history:[{date:'2026-05-30', event:'Released v4.2.1', actor:'Platform Engineering'}] },
+  { id:'core-aca-affordability-pipeline', name:'ACA Affordability Pipeline', namespace:'core', category:'logic', version:'2.0.0', lifecycle:'Released', owner:'Platform Engineering', updated:'2026-06-18',
+    description:'Affordability-percentage computation pipeline (rate-of-pay / W-2 / FPL safe harbors). Not SME editable.', ci:{lint:'n/a',test:'pass',diff:'n/a',closure:'n/a'},
+    history:[{date:'2026-06-18', event:'Released v2.0.0', actor:'Platform Engineering'}],
+    triples:[ { subject:'c-ny-avg-weekly-wage', predicate:'r-appliesTo', object:{ type:'calc', ref:'calc-aca-affordability' } } ] },
+  { id:'core-employee-v1-deprecated', name:'Employee (legacy shape)', namespace:'core', category:'constraint', version:'1.9.3', lifecycle:'Deprecated', owner:'Architecture', updated:'2026-02-01',
+    description:'Superseded by v2.x. Sunset date 2026-09-01 — 3 domain consumers still pinned.', ci:{lint:'pass',test:'pass',diff:'pass',closure:'n/a'},
+    history:[{date:'2026-02-01', event:'Deprecated — superseded by v2.0.0, sunset 2026-09-01', actor:'Architecture review'}] },
+
+  // ---- CALIFORNIA (domain-level) ----
+  { id:'ca-vocab-employee', name:'CA Employee', namespace:'california', category:'constraint', version:'1.3.0', lifecycle:'Released', owner:'CA State Compliance Team', updated:'2026-05-02',
+    description:'California-specific Employee entity, extends core Employee + Worksite via allOf/$ref (adds Wage Theft Prevention Act disclosure fields).',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'pass'},
+    mapping:{ relation:'skos:broader', target:'core:Employee', owner:'CA State Compliance Team', status:'Approved (dual review)' },
+    history:[{date:'2026-05-02', event:'Released v1.3.0', actor:'Domain SME review'}] },
+  { id:'ca-meal-rest-break-rule', name:'Meal & Rest Break Premium Rule', namespace:'california', category:'rule', version:'2.0.0', lifecycle:'Released', owner:'CA State Compliance Team', updated:'2026-06-25',
+    description:'If shift length > 5 hours and no 30-minute meal break is provided within the first 5 hours, owe 1 hour of premium pay at the regular rate.',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'n/a'},
+    history:[{date:'2026-06-25', event:'Released v2.0.0', actor:'Domain SME review'}],
+    triples:[
+      { subject:'c-shift-length', predicate:'r-gt', object:{ type:'literal', value:'5', constraint:{datatype:'decimal', min:0, unit:'hours'} } },
+      { subject:'c-meal-break-provided', predicate:'r-within', object:{ type:'concept', ref:'c-shift-length', note:'within first 5 hours of shift' } }
+    ] },
+  { id:'ca-overtime-calc', name:'CA Daily Overtime Calculation', namespace:'california', category:'logic', version:'1.1.0', lifecycle:'Released', owner:'CA Payroll Engineering', updated:'2026-04-11',
+    description:'Procedural computation. Not SME editable. California daily overtime (1.5x over 8h/day, 2x over 12h/day, 7th-consecutive-day rules).', ci:{lint:'n/a',test:'pass',diff:'n/a',closure:'n/a'},
+    history:[{date:'2026-04-11', event:'Released v1.1.0', actor:'CA Payroll Engineering'}] },
+  { id:'ca-new-hire-notice-draft', name:'Wage Theft Prevention Notice', namespace:'california', category:'constraint', version:'0.3.0', lifecycle:'Draft', owner:'CA State Compliance Team', updated:'2026-07-24',
+    description:'New Labor Code §2810.5 new-hire notice schema, being authored — not yet in CI.', ci:{lint:'n/a',test:'n/a',diff:'n/a',closure:'n/a'},
+    history:[{date:'2026-07-24', event:'Draft opened', actor:'M. Chen (CA Compliance SME)'}] },
+
+  // ---- CALIFORNIA / LOS ANGELES ----
+  { id:'la-vocab-fair-workweek-employee', name:'Covered FWW Employee', namespace:'ca-losangeles', category:'constraint', version:'1.0.0', lifecycle:'Released', owner:'CA State Compliance Team', updated:'2026-04-28',
+    description:'Covered-employee entity for LA’s Fair Work Week Ordinance: retail employer size threshold, work-schedule fields.',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'pass'},
+    mapping:{ relation:'skos:closeMatch', target:'core:Employee', owner:'CA State Compliance Team', status:'Approved (dual review)' },
+    history:[{date:'2026-04-28', event:'Released v1.0.0', actor:'Domain SME review'}] },
+  { id:'la-predictive-scheduling-rule', name:'Predictive Scheduling Premium Rule', namespace:'ca-losangeles', category:'rule', version:'1.1.0', lifecycle:'Released', owner:'CA State Compliance Team', updated:'2026-05-19',
+    description:'If a schedule change is made with less than 14 days’ notice, predictive-scheduling premium pay is owed on a sliding scale.',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'n/a'},
+    history:[{date:'2026-05-19', event:'Released v1.1.0', actor:'Domain SME review'}],
+    triples:[ { subject:'c-schedule-change-notice-days', predicate:'r-appliesTo', object:{ type:'calc', ref:'calc-predictive-sched-premium' } } ] },
+
+  // ---- CALIFORNIA / SAN FRANCISCO ----
+  { id:'sf-vocab-hcso-employer', name:'HCSO Covered Employer', namespace:'ca-sanfrancisco', category:'constraint', version:'1.2.0', lifecycle:'Released', owner:'CA State Compliance Team', updated:'2026-03-30',
+    description:'Employer entity for the SF Health Care Security Ordinance: employee-headcount threshold, expenditure-requirement fields.',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'pass'},
+    mapping:{ relation:'skos:closeMatch', target:'core:Worksite', owner:'CA State Compliance Team', status:'Pending Architecture review' },
+    history:[{date:'2026-03-30', event:'Released v1.2.0', actor:'Domain SME review'}] },
+  { id:'sf-hcso-legacy-rule', name:'HCSO Expenditure Rule (legacy)', namespace:'ca-sanfrancisco', category:'rule', version:'1.0.0', lifecycle:'Retired', owner:'CA State Compliance Team', updated:'2025-11-02',
+    description:'Retired — replaced by the unified Healthcare Expenditure rule set after the 2024 ordinance amendment.',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'n/a'},
+    history:[{date:'2025-11-02', event:'Retired — removed from registry', actor:'CI Bot'}] },
+  { id:'sf-paid-sick-leave-accrual-rule', name:'Paid Sick Leave Accrual Rule', namespace:'ca-sanfrancisco', category:'rule', version:'0.4.0', lifecycle:'Candidate', owner:'CA State Compliance Team', updated:'2026-07-28',
+    description:'New SF Paid Sick Leave Ordinance accrual rule (1 hour per 30 hours worked, employer-size-based caps) — blocked in CI by a lint failure.',
+    ci:{lint:'fail',test:'n/a',diff:'pass',closure:'n/a'},
+    history:[
+      {date:'2026-07-26', event:'Draft opened', actor:'R. Alvarez (CA Compliance SME)'},
+      {date:'2026-07-28', event:'Candidate — DMN static analysis failed, blocked pending fix', actor:'CI Bot'}
+    ] },
+
+  // ---- NEW YORK (domain-level) ----
+  { id:'ny-vocab-employee', name:'NY Employee', namespace:'newyork', category:'constraint', version:'1.5.0', lifecycle:'Released', owner:'NY State Compliance Team', updated:'2026-06-05',
+    description:'New York Employee entity, extends core Employee (adds Wage Theft Prevention Act / Wage Parity fields).',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'pass'},
+    mapping:{ relation:'skos:broader', target:'core:Employee', owner:'NY State Compliance Team', status:'Approved (dual review)' },
+    history:[{date:'2026-06-05', event:'Released v1.5.0', actor:'Domain SME review'}] },
+  { id:'ny-pay-transparency-rule', name:'Pay Transparency Disclosure Rule', namespace:'newyork', category:'rule', version:'2.3.0', lifecycle:'Released', owner:'NY State Compliance Team', updated:'2026-07-01',
+    description:'If a job posting is for a role that can be performed in NY, the salary range must be disclosed per the NY Pay Transparency Law.',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'n/a'},
+    history:[{date:'2026-07-01', event:'Released v2.3.0', actor:'Domain SME review'}],
+    triples:[ { subject:'c-ny-avg-weekly-wage', predicate:'r-appliesTo', object:{ type:'calc', ref:'calc-ny-pfl-benefit' } } ] },
+  { id:'ny-paid-family-leave-calc', name:'Paid Family Leave Benefit Calculation', namespace:'newyork', category:'logic', version:'3.1.0', lifecycle:'Released', owner:'NY Payroll Engineering', updated:'2026-05-27',
+    description:'Procedural computation. Not SME editable. NY Paid Family Leave benefit + employee contribution calculation.', ci:{lint:'n/a',test:'pass',diff:'n/a',closure:'n/a'},
+    history:[{date:'2026-05-27', event:'Released v3.1.0', actor:'NY Payroll Engineering'}],
+    triples:[ { subject:'c-ny-employee', predicate:'r-appliesTo', object:{ type:'calc', ref:'calc-ny-pfl-benefit' } } ] },
+
+  // ---- NEW YORK / NYC ----
+  { id:'nyc-vocab-fair-workweek-employer', name:'NYC Fair Workweek Employer', namespace:'ny-nyc', category:'constraint', version:'1.0.0', lifecycle:'Candidate', owner:'NY State Compliance Team', updated:'2026-07-22',
+    description:'Covered fast-food/retail employer entity for the NYC Fair Workweek Law — in CI review.',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'fail'},
+    history:[{date:'2026-07-22', event:'Candidate — closure check failing, no mapping to Core yet', actor:'CI Bot'}] },
+  { id:'nyc-scheduling-premium-rule', name:'NYC Schedule-Change Premium Rule', namespace:'ny-nyc', category:'rule', version:'1.4.0', lifecycle:'Released', owner:'NY State Compliance Team', updated:'2026-04-15',
+    description:'Rates NYC Fair Workweek schedule-change premium pay by notice-window band (same day through 14+ days).',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'n/a'},
+    history:[{date:'2026-04-15', event:'Released v1.4.0', actor:'Domain SME review'}] },
+
+  // ---- NEW YORK / WESTCHESTER ----
+  { id:'westchester-vocab-safe-leave-employee', name:'Safe-Time Leave Employee', namespace:'ny-westchester', category:'constraint', version:'1.1.0', lifecycle:'Released', owner:'NY State Compliance Team', updated:'2026-06-30',
+    description:'Covered employee entity for the Westchester County Safe Time Leave Law.',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'pass'},
+    mapping:{ relation:'skos:exactMatch', target:'core:Employee', owner:'NY State Compliance Team', status:'Approved (dual review)' },
+    history:[{date:'2026-06-30', event:'Released v1.1.0', actor:'Domain SME review'}] },
+  { id:'westchester-safe-leave-accrual-rule', name:'Safe-Time Leave Accrual Rule', namespace:'ny-westchester', category:'rule', version:'1.0.0', lifecycle:'Draft', owner:'NY State Compliance Team', updated:'2026-07-25',
+    description:'New safe-time leave accrual rule being authored for domestic-violence / safe-time protections.', ci:{lint:'n/a',test:'n/a',diff:'n/a',closure:'n/a'},
+    history:[{date:'2026-07-25', event:'Draft opened', actor:'J. Patel (NY Compliance SME)'}] },
+
+  // ---- CORE / FEDERAL — added from Insperity_Policies.pdf / Policy_CrossReference.pdf ----
+  { id:'core-worker-classification-test', name:'Worker Classification Test', namespace:'core', category:'rule', version:'1.1.0', lifecycle:'Released', owner:'Architecture', updated:'2026-06-14', serviceDomain:'payrolltax',
+    description:'DOL multi-factor economic-reality test, overridden by a stricter state "ABC" test where the worksite jurisdiction requires it, to prevent 1099 independent-contractor misclassification.',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'n/a'},
+    history:[{date:'2026-06-14', event:'Released v1.1.0', actor:'Architecture review'}],
+    triples:[ { subject:'c-worker-classification-result', predicate:'r-equals', object:{ type:'literal', value:'Employee', constraint:{datatype:'enum', enum:['Employee','Independent Contractor']} } } ] },
+  { id:'core-eeo-protected-class', name:'EEO Protected Class', namespace:'core', category:'constraint', version:'1.0.0', lifecycle:'Released', owner:'Architecture', updated:'2026-03-05', serviceDomain:'compliancerisk',
+    description:'Canonical protected-class taxonomy under Title VII, ADEA, ADA, and GINA — referenced by every accommodation, adverse-action, and EEO-reporting rule.',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'n/a'},
+    history:[{date:'2026-03-05', event:'Released v1.0.0', actor:'Architecture review'}] },
+  { id:'core-pwfa-accommodation-rule', name:'PWFA Accommodation Rule', namespace:'core', category:'rule', version:'1.0.0', lifecycle:'Released', owner:'Architecture', updated:'2026-04-18', serviceDomain:'compliancerisk',
+    description:'Pregnant Workers Fairness Act: employer must engage in a structured interactive accommodation process for known limitations related to pregnancy, childbirth, or related medical conditions.',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'n/a'},
+    history:[{date:'2026-04-18', event:'Released v1.0.0', actor:'Architecture review'}] },
+  { id:'core-pump-act-lactation-rule', name:'PUMP Act Lactation Rule', namespace:'core', category:'rule', version:'1.0.0', lifecycle:'Released', owner:'Architecture', updated:'2026-04-18', serviceDomain:'compliancerisk',
+    description:'PUMP Act: reasonable break time and a private, non-bathroom space to express breast milk for one year after childbirth.',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'n/a'},
+    history:[{date:'2026-04-18', event:'Released v1.0.0', actor:'Architecture review'}] },
+  { id:'core-aedt-bias-audit', name:'AEDT Bias Audit Rule', namespace:'core', category:'rule', version:'0.6.0', lifecycle:'Candidate', owner:'Architecture', updated:'2026-07-29', serviceDomain:'talent',
+    description:'Automated Employment Decision Tool framework: requires an independent annual bias audit plus candidate/employee disclosure before an AEDT is used in a hiring or promotion decision — in CI review.',
+    ci:{lint:'pass',test:'fail',diff:'pass',closure:'n/a'},
+    history:[
+      {date:'2026-07-15', event:'Draft opened', actor:'S. Okafor (Architecture)'},
+      {date:'2026-07-29', event:'Candidate — scenario test failing: candidate-notice timing edge case', actor:'CI Bot'}
+    ] },
+  { id:'core-erisa-plan-governance', name:'ERISA Plan Governance', namespace:'core', category:'constraint', version:'2.2.0', lifecycle:'Released', owner:'Architecture', updated:'2026-05-08', serviceDomain:'benefits',
+    description:'ERISA Master Plan Document constraints for Multiple Employer Plans (MEPs) and Pooled Employer Plans (PEPs): required SPD, Summary of Material Modifications, and Form 5500 filing fields.',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'n/a'},
+    history:[{date:'2026-05-08', event:'Released v2.2.0', actor:'Architecture review'}] },
+  { id:'core-secure2-ltpt-eligibility', name:'SECURE 2.0 LTPT Eligibility Rule', namespace:'core', category:'rule', version:'1.0.0', lifecycle:'Released', owner:'Architecture', updated:'2026-01-12', serviceDomain:'benefits',
+    description:'SECURE 2.0: long-term part-time employee eligibility for retirement-plan participation, plus mandatory automatic-enrollment and auto-escalation defaults.',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'n/a'},
+    history:[{date:'2026-01-12', event:'Released v1.0.0', actor:'Architecture review'}] },
+  { id:'core-aca-ale-determination', name:'ACA ALE Determination Rule', namespace:'core', category:'rule', version:'1.3.0', lifecycle:'Released', owner:'Architecture', updated:'2026-02-20', serviceDomain:'benefits',
+    description:'Applicable Large Employer determination using the look-back measurement method for variable-hour workforces; feeds the ACA Affordability Pipeline.',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'n/a'},
+    history:[{date:'2026-02-20', event:'Released v1.3.0', actor:'Architecture review'}],
+    triples:[
+      { subject:'c-client-employer-ale-status', predicate:'r-appliesTo', object:{ type:'calc', ref:'calc-ale-fte-count' } }
+    ] },
+  { id:'core-cobra-qualifying-event-rule', name:'COBRA Qualifying Event Rule', namespace:'core', category:'rule', version:'1.1.0', lifecycle:'Released', owner:'Architecture', updated:'2026-03-30', serviceDomain:'benefits',
+    description:'Detects COBRA qualifying events (termination, reduced hours, divorce, loss of dependent status) and triggers the required election-notice and premium-billing workflow.',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'n/a'},
+    history:[{date:'2026-03-30', event:'Released v1.1.0', actor:'Architecture review'}] },
+  { id:'core-osha-recordkeeping-rule', name:'OSHA Electronic Recordkeeping Rule', namespace:'core', category:'rule', version:'1.2.0', lifecycle:'Released', owner:'Architecture', updated:'2026-01-25', serviceDomain:'compliancerisk',
+    description:'Determines which covered worksites must submit OSHA Forms 300, 300A, and 301 via the Injury Tracking Application (ITA), keyed to industry code and establishment size.',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'n/a'},
+    history:[{date:'2026-01-25', event:'Released v1.2.0', actor:'Architecture review'}] },
+  { id:'core-cpeo-certification', name:'CPEO Certification Constraint', namespace:'core', category:'constraint', version:'1.0.0', lifecycle:'Released', owner:'Architecture', updated:'2025-12-01', serviceDomain:'compliancerisk',
+    description:'IRC §7705 Certified PEO status constraints: quarterly tax attestations, annual independent CPA audit results, and federal bonding — the basis for transmitting sole-liability relief to clients.',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'n/a'},
+    history:[{date:'2025-12-01', event:'Released v1.0.0', actor:'Architecture review'}] },
+  { id:'core-multistate-tax-nexus-engine', name:'Multi-State Tax Nexus Engine', namespace:'core', category:'logic', version:'2.4.0', lifecycle:'Released', owner:'Payroll Tax Engineering', updated:'2026-06-27', serviceDomain:'payrolltax',
+    description:'Procedural computation — not SME editable. SUTA experience-rate allocation, state/local income-tax withholding jurisdiction resolution, and local business-registration triggers for distributed workforces.',
+    ci:{lint:'n/a',test:'pass',diff:'n/a',closure:'n/a'},
+    history:[{date:'2026-06-27', event:'Released v2.4.0', actor:'Payroll Tax Engineering'}],
+    triples:[ { subject:'c-worksite', predicate:'r-appliesTo', object:{ type:'calc', ref:'calc-suta-allocation' } } ] },
+  { id:'core-fcra-background-check-workflow', name:'FCRA Background Check Workflow', namespace:'core', category:'rule', version:'1.2.0', lifecycle:'Released', owner:'Architecture', updated:'2026-02-11', serviceDomain:'talent',
+    description:'FCRA-compliant background-check sequencing: consent capture, pre-adverse-action notice, statutory waiting period, then adverse-action notice if the offer is withdrawn.',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'n/a'},
+    history:[{date:'2026-02-11', event:'Released v1.2.0', actor:'Architecture review'}] },
+
+  // ---- CALIFORNIA — added ----
+  { id:'ca-workplace-violence-prevention-rule', name:'Workplace Violence Prevention Rule', namespace:'california', category:'rule', version:'1.0.0', lifecycle:'Released', owner:'CA State Compliance Team', updated:'2026-07-01', serviceDomain:'compliancerisk',
+    description:'California SB 553: mandates a written Workplace Violence Prevention Plan, a violent-incident log, and annual employee training for covered worksites.',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'n/a'},
+    history:[{date:'2026-07-01', event:'Released v1.0.0', actor:'Domain SME review'}] },
+  { id:'ca-heat-illness-prevention-rule', name:'Heat Illness Prevention Rule', namespace:'california', category:'rule', version:'1.3.0', lifecycle:'Released', owner:'CA State Compliance Team', updated:'2026-05-20', serviceDomain:'compliancerisk',
+    description:'Cal/OSHA indoor and outdoor heat-illness prevention: water/rest/shade provisioning triggers keyed to temperature thresholds and worksite/industry type.',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'n/a'},
+    history:[{date:'2026-05-20', event:'Released v1.3.0', actor:'Domain SME review'}] },
+
+  // ---- NEW YORK — added ----
+  { id:'ny-harassment-training-rule', name:'Sexual Harassment Prevention Training Rule', namespace:'newyork', category:'rule', version:'1.1.0', lifecycle:'Released', owner:'NY State Compliance Team', updated:'2026-01-05', serviceDomain:'talent',
+    description:'New York State mandatory annual sexual-harassment-prevention training cadence for all employees, tracked through the LMS to completion.',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'n/a'},
+    history:[{date:'2026-01-05', event:'Released v1.1.0', actor:'Domain SME review'}] },
+
+  // ---- NEW YORK / NYC — added ----
+  { id:'nyc-aedt-notice-rule', name:'NYC Local Law 144 Notice Rule', namespace:'ny-nyc', category:'rule', version:'1.0.0', lifecycle:'Released', owner:'NY State Compliance Team', updated:'2026-06-01', serviceDomain:'talent',
+    description:'NYC Local Law 144: the independent bias-audit summary must be published, and candidates/employees must receive advance notice before an AEDT is used in a hiring or promotion decision.',
+    ci:{lint:'pass',test:'pass',diff:'pass',closure:'n/a'},
+    history:[{date:'2026-06-01', event:'Released v1.0.0', actor:'Domain SME review'}] }
+];
+
+const SERVICE_DOMAIN_BY_ARTIFACT = {
+  'core-employee':'hrtech', 'core-paycheck':'payrolltax', 'core-worksite':'hrtech',
+  'core-flsa-overtime-eligibility':'payrolltax', 'core-i9-verification':'talent',
+  'core-payroll-tax-engine':'payrolltax', 'core-aca-affordability-pipeline':'benefits',
+  'core-employee-v1-deprecated':'hrtech', 'ca-vocab-employee':'hrtech',
+  'ca-meal-rest-break-rule':'payrolltax', 'ca-overtime-calc':'payrolltax',
+  'ca-new-hire-notice-draft':'compliancerisk', 'la-vocab-fair-workweek-employee':'payrolltax',
+  'la-predictive-scheduling-rule':'payrolltax', 'sf-vocab-hcso-employer':'benefits',
+  'sf-hcso-legacy-rule':'benefits', 'sf-paid-sick-leave-accrual-rule':'compliancerisk',
+  'ny-vocab-employee':'hrtech', 'ny-pay-transparency-rule':'talent',
+  'ny-paid-family-leave-calc':'payrolltax', 'nyc-vocab-fair-workweek-employer':'payrolltax',
+  'nyc-scheduling-premium-rule':'payrolltax', 'westchester-vocab-safe-leave-employee':'compliancerisk',
+  'westchester-safe-leave-accrual-rule':'compliancerisk'
+};
+ARTIFACTS.forEach(a=>{ if(!a.serviceDomain) a.serviceDomain = SERVICE_DOMAIN_BY_ARTIFACT[a.id] || 'compliancerisk'; });
+
+const SERVICE_DOMAINS = [
+  { id:'benefits', name:'Employee Benefits' },
+  { id:'payrolltax', name:'Payroll & Tax Administration' },
+  { id:'compliancerisk', name:'HR Compliance & Risk Management' },
+  { id:'talent', name:'Talent Management & Development' },
+  { id:'hrtech', name:'HR Technology' }
+];
+function svcLabel(id){ const s = SERVICE_DOMAINS.find(x=>x.id===id); return s ? s.name : id; }
+function svcBadge(id){ return '<span class="badge b-svc-'+id+'">'+svcLabel(id)+'</span>'; }
+
+const PEO_STANDARDS = [
+  { name:'IRS Certified PEO (CPEO)', body:'Internal Revenue Service (IRC § 7705)',
+    purpose:'Transmits statutory sole-liability relief to clients for federal employment taxes; requires annual independent CPA audits, quarterly tax attestations, and federal bonding.' },
+  { name:'ESAC Accreditation', body:'Employer Services Assurance Corporation',
+    purpose:'Acts as the "FDIC of the PEO industry," maintaining continuous financial monitoring, multi-million dollar client protection bonds, and operational compliance verification.' },
+  { name:'SOC 1 (Type II) / SOC 2', body:'AICPA (SSAE 18 / ISAE 3402)',
+    purpose:'Validates internal financial controls around payroll processing, data privacy, cloud architecture security, and multi-tenant isolation.' },
+  { name:'Client Allocation Matrix', body:'State PEO Licensing Boards / Model PEO Acts',
+    purpose:'Formalizes the division of statutory responsibilities and liability limits between the PEO and the SMB client within the Master Services Agreement (MSA).' }
+];
+
+const DOC3_PHASES = ['Discover','Define','Design','Develop','Deliver','Run'];
+const SERVICE_DOMAIN_MATRIX = {
+  benefits: [
+    { scope:'ACA ALE determination, ERISA plan scoping', activity:'Evaluate client size, FTE count, multi-state employee dispersion, and existing plan documentation.' },
+    { scope:'ERISA Master Plan Documents, MEP/PEP bylaws, SECURE 2.0', activity:'Establish fiduciary structures, eligibility standards (including LTPT rules), and Section 125 Cafeteria plan terms.' },
+    { scope:'ACA affordability safe harbors, CAA/TiC transparency rules', activity:'Model plan pricing structures, Machine-Readable File (MRF) disclosure protocols, and MHPAEA compliance workflows.' },
+    { scope:'Carrier EDI standards (HIPAA 834), IRS § 105/125 Non-Discrimination Testing', activity:'Program automated carrier integration feeds, FSA/HSA contribution limit validations, and pre-tax benefit logic.' },
+    { scope:'DOL electronic disclosure rules, COBRA initial notices', activity:'Distribute SPDs and SBCs, and execute open-enrollment self-service workflows.' },
+    { scope:'IRS Form 5500, Form 1094-C/1095-C, ACA employer mandate enforcement', activity:'Conduct annual NDT testing, generate IRS ACA filings, process QLEs, and manage ongoing COBRA premium billing.' }
+  ],
+  payrolltax: [
+    { scope:'Multi-state tax nexus, SUTA experience transfer', activity:'Audit client worksite jurisdictions, remote employee locations, and statutory payroll tax liability baselines.' },
+    { scope:'IRS Certified PEO (IRC § 7705), FLSA salary basis thresholds', activity:'Establish statutory tax allocation matrices, state/local minimum wage baselines, and pay frequency policies.' },
+    { scope:'Gross-to-net logic, state PFML payroll withholdings', activity:'Architect tax calculation rules for multi-state wage bases, reciprocal tax agreements, and local payroll tax ordinances.' },
+    { scope:'Overtime calculation engines (FLSA, CA daily OT, NV 24-hr rules), garnishment priorities', activity:'Build automated overtime calculation logic, tip credit accounting, and court-ordered garnishment engines.' },
+    { scope:'State wage theft prevention acts, direct deposit mandates', activity:'Generate compliant paystubs with statutory itemizations, and distribute wage notices.' },
+    { scope:'Federal Form 941, annual W-2/1099-MISC/NEC, quarterly CPEO attestations', activity:'Remit federal/state/local payroll taxes, file quarterly returns, maintain surety bonds, manage final pay upon separation.' }
+  ],
+  compliancerisk: [
+    { scope:"Workers' comp class codes, OSHA high-hazard coverage", activity:'Audit client industry risk, NCCI codes, and safety compliance baselines.' },
+    { scope:'OSHA written safety plans, Cal/OSHA SB 553, state paid sick leave', activity:'Formalize Master Safety Programs, Workplace Violence Prevention Plans, and statutory leave accrual schedules.' },
+    { scope:'ADA interactive process, PWFA, PUMP Act', activity:'Design accommodation evaluation workflows, lactation accommodation policies, and return-to-work programs.' },
+    { scope:'Digital First Notice of Loss (FNOL), mandatory labor law e-posting engines', activity:"Program injury incident workflows, workers' comp claims intake, and jurisdictional leave coordination (FMLA + PFML)." },
+    { scope:'OSHA hazard communication, client risk safety manuals', activity:'Distribute required federal/state/local compliance posters and specialized workplace safety guidelines.' },
+    { scope:"OSHA Form 300/300A/301 electronic reporting (ITA), master workers' comp policy management", activity:'Conduct annual OSHA log certification, perform client loss-control audits, manage ongoing liability claims.' }
+  ],
+  talent: [
+    { scope:'EEOC Uniform Guidelines on Employee Selection Procedures', activity:'Assess client hiring workflows, sourcing channels, and historical workforce demographic representation.' },
+    { scope:'State pay transparency laws, FLSA exemption criteria', activity:'Define standardized job descriptions with required salary ranges, duties tests, and non-discriminatory hiring rubrics.' },
+    { scope:'Automated Employment Decision Tools (AEDT) laws (e.g. NYC Local Law 144)', activity:'Design AI bias-audit procedures, candidate notice workflows, and standardized performance-appraisal criteria.' },
+    { scope:'FCRA-compliant background check pipelines, LMS statutory training modules', activity:'Integrate background-check consent and pre-adverse/adverse action workflows with harassment-training tracks.' },
+    { scope:'Form I-9 / E-Verify employment verification, wage history ban policies', activity:'Execute digital I-9 verification, distribute wage theft notices, deploy mandatory compliance training.' },
+    { scope:'Federal EEO-1 Component 1, state pay data reporting (e.g. CA CRD, IL Equal Pay)', activity:'Aggregate multi-client workforce compensation/demographic data and submit annual statutory filings.' }
+  ],
+  hrtech: [
+    { scope:'Multi-tenant system boundaries, data sovereignty, PEO Client Allocation Matrix', activity:'Inventory client data flows, identify cross-system dependencies (HRIS, payroll, benefits), map statutory liabilities.' },
+    { scope:'SOC 1 (SSAE 18), SOC 2, HIPAA Security Rule', activity:'Formulate data classification rules (PII, PHI, financial), access governance baselines, multi-tenant security requirements.' },
+    { scope:'Data privacy statutes (CCPA/CPRA, state privacy acts), Role-Based Access Control', activity:'Architect tenant data isolation models, immutable audit log structures, automated encryption schemas.' },
+    { scope:'Policy Enforcement Points (PEPs), Zero-Trust API gateways', activity:'Build secure multi-tenant data pipelines, data minimization algorithms, automated masking/tokenization.' },
+    { scope:'NIST 800-53 security controls, system authorization agreements', activity:'Deploy secure self-service portals, deliver privacy disclosures, execute administrative onboarding.' },
+    { scope:'Continuous SOC 1 / SOC 2 Type II attestations, vulnerability & penetration testing', activity:'Perform continuous access reviews, monitor API security logs, execute data retention/destruction schedules.' }
+  ]
+};
+
+const LIFECYCLE_STAGES = ['Draft','Candidate','Released','Deprecated','Retired'];
+
+const GOVERNANCE_INFO = {
+  'Draft':      { who:'Author (SME or Engineer)', what:'Spec authored/edited locally or on a feature branch.', ci:'None yet.' },
+  'Candidate':  { who:'CODEOWNERS-routed reviewer(s)', what:'PR open — diff classifier runs, lint & scenario tests execute.', ci:'Diff classifier, linter, scenario tests.' },
+  'Released':   { who:'Domain SME (+ Architecture if /core)', what:'Published to the versioned artifact registry as immutable.', ci:'All checks passed; deployment gate cleared.' },
+  'Deprecated': { who:'Owning team sets sunset date', what:'Still served, but flagged; consumers should migrate.', ci:'Consumer scan for pinned versions.' },
+  'Retired':    { who:'CI Bot (automated)', what:'Removed from the registry once the sunset date passes.', ci:'Pinned consumers fail their build.' }
+};
+
+const MAPPING_REGISTRY = ARTIFACTS.filter(a=>a.mapping).map(a=>({
+  term: nsLabel(a.namespace)+' : '+a.name,
+  relation: a.mapping.relation,
+  target: a.mapping.target,
+  owner: a.mapping.owner,
+  status: a.mapping.status
+}));
+
+const COMPONENTS = [
+  // Design-time
+  { name:'Schema/Constraint Authoring UI', type:'Microservice', phase:'Design-time', desc:'Data-dictionary-style form for SMEs to edit constraints without seeing raw JSON Schema/SHACL.' },
+  { name:'Rule Editor UI (Decision Tables)', type:'Microservice', phase:'Design-time', desc:'DMN decision-table grid editor for business rules, e.g. embedded Camunda Modeler.' },
+  { name:'Mapping Authoring UI', type:'Microservice', phase:'Design-time', desc:'SKOS bridge-file editor for relating domain terms to Core terms.' },
+  { name:'Schema Diff Classifier', type:'Agent', phase:'Design-time', desc:'Classifies each spec change as MAJOR/MINOR/PATCH automatically; blocks CI on mismatch.' },
+  { name:'Ontology Closure Checker', type:'Agent', phase:'Design-time', desc:'Walks the mapping graph; fails the build if a domain term has no path to a Core root.' },
+  { name:'DMN/OWL Linter & Validator', type:'Microservice', phase:'Design-time', desc:'Static analysis for DMN tables; semantic reasoner (e.g. HermiT) for ontology consistency.' },
+  { name:'Scenario Test Runner', type:'Microservice', phase:'Design-time', desc:'Runs rule/schema changes against synthetic datasets before merge.' },
+  { name:'CODEOWNERS Router Bot', type:'Agent', phase:'Design-time', desc:'Routes PRs to the correct reviewer(s) based on changed path (/core vs /domains/*).' },
+  { name:'Concept Search Agent', type:'Agent', phase:'Design-time', desc:'Searches Core + all domain mappings for near-duplicate concepts before a new term is created.' },
+  { name:'Code Generator / Compiler', type:'Microservice', phase:'Design-time', desc:'Compiles declarative specs into Pydantic/TS types, SHACL/OWL, and DMN/Drools XML.' },
+  { name:'SSOT Git Repository', type:'Ontology', phase:'Design-time', desc:'Central version-controlled source of truth for all constraints, rules, and mapping files.' },
+  { name:'Versioned Artifact Registry', type:'Microservice', phase:'Design-time', desc:'Immutable, versioned store of released specs; consumers pull pinned ranges from here.' },
+  // Run-time
+  { name:'Decision API (Strangler Fig Facade)', type:'Microservice', phase:'Run-time', desc:'Standardized entry point that routes decision requests to the correct backend, legacy or modern.' },
+  { name:'Rules Engine Runtime', type:'Microservice', phase:'Run-time', desc:'Executes published DMN/Drools decision tables (e.g. Camunda).' },
+  { name:'Domain Computation Services', type:'Microservice', phase:'Run-time', desc:'Procedural/algorithmic logic per jurisdiction (payroll tax withholding, overtime calculation, PFL benefit calc, ACA affordability).' },
+  { name:'Legacy Wrapper Adapters', type:'Microservice', phase:'Run-time', desc:'Wrap legacy stored procedures / rules engines behind the Decision API without rewriting them.' },
+  { name:'Ontology / Graph Store', type:'Ontology', phase:'Run-time', desc:'SHACL-validated semantic layer, reserved for genuine cross-domain reasoning needs.' },
+  { name:'Schema Registry Service (Postgres)', type:'Mapping Service', phase:'Run-time', desc:'Serves versioned JSON Schema definitions for runtime constraint validation.' },
+  { name:'Mapping Registry Service (Postgres)', type:'Mapping Service', phase:'Run-time', desc:'Serves SKOS relation lookups between domain terms and Core terms.' },
+  { name:'Version Resolution Service', type:'Microservice', phase:'Run-time', desc:'Resolves a caller’s declared policy/schema version to the correct artifact.' },
+  { name:'Deprecation / Sunset Monitor', type:'Agent', phase:'Run-time', desc:'Scans consumers still pinned to deprecated versions and alerts their owning teams.' },
+  { name:'Drift Detection Monitor', type:'Monitoring', phase:'Run-time', desc:'Compares generated artifacts across targets (code/graph/rules) to catch any divergence.' },
+  { name:'Observability & Metrics Collector', type:'Monitoring', phase:'Run-time', desc:'Aggregates CI pass rates, mapping coverage, and release velocity into the measures shown here.' },
+  { name:'Audit / Provenance Logger', type:'Monitoring', phase:'Run-time', desc:'Immutable log of every change, reviewer, and approval outcome for each artifact.' }
+];
+
+/* ===== Vocabulary (concepts), Upper Ontology (relations), and Calc Library (Alation) =====
+   Every constraint/rule/logic artifact decomposes into subject–predicate–object triples.
+   Subjects & objects resolve to CONCEPTS (domain vocabulary terms). Predicates resolve to
+   RELATIONS defined in the upper ontology (typed — math / structural / temporal / association).
+   Where an object is a computed value rather than a literal, it resolves to a governed
+   formula in CALC_LIBRARY (the system of record for which is Alation). */
+
+const CONCEPTS = [
+  { id:'c-employee', term:'Employee', kind:'entity', namespace:'core', definition:'Canonical employee entity.', owner:'Architecture', artifactRef:'core-employee',
+    notation:'EMP-001', altLabels:['Worksite Employee','Team Member'], scopeNote:'Use for any individual employed via co-employment with a client company. Do not use for 1099 contractors.', related:['c-paycheck','c-worksite'] },
+  { id:'c-employee-classification', term:'Employee.classification', kind:'property', namespace:'core', parent:'c-employee', definition:'FLSA exemption classification assigned to the employee.', owner:'Architecture',
+    notation:'EMP-001.1', altLabels:['FLSA Classification','Exemption Status'], scopeNote:'Determines federal overtime eligibility under FLSA §13(a)(1). Re-evaluated on any job-duties or salary change.',
+    valueConstraint:{ datatype:'enum', enum:['Exempt','Non-Exempt'], required:true } },
+  { id:'c-paycheck', term:'Paycheck', kind:'entity', namespace:'core', definition:'Canonical paycheck entity.', owner:'Architecture', artifactRef:'core-paycheck',
+    notation:'PAY-001', altLabels:['Pay Statement','Wage Payment'], scopeNote:'Represents a single pay-run disbursement; always tied to exactly one Employee.', related:['c-employee'] },
+  { id:'c-paycheck-grosspay', term:'Paycheck.grossPay', kind:'property', namespace:'core', parent:'c-paycheck', definition:'Total gross monetary value of the paycheck.', owner:'Architecture',
+    notation:'PAY-001.1', altLabels:['Gross Wages','Gross Amount'], scopeNote:'Sum of earnings-line totals before tax and benefit deductions.',
+    valueConstraint:{ datatype:'decimal', min:0, unit:'USD', required:true } },
+  { id:'c-paycheck-earnings-lines', term:'Paycheck.earningsLines', kind:'property', namespace:'core', parent:'c-paycheck', definition:'Earnings lines composing the paycheck.', owner:'Architecture',
+    notation:'PAY-001.2', altLabels:['Earnings Lines','Pay Lines'],
+    valueConstraint:{ datatype:'array<EarningsLine>', cardinality:'1..*', required:true } },
+  { id:'c-worksite', term:'Worksite', kind:'entity', namespace:'core', definition:'Canonical worksite entity.', owner:'Architecture', artifactRef:'core-worksite',
+    notation:'WS-001', altLabels:['Work Location','Registered Worksite'], scopeNote:'The physical or registered remote location that determines which state/local jurisdiction rules apply to an Employee.', related:['c-employee'] },
+  { id:'c-worksite-effectivedate', term:'Worksite.effectiveDate', kind:'property', namespace:'core', parent:'c-worksite', definition:'Effective date the worksite’s jurisdiction rules begin applying.', owner:'Architecture',
+    notation:'WS-001.1', altLabels:['Effective Date','Assignment Date'],
+    valueConstraint:{ datatype:'date', required:true } },
+  { id:'c-employee-ca', term:'CAEmployee', kind:'entity', namespace:'california', definition:'California-specific employee entity.', owner:'CA State Compliance Team', artifactRef:'ca-vocab-employee',
+    notation:'CA-EMP-001', altLabels:['CA Worksite Employee','Wage Order Employee'], scopeNote:'A California Employee record adding Wage Theft Prevention Act disclosure fields.',
+    mapsTo:{ relation:'skos:broader', target:'core:Employee' } },
+  { id:'c-shift-length', term:'CAEmployee.shiftLength', kind:'property', namespace:'california', parent:'c-employee-ca', definition:'Length of the scheduled shift.', owner:'CA State Compliance Team',
+    notation:'CA-EMP-001.1', altLabels:['Shift Duration'],
+    valueConstraint:{ datatype:'decimal', min:0, unit:'hours', required:true } },
+  { id:'c-meal-break-provided', term:'CAEmployee.mealBreakProvided', kind:'property', namespace:'california', parent:'c-employee-ca', definition:'Whether a compliant 30-minute meal break was provided within the first 5 hours.', owner:'CA State Compliance Team',
+    notation:'CA-EMP-001.2', altLabels:['Meal Break Flag','Break Compliance'],
+    valueConstraint:{ datatype:'boolean', required:true } },
+  { id:'c-fairworkweek-employee', term:'FairWorkweekEmployee', kind:'entity', namespace:'ca-losangeles', definition:'Covered employee entity for LA’s Fair Work Week Ordinance.', owner:'CA State Compliance Team', artifactRef:'la-vocab-fair-workweek-employee',
+    notation:'LA-FWW-001', altLabels:['Covered Retail Employee'], scopeNote:'A worksite employee at a covered LA retail employer, subject to predictive-scheduling protections.',
+    mapsTo:{ relation:'skos:closeMatch', target:'core:Employee' } },
+  { id:'c-schedule-change-notice-days', term:'FairWorkweekEmployee.scheduleChangeNoticeDays', kind:'property', namespace:'ca-losangeles', parent:'c-fairworkweek-employee', definition:'Number of days’ notice given before a schedule change.', owner:'CA State Compliance Team',
+    notation:'LA-FWW-001.1', altLabels:['Notice Days'],
+    valueConstraint:{ datatype:'decimal', min:0, unit:'days', required:true } },
+  { id:'c-schedule-change-effective', term:'FairWorkweekEmployee.scheduleChangeEffective', kind:'property', namespace:'ca-losangeles', parent:'c-fairworkweek-employee', definition:'Date the changed schedule takes effect.', owner:'CA State Compliance Team',
+    notation:'LA-FWW-001.2', altLabels:['Effective Date'],
+    valueConstraint:{ datatype:'date', required:true } },
+  { id:'c-ny-employee', term:'NYEmployee', kind:'entity', namespace:'newyork', definition:'New York employee entity.', owner:'NY State Compliance Team', artifactRef:'ny-vocab-employee',
+    notation:'NY-EMP-001', altLabels:['NY Worksite Employee'], scopeNote:'An Employee whose worksite is in New York State, subject to NY Labor Law provisions beyond the federal baseline.',
+    mapsTo:{ relation:'skos:broader', target:'core:Employee' } },
+  { id:'c-ny-avg-weekly-wage', term:'NYEmployee.avgWeeklyWage', kind:'property', namespace:'newyork', parent:'c-ny-employee', definition:'Average weekly wage used for NY Paid Family Leave and affordability calculations.', owner:'NY Payroll Engineering',
+    notation:'NY-EMP-001.1', altLabels:['AWW','Average Weekly Wage'], scopeNote:'Recomputed each benefit year from trailing wage history.',
+    valueConstraint:{ datatype:'decimal', min:0, unit:'USD', required:true } },
+  { id:'c-worker-classification-result', term:'WorkerClassificationResult', kind:'entity', namespace:'core', definition:'Outcome of the multi-factor worker classification test applied to a given work relationship.', owner:'Architecture', artifactRef:'core-worker-classification-test',
+    notation:'WCR-001', altLabels:['Classification Outcome','Employee vs. Contractor Determination'], scopeNote:'Produced by evaluating the federal economic-reality test and, where the worksite jurisdiction requires it, the stricter state ABC test; the more protective result controls.', related:['c-worksite'] },
+  { id:'c-client-employer', term:'ClientEmployer', kind:'entity', namespace:'core', definition:'Canonical PEO client-employer entity — the small/mid-size business co-employing Worksite Employees with Insperity.', owner:'Architecture',
+    notation:'CLI-001', altLabels:['Client Company','Co-Employer'], scopeNote:'Distinct from Employee/Worksite; carries the statutory liability allocation defined in the PEO Client Allocation Matrix and Master Services Agreement.', related:['c-employee','c-worksite'] },
+  { id:'c-client-employer-ale-status', term:'ClientEmployer.aleStatus', kind:'property', namespace:'core', parent:'c-client-employer', definition:'Whether the client employer qualifies as an ACA Applicable Large Employer (ALE), i.e. 50+ full-time-equivalent employees.', owner:'Benefits Engineering',
+    notation:'CLI-001.1', altLabels:['ALE Status','Applicable Large Employer Flag'], scopeNote:'Determined via the ACA look-back measurement method; drives ACA employer-mandate filing obligations (Forms 1094-C/1095-C).',
+    valueConstraint:{ datatype:'boolean', required:true } }
+];
+
+const RELATIONS = [
+  { id:'r-equals', name:'equals', symbol:'=', type:'math', definition:'Equality comparison between a property value and a literal or another property.' },
+  { id:'r-gt', name:'greaterThan', symbol:'>', type:'math', definition:'Strict numeric ordering comparison.' },
+  { id:'r-gte-pct', name:'exceedsPercentOf', symbol:'>%', type:'math', definition:'Ratio comparison — subject exceeds a percentage threshold of a reference value.' },
+  { id:'r-haspart', name:'hasPart', symbol:'⊃', type:'structural', definition:'Composition relation — a whole is composed of one or more parts.' },
+  { id:'r-references', name:'references', symbol:'→', type:'structural', definition:'Referential-integrity relation — the subject must reference an existing instance of the target concept.' },
+  { id:'r-appliesTo', name:'appliesTo', symbol:'⇒', type:'association', definition:'Associates a computed value with the entity or property it modifies.' },
+  { id:'r-within', name:'withinTimeOf', symbol:'⏱', type:'temporal', definition:'Temporal ordering — an event occurs within a bounded time window of another.' }
+];
+
+const CALC_LIBRARY = [
+  { id:'calc-flsa-ot-pay', name:'FLSA Overtime Pay Amount', formula:'hoursOver40 * hourlyRate * 1.5', version:'1.3', owner:'Payroll Engineering',
+    alationId:'ALN-CALC-00842', certification:'Endorsed', lastReviewed:'2026-06-01' },
+  { id:'calc-predictive-sched-premium', name:'Predictive Scheduling Premium', formula:'noticeDaysGiven < 14 ? premiumHoursTable[noticeDaysGiven] : 0', version:'2.0', owner:'CA Payroll Engineering',
+    alationId:'ALN-CALC-00913', certification:'Endorsed', lastReviewed:'2026-05-15' },
+  { id:'calc-aca-affordability', name:'ACA Affordability Percentage', formula:'employeeContribution / max(rateOfPayIncome, w2Income, fplIncome)', version:'3.4', owner:'Benefits Engineering',
+    alationId:'ALN-CALC-01005', certification:'Warned', lastReviewed:'2026-04-20' },
+  { id:'calc-ny-pfl-benefit', name:'NY Paid Family Leave Benefit', formula:'min(avgWeeklyWage * 0.67, statewideAvgWeeklyWage * 0.67)', version:'5.1', owner:'NY Payroll Engineering',
+    alationId:'ALN-CALC-00711', certification:'Endorsed', lastReviewed:'2026-06-10' },
+  { id:'calc-ale-fte-count', name:'ACA ALE Full-Time-Equivalent Count', formula:'sum(fullTimeEmployees) + floor(sum(partTimeHours) / 120)', version:'2.1', owner:'Benefits Engineering',
+    alationId:'ALN-CALC-01128', certification:'Endorsed', lastReviewed:'2026-02-15' },
+  { id:'calc-suta-allocation', name:'SUTA Experience-Rate Allocation', formula:'wageBase * experienceRate * jurisdictionAllocationPct', version:'1.6', owner:'Payroll Tax Engineering',
+    alationId:'ALN-CALC-01201', certification:'Endorsed', lastReviewed:'2026-06-20' }
+];
+
+/* ===== Dependency (causal) map — directed edges between ARTIFACTS =====
+   type: 'references' (existence dependency) · 'extends' (domain composes/extends core)
+         'constrains' (a rule/logic reads a constraint's fields) · 'invokes' (a rule/logic calls another logic/computation) */
+const DEP_TYPES = {
+  references:  { label:'references',  color:'#6B7280' },
+  extends:     { label:'extends',     color:'#B8860B' },
+  constrains:  { label:'constrains',  color:'#2E5C8A' },
+  invokes:     { label:'invokes',     color:'#2E7D4F' }
+};
+const DEPENDENCIES = [
+  { from:'core-employee', to:'core-paycheck', type:'references' },
+  { from:'core-employee', to:'core-flsa-overtime-eligibility', type:'constrains' },
+  { from:'core-paycheck', to:'core-flsa-overtime-eligibility', type:'constrains' },
+  { from:'core-employee', to:'core-i9-verification', type:'constrains' },
+  { from:'core-flsa-overtime-eligibility', to:'core-payroll-tax-engine', type:'invokes' },
+  { from:'core-worksite', to:'ca-vocab-employee', type:'extends' },
+  { from:'ca-vocab-employee', to:'ca-meal-rest-break-rule', type:'constrains' },
+  { from:'ca-vocab-employee', to:'ca-overtime-calc', type:'invokes' },
+  { from:'core-payroll-tax-engine', to:'ca-overtime-calc', type:'invokes' },
+  { from:'ca-vocab-employee', to:'sf-vocab-hcso-employer', type:'constrains' },
+  { from:'sf-vocab-hcso-employer', to:'sf-hcso-legacy-rule', type:'constrains' },
+  { from:'sf-vocab-hcso-employer', to:'sf-paid-sick-leave-accrual-rule', type:'constrains' },
+  { from:'la-vocab-fair-workweek-employee', to:'la-predictive-scheduling-rule', type:'constrains' },
+  { from:'core-worksite', to:'ny-vocab-employee', type:'extends' },
+  { from:'ny-vocab-employee', to:'ny-pay-transparency-rule', type:'constrains' },
+  { from:'ny-vocab-employee', to:'ny-paid-family-leave-calc', type:'invokes' },
+  { from:'core-payroll-tax-engine', to:'ny-paid-family-leave-calc', type:'invokes' },
+  { from:'core-aca-affordability-pipeline', to:'ny-paid-family-leave-calc', type:'invokes' },
+  { from:'ny-vocab-employee', to:'nyc-vocab-fair-workweek-employer', type:'extends' },
+  { from:'nyc-vocab-fair-workweek-employer', to:'nyc-scheduling-premium-rule', type:'constrains' },
+  { from:'ny-vocab-employee', to:'westchester-vocab-safe-leave-employee', type:'extends' },
+  { from:'westchester-vocab-safe-leave-employee', to:'westchester-safe-leave-accrual-rule', type:'constrains' },
+  { from:'core-employee-v1-deprecated', to:'ca-new-hire-notice-draft', type:'references' },
+  { from:'core-worksite', to:'core-worker-classification-test', type:'constrains' },
+  { from:'core-worker-classification-test', to:'core-payroll-tax-engine', type:'invokes' },
+  { from:'core-eeo-protected-class', to:'core-pwfa-accommodation-rule', type:'constrains' },
+  { from:'core-eeo-protected-class', to:'core-pump-act-lactation-rule', type:'constrains' },
+  { from:'core-eeo-protected-class', to:'core-aedt-bias-audit', type:'constrains' },
+  { from:'core-aedt-bias-audit', to:'nyc-aedt-notice-rule', type:'extends' },
+  { from:'core-erisa-plan-governance', to:'core-secure2-ltpt-eligibility', type:'constrains' },
+  { from:'core-erisa-plan-governance', to:'core-cobra-qualifying-event-rule', type:'constrains' },
+  { from:'core-aca-ale-determination', to:'core-aca-affordability-pipeline', type:'invokes' },
+  { from:'core-worksite', to:'core-osha-recordkeeping-rule', type:'constrains' },
+  { from:'core-cpeo-certification', to:'core-multistate-tax-nexus-engine', type:'constrains' },
+  { from:'core-worksite', to:'core-multistate-tax-nexus-engine', type:'invokes' },
+  { from:'core-payroll-tax-engine', to:'core-multistate-tax-nexus-engine', type:'invokes' },
+  { from:'core-i9-verification', to:'core-fcra-background-check-workflow', type:'extends' },
+  { from:'ca-vocab-employee', to:'ca-workplace-violence-prevention-rule', type:'constrains' },
+  { from:'ca-vocab-employee', to:'ca-heat-illness-prevention-rule', type:'constrains' },
+  { from:'ny-vocab-employee', to:'ny-harassment-training-rule', type:'constrains' },
+  { from:'nyc-vocab-fair-workweek-employer', to:'nyc-aedt-notice-rule', type:'constrains' }
+];
+
+/* ===== Lint check detail & scenario test case detail, keyed by artifact id ===== */
+const LINT_RESULTS = {
+  'core-employee': { checks:[
+    { rule:'Schema well-formedness', status:'pass', message:'Valid JSON Schema, all $ref targets resolve.' },
+    { rule:'Naming convention', status:'pass', message:'Field names follow lowerCamelCase enterprise standard.' }
+  ]},
+  'core-worksite': { checks:[
+    { rule:'Breaking-change annotation', status:'pass', message:'Removed field legacyWorksiteCode is documented with a migration note.' }
+  ]},
+  'core-flsa-overtime-eligibility': { checks:[
+    { rule:'DMN static analysis — completeness', status:'pass', message:'All input combinations are covered by at least one rule row.' },
+    { rule:'DMN static analysis — overlap', status:'pass', message:'No two rule rows produce conflicting outputs for the same inputs.' }
+  ]},
+  'core-i9-verification': { checks:[
+    { rule:'DMN static analysis — completeness', status:'pass', message:'Input combinations covered.' },
+    { rule:'Reasoner check (HermiT)', status:'pass', message:'No contradictory axioms detected.' }
+  ]},
+  'sf-paid-sick-leave-accrual-rule': { checks:[
+    { rule:'DMN static analysis — overlap', status:'fail', message:'Rule rows 3 and 7 both match {employerSize: "<10", tenureMonths: "<90"} but produce conflicting outputs (Accrue vs. Frontload). Ambiguous hit policy.' },
+    { rule:'DMN static analysis — completeness', status:'pass', message:'All other input combinations are covered.' },
+    { rule:'Naming convention', status:'fail', message:'Column header "accrualRate " has a trailing space, breaking downstream code generation.' }
+  ]},
+  'ca-meal-rest-break-rule': { checks:[
+    { rule:'DMN static analysis — completeness', status:'pass', message:'Input combinations covered.' }
+  ]},
+  'nyc-vocab-fair-workweek-employer': { checks:[
+    { rule:'Schema well-formedness', status:'pass', message:'Valid JSON Schema.' }
+  ]},
+  'core-aedt-bias-audit': { checks:[
+    { rule:'DMN static analysis — completeness', status:'pass', message:'All input combinations are covered by at least one rule row.' },
+    { rule:'Scenario test — candidate notice timing', status:'fail', message:'Candidate notice generated same-day as AEDT use in the NYC hiring scenario; Local Law 144 requires notice at least 10 business days in advance.' }
+  ]},
+  'core-worker-classification-test': { checks:[
+    { rule:'DMN static analysis — completeness', status:'pass', message:'All input combinations covered across federal economic-reality factors and state ABC-test override.' },
+    { rule:'DMN static analysis — overlap', status:'pass', message:'No conflicting outputs for the same input combination.' }
+  ]}
+};
+
+const TEST_CASES = {
+  'core-flsa-overtime-eligibility': [
+    { name:'Non-exempt, over 40 hours', input:'classification=Non-Exempt, hoursWorked=45', expected:'overtimePay=5hrs @ 1.5x', actual:'overtimePay=5hrs @ 1.5x', result:'pass' },
+    { name:'Exempt, over 40 hours', input:'classification=Exempt, hoursWorked=45', expected:'overtimePay=0', actual:'overtimePay=0', result:'pass' },
+    { name:'Non-exempt, exactly 40 hours', input:'classification=Non-Exempt, hoursWorked=40.00', expected:'overtimePay=0 (strictly greater than)', actual:'overtimePay=0', result:'pass' }
+  ],
+  'core-i9-verification': [
+    { name:'Standard domestic hire', input:'citizenship=US, docType=Passport', expected:'status=Verified', actual:'status=Verified', result:'pass' },
+    { name:'E-Verify tentative nonconfirmation', input:'citizenship=Foreign National, evStatus=TNC', expected:'status=Verified (contested, pending resolution)', actual:'status=Rejected', result:'fail' },
+    { name:'Hire below work-permit age', input:'age=15', expected:'status=Rejected, reason=Underage', actual:'status=Rejected, reason=Underage', result:'pass' }
+  ],
+  'ca-meal-rest-break-rule': [
+    { name:'6-hour shift, no break logged', input:'shiftLength=6, mealBreakProvided=false', expected:'premiumOwed=true', actual:'premiumOwed=true', result:'pass' },
+    { name:'6-hour shift, break within window', input:'shiftLength=6, mealBreakProvided=true, breakStart=3', expected:'premiumOwed=false', actual:'premiumOwed=false', result:'pass' },
+    { name:'4-hour shift, no break', input:'shiftLength=4, mealBreakProvided=false', expected:'premiumOwed=false (below 5hr threshold)', actual:'premiumOwed=false', result:'pass' }
+  ],
+  'la-predictive-scheduling-rule': [
+    { name:'Schedule change with 5 days notice', input:'noticeDaysGiven=5', expected:'premiumHours=4', actual:'premiumHours=4', result:'pass' },
+    { name:'Schedule change with 12 days notice', input:'noticeDaysGiven=12', expected:'premiumHours=2', actual:'premiumHours=2', result:'pass' }
+  ],
+  'ny-pay-transparency-rule': [
+    { name:'Remote role performable in NY', input:'jobLocation=Remote-US, performableInNY=true', expected:'disclosureRequired=true', actual:'disclosureRequired=true', result:'pass' },
+    { name:'Role excluded from NY market', input:'jobLocation=Remote-US, performableInNY=false', expected:'disclosureRequired=false', actual:'disclosureRequired=false', result:'pass' }
+  ],
+  'core-aedt-bias-audit': [
+    { name:'NYC hiring decision, notice sent 10+ business days prior', input:'jurisdiction=NYC, noticeSentDaysPrior=12', expected:'auditGate=pass', actual:'auditGate=pass', result:'pass' },
+    { name:'NYC hiring decision, notice sent same day as AEDT use', input:'jurisdiction=NYC, noticeSentDaysPrior=0', expected:'auditGate=fail, blockHire=true', actual:'auditGate=pass, blockHire=false', result:'fail' },
+    { name:'Non-NYC jurisdiction, no local notice statute', input:'jurisdiction=TX, noticeSentDaysPrior=0', expected:'auditGate=pass (federal bias-audit still required, no notice-timing rule)', actual:'auditGate=pass', result:'pass' }
+  ],
+  'core-worker-classification-test': [
+    { name:'CA worksite, fails ABC test prong B', input:'jurisdiction=CA, controlTest=fail, coreBusinessWork=true, independentTrade=false', expected:'classification=Employee', actual:'classification=Employee', result:'pass' },
+    { name:'Federal-only worksite, passes economic-reality test as contractor', input:'jurisdiction=TX, opportunityForProfitLoss=true, investmentInEquipment=true, permanency=short-term', expected:'classification=Independent Contractor', actual:'classification=Independent Contractor', result:'pass' },
+    { name:'CA worksite, passes federal test but fails state ABC test', input:'jurisdiction=CA, economicRealityResult=Contractor, abcTestResult=Employee', expected:'classification=Employee (stricter state test controls)', actual:'classification=Employee', result:'pass' }
+  ]
+};
+
+function findConcept(id){ return CONCEPTS.find(c=>c.id===id); }
+function findRelation(id){ return RELATIONS.find(r=>r.id===id); }
+function findCalc(id){ return CALC_LIBRARY.find(c=>c.id===id); }
+function artifactsUsing(kind, id){
+  // kind: 'subject' | 'predicate' | 'calc' — returns artifacts whose triples reference this id
+  return ARTIFACTS.filter(a=> (a.triples||[]).some(t=>{
+    if(kind==='subject') return t.subject===id || (t.object && t.object.type==='concept' && t.object.ref===id);
+    if(kind==='predicate') return t.predicate===id;
+    if(kind==='calc') return t.object && t.object.type==='calc' && t.object.ref===id;
+  }));
+}
+function formatConstraint(vc){
+  if(!vc) return '<span class="ci-na">—</span>';
+  const parts = [];
+  if(vc.datatype) parts.push(vc.datatype);
+  if(vc.enum) parts.push('['+vc.enum.join(', ')+']');
+  if(vc.min!==undefined) parts.push('min '+vc.min);
+  if(vc.max!==undefined) parts.push('max '+vc.max);
+  if(vc.unit) parts.push(vc.unit);
+  if(vc.cardinality) parts.push('cardinality '+vc.cardinality);
+  if(vc.pattern) parts.push('pattern '+vc.pattern);
+  if(vc.required) parts.push('required');
+  return parts.join(' · ');
+}
+
+/* ============================= HELPERS ============================= */
+
+function catBadge(c){ return '<span class="badge b-'+c+'">'+c.charAt(0).toUpperCase()+c.slice(1)+'</span>'; }
+function lcBadge(l){ return '<span class="badge b-'+l.toLowerCase()+'">'+l+'</span>'; }
+function ciMark(v){
+  if(v==='pass') return '<span class="ci-pass">&#10003; pass</span>';
+  if(v==='fail') return '<span class="ci-fail">&#10007; fail</span>';
+  return '<span class="ci-na">n/a</span>';
+}
+function fmtDate(d){ return d; }
+
+let state = { namespace:null, category:'all', lifecycle:'', search:'', svcDomain:'all' };
+const DEP_COLUMNS = ['core','california','ca-losangeles','ca-sanfrancisco','newyork','ny-nyc','ny-westchester'];
+let dmState = { types: new Set(['constraint','rule','logic']), domains: new Set(DEP_COLUMNS), selected: null };
+let skosSelected = 'c-employee';
+
+/* ============================= NAV ============================= */
+document.querySelectorAll('.navitem').forEach(el=>{
+  el.addEventListener('click', ()=>{
+    document.querySelectorAll('.navitem').forEach(n=>n.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('sec-'+el.dataset.section).classList.add('active');
+  });
+});
+function activateSubtab(el){
+  const scope = el.closest('.section') || document;
+  scope.querySelectorAll('.subtab').forEach(n=>n.classList.remove('active'));
+  scope.querySelectorAll('.subpanel').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('sub-'+el.dataset.sub).classList.add('active');
+}
+document.querySelectorAll('.subtab').forEach(el=>{
+  el.addEventListener('click', ()=> activateSubtab(el));
+});
+
+/* ============================= OVERVIEW ============================= */
+function renderOverview(){
+  const total = ARTIFACTS.length;
+  const released = ARTIFACTS.filter(a=>a.lifecycle==='Released').length;
+  const domainsCount = DOMAINS.length;
+  const subCount = DOMAINS.reduce((n,d)=>n+d.subdomains.length,0);
+  const constraintsWithMapping = ARTIFACTS.filter(a=>a.category==='constraint' && a.namespace!=='core');
+  const mapped = constraintsWithMapping.filter(a=>a.mapping).length;
+  const mappingCoverage = constraintsWithMapping.length ? Math.round(100*mapped/constraintsWithMapping.length) : 100;
+  const ciFailures = ARTIFACTS.filter(a=>Object.values(a.ci).includes('fail')).length;
+
+  const cards = [
+    {val:total, lbl:'Total artifacts'},
+    {val:domainsCount+' / '+subCount, lbl:'Domains / sub-domains'},
+    {val:released+' ('+Math.round(100*released/total)+'%)', lbl:'Released'},
+    {val:mappingCoverage+'%', lbl:'Domain mapping coverage'},
+    {val:ciFailures, lbl:'Open CI failures'}
+  ];
+  document.getElementById('ov-cards').innerHTML = cards.map(c=>
+    '<div class="metric-card"><div class="val">'+c.val+'</div><div class="lbl">'+c.lbl+'</div></div>').join('');
+
+  const events = [];
+  ARTIFACTS.forEach(a=>a.history.forEach(h=>events.push({...h, art:a.name, ns:nsLabel(a.namespace)})));
+  events.sort((a,b)=> new Date(b.date) - new Date(a.date));
+  document.getElementById('ov-activity').innerHTML = events.slice(0,8).map(e=>
+    '<div class="tl-item"><div class="tdate">'+e.date+' · '+e.ns+'</div><div class="tevent">'+e.art+' — '+e.event+'</div><div class="tactor">'+e.actor+'</div></div>'
+  ).join('');
+}
+
+/* ============================= EXPLORER ============================= */
+function renderTree(){
+  let html = '<div class="tree-node'+(state.namespace===null?' active':'')+'" data-ns="">All namespaces <span class="tree-count">'+ARTIFACTS.length+'</span></div>';
+  DOMAINS.forEach(d=>{
+    const count = ARTIFACTS.filter(a=>a.namespace===d.id).length;
+    html += '<div class="tree-node'+(state.namespace===d.id?' active':'')+'" data-ns="'+d.id+'">'+d.name+' <span class="tree-count">'+count+'</span></div>';
+    d.subdomains.forEach(s=>{
+      const sc = ARTIFACTS.filter(a=>a.namespace===s.id).length;
+      html += '<div class="tree-node tree-sub'+(state.namespace===s.id?' active':'')+'" data-ns="'+s.id+'">'+s.name+' <span class="tree-count">'+sc+'</span></div>';
+    });
+  });
+  document.getElementById('exp-tree').innerHTML = html;
+  document.querySelectorAll('#exp-tree .tree-node').forEach(el=>{
+    el.addEventListener('click', ()=>{ state.namespace = el.dataset.ns || null; renderTree(); renderExplorerList(); });
+  });
+}
+function renderCatFilter(){
+  const cats = [['all','All'],['constraint','Constraints'],['rule','Rules'],['logic','Logic']];
+  document.getElementById('exp-cat-filter').innerHTML = cats.map(c=>
+    '<div class="chip'+(state.category===c[0]?' active':'')+'" data-cat="'+c[0]+'">'+c[1]+'</div>').join('');
+  document.querySelectorAll('#exp-cat-filter .chip').forEach(el=>{
+    el.addEventListener('click', ()=>{ state.category = el.dataset.cat; renderCatFilter(); renderExplorerList(); });
+  });
+}
+function renderSvcFilter(){
+  const opts = [['all','All service domains']].concat(SERVICE_DOMAINS.map(d=>[d.id,d.name]));
+  document.getElementById('exp-svc-filter').innerHTML = opts.map(o=>
+    '<div class="chip'+(state.svcDomain===o[0]?' active':'')+'" data-svc="'+o[0]+'">'+o[1]+'</div>').join('');
+  document.querySelectorAll('#exp-svc-filter .chip').forEach(el=>{
+    el.addEventListener('click', ()=>{ state.svcDomain = el.dataset.svc; renderSvcFilter(); renderExplorerList(); });
+  });
+}
+function renderExplorerList(){
+  let list = ARTIFACTS.filter(a=>{
+    if(state.namespace && a.namespace!==state.namespace) return false;
+    if(state.category!=='all' && a.category!==state.category) return false;
+    if(state.svcDomain && state.svcDomain!=='all' && a.serviceDomain!==state.svcDomain) return false;
+    const lf = document.getElementById('exp-lifecycle-filter').value;
+    if(lf && a.lifecycle!==lf) return false;
+    const q = document.getElementById('exp-search').value.trim().toLowerCase();
+    if(q && !a.name.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  document.getElementById('exp-list').innerHTML = list.map(a=>
+    '<div class="artifact-item" data-id="'+a.id+'"><div class="left"><strong>'+a.name+'</strong><div class="meta">'+nsLabel(a.namespace)+' · v'+a.version+' · '+a.owner+'</div></div>'+
+    '<div class="right">'+svcBadge(a.serviceDomain)+catBadge(a.category)+lcBadge(a.lifecycle)+'</div></div>'
+  ).join('') || '<p style="color:var(--muted);">No artifacts match the current filters.</p>';
+  document.querySelectorAll('#exp-list .artifact-item').forEach(el=>{
+    el.addEventListener('click', ()=> openDetail(el.dataset.id));
+  });
+}
+
+function openDetail(id){
+  const a = ARTIFACTS.find(x=>x.id===id);
+  if(!a) return;
+  let html = '<h3>'+a.name+'</h3><p style="color:var(--muted);margin-top:0;">'+nsLabel(a.namespace)+' · owned by '+a.owner+'</p>';
+  html += '<div>'+catBadge(a.category)+' '+lcBadge(a.lifecycle)+' '+svcBadge(a.serviceDomain)+'</div>';
+  html += '<div class="kv">'+
+    '<div class="k">Version</div><div>'+a.version+'</div>'+
+    '<div class="k">Last updated</div><div>'+a.updated+'</div>'+
+    '<div class="k">Description</div><div>'+a.description+'</div>';
+  if(a.mapping){
+    html += '<div class="k">Mapping</div><div>'+a.mapping.relation+' &rarr; '+a.mapping.target+' <br><span style="color:var(--muted);font-size:11.5px;">'+a.mapping.status+'</span></div>';
+  }
+  html += '<div class="k">CI checks</div><div>Lint: '+ciMark(a.ci.lint)+' &nbsp; Test: '+ciMark(a.ci.test)+' &nbsp; Diff: '+ciMark(a.ci.diff)+' &nbsp; Closure: '+ciMark(a.ci.closure)+'</div>';
+  html += '</div>';
+  html += '<h4>Lineage — subjects, predicates &amp; objects</h4>';
+  if(a.triples && a.triples.length){
+    html += '<table class="lineage-table"><thead><tr><th>Subject</th><th>Predicate</th><th>Object</th></tr></thead><tbody>';
+    a.triples.forEach(t=>{ html += tripleRow(t, a.id); });
+    html += '</tbody></table>';
+    html += '<p style="color:var(--muted);font-size:11.5px;margin-top:8px;">Click any term to see its full definition, value constraint, or — for calculations — its governing entry in Alation.</p>';
+  } else {
+    html += '<p style="color:var(--muted);font-size:12.5px;">No subject/predicate/object lineage recorded yet for this artifact.</p>';
+  }
+  html += '<button class="linkbtn" onclick="closeModal();jumpTo(\'lifecycle\',\''+a.id+'\')">View lifecycle</button>';
+  if(a.diff) html += '<button class="linkbtn secondary" onclick="closeModal();jumpTo(\'diffmap\',\''+a.id+'\',\'diff\')">View diff</button>';
+  if(a.mapping) html += '<button class="linkbtn secondary" onclick="closeModal();jumpTo(\'diffmap\',\''+a.id+'\',\'mapping\')">View mapping</button>';
+  document.getElementById('modal-body').innerHTML = html;
+  document.getElementById('modal').classList.add('active');
+}
+
+function tripleRow(t, backId){
+  const subj = findConcept(t.subject);
+  const pred = findRelation(t.predicate);
+  const subjHtml = subj ? '<span class="clickable-term" onclick="openConceptDetail(\''+subj.id+'\',\''+backId+'\')">'+subj.term+'</span>' : t.subject;
+  const predHtml = pred ? '<span class="clickable-term" onclick="openRelationDetail(\''+pred.id+'\',\''+backId+'\')">'+pred.name+' ('+pred.symbol+')</span> <span class="badge b-'+pred.type+'">'+pred.type+'</span>' : t.predicate;
+  let objHtml = '';
+  if(t.object.type==='literal'){
+    objHtml = '<strong>'+t.object.value+'</strong>' + (t.object.constraint ? '<br><span style="color:var(--muted);font-size:11px;">constraint: '+formatConstraint(t.object.constraint)+'</span>' : '');
+  } else if(t.object.type==='concept'){
+    const oc = findConcept(t.object.ref);
+    objHtml = oc ? '<span class="clickable-term" onclick="openConceptDetail(\''+oc.id+'\',\''+backId+'\')">'+oc.term+'</span>' : t.object.ref;
+    if(t.object.note) objHtml += '<br><span style="color:var(--muted);font-size:11px;">'+t.object.note+'</span>';
+  } else if(t.object.type==='calc'){
+    const cc = findCalc(t.object.ref);
+    objHtml = cc ? '<span class="clickable-term" onclick="openCalcDetail(\''+cc.id+'\',\''+backId+'\')">'+cc.name+'</span> <span class="badge b-'+(cc.certification==='Endorsed'?'endorsed':(cc.certification==='Warned'?'warned':'deprecatedcert'))+'">'+cc.certification+'</span>' : t.object.ref;
+  }
+  return '<tr class="lineage-row"><td>'+subjHtml+'</td><td>'+predHtml+'</td><td>'+objHtml+'</td></tr>';
+}
+
+function usedInList(list){
+  if(!list.length) return '<div class="used-in-list">Not referenced by any artifact’s lineage yet.</div>';
+  return '<div class="used-in-list">Used by: '+list.map(a=>'<a onclick="openDetail(\''+a.id+'\')">'+a.name+'</a>').join(', ')+'</div>';
+}
+
+function openConceptDetail(id, backId){
+  const c = findConcept(id);
+  if(!c) return;
+  let html = '<h3>'+c.term+'</h3><p style="color:var(--muted);margin-top:0;">'+(c.kind==='entity'?'Entity concept':'Property concept')+' · '+nsLabel(c.namespace)+' · owned by '+c.owner+'</p>';
+  html += '<div class="kv"><div class="k">Definition</div><div>'+c.definition+'</div>';
+  if(c.parent){ const p = findConcept(c.parent); html += '<div class="k">Parent entity</div><div><span class="clickable-term" onclick="openConceptDetail(\''+p.id+'\',\''+(backId||'')+'\')">'+p.term+'</span></div>'; }
+  if(c.valueConstraint){ html += '<div class="k">Value constraint</div><div>'+formatConstraint(c.valueConstraint)+'</div>'; }
+  if(c.mapsTo){ html += '<div class="k">Maps to Core</div><div>'+c.mapsTo.relation+' &rarr; '+c.mapsTo.target+'</div>'; }
+  if(c.artifactRef){ html += '<div class="k">Defined by</div><div><a style="color:var(--navy);cursor:pointer;" onclick="closeModal();openDetail(\''+c.artifactRef+'\')">'+ARTIFACTS.find(a=>a.id===c.artifactRef).name+'</a></div>'; }
+  html += '</div>';
+  html += usedInList(artifactsUsing('subject', c.id));
+  if(backId) html += '<button class="linkbtn secondary" onclick="openDetail(\''+backId+'\')">&larr; Back to artifact</button>';
+  document.getElementById('modal-body').innerHTML = html;
+  document.getElementById('modal').classList.add('active');
+}
+
+function openRelationDetail(id, backId){
+  const r = findRelation(id);
+  if(!r) return;
+  let html = '<h3>'+r.name+' <span style="color:var(--muted);">('+r.symbol+')</span></h3>';
+  html += '<div><span class="badge b-'+r.type+'">'+r.type+'</span></div>';
+  html += '<div class="kv"><div class="k">Definition</div><div>'+r.definition+'</div></div>';
+  html += usedInList(artifactsUsing('predicate', r.id));
+  if(backId) html += '<button class="linkbtn secondary" onclick="openDetail(\''+backId+'\')">&larr; Back to artifact</button>';
+  document.getElementById('modal-body').innerHTML = html;
+  document.getElementById('modal').classList.add('active');
+}
+
+function openCalcDetail(id, backId){
+  const c = findCalc(id);
+  if(!c) return;
+  let html = '<h3>'+c.name+'</h3><p style="color:var(--muted);margin-top:0;">Governed in Alation — not embedded inline in application code.</p>';
+  html += '<div class="codebox">'+c.formula+'</div>';
+  html += '<div class="kv">'+
+    '<div class="k">Version</div><div>'+c.version+'</div>'+
+    '<div class="k">Owner</div><div>'+c.owner+'</div>'+
+    '<div class="k">Certification</div><div><span class="badge b-'+(c.certification==='Endorsed'?'endorsed':(c.certification==='Warned'?'warned':'deprecatedcert'))+'">'+c.certification+'</span></div>'+
+    '<div class="k">Last reviewed</div><div>'+c.lastReviewed+'</div>'+
+    '<div class="k">Alation ID</div><div><span class="alation-id">'+c.alationId+'</span></div>'+
+    '</div>';
+  html += usedInList(artifactsUsing('calc', c.id));
+  if(backId) html += '<button class="linkbtn secondary" onclick="openDetail(\''+backId+'\')">&larr; Back to artifact</button>';
+  document.getElementById('modal-body').innerHTML = html;
+  document.getElementById('modal').classList.add('active');
+}
+
+/* ---- Vocabulary / Upper Ontology / Calc Library catalog panels ---- */
+let vocabFilter = '';
+function renderVocabulary(){
+  document.getElementById('vocab-kind-filter').innerHTML = ['', 'entity','property'].map(k=>
+    '<div class="chip'+(vocabFilter===k?' active':'')+'" data-k="'+k+'">'+(k||'All kinds')+'</div>').join('');
+  document.querySelectorAll('#vocab-kind-filter .chip').forEach(el=>el.addEventListener('click', ()=>{ vocabFilter = el.dataset.k; renderVocabulary(); }));
+  const rows = CONCEPTS.filter(c=> !vocabFilter || c.kind===vocabFilter);
+  document.querySelector('#vocab-table tbody').innerHTML = rows.map(c=>
+    '<tr><td><span class="clickable-term" onclick="openConceptDetail(\''+c.id+'\')">'+c.term+'</span></td>'+
+    '<td>'+c.kind+'</td><td>'+nsLabel(c.namespace)+'</td><td>'+c.definition+'</td>'+
+    '<td>'+(c.valueConstraint?formatConstraint(c.valueConstraint):'<span class="ci-na">—</span>')+'</td>'+
+    '<td>'+(c.mapsTo?c.mapsTo.relation+' &rarr; '+c.mapsTo.target:'<span class="ci-na">—</span>')+'</td></tr>'
+  ).join('');
+}
+
+let relFilter = '';
+function renderRelations(){
+  document.getElementById('rel-type-filter').innerHTML = ['','math','structural','temporal','association'].map(t=>
+    '<div class="chip'+(relFilter===t?' active':'')+'" data-t="'+t+'">'+(t||'All types')+'</div>').join('');
+  document.querySelectorAll('#rel-type-filter .chip').forEach(el=>el.addEventListener('click', ()=>{ relFilter = el.dataset.t; renderRelations(); }));
+  const rows = RELATIONS.filter(r=> !relFilter || r.type===relFilter);
+  document.querySelector('#rel-table tbody').innerHTML = rows.map(r=>
+    '<tr><td><span class="clickable-term" onclick="openRelationDetail(\''+r.id+'\')">'+r.name+'</span></td>'+
+    '<td style="font-size:16px;">'+r.symbol+'</td><td><span class="badge b-'+r.type+'">'+r.type+'</span></td><td>'+r.definition+'</td></tr>'
+  ).join('');
+}
+
+let calcFilter = '';
+function renderCalcLibrary(){
+  document.getElementById('calc-cert-filter').innerHTML = ['','Endorsed','Warned','Deprecated'].map(c=>
+    '<div class="chip'+(calcFilter===c?' active':'')+'" data-c="'+c+'">'+(c||'All certifications')+'</div>').join('');
+  document.querySelectorAll('#calc-cert-filter .chip').forEach(el=>el.addEventListener('click', ()=>{ calcFilter = el.dataset.c; renderCalcLibrary(); }));
+  const rows = CALC_LIBRARY.filter(c=> !calcFilter || c.certification===calcFilter);
+  document.querySelector('#calc-table tbody').innerHTML = rows.map(c=>
+    '<tr><td><span class="clickable-term" onclick="openCalcDetail(\''+c.id+'\')">'+c.name+'</span></td>'+
+    '<td><code style="font-size:11.5px;">'+c.formula+'</code></td><td>v'+c.version+'</td><td>'+c.owner+'</td>'+
+    '<td><span class="badge b-'+(c.certification==='Endorsed'?'endorsed':(c.certification==='Warned'?'warned':'deprecatedcert'))+'">'+c.certification+'</span></td>'+
+    '<td><span class="alation-id">'+c.alationId+'</span></td></tr>'
+  ).join('');
+}
+/* ---- Service Domains (Discover -> Run lifecycle, per Policy_CrossReference.pdf) ---- */
+function renderServiceDomains(){
+  document.querySelector('#peo-standards-table tbody').innerHTML = PEO_STANDARDS.map(s=>
+    '<tr><td><strong>'+s.name+'</strong></td><td>'+s.body+'</td><td>'+s.purpose+'</td></tr>'
+  ).join('');
+
+  document.getElementById('svc-domain-blocks').innerHTML = SERVICE_DOMAINS.map(d=>{
+    const phases = SERVICE_DOMAIN_MATRIX[d.id] || [];
+    const phaseRows = DOC3_PHASES.map((p,i)=>{
+      const row = phases[i] || {scope:'—', activity:'—'};
+      return '<tr><td class="phase-cell">'+p+'</td><td>'+row.scope+'</td><td>'+row.activity+'</td></tr>';
+    }).join('');
+    const linked = ARTIFACTS.filter(a=>a.serviceDomain===d.id);
+    const linkedHtml = linked.length
+      ? linked.map(a=>'<a onclick="openDetail(\''+a.id+'\')">'+a.name+'</a>').join(', ')
+      : 'No linked artifacts yet.';
+    return '<div class="svc-block">'+
+      '<h3>'+svcBadge(d.id)+' '+d.name+'</h3>'+
+      '<p class="svc-desc">Capability lifecycle: Discover &rarr; Define &rarr; Design &rarr; Develop &rarr; Deliver &rarr; Run.</p>'+
+      '<table class="svc-phase-table"><thead><tr><th style="width:90px;">Phase</th><th>Scope / Standards</th><th>Activity</th></tr></thead><tbody>'+phaseRows+'</tbody></table>'+
+      '<div class="svc-linked"><strong style="font-size:12.5px;color:var(--navy);">Linked SSOT artifacts (jurisdiction view): </strong><span class="used-in-list" style="display:inline;">'+linkedHtml+'</span></div>'+
+      '</div>';
+  }).join('');
+}
+
+function closeModal(){ document.getElementById('modal').classList.remove('active'); }
+document.getElementById('modal').addEventListener('click', e=>{ if(e.target.id==='modal') closeModal(); });
+
+function jumpTo(section, artId, subtab){
+  document.querySelectorAll('.navitem').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelector('.navitem[data-section="'+section+'"]').classList.add('active');
+  document.getElementById('sec-'+section).classList.add('active');
+  if(section==='lifecycle'){ document.getElementById('lc-select').value = artId; renderLifecycle(); }
+  if(section==='diffmap'){
+    if(subtab==='mapping'){
+      activateSubtab(document.querySelector('#sec-diffmap .subtab[data-sub="mapping"]'));
+      document.getElementById('map-select').value = artId; renderMapping();
+    } else {
+      activateSubtab(document.querySelector('#sec-diffmap .subtab[data-sub="diff"]'));
+      document.getElementById('diff-select').value = artId; renderDiff();
+    }
+  }
+  if(section==='explorer' && subtab){
+    activateSubtab(document.querySelector('#sec-explorer .subtab[data-sub="'+subtab+'"]'));
+  }
+}
+
+/* ============================= LIFECYCLE ============================= */
+function populateLcSelect(){
+  const sel = document.getElementById('lc-select');
+  sel.innerHTML = ARTIFACTS.map(a=>'<option value="'+a.id+'">'+a.name+' ('+nsLabel(a.namespace)+')</option>').join('');
+  sel.addEventListener('change', renderLifecycle);
+}
+function renderLifecycle(){
+  const a = ARTIFACTS.find(x=>x.id===document.getElementById('lc-select').value) || ARTIFACTS[0];
+  const curIdx = LIFECYCLE_STAGES.indexOf(a.lifecycle);
+  document.getElementById('lc-stepper').innerHTML = LIFECYCLE_STAGES.map((s,i)=>{
+    let cls = i<curIdx ? 'done' : (i===curIdx ? 'current' : '');
+    return '<div class="step '+cls+'"><div class="dot">'+(i+1)+'</div><div class="label">'+s+'</div></div>';
+  }).join('');
+  document.getElementById('lc-gov').innerHTML = LIFECYCLE_STAGES.map(s=>{
+    const g = GOVERNANCE_INFO[s];
+    return '<div class="gov-cell"><strong>'+s+'</strong>Reviewer: '+g.who+'<br>'+g.what+'<br><em>CI: '+g.ci+'</em></div>';
+  }).join('');
+  document.getElementById('lc-history').innerHTML = a.history.map(h=>
+    '<div class="tl-item"><div class="tdate">'+h.date+'</div><div class="tevent">'+h.event+'</div><div class="tactor">'+h.actor+'</div></div>'
+  ).join('') || '<p style="color:var(--muted);">No history recorded.</p>';
+}
+
+/* ============================= DIFF ============================= */
+function populateDiffSelect(){
+  const withDiff = ARTIFACTS.filter(a=>a.diff);
+  const sel = document.getElementById('diff-select');
+  sel.innerHTML = withDiff.map(a=>'<option value="'+a.id+'">'+a.name+' ('+nsLabel(a.namespace)+')</option>').join('');
+  sel.addEventListener('change', renderDiff);
+}
+function renderDiff(){
+  const withDiff = ARTIFACTS.filter(a=>a.diff);
+  const a = withDiff.find(x=>x.id===document.getElementById('diff-select').value) || withDiff[0];
+  const worst = a.diff.changes.reduce((w,c)=>{
+    const rank = {MAJOR:3,MINOR:2,PATCH:1};
+    return rank[c.severity]>rank[w] ? c.severity : w;
+  }, 'PATCH');
+  const declared = a.version.split('.')[0] !== a.diff.from.split('.')[0] ? 'MAJOR' :
+                   (a.version.split('.')[1] !== a.diff.from.split('.')[1] ? 'MINOR' : 'PATCH');
+  const match = declared===worst;
+  document.getElementById('diff-banner').innerHTML =
+    '<div class="banner '+(match?'ok':'warn')+'">'+(match ? '&#10003; Diff classifier: declared bump ('+declared+') matches detected severity ('+worst+').' :
+    '&#10007; Diff classifier: declared bump ('+declared+') does not match detected severity ('+worst+') — CI blocked until fixed.')+'</div>';
+  document.querySelector('#diff-table tbody').innerHTML = a.diff.changes.map(c=>
+    '<tr><td>'+c.field+'</td><td class="diff-'+(c.type==='removed'?'removed':'')+'">'+c.before+'</td><td class="diff-'+(c.type==='added'?'added':(c.type==='modified'?'modified':''))+'">'+c.after+'</td>'+
+    '<td>'+c.type+'</td><td><span class="sev-'+c.severity+'">'+c.severity+'</span></td></tr>'
+  ).join('');
+}
+
+/* ============================= MAPPING ============================= */
+function populateMapSelect(){
+  const withMap = ARTIFACTS.filter(a=>a.mapping);
+  const sel = document.getElementById('map-select');
+  sel.innerHTML = withMap.map(a=>'<option value="'+a.id+'">'+nsLabel(a.namespace)+' : '+a.name+'</option>').join('');
+  sel.addEventListener('change', renderMapping);
+}
+function renderMapping(){
+  const withMap = ARTIFACTS.filter(a=>a.mapping);
+  const a = withMap.find(x=>x.id===document.getElementById('map-select').value) || withMap[0];
+  document.getElementById('map-flow').innerHTML =
+    '<div class="map-box">'+nsLabel(a.namespace)+' : '+a.name+'</div>'+
+    '<div class="map-rel"><div class="arrow">&#8594;</div>'+a.mapping.relation+'</div>'+
+    '<div class="map-box core">'+a.mapping.target+'</div>';
+  document.getElementById('map-provenance').innerHTML =
+    '<div class="k">Owner</div><div>'+a.mapping.owner+'</div>'+
+    '<div class="k">Review status</div><div>'+a.mapping.status+'</div>'+
+    '<div class="k">Relation type</div><div>'+a.mapping.relation+' (SKOS)</div>';
+  document.querySelector('#map-registry tbody').innerHTML = MAPPING_REGISTRY.map(m=>
+    '<tr><td>'+m.term+'</td><td>'+m.relation+'</td><td>'+m.target+'</td><td>'+m.owner+'</td><td>'+m.status+'</td></tr>'
+  ).join('');
+}
+
+/* ============================= TESTING & MEASURES ============================= */
+function renderTesting(){
+  const total = ARTIFACTS.length;
+  const released = ARTIFACTS.filter(a=>a.lifecycle==='Released').length;
+  const passRate = Math.round(100*ARTIFACTS.filter(a=>!Object.values(a.ci).includes('fail')).length/total);
+  const constraintsDomain = ARTIFACTS.filter(a=>a.category==='constraint' && a.namespace!=='core');
+  const mappingCoverage = Math.round(100*constraintsDomain.filter(a=>a.mapping).length/constraintsDomain.length);
+  const deprecatedStillConsumed = ARTIFACTS.filter(a=>a.lifecycle==='Deprecated').length;
+  const failing = ARTIFACTS.filter(a=>Object.values(a.ci).includes('fail')).length;
+  const lineageCoverage = Math.round(100*ARTIFACTS.filter(a=>a.triples&&a.triples.length).length/total);
+
+  document.getElementById('tm-cards').innerHTML = [
+    {val:released, lbl:'Released specs'},
+    {val:passRate+'%', lbl:'Overall CI pass rate'},
+    {val:mappingCoverage+'%', lbl:'Mapping coverage (domain constraints)'},
+    {val:lineageCoverage+'%', lbl:'Lineage coverage (subject/predicate/object)'},
+    {val:deprecatedStillConsumed, lbl:'Deprecated, still served'},
+    {val:failing, lbl:'Artifacts with a failing check'}
+  ].map(c=>'<div class="metric-card"><div class="val">'+c.val+'</div><div class="lbl">'+c.lbl+'</div></div>').join('');
+
+  // stage chart
+  const stageCounts = LIFECYCLE_STAGES.map(s=>ARTIFACTS.filter(a=>a.lifecycle===s).length);
+  const maxStage = Math.max(...stageCounts,1);
+  document.getElementById('tm-chart-stage').innerHTML = LIFECYCLE_STAGES.map((s,i)=>{
+    const h = Math.round(130*stageCounts[i]/maxStage);
+    return '<div class="bar-col"><div class="bar-val">'+stageCounts[i]+'</div><div class="bar" style="height:'+Math.max(h,4)+'px;background:var(--navy)"></div><div class="bar-lbl">'+s+'</div></div>';
+  }).join('');
+
+  // domain chart
+  const domainKeys = DOMAINS.map(d=>d.id).concat(DOMAINS.flatMap(d=>d.subdomains.map(s=>s.id)));
+  const domainLabels = DOMAINS.map(d=>d.name).concat(DOMAINS.flatMap(d=>d.subdomains.map(s=>s.name)));
+  const domainCounts = domainKeys.map(k=>ARTIFACTS.filter(a=>a.namespace===k).length);
+  const maxDom = Math.max(...domainCounts,1);
+  document.getElementById('tm-chart-domain').innerHTML = domainKeys.map((k,i)=>{
+    const h = Math.round(130*domainCounts[i]/maxDom);
+    return '<div class="bar-col"><div class="bar-val">'+domainCounts[i]+'</div><div class="bar" style="height:'+Math.max(h,4)+'px;background:var(--gold)"></div><div class="bar-lbl">'+domainLabels[i]+'</div></div>';
+  }).join('');
+
+  // filter dropdown
+  const filterSel = document.getElementById('tm-filter');
+  if(filterSel.options.length<=1){
+    const opts = [['','All namespaces']].concat(domainKeys.map((k,i)=>[k,domainLabels[i]]));
+    filterSel.innerHTML = opts.map(o=>'<option value="'+o[0]+'">'+o[1]+'</option>').join('');
+    filterSel.addEventListener('change', renderCiTable);
+  }
+  renderCiTable();
+}
+function renderCiTable(){
+  const ns = document.getElementById('tm-filter').value;
+  const rows = ARTIFACTS.filter(a=> !ns || a.namespace===ns);
+  document.querySelector('#tm-table tbody').innerHTML = rows.map(a=>
+    '<tr class="ci-row" onclick="openCiDetail(\''+a.id+'\')"><td>'+a.name+'</td><td>'+nsLabel(a.namespace)+'</td><td>'+catBadge(a.category)+'</td>'+
+    '<td>'+ciMark(a.ci.lint)+'</td><td>'+ciMark(a.ci.test)+'</td><td>'+ciMark(a.ci.diff)+'</td><td>'+ciMark(a.ci.closure)+'</td></tr>'
+  ).join('');
+}
+
+/* ============================= CI / TEST DETAIL MODAL ============================= */
+function openCiDetail(id){
+  const a = ARTIFACTS.find(x=>x.id===id);
+  if(!a) return;
+  let html = '<h3>'+a.name+'</h3><p style="color:var(--muted);margin-top:0;">'+nsLabel(a.namespace)+' · '+catBadge(a.category)+' '+lcBadge(a.lifecycle)+'</p>';
+
+  html += '<h4>Lint — '+ciMark(a.ci.lint)+'</h4>';
+  const lint = LINT_RESULTS[id];
+  if(lint){
+    html += lint.checks.map(c=> '<div class="lint-item '+c.status+'">'+(c.status==='pass'?'&#10003;':'&#10007;')+' <strong>'+c.rule+'</strong><br>'+c.message+'</div>').join('');
+  } else if(a.ci.lint==='n/a'){
+    html += '<p style="color:var(--muted);font-size:12.5px;">Not applicable — computational logic is reviewed via standard code review, not spec linting.</p>';
+  } else {
+    html += '<p style="color:var(--muted);font-size:12.5px;">'+(a.ci.lint==='pass' ? 'All lint rules passed (detailed check log not yet cataloged for this artifact).' : 'Lint failed (detailed check log not yet cataloged for this artifact).')+'</p>';
+  }
+
+  html += '<h4>Scenario tests — '+ciMark(a.ci.test)+'</h4>';
+  const cases = TEST_CASES[id];
+  if(cases){
+    html += '<table><thead><tr><th>Test case</th><th>Input</th><th>Expected</th><th>Actual</th><th>Result</th></tr></thead><tbody>'+
+      cases.map(t=>'<tr class="test-case-row"><td>'+t.name+'</td><td>'+t.input+'</td><td>'+t.expected+'</td><td>'+t.actual+'</td><td>'+(t.result==='pass'?'<span class="ci-pass">&#10003; pass</span>':'<span class="ci-fail">&#10007; fail</span>')+'</td></tr>').join('')+
+      '</tbody></table>';
+  } else if(a.ci.test==='n/a'){
+    html += '<p style="color:var(--muted);font-size:12.5px;">Covered by standard unit tests in the owning service, not scenario-based rule tests.</p>';
+  } else {
+    html += '<p style="color:var(--muted);font-size:12.5px;">'+(a.ci.test==='pass' ? 'All scenario tests passed (individual cases not yet cataloged for this artifact).' : 'Scenario tests failed (individual cases not yet cataloged for this artifact).')+'</p>';
+  }
+
+  html += '<h4>Diff classifier — '+ciMark(a.ci.diff)+'</h4>';
+  if(a.diff){
+    const worst = a.diff.changes.reduce((w,c)=>{ const rank={MAJOR:3,MINOR:2,PATCH:1}; return rank[c.severity]>rank[w]?c.severity:w; }, 'PATCH');
+    const declared = a.version.split('.')[0]!==a.diff.from.split('.')[0] ? 'MAJOR' : (a.version.split('.')[1]!==a.diff.from.split('.')[1] ? 'MINOR' : 'PATCH');
+    html += '<p style="font-size:12.5px;">v'+a.diff.from+' &rarr; v'+a.version+' — declared <span class="sev-'+declared+'">'+declared+'</span>, detected <span class="sev-'+worst+'">'+worst+'</span> '+(declared===worst?'&#10003; match':'&#10007; mismatch')+'</p>';
+  } else {
+    html += '<p style="color:var(--muted);font-size:12.5px;">No diff on file for the current version of this artifact.</p>';
+  }
+
+  html += '<button class="linkbtn secondary" onclick="closeModal();openDetail(\''+a.id+'\')">View full artifact</button>';
+  document.getElementById('modal-body').innerHTML = html;
+  document.getElementById('modal').classList.add('active');
+}
+
+/* ============================= DEPENDENCY MAP ============================= */
+function truncate(s,n){ return s.length>n ? s.slice(0,n-1)+'…' : s; }
+
+function computeDepLayout(){
+  const W=900, marginX=90, marginTop=50, rowGap=46;
+  const colGap = (W - marginX*2) / (DEP_COLUMNS.length-1);
+  const columns = DEP_COLUMNS.map((ns,ci)=>({ ns, x: marginX+ci*colGap }));
+  const layout = {};
+  columns.forEach(col=>{
+    const order = {constraint:0, rule:1, logic:2};
+    const nodes = ARTIFACTS.filter(a=>a.namespace===col.ns).sort((a,b)=> (order[a.category]-order[b.category]) || a.name.localeCompare(b.name));
+    nodes.forEach((a,ri)=>{ layout[a.id] = { x:col.x, y:marginTop+ri*rowGap, namespace:col.ns, category:a.category, name:a.name, lifecycle:a.lifecycle }; });
+  });
+  return { layout, columns };
+}
+
+function selectDepNode(id){
+  dmState.selected = (dmState.selected===id) ? null : id;
+  renderDependencyMap();
+}
+
+function renderDepSelection(){
+  const box = document.getElementById('dm-selection');
+  if(!dmState.selected){ box.innerHTML = 'Click any node to see its upstream and downstream dependencies.'; return; }
+  const a = ARTIFACTS.find(x=>x.id===dmState.selected);
+  if(!a){ box.innerHTML = ''; return; }
+  const upstream = DEPENDENCIES.filter(d=>d.to===dmState.selected);
+  const downstream = DEPENDENCIES.filter(d=>d.from===dmState.selected);
+  const depLine = d=>{
+    const other = ARTIFACTS.find(x=>x.id===(d.to===dmState.selected?d.from:d.to));
+    return '<div style="padding:4px 0;"><a onclick="selectDepNode(\''+other.id+'\')" style="color:var(--navy);cursor:pointer;">'+other.name+'</a> '+
+      '<span class="badge" style="background:'+DEP_TYPES[d.type].color+'22;color:'+DEP_TYPES[d.type].color+';">'+d.type+'</span></div>';
+  };
+  let html = '<div style="font-weight:700;margin-bottom:4px;">'+a.name+'</div>';
+  html += catBadge(a.category)+' '+lcBadge(a.lifecycle)+'<br><br>';
+  html += '<div class="k">Depends on ('+upstream.length+')</div>' + (upstream.length ? upstream.map(depLine).join('') : '<div style="color:var(--muted);">None</div>');
+  html += '<div class="k" style="margin-top:8px;">Feeds into ('+downstream.length+')</div>' + (downstream.length ? downstream.map(depLine).join('') : '<div style="color:var(--muted);">None</div>');
+  html += '<button class="linkbtn secondary" style="margin-top:10px;" onclick="dmState.selected=null;renderDependencyMap();">Clear selection</button>';
+  html += '<button class="linkbtn" style="margin-top:10px;" onclick="openDetail(\''+a.id+'\')">Open artifact</button>';
+  box.innerHTML = html;
+}
+
+function renderDependencyMap(){
+  const typeOpts = [['constraint','Constraints'],['rule','Rules'],['logic','Logic']];
+  document.getElementById('dm-type-filter').innerHTML = typeOpts.map(([k,l])=>
+    '<label class="depmap-check"><input type="checkbox" data-k="'+k+'" '+(dmState.types.has(k)?'checked':'')+'> '+l+'</label>').join('');
+  document.querySelectorAll('#dm-type-filter input').forEach(el=>el.addEventListener('change', ()=>{
+    if(el.checked) dmState.types.add(el.dataset.k); else dmState.types.delete(el.dataset.k);
+    renderDependencyMap();
+  }));
+
+  document.getElementById('dm-domain-filter').innerHTML = DEP_COLUMNS.map(k=>
+    '<label class="depmap-check"><input type="checkbox" data-k="'+k+'" '+(dmState.domains.has(k)?'checked':'')+'> '+nsLabel(k)+'</label>').join('');
+  document.querySelectorAll('#dm-domain-filter input').forEach(el=>el.addEventListener('change', ()=>{
+    if(el.checked) dmState.domains.add(el.dataset.k); else dmState.domains.delete(el.dataset.k);
+    renderDependencyMap();
+  }));
+
+  document.getElementById('dm-legend').innerHTML = Object.entries(DEP_TYPES).map(([k,v])=>
+    '<div style="display:flex;align-items:center;gap:8px;padding:3px 0;font-size:12px;"><span class="legend-swatch" style="background:'+v.color+'"></span>'+v.label+'</div>').join('') +
+    '<div style="margin-top:10px;font-size:11px;color:var(--muted);">Arrow points from the depended-upon item toward the item that depends on it. Node fill = category (blue constraint, gold rule, green logic). Dashed outline = deprecated/retired.</div>';
+
+  const { layout, columns } = computeDepLayout();
+  const visible = id=>{ const n = layout[id]; return !!n && dmState.types.has(n.category) && dmState.domains.has(n.namespace); };
+  const catColor = { constraint:'#2E5C8A', rule:'#B8860B', logic:'#2E7D4F' };
+  const sel = dmState.selected;
+
+  let svg = '<defs>';
+  Object.entries(DEP_TYPES).forEach(([k,v])=>{
+    svg += '<marker id="arrow-'+k+'" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="'+v.color+'"></path></marker>';
+  });
+  svg += '</defs>';
+
+  DEPENDENCIES.forEach(dep=>{
+    const a = layout[dep.from], b = layout[dep.to];
+    if(!a || !b) return;
+    const shown = visible(dep.from) && visible(dep.to);
+    const connectedToSel = sel && (dep.from===sel || dep.to===sel);
+    let cls = 'depmap-edge';
+    if(!shown) cls += ' dim';
+    else if(sel && !connectedToSel) cls += ' dim';
+    else if(sel && connectedToSel) cls += ' hi';
+    const dx=b.x-a.x, dy=b.y-a.y, len=Math.hypot(dx,dy)||1, ux=dx/len, uy=dy/len, r=9;
+    const sx=a.x+ux*r, sy=a.y+uy*r, ex=b.x-ux*(r+6), ey=b.y-uy*(r+6);
+    svg += '<path class="'+cls+'" d="M'+sx+','+sy+' L'+ex+','+ey+'" stroke="'+DEP_TYPES[dep.type].color+'" marker-end="url(#arrow-'+dep.type+')"></path>';
+  });
+
+  Object.entries(layout).forEach(([id,n])=>{
+    const shown = visible(id);
+    const isSel = id===sel;
+    const connected = sel && DEPENDENCIES.some(d=> (d.from===sel&&d.to===id) || (d.to===sel&&d.from===id));
+    let cls = 'depmap-node';
+    if(!shown) cls += ' dim';
+    else if(sel && !isSel && !connected) cls += ' dim';
+    const strokeColor = isSel ? '#111827' : '#fff';
+    const dashAttr = (n.lifecycle==='Deprecated'||n.lifecycle==='Retired') ? ' stroke-dasharray="3,2"' : '';
+    svg += '<circle class="'+cls+'" cx="'+n.x+'" cy="'+n.y+'" r="9" fill="'+catColor[n.category]+'" stroke="'+strokeColor+'"'+dashAttr+' onclick="selectDepNode(\''+id+'\')"></circle>';
+    svg += '<text class="depmap-node-label" x="'+(n.x+13)+'" y="'+(n.y+3)+'">'+truncate(n.name,15)+'</text>';
+  });
+
+  columns.forEach(col=>{
+    svg += '<text x="'+col.x+'" y="22" text-anchor="middle" style="font-size:10px;font-weight:700;fill:#1F3A5F;">'+nsLabel(col.ns).split(' / ').pop()+'</text>';
+  });
+
+  document.getElementById('dm-svg').innerHTML = svg;
+  renderDepSelection();
+}
+
+/* ============================= SKOS VOCABULARY ============================= */
+function resolveCoreTerm(targetStr){
+  const name = (targetStr||'').replace(/^core:/,'');
+  return CONCEPTS.find(c=>c.namespace==='core' && c.term===name);
+}
+function selectSkos(id){ skosSelected = id; renderSkosTree(); renderSkosDetail(); }
+
+function renderSkosTree(){
+  const schemes = {};
+  CONCEPTS.forEach(c=>{ (schemes[c.namespace] = schemes[c.namespace]||[]).push(c); });
+  let html = '';
+  Object.keys(schemes).forEach(ns=>{
+    html += '<div class="skos-scheme-title">Scheme: '+nsLabel(ns)+'</div>';
+    const list = schemes[ns];
+    const tops = list.filter(c=>c.kind==='entity');
+    tops.forEach(t=>{
+      html += '<div class="skos-node'+(skosSelected===t.id?' active':'')+'" onclick="selectSkos(\''+t.id+'\')">'+t.term+' <span class="notation">'+(t.notation||'')+'</span></div>';
+      const children = list.filter(c=>c.parent===t.id);
+      if(children.length){
+        html += '<div class="skos-children">';
+        children.forEach(ch=>{
+          html += '<div class="skos-node'+(skosSelected===ch.id?' active':'')+'" onclick="selectSkos(\''+ch.id+'\')">'+ch.term+' <span class="notation">'+(ch.notation||'')+'</span></div>';
+        });
+        html += '</div>';
+      }
+    });
+  });
+  document.getElementById('skos-tree').innerHTML = html;
+}
+
+function skosLinkList(ids){
+  if(!ids || !ids.length) return '<span class="ci-na">—</span>';
+  return ids.map(id=>{ const c=findConcept(id); return c ? '<a onclick="selectSkos(\''+id+'\')">'+c.term+'</a>' : id; }).join(' ');
+}
+
+function renderSkosDetail(){
+  const c = findConcept(skosSelected);
+  const box = document.getElementById('skos-detail');
+  if(!c){ box.innerHTML = '<p style="color:var(--muted);">Select a concept from the tree.</p>'; return; }
+  const children = CONCEPTS.filter(x=>x.parent===c.id).map(x=>x.id);
+  let html = '<h3 style="margin-top:0;color:var(--navy);">'+c.term+'</h3>';
+  html += '<div class="skos-prop"><div class="p">skos:prefLabel</div><div class="v">'+c.term+'</div></div>';
+  if(c.altLabels && c.altLabels.length) html += '<div class="skos-prop"><div class="p">skos:altLabel</div><div class="v">'+c.altLabels.map(l=>'<span class="skos-chip">'+l+'</span>').join('')+'</div></div>';
+  html += '<div class="skos-prop"><div class="p">skos:notation</div><div class="v">'+(c.notation||'—')+'</div></div>';
+  html += '<div class="skos-prop"><div class="p">skos:definition</div><div class="v">'+c.definition+'</div></div>';
+  if(c.scopeNote) html += '<div class="skos-prop"><div class="p">skos:scopeNote</div><div class="v">'+c.scopeNote+'</div></div>';
+  html += '<div class="skos-prop"><div class="p">skos:inScheme</div><div class="v">'+nsLabel(c.namespace)+'</div></div>';
+  if(c.kind==='entity'){
+    html += '<div class="skos-prop"><div class="p">skos:topConceptOf</div><div class="v">'+nsLabel(c.namespace)+'</div></div>';
+  }
+  if(c.parent){
+    const p = findConcept(c.parent);
+    html += '<div class="skos-prop"><div class="p">skos:broader</div><div class="v"><a onclick="selectSkos(\''+p.id+'\')">'+p.term+'</a></div></div>';
+  }
+  if(c.mapsTo){
+    const target = resolveCoreTerm(c.mapsTo.target);
+    html += '<div class="skos-prop"><div class="p">'+c.mapsTo.relation+'</div><div class="v">'+(target ? '<a onclick="selectSkos(\''+target.id+'\')">'+c.mapsTo.target+'</a>' : c.mapsTo.target)+' <span style="color:var(--muted);font-size:11px;">(cross-scheme match)</span></div></div>';
+  }
+  if(children.length) html += '<div class="skos-prop"><div class="p">skos:narrower</div><div class="v">'+skosLinkList(children)+'</div></div>';
+  if(c.related && c.related.length) html += '<div class="skos-prop"><div class="p">skos:related</div><div class="v">'+skosLinkList(c.related)+'</div></div>';
+  if(c.valueConstraint) html += '<div class="skos-prop"><div class="p">ex:valueConstraint</div><div class="v">'+formatConstraint(c.valueConstraint)+'</div></div>';
+  html += '<div class="skos-prop"><div class="p">ex:governedBy</div><div class="v">'+c.owner+'</div></div>';
+  if(c.artifactRef){
+    const art = ARTIFACTS.find(a=>a.id===c.artifactRef);
+    if(art) html += '<div class="skos-prop"><div class="p">ex:definedIn</div><div class="v"><a onclick="openDetail(\''+art.id+'\')">'+art.name+'</a></div></div>';
+  }
+  box.innerHTML = html;
+}
+
+/* ============================= COMPONENTS ============================= */
+let compFilter = { type:'', phase:'' };
+function renderComponents(){
+  const types = ['','Microservice','Agent','Ontology','Mapping Service','Monitoring'];
+  document.getElementById('comp-type-filter').innerHTML = types.map(t=>
+    '<div class="chip'+(compFilter.type===t?' active':'')+'" data-t="'+t+'">'+(t||'All types')+'</div>').join('');
+  const phases = ['','Design-time','Run-time'];
+  document.getElementById('comp-phase-filter').innerHTML = phases.map(p=>
+    '<div class="chip'+(compFilter.phase===p?' active':'')+'" data-p="'+p+'">'+(p||'All phases')+'</div>').join('');
+  document.querySelectorAll('#comp-type-filter .chip').forEach(el=>el.addEventListener('click', ()=>{ compFilter.type=el.dataset.t; renderComponents(); }));
+  document.querySelectorAll('#comp-phase-filter .chip').forEach(el=>el.addEventListener('click', ()=>{ compFilter.phase=el.dataset.p; renderComponents(); }));
+
+  const rows = COMPONENTS.filter(c=> (!compFilter.type||c.type===compFilter.type) && (!compFilter.phase||c.phase===compFilter.phase) );
+  document.querySelector('#comp-table tbody').innerHTML = rows.map(c=>
+    '<tr><td><strong>'+c.name+'</strong></td><td>'+c.type+'</td><td>'+(c.phase==='Design-time'?'<span class="badge b-rule">Design-time</span>':'<span class="badge b-logic">Run-time</span>')+'</td><td>'+c.desc+'</td></tr>'
+  ).join('');
+}
+
+/* ============================= INIT ============================= */
+document.getElementById('exp-lifecycle-filter').addEventListener('change', renderExplorerList);
+document.getElementById('exp-search').addEventListener('input', renderExplorerList);
+
+renderOverview();
+renderServiceDomains();
+renderTree();
+renderCatFilter();
+renderSvcFilter();
+renderExplorerList();
+populateLcSelect();
+renderLifecycle();
+populateDiffSelect();
+renderDiff();
+populateMapSelect();
+renderMapping();
+renderTesting();
+renderComponents();
+renderVocabulary();
+renderRelations();
+renderCalcLibrary();
+renderDependencyMap();
+renderSkosTree();
+renderSkosDetail();
+</script>
+</body>
+</html>
