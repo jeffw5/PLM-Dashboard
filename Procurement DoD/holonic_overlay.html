@@ -1,0 +1,745 @@
+<title>Holonic Overlay</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --paper:#f3f1e9;
+  --card:#ffffff;
+  --card-2:#faf8f2;
+  --ink-1:#1c1b17;
+  --ink-2:#57554c;
+  --ink-3:#8a8779;
+  --ink-4:#b6b3a3;
+  --line:#e1ddcd;
+  --line-2:#edeadd;
+
+  --navy:#1b2a4a;
+  --navy-tint:#eef1f7;
+
+  --l1-bg:#eef1fc; --l1-bd:#b9c4ef; --l1-ink:#33379c;
+  --l2-bg:#dee4f8; --l2-bd:#95a3e6; --l2-ink:#2c2f82;
+  --l3-bg:#c5cef0; --l3-bd:#6f80db; --l3-ink:#22245c;
+  --l4-bg:#1b2a4a; --l4-bd:#1b2a4a; --l4-ink:#f4f6fb; --l4-sub:#a9b8d6;
+
+  --med:#0f766e; --med-bg:#e5f5f2; --med-bd:#63b3a8; --med-ink:#0b5c55;
+
+  --rdsg:#0e7490; --rdsg-bg:#ecfeff; --rdsg-bd:#79d3e6;
+  --sbd:#7c3aed;  --sbd-bg:#f5f3ff;  --sbd-bd:#c4b5fd;
+  --psm:#b45309;  --psm-bg:#fffbeb;  --psm-bd:#fcd34d;
+  --gov:#78350f;  --gov-bg:#fff7ed;  --gov-bd:#fdba74;
+
+  --good:#15803d;
+  --focus:#2563eb;
+
+  --mono:'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --sans:'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14161b;
+    --card:#1b1e25;
+    --card-2:#20232b;
+    --ink-1:#eeece4;
+    --ink-2:#b6b3a6;
+    --ink-3:#847f74;
+    --ink-4:#5b584f;
+    --line:#31333c;
+    --line-2:#282a32;
+
+    --navy:#7f95c2;
+    --navy-tint:#1c2436;
+
+    --l1-bg:#1e2338; --l1-bd:#39408c; --l1-ink:#aab3ec;
+    --l2-bg:#232a44; --l2-bd:#4650a0; --l2-ink:#b7bff0;
+    --l3-bg:#282f52; --l3-bd:#525cb8; --l3-ink:#c7ccf6;
+    --l4-bg:#2b3a63; --l4-bd:#4a5d94; --l4-ink:#f4f6fb; --l4-sub:#9fb0d6;
+
+    --med:#4fbfb2; --med-bg:#12302c; --med-bd:#2f6b62; --med-ink:#7fd9cd;
+
+    --rdsg:#5fd0e8; --rdsg-bg:#12303a; --rdsg-bd:#276275;
+    --sbd:#b09bfa;  --sbd-bg:#241c40;  --sbd-bd:#4c3d85;
+    --psm:#f0b45f;  --psm-bg:#332409;  --psm-bd:#6b4c14;
+    --gov:#e6a35f;  --gov-bg:#33230f;  --gov-bd:#6b4a22;
+
+    --good:#4ade80;
+    --focus:#7aa2ff;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14161b;
+  --card:#1b1e25;
+  --card-2:#20232b;
+  --ink-1:#eeece4;
+  --ink-2:#b6b3a6;
+  --ink-3:#847f74;
+  --ink-4:#5b584f;
+  --line:#31333c;
+  --line-2:#282a32;
+
+  --navy:#7f95c2;
+  --navy-tint:#1c2436;
+
+  --l1-bg:#1e2338; --l1-bd:#39408c; --l1-ink:#aab3ec;
+  --l2-bg:#232a44; --l2-bd:#4650a0; --l2-ink:#b7bff0;
+  --l3-bg:#282f52; --l3-bd:#525cb8; --l3-ink:#c7ccf6;
+  --l4-bg:#2b3a63; --l4-bd:#4a5d94; --l4-ink:#f4f6fb; --l4-sub:#9fb0d6;
+
+  --med:#4fbfb2; --med-bg:#12302c; --med-bd:#2f6b62; --med-ink:#7fd9cd;
+
+  --rdsg:#5fd0e8; --rdsg-bg:#12303a; --rdsg-bd:#276275;
+  --sbd:#b09bfa;  --sbd-bg:#241c40;  --sbd-bd:#4c3d85;
+  --psm:#f0b45f;  --psm-bg:#332409;  --psm-bd:#6b4c14;
+  --gov:#e6a35f;  --gov-bg:#33230f;  --gov-bd:#6b4a22;
+
+  --good:#4ade80;
+  --focus:#7aa2ff;
+}
+
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--sans);
+  background:var(--paper);
+  color:var(--ink-1);
+  font-size:15px;
+  line-height:1.55;
+}
+::selection{background:var(--l3-bd);color:#fff}
+
+a{color:var(--focus)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+#app{max-width:1180px;margin:0 auto;padding:32px 20px 80px}
+
+/* ── HEADER ───────────────────────────────────────── */
+.hdr{
+  display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;
+  padding-bottom:22px;margin-bottom:22px;border-bottom:2px solid var(--navy);
+}
+.eyebrow{
+  font-size:11px;font-weight:600;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--med);margin-bottom:8px;font-family:var(--mono);
+}
+h1{
+  font-size:30px;font-weight:800;letter-spacing:-.015em;color:var(--ink-1);
+  text-wrap:balance;line-height:1.12;max-width:15ch;
+}
+.dek{
+  font-size:14.5px;color:var(--ink-2);max-width:56ch;margin-top:10px;line-height:1.6;
+}
+.hdr-r{display:flex;flex-direction:column;align-items:flex-end;gap:10px;min-width:200px}
+.src-note{
+  font-size:11.5px;color:var(--ink-3);text-align:right;max-width:230px;line-height:1.5;
+}
+.src-note b{color:var(--ink-2);font-weight:600}
+
+/* legend */
+.legend{display:flex;gap:14px;flex-wrap:wrap;justify-content:flex-end}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink-2)}
+.leg-sw{width:11px;height:11px;border-radius:3px;flex-shrink:0;border:1px solid transparent}
+
+/* ── VIEW TABS ────────────────────────────────────── */
+.tabs{display:flex;gap:2px;background:var(--card);border:1px solid var(--line);border-radius:9px;padding:3px;width:fit-content;margin-bottom:22px}
+.tab{
+  background:none;border:none;font-family:var(--sans);font-size:13px;font-weight:600;
+  padding:8px 15px;border-radius:6px;cursor:pointer;color:var(--ink-3);transition:all .15s;
+}
+.tab.on{background:var(--navy);color:#fff}
+.tab:not(.on):hover{color:var(--ink-1);background:var(--card-2)}
+
+.view{display:none}
+.view.on{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+@media (prefers-reduced-motion:reduce){.view.on{animation:none}}
+
+/* ── ELEVATION STACK ──────────────────────────────── */
+.stack-wrap{
+  display:grid;grid-template-columns:172px 1fr;gap:14px;margin-bottom:18px;
+}
+@media (max-width:720px){.stack-wrap{grid-template-columns:1fr}}
+
+.med-rail{
+  background:var(--med-bg);border:1.5px dashed var(--med-bd);border-radius:12px;
+  padding:16px 12px;display:flex;flex-direction:column;gap:10px;
+}
+.med-rail-title{
+  font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.08em;
+  color:var(--med-ink);text-transform:uppercase;line-height:1.4;
+}
+.med-rail-sub{font-size:10.5px;color:var(--med-ink);opacity:.8;line-height:1.5}
+.med-chip{
+  background:var(--card);border:1px solid var(--med-bd);border-radius:7px;padding:8px 9px;
+  cursor:pointer;transition:all .15s;text-align:left;font-family:var(--sans);
+}
+.med-chip:hover{transform:translateX(2px);box-shadow:0 2px 8px rgba(15,118,110,.18)}
+.med-chip.sel{box-shadow:0 0 0 2px var(--med);transform:translateX(2px)}
+.med-chip-name{font-size:11px;font-weight:700;color:var(--med-ink);display:block;margin-bottom:1px}
+.med-chip-tag{font-size:9.5px;color:var(--ink-3);font-family:var(--mono)}
+
+.levels{display:flex;flex-direction:column;gap:8px}
+.lvl{
+  border-radius:12px;padding:14px 16px;position:relative;border:1.5px solid;
+}
+.lvl-l4{background:var(--l4-bg);border-color:var(--l4-bd)}
+.lvl-l3{background:var(--l3-bg);border-color:var(--l3-bd)}
+.lvl-l2{background:var(--l2-bg);border-color:var(--l2-bd)}
+.lvl-l1{background:var(--l1-bg);border-color:var(--l1-bd)}
+
+.lvl-hd{display:flex;align-items:baseline;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.lvl-tag{
+  font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.04em;
+  padding:2px 8px;border-radius:5px;flex-shrink:0;
+}
+.lvl-l4 .lvl-tag{background:rgba(255,255,255,.14);color:var(--l4-ink)}
+.lvl-l3 .lvl-tag{background:rgba(255,255,255,.5);color:var(--l3-ink)}
+.lvl-l2 .lvl-tag{background:rgba(255,255,255,.55);color:var(--l2-ink)}
+.lvl-l1 .lvl-tag{background:rgba(255,255,255,.65);color:var(--l1-ink)}
+
+.lvl-name{font-size:14.5px;font-weight:700}
+.lvl-l4 .lvl-name{color:var(--l4-ink)}
+.lvl-l3 .lvl-name{color:var(--l3-ink)}
+.lvl-l2 .lvl-name{color:var(--l2-ink)}
+.lvl-l1 .lvl-name{color:var(--l1-ink)}
+
+.lvl-scope{font-size:11.5px;flex-basis:100%;margin-top:-2px}
+.lvl-l4 .lvl-scope{color:var(--l4-sub)}
+.lvl-l3 .lvl-scope{color:var(--l3-ink);opacity:.75}
+.lvl-l2 .lvl-scope{color:var(--l2-ink);opacity:.7}
+.lvl-l1 .lvl-scope{color:var(--l1-ink);opacity:.7}
+
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{
+  border-radius:8px;border:1.5px solid;padding:7px 11px;cursor:pointer;
+  transition:all .15s;font-family:var(--sans);text-align:left;background:var(--card);
+}
+.chip:hover{transform:translateY(-2px);box-shadow:0 4px 10px rgba(0,0,0,.10)}
+.chip.sel{box-shadow:0 0 0 2px var(--focus);transform:translateY(-2px)}
+.chip-name{font-size:11.5px;font-weight:700;display:block;line-height:1.3}
+.chip-src{font-size:9.5px;font-family:var(--mono);opacity:.75;display:block;margin-top:2px}
+
+.c-rdsg{border-color:var(--rdsg-bd);background:var(--rdsg-bg);color:var(--rdsg)}
+.c-sbd{border-color:var(--sbd-bd);background:var(--sbd-bg);color:var(--sbd)}
+.c-psm{border-color:var(--psm-bd);background:var(--psm-bg);color:var(--psm)}
+.c-gov{border-color:var(--gov-bd);background:var(--gov-bg);color:var(--gov)}
+.c-ark{border-color:var(--l4-bd);background:var(--card);color:var(--navy)}
+
+/* ── DETAIL PANEL ─────────────────────────────────── */
+.detail{
+  background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:20px 22px;margin-top:6px;display:none;
+}
+.detail.on{display:block;animation:fade .2s ease}
+.detail-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:14px}
+.detail-name{font-size:16px;font-weight:700}
+.detail-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.d-badge{font-size:10px;font-weight:700;padding:2px 9px;border-radius:10px;font-family:var(--mono)}
+.detail-close{
+  background:none;border:1px solid var(--line);border-radius:6px;padding:5px 10px;
+  cursor:pointer;color:var(--ink-3);font-size:11px;font-family:var(--sans);flex-shrink:0;
+}
+.detail-close:hover{background:var(--card-2);color:var(--ink-1)}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:600px){.detail-grid{grid-template-columns:1fr}}
+.d-field{background:var(--card-2);border:1px solid var(--line-2);border-radius:8px;padding:11px 13px}
+.d-field-lbl{font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:5px;font-family:var(--mono)}
+.d-field-body{font-size:12.5px;color:var(--ink-2);line-height:1.6}
+.d-field-body b{color:var(--ink-1);font-weight:600}
+.empty-hint{
+  text-align:center;padding:30px 20px;color:var(--ink-3);font-size:12.5px;
+  border:1.5px dashed var(--line);border-radius:12px;
+}
+
+/* ── TABLE VIEW ───────────────────────────────────── */
+.tbl-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+table.xw{width:100%;border-collapse:collapse;font-size:12.5px;min-width:820px}
+table.xw thead th{
+  text-align:left;font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink-3);padding:11px 14px;border-bottom:1.5px solid var(--line);background:var(--card-2);
+  position:sticky;top:0;font-family:var(--mono);
+}
+table.xw td{padding:10px 14px;border-bottom:1px solid var(--line-2);vertical-align:top;color:var(--ink-2)}
+table.xw tbody tr:hover td{background:var(--card-2)}
+table.xw tr.group-l4 td:first-child{border-left:3px solid var(--l4-bd)}
+table.xw tr.group-l3 td:first-child{border-left:3px solid var(--l3-bd)}
+table.xw tr.group-l2 td:first-child{border-left:3px solid var(--l2-bd)}
+table.xw tr.group-l1 td:first-child{border-left:3px solid var(--l1-bd)}
+table.xw tr.group-med td:first-child{border-left:3px solid var(--med-bd)}
+.xw-name{font-weight:700;color:var(--ink-1);font-size:12.5px}
+.xw-lvl{
+  display:inline-block;font-family:var(--mono);font-size:9.5px;font-weight:700;
+  padding:1px 7px;border-radius:5px;white-space:nowrap;
+}
+.xw-lvl.L4{background:var(--l4-bg);color:var(--l4-ink)}
+.xw-lvl.L3{background:var(--l3-bg);color:var(--l3-ink)}
+.xw-lvl.L2{background:var(--l2-bg);color:var(--l2-ink)}
+.xw-lvl.L1{background:var(--l1-bg);color:var(--l1-ink)}
+.xw-lvl.MED{background:var(--med-bg);color:var(--med-ink)}
+
+/* ── MEDIATION INSIGHT VIEW ───────────────────────── */
+.gap-cards{display:grid;grid-template-columns:1fr;gap:14px}
+.gap-card{
+  background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;
+}
+.gap-hd{
+  padding:14px 18px;background:var(--med-bg);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.gap-num{
+  font-family:var(--mono);font-size:11px;font-weight:700;color:var(--med-ink);
+  background:var(--card);border:1px solid var(--med-bd);border-radius:5px;padding:1px 8px;
+}
+.gap-title{font-size:14px;font-weight:700;color:var(--med-ink)}
+.gap-body{display:grid;grid-template-columns:1fr 1fr;gap:0}
+@media (max-width:640px){.gap-body{grid-template-columns:1fr}}
+.gap-col{padding:16px 18px}
+.gap-col+.gap-col{border-left:1px solid var(--line)}
+@media (max-width:640px){.gap-col+.gap-col{border-left:none;border-top:1px solid var(--line)}}
+.gap-col-lbl{font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px;font-family:var(--mono)}
+.gap-col-lbl.before{color:var(--gov)}
+.gap-col-lbl.after{color:var(--good)}
+.gap-col-body{font-size:12.5px;color:var(--ink-2);line-height:1.65}
+.gap-col-body b{color:var(--ink-1);font-weight:600}
+
+footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);font-size:11px;color:var(--ink-4);text-align:center;font-family:var(--mono)}
+</style>
+
+<div id="app">
+
+  <div class="hdr">
+    <div>
+      <div class="eyebrow">Reference Crosswalk · v1.0</div>
+      <h1>The Holonic Overlay</h1>
+      <p class="dek">Mapping the four holonic levels and the lateral Mediation Holon from the Holonic Semantic Governance Architecture onto the concrete RDSG / Set-Based Design / Predictive Scoring components of the Govini Ark defense-acquisition build.</p>
+    </div>
+    <div class="hdr-r">
+      <div class="legend">
+        <div class="leg-item"><span class="leg-sw" style="background:var(--rdsg-bg);border-color:var(--rdsg-bd)"></span>RDSG</div>
+        <div class="leg-item"><span class="leg-sw" style="background:var(--sbd-bg);border-color:var(--sbd-bd)"></span>SBD</div>
+        <div class="leg-item"><span class="leg-sw" style="background:var(--psm-bg);border-color:var(--psm-bd)"></span>PSM</div>
+        <div class="leg-item"><span class="leg-sw" style="background:var(--gov-bg);border-color:var(--gov-bd)"></span>Governance</div>
+        <div class="leg-item"><span class="leg-sw" style="background:var(--card);border-color:var(--l4-bd)"></span>Ark Core</div>
+      </div>
+      <div class="src-note">Sources: <b>Ark Integration Map</b>, <b>RDSG TMRR/EMD Dashboard</b>, <b>Holonic Semantic Governance Architecture v4.2</b></div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" data-view="stack">Holonic Elevation</button>
+    <button class="tab" data-view="table">Crosswalk Table</button>
+    <button class="tab" data-view="gap">What the Mediation Holon Adds</button>
+  </div>
+
+  <!-- ═══════════ ELEVATION VIEW ═══════════ -->
+  <div class="view on" id="view-stack">
+
+    <div class="stack-wrap">
+      <div class="med-rail" id="med-rail">
+        <div class="med-rail-title">Mediation Holon</div>
+        <div class="med-rail-sub">Lateral — threads across all four levels rather than sitting on the authority axis. Not present by name in the Ark/RDSG files; supplied by the HSGA.</div>
+        <div id="med-chips"></div>
+      </div>
+
+      <div class="levels" id="levels"></div>
+    </div>
+
+    <div class="detail" id="detail">
+      <div class="detail-hd">
+        <div>
+          <div class="detail-name" id="d-name">—</div>
+          <div class="detail-meta" id="d-meta"></div>
+        </div>
+        <button class="detail-close" onclick="closeDetail()">✕ Close</button>
+      </div>
+      <div class="detail-grid" id="d-grid"></div>
+    </div>
+    <div class="empty-hint" id="empty-hint">Click any component above — in a level band or the Mediation rail — to see its holonic role, its Ark/RDSG counterpart, and its governance mechanism.</div>
+
+  </div>
+
+  <!-- ═══════════ TABLE VIEW ═══════════ -->
+  <div class="view" id="view-table">
+    <div class="tbl-scroll">
+      <table class="xw">
+        <thead>
+          <tr><th style="min-width:70px">Level</th><th style="min-width:190px">Component</th><th style="min-width:230px">What It Is in Ark / RDSG / Defense Context</th><th style="min-width:200px">Holonic Governance Mechanism</th><th style="min-width:160px">Standard / Reference</th></tr>
+        </thead>
+        <tbody id="xw-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════ GAP VIEW ═══════════ -->
+  <div class="view" id="view-gap">
+    <div class="gap-cards" id="gap-cards"></div>
+  </div>
+
+  <footer>HOLONIC OVERLAY — L1–L4 + MEDIATION HOLON — DERIVED FROM THREE SOURCE DOCUMENTS</footer>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════════════════
+
+const LEVELS = [
+  {
+    id:'l4', tag:'L4', cls:'lvl-l4',
+    name:'Enterprise Holarchy',
+    scope:'Full federated governance ecosystem — strategic authority, cross-domain conflict resolution, milestone policy',
+    items:[
+      {id:'dod-reg', name:'DoD Regulatory Framework', src:'gov', tag:'DoDI 5000.02/.85/.88'},
+      {id:'iso-std', name:'ISO & Engineering Standards', src:'gov', tag:'ISO 42001 · 15288 · 25010'},
+      {id:'ark-platform', name:'Govini Ark Platform', src:'ark', tag:'Enterprise system-of-record'},
+      {id:'lifecycle', name:'TMRR → EMD → MS C Lifecycle', src:'gov', tag:'MS B · CDR · MS C gates'},
+    ]
+  },
+  {
+    id:'l3', tag:'L3', cls:'lvl-l3',
+    name:'Gateway Holon',
+    scope:'RDSG semantic gateway — holarchic traversal protocol, not a pipeline',
+    items:[
+      {id:'rdsg-flow', name:'RDSG Ten-Step Flow', src:'rdsg', tag:'Steps ①–⑩'},
+      {id:'circuit-breaker', name:'Circuit Breaker · MTBH / Brier', src:'psm', tag:'PSM Pillar 3'},
+      {id:'uca-gate', name:'STPA / UCA Coverage Gate', src:'rdsg', tag:'71% vs 80% MS B threshold'},
+      {id:'simplex-gate', name:'Simplex Action Gate', src:'rdsg', tag:'Irreversibility → human auth'},
+    ]
+  },
+  {
+    id:'l2', tag:'L2', cls:'lvl-l2',
+    name:'Domain Holon',
+    scope:'Component ontologies as sovereign governance units — domain agent + vector DB + PEPs',
+    items:[
+      {id:'nskg-domains', name:'NSKG Domain Ontologies', src:'ark', tag:'Supply chain · industrial base · finance'},
+      {id:'ark-hubs', name:'Ark Application Hubs', src:'ark', tag:'Supply Chain · Production · Modernization'},
+      {id:'sbd-alts', name:'SBD Design Alternatives', src:'sbd', tag:'Alpha · Beta · Gamma · Delta'},
+      {id:'eng-disciplines', name:'Engineering Discipline Holons', src:'gov', tag:'Physical · Digital · Systems · Automation'},
+    ]
+  },
+  {
+    id:'l1', tag:'L1', cls:'lvl-l1',
+    name:'Knowledge Holon',
+    scope:'Individual semantic assets — the finest governed unit, one SHACL/SWRL invariant deep',
+    items:[
+      {id:'nskg-record', name:'Individual NSKG Record', src:'ark', tag:'Supplier · contract · part'},
+      {id:'sysml-artifact', name:'SysML v2 Artifact', src:'rdsg', tag:'SyRS · FCD · ACD · ICD IDs'},
+      {id:'shacl-shape', name:'SHACL Shape / SWRL Rule', src:'rdsg', tag:'Compliance gate primitive'},
+      {id:'gap-record', name:'OntologyGap Record', src:'rdsg', tag:'Unresolved-term capture'},
+    ]
+  },
+];
+
+const MEDIATION = [
+  {id:'nskg-sysml-bridge', name:'NSKG ↔ SysML v2 Bridge', tag:'bottom-up ↔ top-down'},
+  {id:'rag-anchor', name:'RAG Anchor Index', tag:'grounds retrieval'},
+  {id:'entity-registry', name:'Entity & URI Resolution', tag:'one canonical ID'},
+  {id:'compiled-gov', name:'Compiled Semantic Governance', tag:'runtime-native enforcement'},
+  {id:'lineage-agents', name:'Lineage Ingestion Agents', tag:'auto drift detection'},
+  {id:'phys-digital', name:'Physical ↔ Digital Boundary', tag:'HiL / co-sim ↔ baseline'},
+];
+
+const DETAILS = {
+  'dod-reg': {
+    badges:[{t:'L4 Enterprise Holarchy',c:'l4'},{t:'Governance',c:'gov'}],
+    role:'The holarchic contract every lower holon must conform to — a protocol, not a shared schema.',
+    ark:'DoDI 5000.02 (AAF continuous adaptation), 5000.85 (MDAP / Nunn-McCurdy), 5000.88 (digital engineering, ITRA, §3.6.e AI risk). Sits at the top of the Ark architecture map\'s governance layer, constraining every layer below it.',
+    gov:'Enterprise Semantic Governance Council equivalent — approves cross-domain policy and Rule Harmonization Engine changes.',
+    std:'DoDI 5000.02 / .85 / .88; Nunn-McCurdy'
+  },
+  'iso-std': {
+    badges:[{t:'L4 Enterprise Holarchy',c:'l4'},{t:'Governance',c:'gov'}],
+    role:'Inter-enterprise holarchic contract defining interface protocols for AI risk and systems lifecycle — not a shared implementation.',
+    ark:'ISO 42001 underwrites PSM\'s Brier/MTBH risk quantification; ISO 15288 underwrites RDSG\'s closed-loop requirements evolution (Steps ⑦–⑨ of the Ark flow).',
+    gov:'Standards conformance validated at the specification level, not schema-coupled into any one domain.',
+    std:'ISO 42001 · ISO/IEC 15288 · ISO/IEC 25010'
+  },
+  'ark-platform': {
+    badges:[{t:'L4 Enterprise Holarchy',c:'l4'},{t:'Ark Core',c:'ark'}],
+    role:'The full federated governance ecosystem across all domains and lifecycle stages — the outermost holon boundary.',
+    ark:'NSKG + Govini LLMs + SysML v2/KerML repository + Application Hubs, operating under the governance framework layer shown at the top of the Ark integration map.',
+    gov:'Federated governance council, DEV/STG/PRD environments, continuous Observe–Reason–Adapt engineering loop.',
+    std:'—'
+  },
+  'lifecycle': {
+    badges:[{t:'L4 Enterprise Holarchy',c:'l4'},{t:'Governance',c:'gov'}],
+    role:'Milestone-gated holarchic response stratification — different holonic levels engage depending on decision tier.',
+    ark:'The TMRR → Milestone B → EMD (pre-CDR) → CDR → EMD (post-CDR) → Milestone C progression tracked live in the RDSG lifecycle dashboard, including the Milestone B and CDR readiness checklists.',
+    gov:'Tier 3 strategic decisions (weeks–quarters) fully engage L4; Tier 1 operational adjustments use pre-compiled L1/L2 rules only.',
+    std:'ISO/IEC 15288 · INCOSE SE Handbook V-model'
+  },
+
+  'rdsg-flow': {
+    badges:[{t:'L3 Gateway Holon',c:'l3'},{t:'RDSG',c:'rdsg'}],
+    role:'The holarchic traversal protocol itself — context enters, is enriched by every level it crosses, and exits as a governed directive. Not a filter that can be bypassed; the structure through which semantic authority is assembled.',
+    ark:'The ten-step closed loop in the Ark data-flow view: NSKG ingestion → RDSG compliance gate → LLM inference → PSM scoring/circuit breaker → SBD tradespace → Hub interaction → gap detection → requirements review → SysML baseline update → loop.',
+    gov:'Stage 0 Requirement Context Bundle assembly, Steps 1–4 enforcement layers, Step 5 Compiled AI Directive, Service Facade delivery gate.',
+    std:'RDSG v2.0 (STPA/STAMP Edition)'
+  },
+  'circuit-breaker': {
+    badges:[{t:'L3 Gateway Holon',c:'l3'},{t:'PSM',c:'psm'}],
+    role:'The dimensional holonic health monitor. MTBH is stratified across WHO/WHAT/WHEN/WHERE/WHY so a fault localizes to the exact holon responsible instead of tripping the whole system.',
+    ark:'PSM\'s Brier Score / MTBH pillar, and the four-layer Scope Drift Detection panel in the RDSG dashboard: L1 telemetry ≈ MTBH_WHO/WHAT, L2 semantic distance ≈ MTBH_WHERE, L3 trip logic, L4 knowledge-gap re-evaluation ≈ MTBH_WHY.',
+    gov:'Circuit Breaker trip localized by dimension; sanitization layer excludes tripped outputs from training data (anti-collapse protocol).',
+    std:'Circuit Breaker / MTBH Architecture'
+  },
+  'uca-gate': {
+    badges:[{t:'L3 Gateway Holon',c:'l3'},{t:'RDSG',c:'rdsg'}],
+    role:'A holonic safety invariant — must be satisfied for the Gateway Holon to admit a design commitment past a milestone boundary.',
+    ark:'The TMRR dashboard\'s live STPA Unsafe Control Action coverage metric (71% against an 80% Milestone B threshold), gating readiness alongside SyRS/FCD/ACD verification.',
+    gov:'RDSG Step 4 UCA coverage verification against the STPA/STAMP safety holon.',
+    std:'STPA/STAMP (MIT Leveson)'
+  },
+  'simplex-gate': {
+    badges:[{t:'L3 Gateway Holon',c:'l3'},{t:'RDSG',c:'rdsg'}],
+    role:'The output holonic boundary — irreversible actions are suspended pending human authorization before the governance holarchy releases them.',
+    ark:'Corresponds to the Ark flow\'s Service Facade / delivery gate, and to any production or procurement commitment released at CDR in the lifecycle dashboard.',
+    gov:'Human-in-the-loop gate; STPA UCA boundary enforcement.',
+    std:'RDSG v2.0'
+  },
+
+  'nskg-domains': {
+    badges:[{t:'L2 Domain Holon',c:'l2'},{t:'Ark Core',c:'ark'}],
+    role:'Each domain ontology is a self-contained governance environment: its own vocabulary, its own agent, its own vector DB, its own PEPs.',
+    ark:'The 33+ commercial and government sources feeding Govini\'s National Security Knowledge Graph — supply chain, industrial base, contracts, financial data — each domain-specific rather than one flat schema.',
+    gov:'Domain governance team authority; domain-specific SHACL/SWRL; MTBH dimensional scoring per domain.',
+    std:'—'
+  },
+  'ark-hubs': {
+    badges:[{t:'L2 Domain Holon',c:'l2'},{t:'Ark Core',c:'ark'}],
+    role:'Domain holon interface to the operator — the point where holonic governance becomes visible and actionable rather than backend infrastructure.',
+    ark:'Supply Chain, Production, and Modernization Hubs — transformed from static dashboards into active governance tools once MOVOI tradespace and PSM uncertainty scores surface inline.',
+    gov:'PEPs govern interaction between the Hub domain holon and the rest of the holarchy.',
+    std:'—'
+  },
+  'sbd-alts': {
+    badges:[{t:'L2 Domain Holon',c:'l2'},{t:'SBD',c:'sbd'}],
+    role:'A specific instance of holonic MBPLE: variation points are domain holons, and product variants are compositions assembled through the governance protocol rather than an enumerated feature matrix.',
+    ark:'The four scored design alternatives (Alpha–Balanced, Beta–Performance, Gamma–Cost-Optimized, Delta–Risk-Minimized) in the EMD pre-CDR MOVOI tradespace.',
+    gov:'Each holon self-validates via SHACL; composition of the winning alternative is protocol-governed, not manually re-validated.',
+    std:'—'
+  },
+  'eng-disciplines': {
+    badges:[{t:'L2 Domain Holon',c:'l2'},{t:'Governance',c:'gov'}],
+    role:'Each engineering discipline owns its own domain holon — vocabulary, taxonomy, ontology stack — inheriting from the L4 core through polymorphic inheritance, not schema coupling.',
+    ark:'Physical Engineering, Digital Engineering, Systems Engineering, and Automation Engineering — the four discipline lanes shown crossing the physical/digital boundary in the Ark governance rail.',
+    gov:'KSWG "Context is King" federated topology: core holon at top, discipline holons below.',
+    std:'INCOSE KSWG'
+  },
+
+  'nskg-record': {
+    badges:[{t:'L1 Knowledge Holon',c:'l1'},{t:'Ark Core',c:'ark'}],
+    role:'The finest governed unit — carries its own persistent identity, version, lifecycle state, and invariants.',
+    ark:'A single supplier record, contract line, or part number inside the NSKG — before Mediation Holon resolution, each source may represent it with a different physical identifier.',
+    gov:'ORSD defines its governance contract before instantiation; KGCL records every subsequent change.',
+    std:'—'
+  },
+  'sysml-artifact': {
+    badges:[{t:'L1 Knowledge Holon',c:'l1'},{t:'RDSG',c:'rdsg'}],
+    role:'A machine-verifiable governance artifact, not a passive document — identity, invariants, and lifecycle protocol all attached.',
+    ark:'The individually tracked TMR-/EMD- coded artifacts in the RDSG dashboard — SyRS, FCD, ACD, ICD, Algorithm Specification — each with its own validation status and currency percentage.',
+    gov:'SHACL constraint defines valid instances; KGCL tracks every version.',
+    std:'OMG SysML v2 / KerML'
+  },
+  'shacl-shape': {
+    badges:[{t:'L1 Knowledge Holon',c:'l1'},{t:'RDSG',c:'rdsg'}],
+    role:'The formal, executable definition of what a valid knowledge holon looks like — not a validation utility layered on afterward.',
+    ark:'Every SHACL/SWRL rule enforced at the RDSG compliance gate (Step ② of the Ark flow) and tracked in the live SHACL Violation Rate chart on the TMRR dashboard.',
+    gov:'Canonical source of truth at definition time; compiled to runtime-native enforcement by the Mediation Holon\'s Rule Projection Agents.',
+    std:'W3C SHACL / SWRL'
+  },
+  'gap-record': {
+    badges:[{t:'L1 Knowledge Holon',c:'l1'},{t:'RDSG',c:'rdsg'}],
+    role:'A structured signal for an emergent behavior — a concept the AI could not resolve — rather than a silent failure.',
+    ark:'OntologyGap individuals captured by Step ⑦ of the Ark flow, tagged with persona/scenario/program context, feeding Step ⑧ Automated Requirements Review.',
+    gov:'Same mechanism as the HSGA\'s "New entity discovery" RAG feedback cycle: validated, then admitted as a new L1 knowledge holon.',
+    std:'—'
+  },
+
+  'nskg-sysml-bridge': {
+    badges:[{t:'Mediation Holon',c:'med'},{t:'Lateral',c:'gov'}],
+    role:'Not present by name in the Ark map — but structurally required. Insulates the slow-moving, formally governed SysML v2 ontology from the fast-moving, 33-source NSKG so neither has to absorb the other\'s rate of change.',
+    ark:'The Ark map shows NSKG and the SysML v2/KerML repository as two boxes with RDSG "between" them. The Mediation Holon is the formal mechanism that makes that bridge persistent and governed rather than ad hoc.',
+    gov:'Persists as its own holon: identity, invariants, KGCL change history — not a byproduct of one integration effort.',
+    std:'Semantic Abstraction & Mediation Layer (SAML), v3.0'
+  },
+  'rag-anchor': {
+    badges:[{t:'Mediation Holon',c:'med'},{t:'PSM',c:'psm'}],
+    role:'Grounds retrieval before generation — a defense-in-depth layer upstream of the PSM circuit breaker, which only catches bad output after it\'s produced.',
+    ark:'Binds Govini LLM vector-DB retrieval to a canonical NSKG entity before the RDSG compliance gate ever evaluates it — closing the "ungrounded chunk" gap that plain RAG leaves open.',
+    gov:'SHACL-validated at admission; only anchored chunks are eligible for Compiled AI Directive assembly.',
+    std:'—'
+  },
+  'entity-registry': {
+    badges:[{t:'Mediation Holon',c:'med'},{t:'Ark Core',c:'ark'}],
+    role:'Resolves every physical identifier across every bottom-up system to exactly one canonical Enterprise Entity ID.',
+    ark:'Reconciles a supplier appearing as one ID in a contracts source, another string in a supply-chain feed, and a third label in a vector-DB chunk — all inside the 33+ NSKG sources.',
+    gov:'Domain Governance Team owns entity-type resolution rules; Enterprise Council arbitrates cross-domain conflicts.',
+    std:'ISO 8000 Uniqueness dimension'
+  },
+  'compiled-gov': {
+    badges:[{t:'Mediation Holon',c:'med'},{t:'RDSG',c:'rdsg'}],
+    role:'Separates rule definition from rule execution, so the compliance gate can run at production query volume without full graph reasoning on every call.',
+    ark:'The practical answer to how RDSG\'s Step ② compliance gate sits inline on every Govini LLM call: canonical SHACL/SWRL compiles to SQL/dbt constraints, OPA/Rego policies, and vector filters at microsecond latency.',
+    gov:'Every compiled artifact retains a traceable URI back to its source invariant for audit.',
+    std:'Open Policy Agent / Rego'
+  },
+  'lineage-agents': {
+    badges:[{t:'Mediation Holon',c:'med'},{t:'Ark Core',c:'ark'}],
+    role:'Keeps the mapping graph from going stale by observing schema drift automatically rather than through manual review.',
+    ark:'Watches for changes in NSKG source schemas the same way the Ark flow\'s Ontology Gap Detection watches operator sessions — both are Observe-phase mechanisms in the self-evolving holarchy.',
+    gov:'Flagged drift routed to the Domain Governance Team for KGCL-recorded resolution.',
+    std:'OpenLineage · dbt'
+  },
+  'phys-digital': {
+    badges:[{t:'Mediation Holon',c:'med'},{t:'Governance',c:'gov'}],
+    role:'Where the Mediation Holon\'s bottom-up/top-down insulation crosses into hardware — physical test data updates the digital baseline; digital constraints bound the physical build.',
+    ark:'The HiL/FMI co-simulation (Modelica physics + Simulink control) in the EMD post-CDR dashboard, reconciled against the SysML v2 authoritative baseline — the same "Physical ↔ Digital Boundary" callout already present in the Ark governance rail, here given its formal mechanism.',
+    gov:'Physical test results calibrate the digital twin; the digital twin constrains what physical builds are authorized.',
+    std:'FMI 3.0 · Hardware-in-the-Loop'
+  },
+};
+
+const LVL_COLOR = {l4:'l4',l3:'l3',l2:'l2',l1:'l1',med:'med'};
+
+// ══════════════════════════════════════════════════════════════════
+// RENDER — ELEVATION
+// ══════════════════════════════════════════════════════════════════
+const levelsEl = document.getElementById('levels');
+LEVELS.forEach(lvl=>{
+  const div = document.createElement('div');
+  div.className = 'lvl ' + lvl.cls;
+  div.innerHTML = `
+    <div class="lvl-hd">
+      <span class="lvl-tag">${lvl.tag}</span>
+      <span class="lvl-name">${lvl.name}</span>
+      <span class="lvl-scope">${lvl.scope}</span>
+    </div>
+    <div class="chips">
+      ${lvl.items.map(it=>`
+        <button class="chip c-${it.src}" data-id="${it.id}">
+          <span class="chip-name">${it.name}</span>
+          <span class="chip-src">${it.tag}</span>
+        </button>
+      `).join('')}
+    </div>
+  `;
+  levelsEl.appendChild(div);
+});
+
+const medChipsEl = document.getElementById('med-chips');
+medChipsEl.innerHTML = MEDIATION.map(it=>`
+  <button class="med-chip" data-id="${it.id}" style="margin-bottom:6px;width:100%">
+    <span class="med-chip-name">${it.name}</span>
+    <span class="med-chip-tag">${it.tag}</span>
+  </button>
+`).join('');
+
+function selectComponent(id){
+  document.querySelectorAll('.chip.sel,.med-chip.sel').forEach(n=>n.classList.remove('sel'));
+  const btn = document.querySelector(`[data-id="${id}"]`);
+  if(btn) btn.classList.add('sel');
+  const d = DETAILS[id];
+  if(!d) return;
+  document.getElementById('empty-hint').style.display = 'none';
+  const panel = document.getElementById('detail');
+  panel.classList.add('on');
+  document.getElementById('d-name').textContent = btn ? btn.querySelector('.chip-name,.med-chip-name').textContent : id;
+  document.getElementById('d-meta').innerHTML = d.badges.map(b=>`<span class="d-badge" style="background:var(--${b.c}-bg,var(--card-2));color:var(--${b.c}-ink,var(--${b.c}))">${b.t}</span>`).join('');
+  document.getElementById('d-grid').innerHTML = `
+    <div class="d-field"><div class="d-field-lbl">Holonic Role</div><div class="d-field-body">${d.role}</div></div>
+    <div class="d-field"><div class="d-field-lbl">Ark / RDSG Counterpart</div><div class="d-field-body">${d.ark}</div></div>
+    <div class="d-field"><div class="d-field-lbl">Governance Mechanism</div><div class="d-field-body">${d.gov}</div></div>
+    <div class="d-field"><div class="d-field-lbl">Standard / Reference</div><div class="d-field-body"><b>${d.std}</b></div></div>
+  `;
+  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+function closeDetail(){
+  document.getElementById('detail').classList.remove('on');
+  document.getElementById('empty-hint').style.display = 'block';
+  document.querySelectorAll('.chip.sel,.med-chip.sel').forEach(n=>n.classList.remove('sel'));
+}
+document.getElementById('app').addEventListener('click', e=>{
+  const btn = e.target.closest('[data-id]');
+  if(btn) selectComponent(btn.dataset.id);
+});
+
+// ══════════════════════════════════════════════════════════════════
+// RENDER — TABLE
+// ══════════════════════════════════════════════════════════════════
+const tblBody = document.getElementById('xw-body');
+const rows = [];
+LEVELS.forEach(lvl=>{
+  lvl.items.forEach(it=>{
+    const d = DETAILS[it.id];
+    rows.push({lvl:lvl.tag, group:lvl.id, name:it.name, what:d.ark, gov:d.gov, std:d.std});
+  });
+});
+MEDIATION.forEach(it=>{
+  const d = DETAILS[it.id];
+  rows.push({lvl:'MED', group:'med', name:it.name, what:d.ark, gov:d.gov, std:d.std});
+});
+tblBody.innerHTML = rows.map(r=>`
+  <tr class="group-${r.group}">
+    <td><span class="xw-lvl ${r.lvl}">${r.lvl}</span></td>
+    <td class="xw-name">${r.name}</td>
+    <td>${r.what}</td>
+    <td>${r.gov}</td>
+    <td>${r.std}</td>
+  </tr>
+`).join('');
+
+// ══════════════════════════════════════════════════════════════════
+// RENDER — GAP VIEW
+// ══════════════════════════════════════════════════════════════════
+const GAPS = [
+  {
+    n:'01', title:'Grounding happens before the circuit breaker fires',
+    before:'PSM\'s circuit breaker (MTBH / Brier) scores AI output <b>after</b> the LLM has already generated it — hallucination is caught, not prevented.',
+    after:'The Mediation Holon\'s RAG Anchor Index binds retrieved vector-DB chunks to a canonical NSKG entity <b>before</b> generation, so an ungrounded chunk is quarantined the same way an invalid knowledge holon is at the inbound gateway — a defense-in-depth layer upstream of PSM, not a replacement for it.'
+  },
+  {
+    n:'02', title:'One canonical identity across 33+ sources',
+    before:'The Ark map describes the NSKG as unifying 33+ commercial and government sources, but doesn\'t say how the same supplier or contract, represented differently in each source, becomes one entity.',
+    after:'The Entity & URI Resolution Registry mints exactly one canonical Enterprise Entity ID per real-world entity, enforced as a mandatory admission check — no bottom-up asset counts as mapped until it resolves.'
+  },
+  {
+    n:'03', title:'Why the compliance gate can run at production latency',
+    before:'RDSG\'s Step ② is described as SHACL/SWRL validation on every query — full graph reasoning at that volume is a well-documented performance bottleneck.',
+    after:'Compiled Semantic Governance keeps SHACL/SWRL as the canonical, authored source of truth, but compiles it into runtime-native targets (SQL/dbt, OPA/Rego, vector filters) so enforcement runs at microsecond latency without touching the graph reasoner on the hot path.'
+  },
+  {
+    n:'04', title:'The gateway can\'t be bypassed because it isn\'t a layer',
+    before:'A filter sitting in front of an LLM can be routed around — prompt injection, context manipulation — because it\'s bolted on rather than structural.',
+    after:'Holonic theory reframes the RDSG flow as a holarchic protocol: governance is assembled as context traverses each level, not applied afterward. There is nothing to bypass because the governance <i>is</i> the structure the request travels through.'
+  },
+  {
+    n:'05', title:'The mapping graph updates itself',
+    before:'A manually maintained bridge between NSKG and the SysML v2 baseline would silently fall behind as NSKG sources change — a known failure mode for hand-curated integration layers at scale.',
+    after:'Lineage Ingestion Agents watch for schema drift in the bottom-up sources automatically (via OpenLineage / dbt artifact events) and propose mapping updates for steward review — the same Observe-phase pattern the Ark flow already uses for Ontology Gap Detection.'
+  },
+];
+document.getElementById('gap-cards').innerHTML = GAPS.map(g=>`
+  <div class="gap-card">
+    <div class="gap-hd"><span class="gap-num">${g.n}</span><span class="gap-title">${g.title}</span></div>
+    <div class="gap-body">
+      <div class="gap-col"><div class="gap-col-lbl before">Implicit / Unresolved in the Ark files</div><div class="gap-col-body">${g.before}</div></div>
+      <div class="gap-col"><div class="gap-col-lbl after">Made Explicit by the Mediation Holon</div><div class="gap-col-body">${g.after}</div></div>
+    </div>
+  </div>
+`).join('');
+
+// ══════════════════════════════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════════════════════════════
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+    tab.classList.add('on');
+    document.getElementById('view-'+tab.dataset.view).classList.add('on');
+  });
+});
+</script>
