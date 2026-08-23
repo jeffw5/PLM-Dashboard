@@ -1,0 +1,567 @@
+<title>Ten Points of Contact</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#faf8f4;
+    --surface:#ffffff;
+    --surface-2:#f2ede2;
+    --ink:#1c1b19;
+    --ink-soft:#4a473f;
+    --muted:#7a7669;
+    --line:#ded7c6;
+    --accent:#8a5a2b;
+    --accent-ink:#5e3c1c;
+    --navy:#233044;
+    --navy-ink:#1a2436;
+    --hfgt-tint:#e9eef4;
+    --hfgt-line:#c4d2e2;
+    --hsga-tint:#f7efdf;
+    --hsga-line:#e3cfa2;
+    --bridge:#4f7a54;
+    --bridge-ink:#38583d;
+    --bridge-tint:#e9f1e6;
+    --bridge-line:#c3d9c0;
+    --code-bg:#efe9da;
+    --shadow: 0 1px 2px rgba(20,15,5,0.06), 0 12px 32px rgba(20,15,5,0.10);
+    --serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+    --sans: 'IBM Plex Sans', 'Segoe UI', system-ui, sans-serif;
+    --mono: 'IBM Plex Mono', 'Consolas', monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#15130f;
+      --surface:#1c1a15;
+      --surface-2:#242019;
+      --ink:#ece7db;
+      --ink-soft:#c9c2b1;
+      --muted:#8f8977;
+      --line:#3a3527;
+      --accent:#d0a05a;
+      --accent-ink:#e8c48b;
+      --navy:#aebedb;
+      --navy-ink:#dbe4f2;
+      --hfgt-tint:#1b2330;
+      --hfgt-line:#33455f;
+      --hsga-tint:#2b2416;
+      --hsga-line:#5c4a26;
+      --bridge:#8fbf8a;
+      --bridge-ink:#b4dab0;
+      --bridge-tint:#1b2a1c;
+      --bridge-line:#3a5c39;
+      --code-bg:#26221a;
+      --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 12px 32px rgba(0,0,0,0.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#15130f;
+    --surface:#1c1a15;
+    --surface-2:#242019;
+    --ink:#ece7db;
+    --ink-soft:#c9c2b1;
+    --muted:#8f8977;
+    --line:#3a3527;
+    --accent:#d0a05a;
+    --accent-ink:#e8c48b;
+    --navy:#aebedb;
+    --navy-ink:#dbe4f2;
+    --hfgt-tint:#1b2330;
+    --hfgt-line:#33455f;
+    --hsga-tint:#2b2416;
+    --hsga-line:#5c4a26;
+    --bridge:#8fbf8a;
+    --bridge-ink:#b4dab0;
+    --bridge-tint:#1b2a1c;
+    --bridge-line:#3a5c39;
+    --code-bg:#26221a;
+    --shadow: 0 1px 2px rgba(0,0,0,0.35), 0 12px 32px rgba(0,0,0,0.4);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--serif); line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:var(--sans); text-wrap:balance; margin:0;}
+  code, .mono{font-family:var(--mono);}
+  a{color:var(--accent-ink);}
+  ::selection{ background: var(--hsga-line); }
+
+  .wrap{ max-width:1180px; margin:0 auto; padding:0 28px 80px; }
+
+  /* ---------- header ---------- */
+  header.top{
+    border-bottom:1px solid var(--line);
+    padding:56px 0 34px;
+    background:
+      radial-gradient(680px 220px at 12% -10%, var(--hsga-tint), transparent 60%),
+      radial-gradient(680px 220px at 90% -20%, var(--hfgt-tint), transparent 60%);
+  }
+  header.top .inner{ max-width:1180px; margin:0 auto; padding:0 28px; }
+  .eyebrow{
+    font-family:var(--sans); font-size:12.5px; font-weight:600; letter-spacing:.12em; text-transform:uppercase;
+    color:var(--muted); margin:0 0 14px;
+  }
+  header.top h1{
+    font-size:clamp(2.1rem, 4.4vw, 3.1rem); font-weight:600; letter-spacing:-0.01em; color:var(--ink);
+  }
+  header.top p.dek{
+    font-family:var(--serif); font-size:1.14rem; color:var(--ink-soft); max-width:62ch; margin:18px 0 0; line-height:1.6;
+  }
+  .legend{ display:flex; flex-wrap:wrap; gap:22px; margin-top:0; font-family:var(--sans); font-size:13.5px; color:var(--ink-soft); }
+  .legend span{ display:inline-flex; align-items:center; gap:8px; }
+  .swatch{ width:13px; height:13px; border-radius:3px; display:inline-block; }
+  .sw-hsga{ background:var(--accent); }
+  .sw-hfgt{ background:var(--navy); }
+  .sw-bridge{ background:var(--bridge); }
+
+  .hint{ font-family:var(--sans); font-size:13px; color:var(--muted); margin-top:14px; display:flex; align-items:center; gap:8px; }
+  .hint svg{ width:15px; height:15px; flex:none; }
+
+  /* ---------- tab nav ---------- */
+  .pages{ display:flex; gap:8px; margin-top:32px; }
+  .pagebtn{
+    font-family:var(--sans); font-size:13.5px; font-weight:600; letter-spacing:.01em;
+    border:1px solid var(--line); background:var(--surface); color:var(--ink-soft);
+    padding:9px 18px; border-radius:999px; cursor:pointer; transition:background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .pagebtn:hover{ border-color:var(--bridge-line); }
+  .pagebtn[aria-selected="true"]{ background:var(--ink); color:var(--bg); border-color:var(--ink); }
+
+  /* ---------- overview page ---------- */
+  #page-overview, #page-contact{ margin-top:44px; }
+  .ov-grid{ display:grid; grid-template-columns:1fr 1fr; gap:20px; align-items:stretch; }
+  @media (max-width:820px){ .ov-grid{ grid-template-columns:1fr; } }
+  .ov-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:14px;
+    padding:28px 30px 30px; display:flex; flex-direction:column; box-shadow:0 1px 2px rgba(20,15,5,0.04);
+  }
+  .ov-hsga{ border-top:4px solid var(--accent); }
+  .ov-hfgt{ border-top:4px solid var(--navy); }
+  .ov-head{ display:flex; align-items:center; gap:12px; margin-bottom:6px; }
+  .ov-head .swatch{ width:15px; height:15px; border-radius:4px; flex:none; }
+  .ov-kicker{ font-family:var(--sans); font-size:12px; color:var(--muted); margin:0 0 2px; letter-spacing:.01em; }
+  .ov-card h2{ font-size:1.7rem; font-weight:700; letter-spacing:-.01em; }
+  .ov-meta{
+    font-family:var(--mono); font-size:12px; color:var(--muted); margin:14px 0 18px; line-height:1.6;
+    padding-bottom:16px; border-bottom:1px solid var(--line);
+  }
+  .ov-body{ font-family:var(--serif); font-size:15px; color:var(--ink); line-height:1.68; margin:0 0 20px; }
+  .ov-label{
+    font-family:var(--sans); font-size:11.5px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--muted); margin:0 0 12px;
+  }
+  .ov-list{ margin:0; padding-left:19px; display:flex; flex-direction:column; gap:9px; font-family:var(--serif); font-size:14px; color:var(--ink-soft); line-height:1.5; }
+  .ov-list li::marker{ color:var(--bridge); }
+
+  .cta{
+    margin:32px auto 0; display:flex; align-items:center; gap:9px; justify-content:center;
+    font-family:var(--sans); font-size:14.5px; font-weight:600; color:var(--bg); background:var(--ink);
+    border:none; border-radius:999px; padding:14px 26px; cursor:pointer; transition:transform .15s ease, opacity .15s ease;
+  }
+  .cta:hover{ opacity:.88; }
+  .cta svg{ width:15px; height:15px; }
+
+  /* ---------- grid ---------- */
+  .grid{
+    display:grid; grid-template-columns:repeat(5, 1fr); gap:16px;
+    margin-top:24px;
+  }
+  @media (max-width:1020px){ .grid{ grid-template-columns:repeat(3,1fr); } }
+  @media (max-width:680px){ .grid{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:420px){ .grid{ grid-template-columns:1fr; } }
+
+  .cell{
+    text-align:left; cursor:pointer; background:var(--surface); border:1px solid var(--line); border-radius:10px;
+    padding:18px 16px 16px; font-family:inherit; color:inherit;
+    display:flex; flex-direction:column; gap:10px; min-height:168px;
+    position:relative; overflow:hidden;
+    box-shadow:0 1px 2px rgba(20,15,5,0.04);
+    transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+  }
+  .cell::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:4px;
+    background:linear-gradient(90deg, var(--accent) 0 50%, var(--navy) 50% 100%);
+  }
+  .cell:hover, .cell:focus-visible{
+    transform:translateY(-3px); border-color:var(--bridge-line);
+    box-shadow:var(--shadow); outline:none;
+  }
+  .cell:hover::after, .cell:focus-visible::after{
+    content:""; position:absolute; left:16px; right:16px; bottom:14px; height:2px; background:var(--bridge-line);
+    border-radius:2px;
+  }
+  .cell .num{ font-family:var(--mono); font-size:12px; color:var(--muted); letter-spacing:.04em; }
+  .cell h3{ font-size:1.03rem; font-weight:600; line-height:1.28; }
+  .cell p{ font-family:var(--serif); font-size:13.5px; color:var(--ink-soft); margin:0; line-height:1.5; flex:1; }
+  .cell .open{
+    font-family:var(--sans); font-size:12px; font-weight:600; color:var(--bridge-ink); letter-spacing:.02em;
+    display:inline-flex; align-items:center; gap:5px; margin-top:auto;
+  }
+  .cell .open svg{ width:12px; height:12px; transition:transform .15s ease; }
+  .cell:hover .open svg{ transform:translateX(3px); }
+
+  footer.page{
+    margin-top:56px; padding-top:26px; border-top:1px solid var(--line);
+    font-family:var(--sans); font-size:13px; color:var(--muted); line-height:1.7;
+  }
+  footer.page a{ color:var(--bridge-ink); font-weight:600; text-decoration:none; }
+  footer.page a:hover{ text-decoration:underline; }
+
+  /* ---------- modal ---------- */
+  .backdrop{
+    position:fixed; inset:0; background:rgba(15,13,10,0.52); backdrop-filter:blur(2px);
+    display:flex; align-items:flex-start; justify-content:center; padding:5vh 20px;
+    opacity:0; pointer-events:none; transition:opacity .18s ease; z-index:50;
+  }
+  :root[data-theme="dark"] .backdrop, :root:not([data-theme="light"]) .backdrop{ background:rgba(0,0,0,0.62); }
+  .backdrop.show{ opacity:1; pointer-events:auto; }
+
+  .modal{
+    background:var(--surface); border:1px solid var(--line); border-radius:14px; max-width:920px; width:100%;
+    max-height:90vh; overflow-y:auto; box-shadow:0 24px 70px rgba(0,0,0,0.28);
+    transform:translateY(14px) scale(.98); opacity:0; transition:transform .2s ease, opacity .2s ease;
+  }
+  .backdrop.show .modal{ transform:translateY(0) scale(1); opacity:1; }
+
+  .modal-head{
+    display:flex; align-items:flex-start; justify-content:space-between; gap:16px;
+    padding:26px 28px 18px; border-bottom:1px solid var(--line);
+  }
+  .modal-head .num{ font-family:var(--mono); font-size:12.5px; color:var(--muted); margin-bottom:6px; display:block; }
+  .modal-head h2{ font-size:1.5rem; font-weight:600; }
+  .modal-close{
+    border:1px solid var(--line); background:var(--surface-2); color:var(--ink-soft); border-radius:8px;
+    width:34px; height:34px; flex:none; cursor:pointer; font-size:16px; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .modal-close:hover{ background:var(--code-bg); }
+
+  .cols{ display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line); }
+  @media (max-width:640px){ .cols{ grid-template-columns:1fr; } }
+  .col{ background:var(--surface); padding:22px 26px; }
+  .col-hsga{ background:var(--hsga-tint); }
+  .col-hfgt{ background:var(--hfgt-tint); }
+  .col-label{
+    font-family:var(--sans); font-size:12px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+    display:flex; align-items:center; gap:8px; margin-bottom:12px;
+  }
+  .col-hsga .col-label{ color:var(--accent-ink); }
+  .col-hfgt .col-label{ color:var(--navy-ink); }
+  .col p{ font-size:14.5px; color:var(--ink); line-height:1.62; margin:0; }
+  .col .swatch{ width:10px; height:10px; }
+
+  .bridge{
+    margin:0; padding:22px 28px 26px; background:var(--bridge-tint); border-top:1px solid var(--bridge-line);
+  }
+  .bridge .col-label{ color:var(--bridge-ink); }
+  .bridge p{ font-size:14.5px; color:var(--ink); line-height:1.62; margin:0; }
+
+  .modal-foot{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:16px 28px 22px; font-family:var(--sans);
+  }
+  .modal-foot .src{ font-size:12px; color:var(--muted); }
+  .navbtns{ display:flex; gap:8px; }
+  .navbtn{
+    border:1px solid var(--line); background:var(--surface-2); color:var(--ink-soft); border-radius:8px;
+    padding:8px 14px; font-family:var(--sans); font-size:13px; font-weight:600; cursor:pointer;
+    display:inline-flex; align-items:center; gap:6px;
+  }
+  .navbtn:hover{ background:var(--code-bg); }
+  .navbtn:disabled{ opacity:.4; cursor:default; }
+  .navbtn svg{ width:13px; height:13px; }
+
+  @media (prefers-reduced-motion: reduce){
+    .cell, .backdrop, .modal, .cell .open svg{ transition:none !important; }
+  }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="inner">
+      <p class="eyebrow">HSGA · HFGT — companion reading</p>
+      <h1>Ten Points of Contact</h1>
+      <p class="dek">Holonic Semantic Governance Architecture and Hetero-Functional Graph Theory, read first on their own terms, then set side by side across ten structural dimensions — not to score one against the other, but to see where each does work the other doesn't, and where the two could be run together.</p>
+      <nav class="pages" role="tablist" aria-label="Page">
+        <button class="pagebtn" id="tabOverview" role="tab" aria-selected="true" aria-controls="page-overview">Overview</button>
+        <button class="pagebtn" id="tabContact" role="tab" aria-selected="false" aria-controls="page-contact">Ten Points of Contact</button>
+      </nav>
+    </div>
+  </header>
+
+  <section id="page-overview" role="tabpanel" aria-labelledby="tabOverview">
+    <div class="ov-grid">
+      <article class="ov-card ov-hsga">
+        <div class="ov-head">
+          <span class="swatch sw-hsga"></span>
+          <div>
+            <p class="ov-kicker">Holonic Semantic Governance Architecture</p>
+            <h2>HSGA</h2>
+          </div>
+        </div>
+        <p class="ov-meta">v4.2 · Jeffrey Wallk, The Value Enablement Group, LLC · self-published draft, uncertified</p>
+        <p class="ov-body">HSGA is an enterprise reference architecture for governing what knowledge and AI systems mean, what they may be used for, and what actions they may authorize — at both design time and run time. It uses Arthur Koestler's holon concept (an entity that is simultaneously a self-contained whole and a composable part) as its organizing grammar, synthesizing nine prior internal frameworks into one architecture. It is process-first: the Process Step is the elementary, operand-agnostic unit, wrapped in a governance contract — identity, SHACL invariant, ORSD/KGCL lifecycle — that composes upward through Service, Value Stream, Supply Chain, and Value Chain regardless of what is flowing through it. Critically, HSGA is not just narrative description: a live, versioned OWL/SHACL ontology suite built at Verizon instantiates its classes and constraints as executable, queryable structure.</p>
+        <p class="ov-label">Defining elements</p>
+        <ul class="ov-list">
+          <li>Four vertical holonic levels (L1 Knowledge → L4 Enterprise Holarchy) plus a lateral Mediation Holon bridging top-down ontology to bottom-up implementation</li>
+          <li>Circuit Breaker / MTBH — dimensional health monitoring that detects and contains AI hallucination before it can poison training data</li>
+          <li>LKIF deontic norms — obligation, permission, prohibition, violation, sanction — attached to every holon</li>
+          <li>Decision Model &amp; Measurement — a decision, not a requirement, is the first-class object mediating problem and solution</li>
+          <li>Grounded in Basic Formal Ontology (BFO), an ISO/IEC 21838-2 top-level ontology</li>
+        </ul>
+      </article>
+
+      <article class="ov-card ov-hfgt">
+        <div class="ov-head">
+          <span class="swatch sw-hfgt"></span>
+          <div>
+            <p class="ov-kicker">Hetero-Functional Graph Theory</p>
+            <h2>HFGT</h2>
+          </div>
+        </div>
+        <p class="ov-meta">Farid, Hosseini &amp; Little (2026) · Systems Engineering (Wiley), DOI 10.1002/sys.70056 · peer-reviewed, NSF-funded</p>
+        <p class="ov-body">HFGT is a mathematical formalism for modeling systems-of-systems, built as a methodological bridge between model-based systems engineering — qualitative, heterogeneous, but hard to compute over — and network science, which offers rigorous matrix-based analysis but has historically flattened that heterogeneity into uniform nodes and edges. It is operand-first: its foundational taxonomy (Table 1) crosses five generic functions — Transform, Transport, Store, Exchange, Control — against five universal substances — Living Organisms, Matter, Energy, Information, Money — and that operand typing is load-bearing, giving the framework's mathematics physical meaning (conservation of matter and energy, non-rivalry of information, fungibility of money) for free. The core grammar — a resource executes a process on an operand — compresses into an operand net per operand, then third-order incidence tensors, then a hetero-functional adjacency matrix, from which structural-robustness metrics can be computed directly rather than argued. The work traces to 2006–2008 and has been applied, in published and cited studies, to power grids, potable water, transportation, mass-customized production, healthcare delivery, and megaproject engineering.</p>
+        <p class="ov-label">Defining elements</p>
+        <ul class="ov-list">
+          <li>Three meta-architecture tiers (Instantiated → Reference → Meta-Architecture), organized by generalization depth</li>
+          <li>Ullman's triangle plus four linguistic properties — soundness, completeness, lucidity, laconicity — used to test whether a model is ontologically adequate</li>
+          <li>Operand net (Petri net) per operand, compressed into third-order hetero-functional incidence tensors</li>
+          <li>Hetero-functional adjacency matrix — a computed structural-robustness metric, not an asserted one</li>
+          <li>Resources typed by capability: Transformation Resource, Independent Buffer, Transportation Resource</li>
+        </ul>
+      </article>
+    </div>
+    <button class="cta" id="ctaToContact">
+      Explore the ten points of contact
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+  </section>
+
+  <section id="page-contact" role="tabpanel" aria-labelledby="tabContact" hidden>
+    <div class="legend">
+      <span><i class="swatch sw-hsga"></i>HSGA</span>
+      <span><i class="swatch sw-hfgt"></i>HFGT</span>
+      <span><i class="swatch sw-bridge"></i>Where they complement</span>
+    </div>
+    <p class="hint">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 9a3 3 0 1 1 4 2.8c-.7.3-1 .9-1 1.7v.5"/><circle cx="12" cy="17.5" r=".6" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="9.5"/></svg>
+      Click any tile to open the side-by-side view.
+    </p>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <footer class="page">
+    Descriptions are sourced to Farid, Hosseini &amp; Little (2026), <i>Systems Engineering</i>, for HFGT, and to the HSGA v4.2 draft plus five reviewed Verizon ontology modules (draft, uncertified) for HSGA. Where a claim could not be verified against the reviewed materials, it is noted as such rather than asserted.
+    <br><br>
+    Read the full twelve-part analysis, with verbatim definitions and SHACL citations, in the <a href="https://claude.ai/code/artifact/c7d19c48-02ce-4ee0-94d2-5db3b98708ce" target="_blank" rel="noopener">companion document ↗</a>.
+  </footer>
+</div>
+
+<div class="backdrop" id="backdrop">
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-head">
+      <div>
+        <span class="num" id="modalNum"></span>
+        <h2 id="modalTitle"></h2>
+      </div>
+      <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+    </div>
+    <div class="cols">
+      <div class="col col-hsga">
+        <div class="col-label"><i class="swatch sw-hsga"></i>HSGA</div>
+        <p id="modalHsga"></p>
+      </div>
+      <div class="col col-hfgt">
+        <div class="col-label"><i class="swatch sw-hfgt"></i>HFGT</div>
+        <p id="modalHfgt"></p>
+      </div>
+    </div>
+    <div class="bridge">
+      <div class="col-label"><i class="swatch sw-bridge"></i>Where they complement</div>
+      <p id="modalBridge"></p>
+    </div>
+    <div class="modal-foot">
+      <span class="src" id="modalSrc"></span>
+      <div class="navbtns">
+        <button class="navbtn" id="prevBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>Prev</button>
+        <button class="navbtn" id="nextBtn">Next<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const DIMENSIONS = [
+    {
+      title: "Provenance & Purpose",
+      teaser: "Where each framework comes from, and what it was built to do.",
+      hsga: "Self-published enterprise-architecture draft, v4.2 (Jeffrey Wallk, The Value Enablement Group, LLC), synthesizing nine prior internal frameworks into one holonic reference architecture. Backed by a live, versioned OWL/SHACL ontology suite built at Verizon that instantiates the architecture as executable classes rather than prose. Purpose: govern what enterprise knowledge and AI systems mean, may be used for, and may authorize — at design time and run time.",
+      hfgt: "Peer-reviewed review article — Farid, Hosseini & Little (2026), Systems Engineering (Wiley), DOI 10.1002/sys.70056 — authored at Stevens, MIT, and Virginia Tech under NSF funding, consolidating a research line dating to 2006–2008. Purpose: a methodological bridge between model-based systems engineering (qualitative, heterogeneous) and network science (quantitative, but historically homogeneous).",
+      bridge: "HFGT contributes two decades of published, cited mathematical lineage that a practitioner ontology can point to for external grounding. HSGA contributes a live, production-instantiated example of exactly the kind of reference architecture HFGT's meta-architecture ladder describes only abstractly — the theory finds a working instance; the instance finds a citable theory.",
+      src: "Part I"
+    },
+    {
+      title: "Ontological Grounding",
+      teaser: "Two different points in the modeling lifecycle where each earns its rigor.",
+      hsga: "Classes — Process, Persona, Asset, Service, Rules, Compliance, Event — are built against Basic Formal Ontology (BFO), an ISO/IEC 21838-2 top-level ontology used across the OBO Foundry and defense/industrial ontology engineering. BFO enforces a continuant/occurrent category split before any domain-specific class is defined.",
+      hfgt: "Grounded in Ullman's triangle (Real Domain / Domain Conceptualization / Language), tested via four linguistic properties defined in the paper — soundness, completeness, lucidity, laconicity. This is the same test the paper applies to show formal graphs and multilayer networks lose information that a hetero-functional graph does not.",
+      bridge: "BFO constrains what a class is allowed to be before it's written; Ullman's triangle tests whether a finished model still represents reality completely and without overlap. One is a pre-condition, the other a post-hoc audit — a class built under BFO's discipline is a natural candidate to test for soundness, completeness, lucidity, and laconicity once it's instantiated.",
+      src: "Part II.1"
+    },
+    {
+      title: "Meta-Architecture Shape",
+      teaser: "Depth of generalization vs. authority of governance — two different ladders.",
+      hsga: "Four vertical holonic levels — L1 Knowledge Holon, L2 Domain Holon, L3 Gateway Holon, L4 Enterprise Holarchy — plus one lateral Mediation Holon (v3.0+) that persists the mapping between top-down enterprise ontology and bottom-up implementation (dbt, property graphs, vector stores), separating rule definition from rule execution.",
+      hfgt: "Three tiers on a single generalization axis — Instantiated Architecture (case-specific), Reference Architecture (domain-general), Meta-Architecture (domain-neutral, where HFGT itself operates) — expressed as a SysML block-definition hierarchy.",
+      bridge: "The two ladders answer different questions — how abstract a description is (HFGT) versus who holds governance authority over it (HSGA) — so they can be laid across each other: any HFGT tier could be governed at any HSGA level, and the Mediation Holon is exactly the mechanism that would keep such a mapping current as implementation details shift underneath a stable top-down model.",
+      src: "Part II.2"
+    },
+    {
+      title: "The Core Triple",
+      teaser: "Resource, process, operand — the same grammar, reached independently.",
+      hsga: "Persona / Role / Party (resource) — Process / ProcessAction (process) — DigitalAsset / PhysicalAsset / BiologicalAsset (operand), enforced as SHACL shapes: PersonaShape performs → Process; ProcessShape creates/modifies → Asset.",
+      hfgt: "System Resource R (Def. 8) — System Process P (Def. 7) — System Operand L (Def. 6), joined as the explicit “subject + verb + operand” sentence form, with the Resource–Process pairing formalized as a binary P×R matrix Aₛ (Def. 12).",
+      bridge: "The same three-part grammar, arrived at independently. HSGA's performedBy → Persona SHACL constraint and HFGT's matrix Aₛ assert the identical fact — which resource may execute which process — in different representations. HSGA's enforced relation is already the exact data HFGT's matrix needs as input; turning one into the other is closer to a data transform than new modeling.",
+      src: "Part III"
+    },
+    {
+      title: "Compositional Scaffold",
+      teaser: "How the elementary triple builds upward into services, chains, and networks.",
+      hsga: "Process Step → SIPOC chain (Supplier–Inputs–ProcessAction–Outputs–Customer) → Service → Value Stream → Supply Chain (SCOR: Plan/Source/Make/Deliver/Return) → Value Chain (Porter, with InboundLogistics as a worked subclass) — six rungs, each grounded in an external framework and verified end-to-end across the reviewed ontology modules.",
+      hfgt: "System Process → Independent/Dependent Process (sequenced under the Independence Axiom) → Whole Process → Hetero-functional Network — four rungs, with no separate named layer above the network; supply-chain and production-system extensions work directly at that level in Farid's cited further-reading applications.",
+      bridge: "HFGT's undifferentiated network rung is exactly where HSGA's supply-chain and value-chain rungs sit conceptually. HSGA inherits SCOR's and Porter's established process content by reference rather than reinventing it — content that could give HFGT's top rung two named, standards-based structures in place of a generic label.",
+      src: "Part IV"
+    },
+    {
+      title: "Formal Apparatus",
+      teaser: "A tensor computes structure; a constraint validates state — neither does both.",
+      hsga: "A SHACL shape (invariant), a SWRL rule (inference), and an LKIF deontic statement (obligation / permission / prohibition / violation / sanction) per holon — compiled from canonical definitions into runtime-native targets (SQL/dbt, OPA/Rego, vector filters) by Rule Projection Agents, each carrying a URI back to its source rule.",
+      hfgt: "An operand net (Petri net, Def. 9) per operand, compressed into third-order positive/negative hetero-functional incidence tensors (Def. 13–14), from which the hetero-functional adjacency matrix (Def. 15) is computed directly — enabling published structural-robustness analyses (redundancy, degrees of freedom, resilience to resource loss) across domains from power grids to healthcare delivery.",
+      bridge: "One apparatus validates state and authorization; the other computes structural robustness — neither answers the other's question. A Circuit Breaker that already asks “is this holon valid and within its deontic bounds” could be extended to also ask “is this holon reachable through a redundant path if its primary resource fails,” using HFGT's adjacency matrix over the same underlying model.",
+      src: "Part V"
+    },
+    {
+      title: "Operand Coverage",
+      teaser: "Which of five universal substances each framework's asset classes cover.",
+      hsga: "PhysicalAsset, DigitalAsset, and BiologicalAsset are confirmed as sibling classes created/modified by Process through identical predicates — three of five operand types. Energy and Money were not located as typed Asset subclasses in the four ontology modules reviewed; money instead appears as compliance/process metadata.",
+      hfgt: "Five operand types are load-bearing from Table 1 onward — Living Organisms, Matter, Energy, Information, Money — each inheriting physical or economic properties (conservation, non-rivalry, fungibility, agency) directly from its column in the taxonomy.",
+      bridge: "HSGA already covers three of five types using one consistent predicate pattern. HFGT's taxonomy effectively specifies, in advance, the name and expected behavior of the two missing classes — extending HSGA to full parity would mean applying a pattern it already uses, not designing a new one.",
+      src: "Part VI"
+    },
+    {
+      title: "Resource Typing",
+      teaser: "Whether a resource declares what kind of work it can do, or leaves it implied.",
+      hsga: "Persona / Role / Party carry identity, role assignment, and ORSD/KGCL lifecycle governance, but are not typed by the class of capability they can execute — whether a resource transforms, moves, or stores is inferred from which Process subclass it relates to, not stated on the resource itself.",
+      hfgt: "Resources are explicitly typed by capability: Transformation Resource (M, owns Transform Operand), Independent Buffer (B, storage only), Transportation Resource (H, owns Hold/Transport Operand) — a split that determines, structurally, which resources can execute which process types.",
+      bridge: "HFGT's three-way typing is a directly portable addition to HSGA's Persona/Role classes: a capability-class property would let HSGA state which SIPOC roles a resource may occupy, rather than leaving it to be inferred from context — a specific, named extension rather than a philosophical one.",
+      src: "Part VII"
+    },
+    {
+      title: "Extensions Beyond the Core",
+      teaser: "Four HSGA layers — decision, AI trust, service controls, deontic norms — HFGT is silent on.",
+      hsga: "Four layers with no HFGT counterpart: decision governance (DecisionAction as a formal ProcessAction subclass, Fitch's Requirement→Decision→Alternative→Derived-Requirement→Risk traceability); Circuit Breaker / MTBH AI-trust monitoring; a service-level governance surface (GovernanceServices → DetectiveControls → IssueManagement); and LKIF deontic normativity layered onto every holon.",
+      hfgt: "No concept of a decision, a decision fault, AI-generated content, model collapse, service-level controls, or deontic modality — a process in HFGT executes or it does not, with no formal notion of what it is permitted, obligated, or authorized to do.",
+      bridge: "None of this is a gap in HFGT — these four layers sit outside a paper whose stated scope is structural and dynamic analysis. They describe a governance skin that could wrap any operand-first structural model HFGT produces, including one built from HFGT's own tensors, without altering HFGT's mathematics at all.",
+      src: "Part VIII"
+    },
+    {
+      title: "Path to Convergence",
+      teaser: "A six-step, source-cited route to compute what HSGA currently only asserts.",
+      hsga: "Today, HSGA has the categorical substrate a quantitative layer would need as input: typed resources, typed processes, a typed (if partial) multi-substance operand taxonomy, and an explicit, enforced resource–process relation. It does not yet compute an operand net, an incidence tensor, or an adjacency matrix.",
+      hfgt: "A six-step, source-cited path grounds HSGA's classes in HFGT's mathematics without inventing new theory: map Persona/Process/Asset to R/P/L; type resources by capability class; add EnergyAsset/MonetaryAsset; instantiate Aₛ directly from performedBy → Persona; derive the operand net from KGCL's change records; compute the adjacency matrix.",
+      bridge: "Neither framework would need to abandon anything it already does. HSGA keeps its governance, decision, and AI-trust layers exactly as they are; it gains the ability to compute, rather than assert, how structurally robust its holon network is to losing a resource.",
+      src: "Parts XI–XII"
+    }
+  ];
+
+  /* ---------- page tabs ---------- */
+  const tabOverview = document.getElementById('tabOverview');
+  const tabContact = document.getElementById('tabContact');
+  const pageOverview = document.getElementById('page-overview');
+  const pageContact = document.getElementById('page-contact');
+
+  function showPage(name){
+    const isOverview = name === 'overview';
+    pageOverview.hidden = !isOverview;
+    pageContact.hidden = isOverview;
+    tabOverview.setAttribute('aria-selected', String(isOverview));
+    tabContact.setAttribute('aria-selected', String(!isOverview));
+    window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+    history.replaceState(null, '', name === 'contact' ? '#contact' : '#overview');
+  }
+
+  tabOverview.addEventListener('click', () => showPage('overview'));
+  tabContact.addEventListener('click', () => showPage('contact'));
+  document.getElementById('ctaToContact').addEventListener('click', () => showPage('contact'));
+  showPage(location.hash === '#contact' ? 'contact' : 'overview');
+
+  const grid = document.getElementById('grid');
+  DIMENSIONS.forEach((d, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'cell';
+    btn.setAttribute('aria-haspopup', 'dialog');
+    btn.innerHTML =
+      '<span class="num">' + String(i+1).padStart(2,'0') + ' / ' + String(DIMENSIONS.length).padStart(2,'0') + '</span>' +
+      '<h3>' + d.title + '</h3>' +
+      '<p>' + d.teaser + '</p>' +
+      '<span class="open">Open comparison<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></span>';
+    btn.addEventListener('click', () => openModal(i));
+    grid.appendChild(btn);
+  });
+
+  const backdrop = document.getElementById('backdrop');
+  const modalNum = document.getElementById('modalNum');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalHsga = document.getElementById('modalHsga');
+  const modalHfgt = document.getElementById('modalHfgt');
+  const modalBridge = document.getElementById('modalBridge');
+  const modalSrc = document.getElementById('modalSrc');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  let current = 0;
+  let lastFocused = null;
+
+  function renderModal(i){
+    const d = DIMENSIONS[i];
+    modalNum.textContent = String(i+1).padStart(2,'0') + ' / ' + String(DIMENSIONS.length).padStart(2,'0');
+    modalTitle.textContent = d.title;
+    modalHsga.textContent = d.hsga;
+    modalHfgt.textContent = d.hfgt;
+    modalBridge.textContent = d.bridge;
+    modalSrc.textContent = 'Full treatment: ' + d.src + ' of the companion analysis.';
+    prevBtn.disabled = i === 0;
+    nextBtn.disabled = i === DIMENSIONS.length - 1;
+    document.getElementById('modal').scrollTop = 0;
+  }
+
+  function openModal(i){
+    current = i;
+    lastFocused = document.activeElement;
+    renderModal(i);
+    backdrop.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    document.getElementById('modalClose').focus();
+  }
+  function closeModal(){
+    backdrop.classList.remove('show');
+    document.body.style.overflow = '';
+    if (lastFocused) lastFocused.focus();
+  }
+
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closeModal(); });
+  prevBtn.addEventListener('click', () => { if (current > 0) renderModal(--current); });
+  nextBtn.addEventListener('click', () => { if (current < DIMENSIONS.length - 1) renderModal(++current); });
+  document.addEventListener('keydown', (e) => {
+    if (!backdrop.classList.contains('show')) return;
+    if (e.key === 'Escape') closeModal();
+    if (e.key === 'ArrowLeft' && current > 0) renderModal(--current);
+    if (e.key === 'ArrowRight' && current < DIMENSIONS.length - 1) renderModal(++current);
+  });
+</script>
