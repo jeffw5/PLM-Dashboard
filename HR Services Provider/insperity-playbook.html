@@ -170,10 +170,31 @@
   }
 
   .doc {
+    display: block;
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: 10px;
     padding: 1.5rem 1.6rem;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .doc:hover,
+  .doc:focus-visible {
+    border-color: var(--accent);
+    box-shadow: 0 2px 14px -4px rgba(0, 0, 0, 0.14);
+    transform: translateY(-1px);
+  }
+
+  .doc:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .doc:hover .doc-name,
+  .doc:focus-visible .doc-name {
+    color: var(--accent-ink);
   }
 
   .doc-head {
@@ -190,6 +211,15 @@
     font-weight: 600;
     font-size: 1.14rem;
     color: var(--ink);
+    transition: color 0.15s ease;
+  }
+
+  .doc-name::after {
+    content: "  ↗";
+    font-family: var(--sans);
+    font-weight: 500;
+    font-size: 0.85em;
+    color: var(--accent);
   }
 
   .doc-kind {
@@ -284,59 +314,59 @@
     <h2>What each thing actually is</h2>
     <div class="doc-list">
 
-      <div class="doc">
+      <a class="doc" href="https://plm.enablingvalue.com/HR%20Services%20Provider/Interview%20Prep%20Sheet_%20David%20Burnley.pdf" target="_blank" rel="noopener noreferrer">
         <div class="doc-head">
           <span class="doc-name">Interview Prep Sheet</span>
           <span class="doc-kind">PDF</span>
         </div>
         <p class="doc-tagline">My cheat sheet on the person and the company.</p>
         <p class="body-text">Notes on David Burnley's background, what Insperity does and how big it is, and a handful of sharp questions I plan to ask. This is the "know who you're talking to" homework.</p>
-      </div>
+      </a>
 
-      <div class="doc">
+      <a class="doc" href="https://plm.enablingvalue.com/HR%20Services%20Provider/Insperity%20Impact.pdf" target="_blank" rel="noopener noreferrer">
         <div class="doc-head">
           <span class="doc-name">Insperity Impact</span>
           <span class="doc-kind">PDF</span>
         </div>
         <p class="doc-tagline">The pitch — here's where I think I can help.</p>
         <p class="body-text">A short proposal laying out problems Insperity likely has — things like keeping up with different labor laws in every state, connecting HR systems that don't talk to each other, and making sure an AI assistant doesn't confidently give a wrong answer about someone's benefits — and how my approach could fix each one.</p>
-      </div>
+      </a>
 
-      <div class="doc">
+      <a class="doc" href="https://plm.enablingvalue.com/HR%20Services%20Provider/insperity-iih-interactive.html" target="_blank" rel="noopener noreferrer">
         <div class="doc-head">
           <span class="doc-name">IIH Interactive</span>
           <span class="doc-kind">Interactive demo</span>
         </div>
         <p class="doc-tagline">A working sketch of a smarter, safer HR chatbot.</p>
         <p class="body-text">Insperity is building an AI assistant for employees. This is my concept for how to make it trustworthy — every answer can be traced back to the actual policy it came from, and it can't take a risky action (like changing someone's pay) without a human checking first. Also includes a step-by-step plan for rolling it out safely over about a year and a half.</p>
-      </div>
+      </a>
 
-      <div class="doc">
+      <a class="doc" href="https://plm.enablingvalue.com/HR%20Services%20Provider/HR%20Services%20Business%20Model.html" target="_blank" rel="noopener noreferrer">
         <div class="doc-head">
           <span class="doc-name">HR Services Business Model</span>
           <span class="doc-kind">Interactive map</span>
         </div>
         <p class="doc-tagline">A map of how Insperity's business actually fits together.</p>
         <p class="body-text">A clickable diagram of Insperity's services and how they connect — payroll, benefits, compliance, hiring, and so on. I built this to prove I understand the business itself, not just the technology underneath it.</p>
-      </div>
+      </a>
 
-      <div class="doc">
+      <a class="doc" href="https://plm.enablingvalue.com/HR%20Services%20Provider/accelerator-console.html" target="_blank" rel="noopener noreferrer">
         <div class="doc-head">
           <span class="doc-name">Accelerator Console</span>
           <span class="doc-kind">Interactive demo</span>
         </div>
         <p class="doc-tagline">Six tools I've built, laid out as a menu.</p>
         <p class="body-text">A dashboard showing six ideas I've developed over the years — things like a system for writing a rule once and having it enforced everywhere automatically, and a "circuit breaker" that pauses an AI assistant if it starts guessing instead of knowing. Each one is mapped directly to something Insperity has said they care about.</p>
-      </div>
+      </a>
 
-      <div class="doc">
+      <a class="doc" href="https://plm.enablingvalue.com/HR%20Services%20Provider/Insperity%20HR%20Compliance%20SSOT%20Dashboard.html" target="_blank" rel="noopener noreferrer">
         <div class="doc-head">
           <span class="doc-name">Compliance SSOT Dashboard</span>
           <span class="doc-kind">Prototype dashboard</span>
         </div>
         <p class="doc-tagline">One place to keep every employment rule straight.</p>
         <p class="body-text">"SSOT" just means "single source of truth" — one place that's always right, instead of five spreadsheets that disagree. This prototype shows how a company could track every federal, state, and local employment rule in one system, so nothing slips through when a law changes.</p>
-      </div>
+      </a>
 
     </div>
   </section>
