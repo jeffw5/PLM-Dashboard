@@ -1,0 +1,4095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR Services Architecture Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1a2332;
+  --ink-soft:#3c4657;
+  --muted:#5b6577;
+  --paper:#f4f6f9;
+  --surface:#ffffff;
+  --surface-2:#eef1f5;
+  --border:#dde1e8;
+  --border-soft:#e8ebf0;
+  --accent:#2f5d78;
+  --accent-soft:#e3edf3;
+  --grid-line: rgba(47,93,120,0.09);
+
+  --dom-workforce:#0e7c86;
+  --dom-benefits:#3454a6;
+  --dom-compliance:#b5482a;
+  --dom-talent:#3f7d5c;
+  --dom-client:#c17f17;
+  --dom-tech:#6b4c93;
+
+  --font-display:"Barlow Condensed", "Arial Narrow", sans-serif;
+  --font-body:"Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono:"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --shadow-panel: 0 1px 2px rgba(20,30,45,0.06), 0 8px 24px -12px rgba(20,30,45,0.18);
+}
+
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#e7ecf3;
+    --ink-soft:#c3ccda;
+    --muted:#8b95a8;
+    --paper:#11151c;
+    --surface:#171c25;
+    --surface-2:#1e2530;
+    --border:#2a3241;
+    --border-soft:#242c39;
+    --accent:#6ba3c7;
+    --accent-soft:rgba(107,163,199,0.14);
+    --grid-line: rgba(107,163,199,0.08);
+
+    --dom-workforce:#2bb4bc;
+    --dom-benefits:#7292d6;
+    --dom-compliance:#e08361;
+    --dom-talent:#67b78d;
+    --dom-client:#e0a94a;
+    --dom-tech:#a68ad4;
+
+    --shadow-panel: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#e7ecf3;
+  --ink-soft:#c3ccda;
+  --muted:#8b95a8;
+  --paper:#11151c;
+  --surface:#171c25;
+  --surface-2:#1e2530;
+  --border:#2a3241;
+  --border-soft:#242c39;
+  --accent:#6ba3c7;
+  --accent-soft:rgba(107,163,199,0.14);
+  --grid-line: rgba(107,163,199,0.08);
+
+  --dom-workforce:#2bb4bc;
+  --dom-benefits:#7292d6;
+  --dom-compliance:#e08361;
+  --dom-talent:#67b78d;
+  --dom-client:#e0a94a;
+  --dom-tech:#a68ad4;
+
+  --shadow-panel: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+}
+
+*{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; }
+body{
+  font-family:var(--font-body);
+  background:var(--paper);
+  color:var(--ink);
+  height:100vh;
+  width:100vw;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; }
+}
+
+button{ font-family:inherit; }
+::selection{ background:var(--accent-soft); }
+
+/* ---------- Header ---------- */
+header{
+  flex:none;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:1rem;
+  padding:0.7rem 1.25rem;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:0.65rem;
+  min-width:0;
+}
+.brand-mark{ flex:none; color:var(--accent); }
+.brand-text{ display:flex; flex-direction:column; line-height:1.15; min-width:0; }
+.brand-title{
+  font-family:var(--font-display);
+  font-weight:600;
+  font-size:1.28rem;
+  letter-spacing:0.01em;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.brand-sub{
+  font-size:0.72rem;
+  color:var(--muted);
+  letter-spacing:0.04em;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+.header-stats{
+  display:flex;
+  gap:1.4rem;
+  flex:none;
+}
+.stat{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  line-height:1.1;
+}
+.stat b{
+  font-family:var(--font-mono);
+  font-size:1rem;
+  font-variant-numeric:tabular-nums;
+  color:var(--ink);
+}
+.stat span{
+  font-size:0.66rem;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:0.05em;
+}
+
+/* ---------- Controls bar ---------- */
+.controls-bar{
+  flex:none;
+  display:flex;
+  align-items:center;
+  gap:0.9rem;
+  padding:0.6rem 1.25rem;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+  flex-wrap:wrap;
+}
+.search-box{
+  position:relative;
+  width:270px;
+  flex:none;
+}
+.search-box svg{
+  position:absolute; left:0.6rem; top:50%; transform:translateY(-50%);
+  width:15px; height:15px; color:var(--muted); pointer-events:none;
+}
+.search-box input{
+  width:100%;
+  padding:0.45rem 0.6rem 0.45rem 2rem;
+  border:1px solid var(--border);
+  border-radius:5px;
+  background:var(--surface-2);
+  color:var(--ink);
+  font-family:var(--font-mono);
+  font-size:0.8rem;
+  outline:none;
+}
+.search-box input:focus{ border-color:var(--accent); background:var(--surface); }
+.search-results{
+  position:absolute; top:calc(100% + 4px); left:0; right:0;
+  background:var(--surface); border:1px solid var(--border); border-radius:6px;
+  box-shadow:var(--shadow-panel); max-height:260px; overflow-y:auto; z-index:30;
+  display:none;
+}
+.search-results.open{ display:block; }
+.search-result-item{
+  padding:0.45rem 0.65rem; font-size:0.78rem; cursor:pointer;
+  display:flex; align-items:center; gap:0.5rem; border-bottom:1px solid var(--border-soft);
+}
+.search-result-item:last-child{ border-bottom:none; }
+.search-result-item:hover{ background:var(--surface-2); }
+.sri-dot{ width:7px; height:7px; border-radius:50%; flex:none; }
+.sri-type{ font-family:var(--font-mono); font-size:0.62rem; color:var(--muted); text-transform:uppercase; flex:none; }
+
+.field{
+  display:flex; flex-direction:column; gap:0.25rem; flex:none;
+}
+.field label{
+  font-size:0.65rem; font-weight:600; color:var(--muted);
+  text-transform:uppercase; letter-spacing:0.06em;
+}
+select{
+  padding:0.42rem 1.6rem 0.42rem 0.6rem;
+  border:1px solid var(--border);
+  border-radius:5px;
+  background:var(--surface-2) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="%235b6577" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>') no-repeat right 0.55rem center;
+  color:var(--ink);
+  font-size:0.78rem;
+  font-family:var(--font-body);
+  appearance:none;
+  cursor:pointer;
+  min-width:172px;
+}
+select:focus{ outline:none; border-color:var(--accent); }
+
+.view-toggle{
+  display:flex; background:var(--surface-2); border:1px solid var(--border);
+  border-radius:6px; padding:2px; flex:none; gap:1px;
+}
+.view-toggle button{
+  border:none; background:transparent; padding:0.4rem 0.55rem;
+  font-size:0.74rem; font-weight:600; color:var(--muted); border-radius:4px; cursor:pointer;
+  white-space:nowrap;
+}
+.view-toggle button.active{ background:var(--accent); color:#fff; }
+
+.slider-field{
+  display:flex; flex-direction:column; gap:0.3rem; width:230px; flex:none;
+  transition:opacity 0.15s;
+}
+.slider-field.disabled{ opacity:0.4; pointer-events:none; }
+.slider-labels{
+  display:flex; justify-content:space-between; font-size:0.65rem; color:var(--muted);
+  text-transform:uppercase; letter-spacing:0.04em;
+}
+.slider-labels b{ color:var(--ink); font-weight:700; }
+input[type=range]{
+  width:100%; accent-color:var(--accent); cursor:pointer; height:4px;
+}
+.tick-row{
+  display:flex; justify-content:space-between; font-size:0.58rem; color:var(--muted);
+  font-family:var(--font-mono);
+}
+
+.spacer{ flex:1; }
+
+.legend-strip{
+  display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;
+}
+.legend-chip{
+  display:flex; align-items:center; gap:0.35rem;
+  padding:0.28rem 0.55rem 0.28rem 0.4rem;
+  border-radius:999px; border:1px solid var(--border);
+  background:var(--surface-2);
+  font-size:0.7rem; font-weight:600; color:var(--ink-soft);
+  cursor:pointer; user-select:none;
+  transition:opacity 0.15s, border-color 0.15s;
+}
+.legend-chip .dot{ width:9px; height:9px; border-radius:50%; flex:none; }
+.legend-chip.dim{ opacity:0.35; }
+.legend-chip:hover{ border-color:var(--accent); }
+
+/* ---------- Workspace ---------- */
+.workspace{ flex:1; display:flex; min-height:0; position:relative; }
+
+.canvas-wrap{
+  flex:1; position:relative; overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 46%, var(--grid-line) 0, transparent 62%),
+    var(--paper);
+}
+svg#stage{ width:100%; height:100%; display:block; cursor:grab; }
+svg#stage.grabbing{ cursor:grabbing; }
+
+.ring-grid circle{ fill:none; stroke:var(--border-soft); stroke-width:1; }
+.ring-grid .tick{ stroke:var(--border-soft); stroke-width:1; }
+.ring-grid text{
+  font-family:var(--font-mono); font-size:9px; fill:var(--muted); opacity:0.7;
+}
+.sector-arc{ opacity:0.07; transition:opacity 0.2s; }
+.sector-arc.dim{ opacity:0.02; }
+
+.link{
+  fill:none; stroke:var(--border); stroke-width:1.1; opacity:0.55;
+  transition:stroke 0.2s, opacity 0.2s, stroke-width 0.2s;
+}
+.link.on-path{ stroke:var(--accent); stroke-width:2; opacity:1; }
+.link.dim{ opacity:0.08; }
+
+.link-label{ pointer-events:none; opacity:0.82; transition:opacity 0.2s; }
+.link-label rect{
+  fill:var(--surface); stroke:var(--border-soft); stroke-width:1;
+}
+.link-label text{
+  font-family:var(--font-mono); font-size:7.5px; fill:var(--muted);
+  letter-spacing:0.01em;
+}
+.link-label.dim{ opacity:0.08; }
+.link-label.on-path rect{ stroke:var(--accent); }
+.link-label.on-path text{ fill:var(--accent); font-weight:600; }
+
+.node{ cursor:grab; }
+.node:active{ cursor:grabbing; }
+.node .core{ transition:r 0.15s, stroke-width 0.15s, opacity 0.2s, filter 0.2s; stroke:var(--surface); }
+.node.pinned .core{ stroke-dasharray:2.5 2; stroke:var(--ink-soft); }
+.node .label{
+  font-family:var(--font-body); font-weight:600; fill:var(--ink);
+  pointer-events:none; transition:opacity 0.2s;
+}
+.node.dim .core{ opacity:0.14; }
+.node.dim .label{ opacity:0; }
+.node.on-path .core{ filter:drop-shadow(0 0 5px rgba(0,0,0,0.25)); }
+.node.selected .core{ stroke:var(--ink); stroke-width:2.5; }
+.node.op-hit .core{ stroke:var(--ink); stroke-width:1.6; filter:drop-shadow(0 0 3px rgba(0,0,0,0.3)); }
+.node:hover .core{ stroke-width:2.5; }
+.link.op-hit{ stroke-opacity:0.85 !important; stroke-width:1.8; }
+
+.domain-band-label{
+  font-family:var(--font-display); font-weight:600; letter-spacing:0.02em;
+  pointer-events:none;
+}
+
+.hub circle{ fill:var(--surface); stroke:var(--border); stroke-width:1.4; }
+.hub text{ font-family:var(--font-display); font-weight:600; fill:var(--ink-soft); font-size:11px; }
+
+.tooltip{
+  position:absolute; pointer-events:none; z-index:40;
+  background:var(--ink); color:var(--paper);
+  padding:0.4rem 0.6rem; border-radius:5px; font-size:0.72rem;
+  max-width:240px; line-height:1.35; box-shadow:var(--shadow-panel);
+  opacity:0; transform:translate(-50%,-100%); transition:opacity 0.1s;
+}
+:root:not([data-theme="light"]) .tooltip{ background:#eef1f5; color:#11151c; }
+:root[data-theme="dark"] .tooltip{ background:#eef1f5; color:#11151c; }
+.tooltip.show{ opacity:1; }
+.tooltip .tt-type{
+  font-family:var(--font-mono); font-size:0.6rem; text-transform:uppercase;
+  letter-spacing:0.05em; opacity:0.65; display:block; margin-bottom:0.15rem;
+}
+
+.canvas-controls{
+  position:absolute; bottom:1.1rem; right:1.1rem; z-index:20;
+  display:flex; flex-direction:column; gap:0.25rem;
+  background:var(--surface); border:1px solid var(--border); border-radius:7px;
+  box-shadow:var(--shadow-panel); padding:0.25rem;
+}
+.icon-btn{
+  border:none; background:transparent; width:30px; height:30px; border-radius:5px;
+  display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--muted);
+}
+.icon-btn:hover{ background:var(--surface-2); color:var(--ink); }
+.icon-btn svg{ width:16px; height:16px; }
+
+.canvas-hint{
+  position:absolute; top:1rem; left:1rem; z-index:20;
+  font-family:var(--font-mono); font-size:0.68rem; color:var(--muted);
+  background:var(--surface); border:1px solid var(--border); border-radius:6px;
+  padding:0.4rem 0.65rem; opacity:0.85;
+}
+
+/* ---------- Inspector panel ---------- */
+.inspector{
+  width:360px; flex:none; background:var(--surface); border-left:1px solid var(--border);
+  display:flex; flex-direction:column; overflow-y:auto;
+}
+.insp-empty{
+  padding:2.2rem 1.4rem; text-align:center; color:var(--muted); font-size:0.85rem;
+}
+.insp-empty svg{ width:34px; height:34px; margin-bottom:0.75rem; opacity:0.5; }
+
+.insp-header{
+  padding:1.1rem 1.25rem 0.9rem; border-bottom:1px solid var(--border);
+}
+.insp-breadcrumb{
+  display:flex; flex-wrap:wrap; gap:0.3rem; align-items:center;
+  font-family:var(--font-mono); font-size:0.62rem; color:var(--muted);
+  text-transform:uppercase; letter-spacing:0.03em; margin-bottom:0.5rem;
+}
+.insp-breadcrumb span:not(:last-child)::after{ content:"/"; margin-left:0.3rem; color:var(--border); }
+.insp-type-pill{
+  display:inline-flex; align-items:center; gap:0.3rem;
+  font-family:var(--font-mono); font-size:0.62rem; font-weight:600; text-transform:uppercase;
+  letter-spacing:0.04em; padding:0.15rem 0.45rem; border-radius:4px; margin-bottom:0.5rem;
+}
+.insp-title{
+  font-family:var(--font-display); font-size:1.28rem; font-weight:600; line-height:1.2;
+}
+
+.insp-section{ padding:1rem 1.25rem; border-bottom:1px solid var(--border); }
+.insp-section:last-child{ border-bottom:none; }
+.insp-section-title{
+  font-size:0.66rem; font-weight:700; color:var(--muted); text-transform:uppercase;
+  letter-spacing:0.06em; margin-bottom:0.6rem;
+}
+.chip-row{ display:flex; flex-wrap:wrap; gap:0.4rem; }
+.chip{
+  font-family:var(--font-mono); font-size:0.7rem; padding:0.25rem 0.55rem;
+  border-radius:4px; background:var(--surface-2); border:1px solid var(--border);
+  color:var(--ink-soft);
+}
+.stat-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:0.6rem; }
+.stat-tile{
+  background:var(--surface-2); border:1px solid var(--border); border-radius:6px;
+  padding:0.55rem 0.5rem; text-align:center;
+}
+.stat-tile b{ display:block; font-family:var(--font-mono); font-size:1.05rem; font-variant-numeric:tabular-nums; }
+.stat-tile span{ font-size:0.62rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.03em; }
+
+.proc-list{ display:flex; flex-direction:column; gap:0.5rem; }
+.proc-item{
+  border:1px solid var(--border); border-radius:6px; padding:0.55rem 0.65rem;
+  background:var(--surface-2); cursor:pointer;
+}
+.proc-item:hover{ border-color:var(--accent); }
+.proc-item-name{ font-size:0.8rem; font-weight:600; margin-bottom:0.3rem; }
+.proc-item-ops{ display:flex; flex-wrap:wrap; gap:0.3rem; }
+.op-tag{
+  font-family:var(--font-mono); font-size:0.62rem; padding:0.12rem 0.4rem;
+  border-radius:3px; background:var(--surface); border:1px solid var(--border); color:var(--muted);
+}
+
+.child-list{ display:flex; flex-direction:column; gap:0.3rem; }
+.child-row{
+  display:flex; align-items:center; gap:0.5rem; padding:0.4rem 0.5rem;
+  border-radius:5px; cursor:pointer; font-size:0.8rem;
+}
+.child-row:hover{ background:var(--surface-2); }
+.child-row .dot{ width:7px; height:7px; border-radius:50%; flex:none; }
+.child-count{ margin-left:auto; font-family:var(--font-mono); font-size:0.65rem; color:var(--muted); }
+
+.oparea-list{ display:flex; flex-direction:column; gap:0.45rem; }
+.oparea-item{
+  border:1px solid var(--border); border-radius:6px; padding:0.5rem 0.65rem; cursor:pointer;
+  background:var(--surface-2);
+}
+.oparea-item.active-filter{ border-color:var(--accent); background:var(--accent-soft); }
+.oparea-name{ font-size:0.76rem; font-weight:600; margin-bottom:0.2rem; }
+.oparea-desc{ font-size:0.68rem; color:var(--muted); line-height:1.4; }
+
+/* ---------- Tree view ---------- */
+#view-tree{ display:none; flex:1; overflow:auto; padding:1.75rem; }
+.tree-shell{
+  max-width:880px; margin:0 auto; background:var(--surface); border:1px solid var(--border);
+  border-radius:10px; padding:1.5rem 1.75rem 2rem; box-shadow:var(--shadow-panel);
+}
+.tree-shell h2{
+  font-family:var(--font-display); font-size:1.3rem; font-weight:600; margin-bottom:1.1rem;
+}
+ul.tnode-list{ list-style:none; margin:0; padding:0; font-size:0.85rem; }
+ul.tnode-list ul{ list-style:none; margin:0.2rem 0 0.2rem 1.1rem; padding-left:0.75rem; border-left:1px solid var(--border-soft); }
+.tnode{
+  display:flex; align-items:center; gap:0.45rem; padding:0.32rem 0.4rem; border-radius:5px; cursor:pointer;
+}
+.tnode:hover{ background:var(--surface-2); }
+.tnode .twisty{ width:12px; height:12px; flex:none; color:var(--muted); transition:transform 0.15s; }
+.tnode .twisty.open{ transform:rotate(90deg); }
+.tnode .dot{ width:7px; height:7px; border-radius:50%; flex:none; }
+.tnode .name{ flex:1; }
+.tnode .n{ font-family:var(--font-mono); font-size:0.65rem; color:var(--muted); }
+.tnode.dim{ opacity:0.32; }
+.tnode.selected{ background:var(--accent-soft); }
+.tchildren{ display:none; }
+.tchildren.open{ display:block; }
+
+/* Scrollbars */
+::-webkit-scrollbar{ width:9px; height:9px; }
+::-webkit-scrollbar-track{ background:transparent; }
+::-webkit-scrollbar-thumb{ background:var(--border); border-radius:5px; }
+::-webkit-scrollbar-thumb:hover{ background:var(--muted); }
+
+a{ color:var(--accent); }
+
+@media (max-width: 980px){
+  .inspector{ position:absolute; right:0; top:0; bottom:0; box-shadow:var(--shadow-panel); }
+}
+</style>
+
+
+</head>
+<body>
+<!-- SVG icon sprite -->
+<svg width="0" height="0" style="position:absolute">
+<defs>
+<symbol id="ic-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><line x1="21" y1="21" x2="16.6" y2="16.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="ic-zoomin" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><line x1="11" y1="8" x2="11" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="8" y1="11" x2="14" y2="11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="21" x2="16.6" y2="16.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="ic-zoomout" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><line x1="8" y1="11" x2="14" y2="11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="21" y1="21" x2="16.6" y2="16.6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="ic-reset" viewBox="0 0 24 24"><path d="M4 4v6h6M20 20v-6h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 15a7.5 7.5 0 0 0 13-3M18.5 9a7.5 7.5 0 0 0-13 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="ic-x" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="ic-chevron" viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+<symbol id="ic-hub" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.4" fill="currentColor"/><circle cx="5" cy="18" r="2.4" fill="currentColor"/><circle cx="19" cy="18" r="2.4" fill="currentColor"/><line x1="12" y1="7.4" x2="6.2" y2="16" stroke="currentColor" stroke-width="1.6"/><line x1="12" y1="7.4" x2="17.8" y2="16" stroke="currentColor" stroke-width="1.6"/><line x1="7.4" y1="18" x2="16.6" y2="18" stroke="currentColor" stroke-width="1.6"/></symbol>
+<symbol id="ic-cursor" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M3 12h4M17 12h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="12" r="3.4" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+<symbol id="ic-rearrange" viewBox="0 0 24 24"><circle cx="5" cy="6" r="2.1" fill="currentColor"/><circle cx="12" cy="18.5" r="2.1" fill="currentColor"/><circle cx="19" cy="6" r="2.1" fill="currentColor"/><path d="M5 8.3v3a4 4 0 0 0 4 4h1.3M19 8.3v3a4 4 0 0 1-4 4h-1.3" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+</defs>
+</svg>
+
+<header>
+  <div class="brand">
+    <svg class="brand-mark" width="26" height="26" viewBox="0 0 24 24"><use href="#ic-hub"/></svg>
+    <div class="brand-text">
+      <div class="brand-title">HR Services &amp; PEO Architecture Map</div>
+      <div class="brand-sub">Domain-driven service topology &middot; L1&ndash;L3 &plus; processes</div>
+    </div>
+  </div>
+  <div class="header-stats" id="header-stats"></div>
+</header>
+
+<div class="controls-bar">
+  <div class="search-box">
+    <svg><use href="#ic-search"/></svg>
+    <input type="text" id="search-input" placeholder="Search domains, services, processes&hellip;" autocomplete="off">
+    <div class="search-results" id="search-results"></div>
+  </div>
+
+  <div class="field">
+    <label for="oparea-filter">Operational area lens</label>
+    <select id="oparea-filter">
+      <option value="">All processes</option>
+    </select>
+  </div>
+
+  <div class="view-toggle" role="tablist" id="view-toggle">
+    <button data-mode="list" onclick="setView('list')">List</button>
+    <button data-mode="force" onclick="setView('force')">Force</button>
+    <button data-mode="radial" class="active" onclick="setView('radial')">Radial</button>
+    <button data-mode="cluster" onclick="setView('cluster')">Cluster</button>
+    <button data-mode="hierarchical" onclick="setView('hierarchical')">Hierarchical</button>
+  </div>
+
+  <div class="slider-field">
+    <div class="slider-labels"><span>Detail depth</span><b id="detail-label">Services</b></div>
+    <input type="range" id="detail-slider" min="1" max="4" value="3" step="1">
+    <div class="tick-row"><span>Domains</span><span>Contexts</span><span>Services</span><span>Processes</span></div>
+  </div>
+
+  <div class="slider-field" id="spacing-field">
+    <div class="slider-labels"><span>Node spacing</span><b id="spacing-label">1.0&times;</b></div>
+    <input type="range" id="spacing-slider" min="0.6" max="2.2" value="1" step="0.1">
+    <div class="tick-row"><span>Compact</span><span>Roomy</span></div>
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="legend-strip" id="legend-strip"></div>
+</div>
+
+<div class="workspace">
+  <div class="canvas-wrap" id="canvas-wrap">
+
+    <div id="view-map" style="position:absolute; inset:0;">
+      <svg id="stage">
+        <g id="viewport">
+          <g id="ring-grid" class="ring-grid"></g>
+          <g id="sector-layer"></g>
+          <g id="link-layer"></g>
+          <g id="hub-layer" class="hub"></g>
+          <g id="node-layer"></g>
+        </g>
+      </svg>
+      <div class="canvas-hint" id="canvas-hint"><svg width="11" height="11" style="vertical-align:-1px; margin-right:3px;"><use href="#ic-cursor"/></svg>drag node to reposition &middot; drag canvas to pan &middot; scroll to zoom</div>
+      <div class="canvas-controls">
+        <button class="icon-btn" title="Zoom in" onclick="zoomBy(1.25)"><svg><use href="#ic-zoomin"/></svg></button>
+        <button class="icon-btn" title="Zoom out" onclick="zoomBy(0.8)"><svg><use href="#ic-zoomout"/></svg></button>
+        <button class="icon-btn" title="Reset view" onclick="resetView()"><svg><use href="#ic-reset"/></svg></button>
+        <button class="icon-btn" title="Reset layout (undo manual drags)" onclick="resetLayout()"><svg><use href="#ic-rearrange"/></svg></button>
+      </div>
+    </div>
+
+    <div id="view-tree">
+      <div class="tree-shell">
+        <h2>Full Domain Hierarchy</h2>
+        <div id="tree-target"></div>
+      </div>
+    </div>
+
+    <div class="tooltip" id="tooltip"></div>
+  </div>
+
+  <div class="inspector" id="inspector">
+    <div class="insp-empty" id="insp-empty">
+      <svg viewBox="0 0 24 24"><use href="#ic-hub"/></svg>
+      <div>Select a domain, sub-domain, service, or process on the map to inspect its relationships &mdash; mapped ontology concepts, executing processes, and the operational areas that support them.</div>
+    </div>
+    <div id="insp-content" style="display:none;"></div>
+  </div>
+</div>
+
+<script id="model-json" type="application/json">
+{
+ "tree": [
+  {
+   "id": "WorkforceAdminDomain",
+   "label": "Workforce Administration & Payroll Domain",
+   "type": "domain",
+   "children": [
+    {
+     "id": "PayrollTaxSubDomain",
+     "label": "Payroll Processing & Multi-State Tax Bounded Context",
+     "type": "subdomain",
+     "children": [
+      {
+       "id": "GrossToNetPayrollService",
+       "label": "Gross-to-Net Payroll Calculation Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptGrossToNetRule",
+         "label": "Gross-to-Net Computation Calculation Rule"
+        },
+        {
+         "id": "ConceptOvertimeCalculation",
+         "label": "FLSA Statutory Overtime Calculation Standard"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcGrossToNetCalculation",
+         "label": "Gross-to-Net Wage Calculation Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpPayrollTaxAccounting",
+           "label": "Payroll Tax Accounting & Treasury Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcOvertimeRuleEnforce",
+         "label": "FLSA Overtime Rule Enforcement Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpPayrollTaxAccounting",
+           "label": "Payroll Tax Accounting & Treasury Operations"
+          },
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "MultiStateTaxFilingService",
+       "label": "Multi-Jurisdiction Payroll Tax Filing Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptTaxImpoundEngine",
+         "label": "Multi-State Tax Impound Engine"
+        },
+        {
+         "id": "ConceptQuarterlyForm941",
+         "label": "Quarterly Federal/State Form 941 Return"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcTaxImpoundSchedule",
+         "label": "Payroll Tax Impound Scheduling Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpPayrollTaxAccounting",
+           "label": "Payroll Tax Accounting & Treasury Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcQuarterlyTaxFilingAuto",
+         "label": "Automated Quarterly Tax Filing Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpPayrollTaxAccounting",
+           "label": "Payroll Tax Accounting & Treasury Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "WageGarnishmentService",
+       "label": "Wage Garnishment & Deduction Administration Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptGarnishmentOrder",
+         "label": "Court-Ordered Wage Garnishment Directive"
+        },
+        {
+         "id": "ConceptChildSupportWithholding",
+         "label": "Statutory Child Support Withholding Schedule"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcGarnishmentPriorityOrder",
+         "label": "Wage Garnishment Priority Ordering Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpPayrollTaxAccounting",
+           "label": "Payroll Tax Accounting & Treasury Operations"
+          },
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcAgencyRemittanceSync",
+         "label": "Garnishment Agency Remittance Synchronization Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpPayrollTaxAccounting",
+           "label": "Payroll Tax Accounting & Treasury Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "DirectDepositOffCycleService",
+       "label": "Direct Deposit & Off-Cycle Payment Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptACHBatchOrchestration",
+         "label": "NACHA Direct Deposit Batch File"
+        },
+        {
+         "id": "ConceptOffCycleCheck",
+         "label": "Emergency Off-Cycle Payment Record"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcACHDirectDepositBatch",
+         "label": "ACH Direct Deposit Batch Processing",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpPayrollTaxAccounting",
+           "label": "Payroll Tax Accounting & Treasury Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcOffCyclePaymentGen",
+         "label": "Off-Cycle Payment Generation Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpPayrollTaxAccounting",
+           "label": "Payroll Tax Accounting & Treasury Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "YearEndTaxDocService",
+       "label": "Year-End Tax Document (W-2 / 1099) Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptWageLedgerRecon",
+         "label": "Annual Cumulative Wage Ledger"
+        },
+        {
+         "id": "ConceptDigitalW2Filing",
+         "label": "IRS Form W-2 / 1099 Electronic Transmission"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcYearEndWageLedgerRecon",
+         "label": "Year-End Wage Ledger Reconciliation Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpPayrollTaxAccounting",
+           "label": "Payroll Tax Accounting & Treasury Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcAutomatedW2Distribution",
+         "label": "Automated W-2/1099 Distribution Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpPayrollTaxAccounting",
+           "label": "Payroll Tax Accounting & Treasury Operations"
+          },
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "TimeAttendanceLeaveSubDomain",
+     "label": "Time, Attendance & Leave Management Bounded Context",
+     "type": "subdomain",
+     "children": [
+      {
+       "id": "TimeCapturePunchService",
+       "label": "Time Capture & Punch Ingestion Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptPunchRecord",
+         "label": "Geofenced Mobile & Biometric Punch Timecard"
+        },
+        {
+         "id": "ConceptMealBreakAudit",
+         "label": "Mandatory Meal Break Penalty Audit Record"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcPunchIngestionAudit",
+         "label": "Time Punch Ingestion & Audit Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcMealBreakRuleAudit",
+         "label": "Meal & Rest Break Compliance Audit Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "TimesheetApprovalStagingService",
+       "label": "Timesheet Approval & Payroll Staging Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptSupervisorRoute",
+         "label": "Multi-Level Management Approval Chain"
+        },
+        {
+         "id": "ConceptPayrollDataStaging",
+         "label": "Pre-Payroll Locked Calculation Staging Table"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcSupervisorApprovalRoute",
+         "label": "Supervisor Timesheet Approval Routing Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcPrePayrollTimesheetLock",
+         "label": "Pre-Payroll Timesheet Locking Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpPayrollTaxAccounting",
+           "label": "Payroll Tax Accounting & Treasury Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "CustomPTOAccrualService",
+       "label": "Custom PTO Accrual & Balance Ledger Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptPTOAccrualLedger",
+         "label": "Seniority-Tiered Paid Time Off Accrual Ledger"
+        },
+        {
+         "id": "ConceptLeaveBalanceCarryover",
+         "label": "Year-End PTO Carryover Limit Specification"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcSeniorityPTOAccrual",
+         "label": "Seniority-Based PTO Accrual Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpPayrollTaxAccounting",
+           "label": "Payroll Tax Accounting & Treasury Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcLeaveCarryoverValidation",
+         "label": "PTO Carryover Limit Validation Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "StatutoryLeaveFMLAService",
+       "label": "Statutory Leave & FMLA Administration Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptFMLAEligibility",
+         "label": "Statutory FMLA 1,250-Hour Eligibility Requirement"
+        },
+        {
+         "id": "ConceptPFLIntermittentTracking",
+         "label": "Paid Family Leave Intermittent Absence Matrix"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcFMLAEligibilityVerify",
+         "label": "FMLA Eligibility Verification Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcIntermittentLeaveTrack",
+         "label": "Intermittent Leave Tracking Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "LaborAllocationCostingService",
+       "label": "Labor Allocation & Job Costing Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptMultiDeptLaborDist",
+         "label": "Multi-Department Labor Cost Distribution Model"
+        },
+        {
+         "id": "ConceptGLWageExport",
+         "label": "General Ledger Payroll Journal Entry Schema"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcLaborCostDistribution",
+         "label": "Multi-Department Labor Cost Distribution Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpPayrollTaxAccounting",
+           "label": "Payroll Tax Accounting & Treasury Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcGLWageAllocationExport",
+         "label": "General Ledger Wage Allocation Export Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpPayrollTaxAccounting",
+           "label": "Payroll Tax Accounting & Treasury Operations"
+          },
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "BenefitsRetirementDomain",
+   "label": "Employee Benefits & Retirement Sponsorship Domain",
+   "type": "domain",
+   "children": [
+    {
+     "id": "HealthWelfareSponsorshipSubDomain",
+     "label": "Group Health & Welfare Plan Sponsorship Bounded Context",
+     "type": "subdomain",
+     "children": [
+      {
+       "id": "PEOMasterHealthPlanService",
+       "label": "PEO Master Health Plan Administration Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptLargeGroupPoolTier",
+         "label": "PEO Master Large-Group Underwriting Tier"
+        },
+        {
+         "id": "ConceptCarrierEDI834",
+         "label": "ANSI X12 834 Benefit Enrollment Electronic Feed"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcCarrierEDI834Sync",
+         "label": "Carrier EDI 834 Enrollment Synchronization Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBenefitsUnderwriting",
+           "label": "Benefits Plan Underwriting & Carrier Relations"
+          },
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcLargeGroupUnderwrite",
+         "label": "Large-Group Master Plan Underwriting Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBenefitsUnderwriting",
+           "label": "Benefits Plan Underwriting & Carrier Relations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "OpenEnrollmentLifeEventService",
+       "label": "Open Enrollment & Life Event Election Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptOpenEnrollmentPortal",
+         "label": "Annual Benefit Open Enrollment Digital Portal"
+        },
+        {
+         "id": "ConceptQLEVerification",
+         "label": "Qualifying Life Event Statutory Documentation"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcOpenEnrollmentOrchestrate",
+         "label": "Open Enrollment Orchestration Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBenefitsUnderwriting",
+           "label": "Benefits Plan Underwriting & Carrier Relations"
+          },
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcQLEVerificationWorkflow",
+         "label": "Qualifying Life Event Verification Workflow Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBenefitsUnderwriting",
+           "label": "Benefits Plan Underwriting & Carrier Relations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "PretaxDeductionReconService",
+       "label": "Pre-Tax Premium Payroll Deduction Reconciliation Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptSection125Matching",
+         "label": "IRS Section 125 Pre-Tax Deduction Schedule"
+        },
+        {
+         "id": "ConceptCarrierInvoiceRecon",
+         "label": "Health Carrier Premium Reconciliation Record"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcSection125MatchingSync",
+         "label": "Section 125 Pre-Tax Deduction Matching Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpPayrollTaxAccounting",
+           "label": "Payroll Tax Accounting & Treasury Operations"
+          },
+          {
+           "id": "OpBenefitsUnderwriting",
+           "label": "Benefits Plan Underwriting & Carrier Relations"
+          }
+         ]
+        },
+        {
+         "id": "ProcCarrierInvoiceRecon",
+         "label": "Carrier Premium Invoice Reconciliation Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBenefitsUnderwriting",
+           "label": "Benefits Plan Underwriting & Carrier Relations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "COBRAAdministrationService",
+       "label": "COBRA Qualifying Event & Continuation Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptCOBRAQualifyingEvent",
+         "label": "COBRA Statutory Separation Event Notice"
+        },
+        {
+         "id": "ConceptDirectBillingNotice",
+         "label": "COBRA Continuation Direct Billing Account"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcCOBRANoticeGeneration",
+         "label": "COBRA Qualifying Event Notice Generation Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          },
+          {
+           "id": "OpBenefitsUnderwriting",
+           "label": "Benefits Plan Underwriting & Carrier Relations"
+          }
+         ]
+        },
+        {
+         "id": "ProcPremiumDirectBilling",
+         "label": "COBRA Premium Direct Billing Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBenefitsUnderwriting",
+           "label": "Benefits Plan Underwriting & Carrier Relations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "FlexibleSpendingAccountsService",
+       "label": "Flexible Spending & Account Integration (FSA/HSA/HRA) Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptDebitCardAutoSubstantiation",
+         "label": "FSA/HSA IIAS Auto-Substantiation Record"
+        },
+        {
+         "id": "ConceptAnnualCapMonitor",
+         "label": "Statutory Pre-Tax Contribution Cap Model"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcClaimsAutoSubstantiation",
+         "label": "FSA/HSA Claims Auto-Substantiation Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBenefitsUnderwriting",
+           "label": "Benefits Plan Underwriting & Carrier Relations"
+          },
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcAnnualCapMonitor",
+         "label": "Annual Pre-Tax Contribution Cap Monitoring Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBenefitsUnderwriting",
+           "label": "Benefits Plan Underwriting & Carrier Relations"
+          },
+          {
+           "id": "OpPayrollTaxAccounting",
+           "label": "Payroll Tax Accounting & Treasury Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "VoluntaryAncillaryBenefitsService",
+       "label": "Voluntary Ancillary Benefits Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptVoluntaryRosterSync",
+         "label": "Voluntary Dental/Vision/Life Payroll Sync"
+        },
+        {
+         "id": "ConceptDentalVisionLifeAgg",
+         "label": "Ancillary Insurance Carrier API Connector"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcCarrierDataAggregation",
+         "label": "Ancillary Carrier Data Aggregation Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBenefitsUnderwriting",
+           "label": "Benefits Plan Underwriting & Carrier Relations"
+          }
+         ]
+        },
+        {
+         "id": "ProcVoluntaryBenefitRosterSync",
+         "label": "Voluntary Benefit Roster Synchronization Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBenefitsUnderwriting",
+           "label": "Benefits Plan Underwriting & Carrier Relations"
+          },
+          {
+           "id": "OpPayrollTaxAccounting",
+           "label": "Payroll Tax Accounting & Treasury Operations"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "RetirementMEP401kSubDomain",
+     "label": "Retirement & 401(k) Multiple Employer Plan (MEP) Bounded Context",
+     "type": "subdomain",
+     "children": [
+      {
+       "id": "MultipleEmployerPlan401kService",
+       "label": "Insperity 401(k) Multiple Employer Plan (MEP) Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "Concept401kDeferralFeed",
+         "label": "Pre-Tax / Roth 401(k) Payroll Deferral Feed"
+        },
+        {
+         "id": "ConceptAutoEnrollmentSync",
+         "label": "Automatic 401(k) Escalation & Enrollment Protocol"
+        }
+       ],
+       "children": [
+        {
+         "id": "Proc401kPayrollContributionSync",
+         "label": "401(k) Payroll Contribution Synchronization Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpPayrollTaxAccounting",
+           "label": "Payroll Tax Accounting & Treasury Operations"
+          },
+          {
+           "id": "OpBenefitsUnderwriting",
+           "label": "Benefits Plan Underwriting & Carrier Relations"
+          }
+         ]
+        },
+        {
+         "id": "ProcAutoEnrollmentSync",
+         "label": "401(k) Automatic Enrollment & Escalation Synchronization Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBenefitsUnderwriting",
+           "label": "Benefits Plan Underwriting & Carrier Relations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "SafeHarborEmployerMatchService",
+       "label": "Safe Harbor & Discretionary Employer Match Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptSafeHarborMatchCalc",
+         "label": "ERISA Safe Harbor Matching Formula"
+        },
+        {
+         "id": "ConceptProfitSharingModel",
+         "label": "Discretionary Employer Profit Sharing Matrix"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcSafeHarborCalculationEngine",
+         "label": "Safe Harbor Match Calculation Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBenefitsUnderwriting",
+           "label": "Benefits Plan Underwriting & Carrier Relations"
+          }
+         ]
+        },
+        {
+         "id": "ProcDiscretionaryAllocationModel",
+         "label": "Discretionary Profit-Sharing Allocation Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBenefitsUnderwriting",
+           "label": "Benefits Plan Underwriting & Carrier Relations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "ConsolidatedForm5500AuditService",
+       "label": "Consolidated Form 5500 & ERISA Plan Audit Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptConsolidated5500",
+         "label": "Consolidated Multiple Employer Form 5500"
+        },
+        {
+         "id": "ConceptThirdPartyAuditFile",
+         "label": "ERISA Independent Auditor Package"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcConsolidated5500Audit",
+         "label": "Consolidated Form 5500 Audit Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          },
+          {
+           "id": "OpBenefitsUnderwriting",
+           "label": "Benefits Plan Underwriting & Carrier Relations"
+          }
+         ]
+        },
+        {
+         "id": "ProcThirdPartyAuditAssembly",
+         "label": "Third-Party ERISA Audit File Assembly Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBenefitsUnderwriting",
+           "label": "Benefits Plan Underwriting & Carrier Relations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "NondiscriminationComplianceTestingService",
+       "label": "Nondiscrimination (ADP/ACP) & Compliance Testing Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptADP_ACPTesting",
+         "label": "Annual ADP/ACP Non-Discrimination Test Metric"
+        },
+        {
+         "id": "ConceptExcessRefundCorrection",
+         "label": "401(k) Excess Contribution Corrective Refund"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcADP_ACPRatioTesting",
+         "label": "ADP/ACP Nondiscrimination Ratio Testing Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBenefitsUnderwriting",
+           "label": "Benefits Plan Underwriting & Carrier Relations"
+          }
+         ]
+        },
+        {
+         "id": "ProcExcessContributionRefund",
+         "label": "401(k) Excess Contribution Refund Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpPayrollTaxAccounting",
+           "label": "Payroll Tax Accounting & Treasury Operations"
+          },
+          {
+           "id": "OpBenefitsUnderwriting",
+           "label": "Benefits Plan Underwriting & Carrier Relations"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ComplianceRiskDomain",
+   "label": "Government Compliance & Employer Risk Management Domain",
+   "type": "domain",
+   "children": [
+    {
+     "id": "EmployerLiabilityPracticesSubDomain",
+     "label": "Co-Employment Liability & Employment Practices Bounded Context",
+     "type": "subdomain",
+     "children": [
+      {
+       "id": "EPLIDefenseService",
+       "label": "Employment Practices Liability Insurance (EPLI) Defense Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptEPLITenMillionCoverage",
+         "label": "Employment Practices Liability Insurance Policy"
+        },
+        {
+         "id": "ConceptWrongfulTerminationReview",
+         "label": "Involuntary Termination Legal Risk Assessment"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcSeparationRiskReview",
+         "label": "Employee Separation Risk Review Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcEPLIClaimDefenseCoordination",
+         "label": "EPLI Claim Defense Coordination Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "MultiStateHandbookPolicyService",
+       "label": "Multi-State Employee Policy & Handbook Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptStateSpecificAddendum",
+         "label": "Multi-Jurisdiction Employee Handbook Addendum"
+        },
+        {
+         "id": "ConceptDigitalSignatureAcknowledge",
+         "label": "Policy Acknowledgment E-Signature Audit Trail"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcHandbookRegulatoryUpdate",
+         "label": "Employee Handbook Regulatory Update Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcPolicySignatureAudit",
+         "label": "Policy Acknowledgment Signature Audit Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          },
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "HarassmentPreventionTrainingService",
+       "label": "Harassment Prevention & Mandatory Training Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptMandatoryTrainingTracking",
+         "label": "State-Mandated Anti-Harassment Course Progress"
+        },
+        {
+         "id": "ConceptCertificateRenewal",
+         "label": "Annual Compliance Certification Renewal Record"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcTrainingCompletionTracking",
+         "label": "Mandatory Training Completion Tracking Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          },
+          {
+           "id": "OpTalentAdvisory",
+           "label": "Talent Acquisition & Organizational Consulting Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcComplianceCertificateRenew",
+         "label": "Compliance Certificate Renewal Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "EEOC_DOL_DefenseConsultService",
+       "label": "EEOC & Department of Labor Defense Consultation Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptEEOCPositionStatement",
+         "label": "Formal EEOC Charge Position Statement Document"
+        },
+        {
+         "id": "ConceptDOLWageHourSupport",
+         "label": "Department of Labor Wage Audit Support Dossier"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcEEOCInquiryResponse",
+         "label": "EEOC Inquiry Response Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcDOLWageHourAuditSupport",
+         "label": "DOL Wage & Hour Audit Support Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "CPEOComplianceMonitoringService",
+       "label": "IRS Certified PEO (CPEO) Compliance Monitoring Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptSuretyBondMaintenance",
+         "label": "IRS Certified PEO Federal Surety Bond"
+        },
+        {
+         "id": "ConceptCPEOForm8973",
+         "label": "IRS Form 8973 CPEO Client Notification File"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcTaxSuretyBondMaintain",
+         "label": "CPEO Tax Surety Bond Maintenance Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          },
+          {
+           "id": "OpPayrollTaxAccounting",
+           "label": "Payroll Tax Accounting & Treasury Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcQuarterlyCPEOForm8973",
+         "label": "Quarterly CPEO Form 8973 Filing Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "WorkersCompWorksiteSafetySubDomain",
+     "label": "Workers' Compensation & Worksite Safety Bounded Context",
+     "type": "subdomain",
+     "children": [
+      {
+       "id": "WorkersCompMasterPolicyService",
+       "label": "Workers' Compensation Master Policy Administration Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptClassCodeExposure",
+         "label": "Workers' Comp Class Code Payroll Exposure Report"
+        },
+        {
+         "id": "ConceptEMRAnalysis",
+         "label": "Experience Modification Rate (EMR) Model"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcClassCodePayrollReport",
+         "label": "Workers' Comp Class Code Payroll Reporting Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpRiskSafety",
+           "label": "Risk Management & Worksite Safety Operations"
+          },
+          {
+           "id": "OpPayrollTaxAccounting",
+           "label": "Payroll Tax Accounting & Treasury Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcEMRAnalysisProcess",
+         "label": "Experience Modification Rate Analysis Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpRiskSafety",
+           "label": "Risk Management & Worksite Safety Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "FNOIClaimsTriageService",
+       "label": "First Notice of Injury (FNOI) & Claims Triage Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptFNOITriage",
+         "label": "First Notice of Injury (FNOI) Intake Schema"
+        },
+        {
+         "id": "ConceptWageReplacementProcessing",
+         "label": "Temporary Total Disability (TTD) Wage Calculation"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcFirstReportOfInjury",
+         "label": "First Report of Injury Intake Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpRiskSafety",
+           "label": "Risk Management & Worksite Safety Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcWageReplacementProcess",
+         "label": "Temporary Disability Wage Replacement Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpRiskSafety",
+           "label": "Risk Management & Worksite Safety Operations"
+          },
+          {
+           "id": "OpPayrollTaxAccounting",
+           "label": "Payroll Tax Accounting & Treasury Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "ModifiedDutyReturnToWorkService",
+       "label": "Modified-Duty Return-to-Work Program Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptModifiedDutyMatch",
+         "label": "Transitional Return-to-Work Position Match"
+        },
+        {
+         "id": "ConceptPhysicianStatusFollowUp",
+         "label": "Treating Physician Functional Capacity Evaluation"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcModifiedDutyReturnToWork",
+         "label": "Modified-Duty Return-to-Work Matching Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpRiskSafety",
+           "label": "Risk Management & Worksite Safety Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcPhysicianWorkStatusFollowUp",
+         "label": "Treating Physician Work Status Follow-Up Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpRiskSafety",
+           "label": "Risk Management & Worksite Safety Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "WorksiteSafetyHazardService",
+       "label": "Worksite Safety Survey & Hazard Mitigation Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptHazardInspectionReport",
+         "label": "On-Site Worksite Hazard Inspection Report"
+        },
+        {
+         "id": "ConceptCorrectiveActionTrack",
+         "label": "OSHA Safety Hazard Abatement Log"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcOnSiteSafetyInspection",
+         "label": "On-Site Safety Inspection Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpRiskSafety",
+           "label": "Risk Management & Worksite Safety Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcHazardAbatementTracking",
+         "label": "Safety Hazard Abatement Tracking Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpRiskSafety",
+           "label": "Risk Management & Worksite Safety Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "OSHA300ComplianceReportingService",
+       "label": "OSHA Form 300 / 300A Compliance & Reporting Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptRecordableInjuryClass",
+         "label": "OSHA Form 300 Recordable Incident Log"
+        },
+        {
+         "id": "ConceptElectronicOSHASubmission",
+         "label": "Electronic OSHA ITA Form 300A Filing File"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcOSHA300LogGeneration",
+         "label": "OSHA Form 300 Log Generation Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpRiskSafety",
+           "label": "Risk Management & Worksite Safety Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcElectronicOSHASubmission",
+         "label": "Electronic OSHA ITA Submission Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpRiskSafety",
+           "label": "Risk Management & Worksite Safety Operations"
+          },
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "TalentManagementDomain",
+   "label": "Talent Management & Organizational Development Domain",
+   "type": "domain",
+   "children": [
+    {
+     "id": "TalentAcquisitionOnboardingSubDomain",
+     "label": "Talent Acquisition & Digital Onboarding Bounded Context",
+     "type": "subdomain",
+     "children": [
+      {
+       "id": "RecruitingProcessOutsourcingService",
+       "label": "Recruiting Process Outsourcing (RPO) & Sourcing Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptCandidateATSWorkflow",
+         "label": "Applicant Tracking System (ATS) Pipeline Stage"
+        },
+        {
+         "id": "ConceptMultiBoardDistribution",
+         "label": "Programmatic Job Requisition Distribution Schema"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcCandidateSourcingScreen",
+         "label": "Candidate Sourcing & Screening Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpTalentAdvisory",
+           "label": "Talent Acquisition & Organizational Consulting Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcJobRequisitionDistribution",
+         "label": "Job Requisition Multi-Board Distribution Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpTalentAdvisory",
+           "label": "Talent Acquisition & Organizational Consulting Operations"
+          },
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "MarketWageBenchmarkingService",
+       "label": "Market Compensation & Wage Benchmarking Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptRegionalSalaryData",
+         "label": "Geographic Compensation Market Survey Dataset"
+        },
+        {
+         "id": "ConceptPayBandEquityModel",
+         "label": "Internal Pay Band Equity & Compression Model"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcRegionalSalaryDataExtract",
+         "label": "Regional Salary Data Extraction Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpTalentAdvisory",
+           "label": "Talent Acquisition & Organizational Consulting Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcPayBandEquityModel",
+         "label": "Pay Band Equity Modeling Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpTalentAdvisory",
+           "label": "Talent Acquisition & Organizational Consulting Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "PreEmploymentScreeningService",
+       "label": "Pre-Employment Background & Drug Screening Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptFCRABackground",
+         "label": "FCRA-Compliant Background Screening Package"
+        },
+        {
+         "id": "ConceptAdverseActionNotice",
+         "label": "Pre-Adverse & Adverse Action Notice Schedule"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcFCRABackgroundDispatch",
+         "label": "FCRA Background Screening Dispatch Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          },
+          {
+           "id": "OpTalentAdvisory",
+           "label": "Talent Acquisition & Organizational Consulting Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcAdverseActionWorkflow",
+         "label": "Pre-Adverse & Adverse Action Notice Workflow Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "FormI9EVerifyService",
+       "label": "Form I-9 & Automated E-Verify Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptEVerifyRemoteDoc",
+         "label": "Department of Homeland Security E-Verify Case File"
+        },
+        {
+         "id": "ConceptSection2Validation",
+         "label": "Form I-9 Section 2 Document Verification Audit"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcEVerifySubmission",
+         "label": "E-Verify Case Submission Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          },
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcSection2DocValidation",
+         "label": "Form I-9 Section 2 Document Validation Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "DigitalNewHireOnboardingService",
+       "label": "Self-Service Digital New Hire Onboarding Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptDirectDepositSignature",
+         "label": "Digital New Hire Direct Deposit Authorization"
+        },
+        {
+         "id": "ConceptMasterProfileActivation",
+         "label": "Active Employee Master Profile Data Schema"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcNewHirePaperworkSync",
+         "label": "New Hire Paperwork Synchronization Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcDayOneProfileActivation",
+         "label": "Day-One Employee Profile Activation Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "LearningPerformanceSuccessionSubDomain",
+     "label": "Learning, Performance & Succession Bounded Context",
+     "type": "subdomain",
+     "children": [
+      {
+       "id": "CorporateLMSDeliveryService",
+       "label": "Corporate Learning Management (LMS) Delivery Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptSCORMContentStream",
+         "label": "SCORM/xAPI Learning Content Package"
+        },
+        {
+         "id": "ConceptCEUCreditVerify",
+         "label": "Continuing Education Unit (CEU) Credit Ledger"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcCourseProgressTracking",
+         "label": "LMS Course Progress Tracking Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpTalentAdvisory",
+           "label": "Talent Acquisition & Organizational Consulting Operations"
+          },
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcCEUCreditVerification",
+         "label": "CEU Credit Verification Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpTalentAdvisory",
+           "label": "Talent Acquisition & Organizational Consulting Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "Feedback360AppraisalCycleService",
+       "label": "360-Degree Feedback & Appraisal Cycle Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptMultiRaterFeedback",
+         "label": "360-Degree Multi-Rater Feedback Assessment"
+        },
+        {
+         "id": "ConceptAppraisalCycleRecon",
+         "label": "Consolidated Performance Appraisal Score Record"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcAppraisalWorkflowCycle",
+         "label": "Performance Appraisal Workflow Cycle Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpTalentAdvisory",
+           "label": "Talent Acquisition & Organizational Consulting Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcMultiRaterFeedbackCollect",
+         "label": "360-Degree Multi-Rater Feedback Collection Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpTalentAdvisory",
+           "label": "Talent Acquisition & Organizational Consulting Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "StrategicGoalAlignmentOKRService",
+       "label": "Strategic Goal Alignment (OKR) & Tracking Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptCascadingOKRs",
+         "label": "Enterprise Objectives & Key Results (OKR) Tree"
+        },
+        {
+         "id": "ConceptGoalWeighting",
+         "label": "Performance Goal Weighting & Evaluation Metric"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcCascadingOKRsAlign",
+         "label": "Cascading OKR Alignment Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpTalentAdvisory",
+           "label": "Talent Acquisition & Organizational Consulting Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcGoalProgressWeighting",
+         "label": "Goal Progress Weighting Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpTalentAdvisory",
+           "label": "Talent Acquisition & Organizational Consulting Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "MeritMatrixCompensationPlanningService",
+       "label": "Merit Matrix & Compensation Planning Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptMeritIncreaseMatrix",
+         "label": "Performance Rating Merit Increase Grid"
+        },
+        {
+         "id": "ConceptExecCompAllocation",
+         "label": "Executive Incentive Compensation Allocation Pool"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcMeritIncreaseGuidance",
+         "label": "Merit Increase Guidance Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpTalentAdvisory",
+           "label": "Talent Acquisition & Organizational Consulting Operations"
+          },
+          {
+           "id": "OpPayrollTaxAccounting",
+           "label": "Payroll Tax Accounting & Treasury Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcExecCompensationAllocation",
+         "label": "Executive Compensation Allocation Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpTalentAdvisory",
+           "label": "Talent Acquisition & Organizational Consulting Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "LeadershipSuccessionPlanningService",
+       "label": "Leadership Development & Succession Planning Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptNineBoxTalentMatrix",
+         "label": "9-Box Performance vs. Potential Grid Mapping"
+        },
+        {
+         "id": "ConceptHighPotentialCoaching",
+         "label": "Executive Coaching & Succession Track Record"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcNineBoxMatrixCalibrate",
+         "label": "9-Box Talent Matrix Calibration Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpTalentAdvisory",
+           "label": "Talent Acquisition & Organizational Consulting Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcExecCoachingTrack",
+         "label": "Executive Coaching Track Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpTalentAdvisory",
+           "label": "Talent Acquisition & Organizational Consulting Operations"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ClientRelationshipDomain",
+   "label": "Client Relationship & Business Development Domain",
+   "type": "domain",
+   "children": [
+    {
+     "id": "SalesClientOnboardingSubDomain",
+     "label": "Sales & Client Onboarding Bounded Context",
+     "type": "subdomain",
+     "children": [
+      {
+       "id": "ProspectQualificationRFPService",
+       "label": "Prospect Qualification & RFP Response Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptLeadScoringModel",
+         "label": "Prospect Lead Qualification Scoring Model"
+        },
+        {
+         "id": "ConceptRFPProposalTemplate",
+         "label": "Standardized RFP Proposal Response Template"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcLeadQualificationScoring",
+         "label": "Lead Qualification & Scoring Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBusinessDevelopmentSales",
+           "label": "Sales, Contracting & Client Implementation Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcRFPProposalAssembly",
+         "label": "RFP Proposal Assembly Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBusinessDevelopmentSales",
+           "label": "Sales, Contracting & Client Implementation Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "MasterServiceAgreementContractingService",
+       "label": "Master Service Agreement & Co-Employment Contracting Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptMSATemplate",
+         "label": "Master Service Agreement Contract Template"
+        },
+        {
+         "id": "ConceptCoEmploymentRiskProfile",
+         "label": "Co-Employment Liability Risk Profile"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcMSAContractDrafting",
+         "label": "Master Service Agreement Contract Drafting Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBusinessDevelopmentSales",
+           "label": "Sales, Contracting & Client Implementation Operations"
+          },
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcCoEmploymentRiskAssessment",
+         "label": "Co-Employment Risk Assessment Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          },
+          {
+           "id": "OpBusinessDevelopmentSales",
+           "label": "Sales, Contracting & Client Implementation Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "ClientImplementationDataMigrationService",
+       "label": "Client Implementation & Legacy Data Migration Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptDataMigrationMapping",
+         "label": "Legacy System Data Migration Field Mapping"
+        },
+        {
+         "id": "ConceptImplementationMilestonePlan",
+         "label": "Client Implementation Milestone Plan"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcLegacyPayrollDataMigration",
+         "label": "Legacy Payroll & HRIS Data Migration Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBusinessDevelopmentSales",
+           "label": "Sales, Contracting & Client Implementation Operations"
+          },
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcImplementationMilestoneTracking",
+         "label": "Implementation Milestone Tracking Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBusinessDevelopmentSales",
+           "label": "Sales, Contracting & Client Implementation Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "ClientOnboardingKickoffService",
+       "label": "Client Onboarding Kickoff & Census Intake Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptKickoffPlaybook",
+         "label": "Client Onboarding Kickoff Playbook"
+        },
+        {
+         "id": "ConceptEmployeeCensusFile",
+         "label": "Worksite Employee Census Data File"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcKickoffMeetingOrchestration",
+         "label": "Client Kickoff Meeting Orchestration Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBusinessDevelopmentSales",
+           "label": "Sales, Contracting & Client Implementation Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcWorksiteEmployeeCensusIntake",
+         "label": "Worksite Employee Census Intake Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBusinessDevelopmentSales",
+           "label": "Sales, Contracting & Client Implementation Operations"
+          },
+          {
+           "id": "OpPayrollTaxAccounting",
+           "label": "Payroll Tax Accounting & Treasury Operations"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "ClientSuccessAccountMgmtSubDomain",
+     "label": "Client Success & Account Management Bounded Context",
+     "type": "subdomain",
+     "children": [
+      {
+       "id": "ClientHealthScoringRetentionService",
+       "label": "Client Health Scoring & Retention Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptClientHealthScoreModel",
+         "label": "Client Account Health Scoring Model"
+        },
+        {
+         "id": "ConceptAtRiskAccountFlag",
+         "label": "At-Risk Client Account Escalation Flag"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcClientHealthScoreCalculation",
+         "label": "Client Health Score Calculation Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBusinessDevelopmentSales",
+           "label": "Sales, Contracting & Client Implementation Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcAtRiskAccountEscalation",
+         "label": "At-Risk Account Escalation Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBusinessDevelopmentSales",
+           "label": "Sales, Contracting & Client Implementation Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "ClientRenewalRenegotiationService",
+       "label": "Client Renewal & Service Level Renegotiation Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptRenewalPricingModel",
+         "label": "Annual Client Renewal Pricing Model"
+        },
+        {
+         "id": "ConceptSLARenegotiationRecord",
+         "label": "Service Level Agreement Renegotiation Record"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcAnnualRenewalPricingReview",
+         "label": "Annual Renewal Pricing Review Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBusinessDevelopmentSales",
+           "label": "Sales, Contracting & Client Implementation Operations"
+          },
+          {
+           "id": "OpClientFinanceBilling",
+           "label": "Client Invoicing, Billing & Accounts Receivable Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcServiceLevelAgreementRenegotiation",
+         "label": "Service Level Agreement Renegotiation Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBusinessDevelopmentSales",
+           "label": "Sales, Contracting & Client Implementation Operations"
+          },
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "ClientEscalationResolutionService",
+       "label": "Client Escalation & Issue Resolution Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptEscalationTierMatrix",
+         "label": "Client Escalation Tier Routing Matrix"
+        },
+        {
+         "id": "ConceptRootCauseAnalysisRecord",
+         "label": "Client Issue Root Cause Analysis Record"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcTieredEscalationRouting",
+         "label": "Tiered Escalation Routing Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBusinessDevelopmentSales",
+           "label": "Sales, Contracting & Client Implementation Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcRootCauseResolutionReview",
+         "label": "Root Cause Resolution Review Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpBusinessDevelopmentSales",
+           "label": "Sales, Contracting & Client Implementation Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "ClientInvoicingBillingService",
+       "label": "Client Service Fee Invoicing & Billing Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptServiceFeeInvoiceSchema",
+         "label": "PEO Service Fee Invoice Schema"
+        },
+        {
+         "id": "ConceptARAgingLedger",
+         "label": "Accounts Receivable Aging Ledger"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcClientInvoiceGeneration",
+         "label": "Client Service Fee Invoice Generation Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpClientFinanceBilling",
+           "label": "Client Invoicing, Billing & Accounts Receivable Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcAccountsReceivableCollection",
+         "label": "Accounts Receivable Collection Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpClientFinanceBilling",
+           "label": "Client Invoicing, Billing & Accounts Receivable Operations"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "HRTechnologyPlatformDomain",
+   "label": "HR Technology Platform & Employee Experience Domain",
+   "type": "domain",
+   "children": [
+    {
+     "id": "DigitalSelfServiceExperienceSubDomain",
+     "label": "Digital Self-Service & Platform Experience Bounded Context",
+     "type": "subdomain",
+     "children": [
+      {
+       "id": "EmployeeSelfServicePortalService",
+       "label": "Employee Self-Service Portal Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptSelfServiceProfileSchema",
+         "label": "Employee Self-Service Profile Data Schema"
+        },
+        {
+         "id": "ConceptDigitalPayStubArchive",
+         "label": "Digital Pay Stub Document Archive"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcPortalProfileSelfUpdate",
+         "label": "Employee Portal Profile Self-Update Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcPayStubDocumentAccessLog",
+         "label": "Pay Stub Document Access Logging Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          },
+          {
+           "id": "OpPayrollTaxAccounting",
+           "label": "Payroll Tax Accounting & Treasury Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "ClientAdminPortalReportingService",
+       "label": "Client Admin Portal & Reporting Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptClientReportingDashboard",
+         "label": "Client Admin Portal Reporting Dashboard"
+        },
+        {
+         "id": "ConceptRoleBasedAccessModel",
+         "label": "Portal Role-Based Access Control Model"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcClientDashboardReportGen",
+         "label": "Client Dashboard Report Generation Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          },
+          {
+           "id": "OpClientFinanceBilling",
+           "label": "Client Invoicing, Billing & Accounts Receivable Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcAdminRoleBasedAccessControl",
+         "label": "Admin Role-Based Access Control Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "SingleSignOnIdentityManagementService",
+       "label": "Single Sign-On & Identity Management Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptSSOFederationProtocol",
+         "label": "Single Sign-On Federation Protocol (SAML/OIDC)"
+        },
+        {
+         "id": "ConceptMFAPolicyRule",
+         "label": "Multi-Factor Authentication Policy Rule"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcSSOFederationSetup",
+         "label": "SSO Federation Setup Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcMultiFactorAuthEnforcement",
+         "label": "Multi-Factor Authentication Enforcement Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "MobileWorkforceAppService",
+       "label": "Mobile Workforce Application Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptMobileAppNotificationSchema",
+         "label": "Mobile Workforce App Notification Schema"
+        },
+        {
+         "id": "ConceptGeofenceBoundaryModel",
+         "label": "Mobile Geofence Boundary Model"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcMobilePushNotificationDispatch",
+         "label": "Mobile Push Notification Dispatch Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcGeofencedClockInValidation",
+         "label": "Geofenced Clock-In Validation Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          },
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "DataIntegrationAnalyticsSubDomain",
+     "label": "Data Integration & Workforce Analytics Bounded Context",
+     "type": "subdomain",
+     "children": [
+      {
+       "id": "HRISDataIntegrationConnectorService",
+       "label": "HRIS Data Integration & API Connector Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptAPIConnectorRegistry",
+         "label": "HRIS API Connector Registry"
+        },
+        {
+         "id": "ConceptHRISFieldMappingSchema",
+         "label": "Third-Party HRIS Field Mapping Schema"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcAPIConnectorSyncMonitoring",
+         "label": "API Connector Synchronization Monitoring Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcThirdPartyHRISFileMapping",
+         "label": "Third-Party HRIS File Mapping Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "WorkforceAnalyticsReportingService",
+       "label": "Workforce Analytics & Predictive Reporting Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptWorkforceKPILibrary",
+         "label": "Workforce Analytics KPI Metric Library"
+        },
+        {
+         "id": "ConceptTurnoverPredictionModel",
+         "label": "Employee Turnover Predictive Model"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcWorkforceKPIDashboardBuild",
+         "label": "Workforce KPI Dashboard Build Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          },
+          {
+           "id": "OpTalentAdvisory",
+           "label": "Talent Acquisition & Organizational Consulting Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcTurnoverPredictiveModeling",
+         "label": "Turnover Predictive Modeling Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          },
+          {
+           "id": "OpTalentAdvisory",
+           "label": "Talent Acquisition & Organizational Consulting Operations"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "id": "DataPrivacySecurityGovernanceService",
+       "label": "Data Privacy & Security Governance Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptDataAccessAuditTrail",
+         "label": "Data Access Audit Trail Log"
+        },
+        {
+         "id": "ConceptEncryptionKeyRotationPolicy",
+         "label": "PII Encryption Key Rotation Policy"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcDataAccessAuditLogging",
+         "label": "Data Access Audit Logging Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          },
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcPIIEncryptionKeyRotation",
+         "label": "PII Encryption Key Rotation Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "operationalAreas": [
+  {
+   "id": "OpPayrollTaxAccounting",
+   "label": "Payroll Tax Accounting & Treasury Operations",
+   "comment": "Multi-jurisdiction tax impounding, disbursement, and general ledger reconciliation."
+  },
+  {
+   "id": "OpBenefitsUnderwriting",
+   "label": "Benefits Plan Underwriting & Carrier Relations",
+   "comment": "Carrier EDI feeds, master trust management, and stop-loss underwriting."
+  },
+  {
+   "id": "OpLegalCompliance",
+   "label": "Employment Legal, Regulatory & Compliance Operations",
+   "comment": "EPLI defense coordination, CPEO compliance, and labor standards adherence."
+  },
+  {
+   "id": "OpRiskSafety",
+   "label": "Risk Management & Worksite Safety Operations",
+   "comment": "Workers' compensation claims triage, safety audits, and OSHA reporting."
+  },
+  {
+   "id": "OpTalentAdvisory",
+   "label": "Talent Acquisition & Organizational Consulting Operations",
+   "comment": "Recruiting pipeline delivery, HR advisory, and compensation benchmarking."
+  },
+  {
+   "id": "OpHRTechnologyCyber",
+   "label": "HR Technology Platform & Cybersecurity Operations",
+   "comment": "Single Sign-On (SSO), data connectors, and self-service portal infrastructure."
+  },
+  {
+   "id": "OpBusinessDevelopmentSales",
+   "label": "Sales, Contracting & Client Implementation Operations",
+   "comment": "Prospect qualification, master service agreement contracting, and new-client implementation/onboarding delivery."
+  },
+  {
+   "id": "OpClientFinanceBilling",
+   "label": "Client Invoicing, Billing & Accounts Receivable Operations",
+   "comment": "Service fee invoicing, accounts receivable collection, and client-facing financial reporting, distinct from worksite-employee payroll treasury."
+  }
+ ],
+ "stats": {
+  "domains": 6,
+  "subdomains": 12,
+  "services": 55,
+  "processes": 110,
+  "operationalAreas": 8,
+  "concepts": 110
+ }
+}
+</script>
+
+<script>
+const MODEL = JSON.parse(document.getElementById('model-json').textContent);
+
+const DOMAIN_COLOR_VARS = {};
+const DOMAIN_KEYS = ['workforce','benefits','compliance','talent','client','tech'];
+MODEL.tree.forEach((d,i)=>{ DOMAIN_COLOR_VARS[d.id] = 'var(--dom-'+DOMAIN_KEYS[i % DOMAIN_KEYS.length]+')'; });
+
+function domainColor(domainId){ return DOMAIN_COLOR_VARS[domainId] || 'var(--muted)'; }
+
+/* ---------------- Flatten + index ---------------- */
+const NODES = {};      // id -> node record
+const ROOT_ID = '__root__';
+
+function indexNode(n, parentId, domainId, ancestry){
+  const rec = {
+    id:n.id, label:n.label, type:n.type,
+    parentId, domainId, ancestry: ancestry.slice(),
+    childIds: [],
+    concepts:n.concepts||null, operations:n.operations||null,
+    pos:{}, pinned:false
+  };
+  NODES[n.id] = rec;
+  if(n.children){
+    n.children.forEach(c=>{
+      rec.childIds.push(c.id);
+      indexNode(c, n.id, domainId, ancestry.concat([n.id]));
+    });
+  }
+  return rec;
+}
+MODEL.tree.forEach(d=>indexNode(d, ROOT_ID, d.id, []));
+
+/* Synthetic root node so Domain->SubDomain->Service->Process and the
+   root itself share one uniform graph structure across every view. */
+NODES[ROOT_ID] = {
+  id:ROOT_ID, label:'HR / PEO', type:'root',
+  parentId:null, domainId:null, ancestry:[],
+  childIds: MODEL.tree.map(d=>d.id),
+  concepts:null, operations:null, pos:{}, pinned:false
+};
+
+const leafCountCache = {};
+function leafCountById(id){
+  if(leafCountCache[id]!==undefined) return leafCountCache[id];
+  const rec = NODES[id];
+  const v = rec.childIds.length ? rec.childIds.reduce((s,cid)=>s+leafCountById(cid),0) : 1;
+  leafCountCache[id] = v;
+  return v;
+}
+
+const OPAREAS = {};
+MODEL.operationalAreas.forEach(o=>OPAREAS[o.id]=o);
+
+const OPAREA_TO_PROCESSES = {};
+Object.values(NODES).forEach(n=>{
+  if(n.type==='process' && n.operations){
+    n.operations.forEach(o=>{
+      (OPAREA_TO_PROCESSES[o.id] = OPAREA_TO_PROCESSES[o.id]||[]).push(n.id);
+    });
+  }
+});
+
+const TYPE_LABELS = {root:'Enterprise Model', domain:'Business Domain', subdomain:'Bounded Context', service:'Domain Service', process:'Business Process'};
+
+/* ---------------- Shared geometry helpers ---------------- */
+const svgns = 'http://www.w3.org/2000/svg';
+function el(tag, attrs, parent){
+  const e = document.createElementNS(svgns, tag);
+  if(attrs) for(const k in attrs) e.setAttribute(k, attrs[k]);
+  if(parent) parent.appendChild(e);
+  return e;
+}
+function polar(r, angleRad){ return { x: r*Math.sin(angleRad), y: -r*Math.cos(angleRad) }; }
+function octagon(cx,cy,r){
+  const pts=[];
+  for(let i=0;i<8;i++){
+    const a = i*Math.PI/4 + Math.PI/8;
+    pts.push(`${cx+r*Math.sin(a)},${cy-r*Math.cos(a)}`);
+  }
+  return pts.join(' ');
+}
+function truncate(s, n){ return s.length>n ? s.slice(0,n-1)+'…' : s; }
+
+const NODE_R = {0:13, 1:15, 2:9.5, 3:5.5, 4:2.6};
+const LABEL_SIZE = {0:12, 1:14, 2:10.5, 3:9, 4:8};
+
+let spacingMult = 1; // global "distance between nodes" multiplier, driven by the spacing slider
+
+/* =================================================================
+   LAYOUT 1 — Radial orbit (domain wedge dendrogram)
+   ================================================================= */
+const RING_R_BASE = {0:0, 1:128, 2:245, 3:355, 4:465};
+const RING_R = {...RING_R_BASE};
+function computeRingR(){
+  Object.keys(RING_R_BASE).forEach(k=>{ RING_R[k] = RING_R_BASE[k] * spacingMult; });
+}
+
+function layoutRadialSubtree(id, a0, a1, depth){
+  const rec = NODES[id];
+  rec.radialAngle = (a0+a1)/2;
+  rec.radialR = RING_R[depth] !== undefined ? RING_R[depth] : RING_R[4];
+  const p = polar(rec.radialR, rec.radialAngle);
+  rec.pos.radial = {x:p.x, y:p.y};
+  rec.sectorA0 = a0; rec.sectorA1 = a1;
+  if(rec.childIds.length){
+    const total = leafCountById(id);
+    let cursor = a0;
+    rec.childIds.forEach(cid=>{
+      const span = (a1-a0) * (leafCountById(cid)/total);
+      layoutRadialSubtree(cid, cursor, cursor+span, depth+1);
+      cursor += span;
+    });
+  }
+}
+layoutRadialSubtree(ROOT_ID, 0, 2*Math.PI, 0);
+
+function radialLinkPath(a, b){
+  const pa = getPos(NODES[a]), pb = getPos(NODES[b]);
+  const ra = Math.hypot(pa.x, pa.y), rb = Math.hypot(pb.x, pb.y);
+  const aa = Math.atan2(pa.x, -pa.y), ab = Math.atan2(pb.x, -pb.y);
+  const midR = (ra + rb) / 2;
+  const m0 = polar(midR, aa), m1 = polar(midR, ab);
+  return {
+    d: `M ${pa.x} ${pa.y} C ${m0.x} ${m0.y}, ${m1.x} ${m1.y}, ${pb.x} ${pb.y}`,
+    mid: bezierPoint(pa, m0, m1, pb, 0.5)
+  };
+}
+
+/* =================================================================
+   LAYOUT 2 — Hierarchical (top-down tidy tree, org-chart style)
+   ================================================================= */
+const HROW_GAP_BASE = 132;
+let HROW_GAP = HROW_GAP_BASE;
+let lastHierDepth = null;
+
+/* Leaf count "capped" at a given max depth — nodes at maxDepth are treated
+   as leaves for spacing purposes even if they have hidden deeper children,
+   so the layout only reserves as much room as is currently visible. */
+function leafCountCapped(id, maxDepth){
+  const rec = NODES[id];
+  if(rec.depth >= maxDepth || rec.childIds.length===0) return 1;
+  return rec.childIds.reduce((s,cid)=>s+leafCountCapped(cid,maxDepth),0);
+}
+
+function layoutHierarchical(maxDepth){
+  const total = leafCountCapped(ROOT_ID, maxDepth);
+  const fullWidth = Math.max(760, total * 26) * spacingMult;
+  function place(id, x0, x1, depth){
+    const rec = NODES[id];
+    const cx = (x0+x1)/2;
+    rec.pos.hierarchical = { x:cx, y:(depth-2)*HROW_GAP };
+    if(rec.childIds.length && depth < maxDepth){
+      const tot = leafCountCapped(id, maxDepth);
+      let cursor = x0;
+      rec.childIds.forEach(cid=>{
+        const span = (x1-x0) * (leafCountCapped(cid,maxDepth)/tot);
+        place(cid, cursor, cursor+span, depth+1);
+        cursor += span;
+      });
+    }
+  }
+  place(ROOT_ID, -fullWidth/2, fullWidth/2, 0);
+  lastHierDepth = maxDepth;
+}
+layoutHierarchical(4);
+
+function verticalLinkPath(a, b){
+  const pa = getPos(NODES[a]), pb = getPos(NODES[b]);
+  const midY = (pa.y + pb.y) / 2;
+  const c0 = {x:pa.x, y:midY}, c1 = {x:pb.x, y:midY};
+  return {
+    d: `M ${pa.x} ${pa.y} C ${c0.x} ${c0.y}, ${c1.x} ${c1.y}, ${pb.x} ${pb.y}`,
+    mid: bezierPoint(pa, c0, c1, pb, 0.5)
+  };
+}
+
+/* =================================================================
+   LAYOUT 3 — Cluster (left-to-right dendrogram, elbow connectors)
+   ================================================================= */
+const CCOL_GAP_BASE = 178;
+let CCOL_GAP = CCOL_GAP_BASE;
+let lastClusterDepth = null;
+
+function layoutCluster(maxDepth){
+  const total = leafCountCapped(ROOT_ID, maxDepth);
+  const fullHeight = Math.max(560, total * 20) * spacingMult;
+  function place(id, y0, y1, depth){
+    const rec = NODES[id];
+    const cy = (y0+y1)/2;
+    rec.pos.cluster = { x:(depth-2)*CCOL_GAP, y:cy };
+    if(rec.childIds.length && depth < maxDepth){
+      const tot = leafCountCapped(id, maxDepth);
+      let cursor = y0;
+      rec.childIds.forEach(cid=>{
+        const span = (y1-y0) * (leafCountCapped(cid,maxDepth)/tot);
+        place(cid, cursor, cursor+span, depth+1);
+        cursor += span;
+      });
+    }
+  }
+  place(ROOT_ID, -fullHeight/2, fullHeight/2, 0);
+  lastClusterDepth = maxDepth;
+}
+layoutCluster(4);
+
+function elbowLinkPath(a, b){
+  const pa = getPos(NODES[a]), pb = getPos(NODES[b]);
+  const midX = (pa.x + pb.x) / 2;
+  return {
+    d: `M ${pa.x} ${pa.y} H ${midX} V ${pb.y} H ${pb.x}`,
+    mid: {x:midX, y:(pa.y+pb.y)/2}
+  };
+}
+
+/* =================================================================
+   LAYOUT 4 — Force-directed (custom lightweight physics)
+   ================================================================= */
+const LINK_TARGET_BASE = {1:115, 2:78, 3:52, 4:34};
+let forceRAF = null;
+
+function seedForcePositions(){
+  Object.values(NODES).forEach(n=>{
+    if(!n.pos.force){
+      const rp = n.pos.radial || {x:0,y:0};
+      n.pos.force = { x:rp.x + (Math.random()-0.5)*14, y:rp.y + (Math.random()-0.5)*14, vx:0, vy:0 };
+    }
+  });
+}
+
+function forceTick(){
+  const nodesArr = collectVisible();
+  const visibleSet = new Set(nodesArr.map(n=>n.id));
+  const n = nodesArr.length;
+  nodesArr.forEach(rec=>{ rec._fx=0; rec._fy=0; });
+
+  for(let i=0;i<n;i++){
+    const a = nodesArr[i], pa = a.pos.force;
+    for(let j=i+1;j<n;j++){
+      const b = nodesArr[j], pb = b.pos.force;
+      let dx = pa.x-pb.x, dy = pa.y-pb.y;
+      let d2 = dx*dx+dy*dy;
+      if(d2 < 1){ dx = (Math.random()-0.5); dy = (Math.random()-0.5); d2 = 1; }
+      const d = Math.sqrt(d2);
+      const force = Math.min((2400*spacingMult*spacingMult)/d2, 46*spacingMult);
+      const fx = (dx/d)*force, fy = (dy/d)*force;
+      a._fx += fx; a._fy += fy;
+      b._fx -= fx; b._fy -= fy;
+    }
+  }
+
+  nodesArr.forEach(rec=>{
+    if(rec.parentId && visibleSet.has(rec.parentId)){
+      const p = NODES[rec.parentId];
+      const pa = rec.pos.force, pb = p.pos.force;
+      const dx = pb.x-pa.x, dy = pb.y-pa.y;
+      const d = Math.sqrt(dx*dx+dy*dy) || 0.01;
+      const target = (LINK_TARGET_BASE[rec.depth] || 90) * spacingMult;
+      const f = (d-target)*0.058;
+      const fx = (dx/d)*f, fy = (dy/d)*f;
+      rec._fx += fx; rec._fy += fy;
+      p._fx -= fx*0.4; p._fy -= fy*0.4;
+    }
+  });
+
+  nodesArr.forEach(rec=>{
+    if(rec.domainId){
+      const anchor = NODES[rec.domainId].pos.radial;
+      rec._fx += (anchor.x - rec.pos.force.x)*0.0065;
+      rec._fy += (anchor.y - rec.pos.force.y)*0.0065;
+    }
+    rec._fx += (0-rec.pos.force.x)*0.0018;
+    rec._fy += (0-rec.pos.force.y)*0.0018;
+  });
+
+  let maxSpeed = 0;
+  nodesArr.forEach(rec=>{
+    const p = rec.pos.force;
+    if(rec.pinned){ p.vx=0; p.vy=0; return; }
+    p.vx = (p.vx + rec._fx) * 0.8;
+    p.vy = (p.vy + rec._fy) * 0.8;
+    p.x += p.vx; p.y += p.vy;
+    maxSpeed = Math.max(maxSpeed, Math.abs(p.vx)+Math.abs(p.vy));
+  });
+
+  render();
+
+  if(maxSpeed > 0.07){
+    forceRAF = requestAnimationFrame(forceTick);
+  } else {
+    forceRAF = null;
+  }
+}
+function startForce(){
+  seedForcePositions();
+  if(forceRAF) cancelAnimationFrame(forceRAF);
+  forceRAF = requestAnimationFrame(forceTick);
+}
+function stopForce(){
+  if(forceRAF){ cancelAnimationFrame(forceRAF); forceRAF=null; }
+}
+function reheatForce(){
+  if(viewMode!=='force') return;
+  seedForcePositions();
+  if(!forceRAF) forceRAF = requestAnimationFrame(forceTick);
+}
+/* Restarts the settle loop WITHOUT reseeding positions — used when the
+   target link/repulsion distances change (spacing slider) so the sim
+   eases into the new spacing instead of jumping back near its radial seed. */
+function wakeForce(){
+  if(viewMode!=='force') return;
+  if(!forceRAF) forceRAF = requestAnimationFrame(forceTick);
+}
+function straightLinkPath(a, b){
+  const pa = getPos(NODES[a]), pb = getPos(NODES[b]);
+  return {
+    d: `M ${pa.x} ${pa.y} L ${pb.x} ${pb.y}`,
+    mid: {x:(pa.x+pb.x)/2, y:(pa.y+pb.y)/2}
+  };
+}
+function bezierPoint(p0, c0, c1, p1, t){
+  const it = 1-t;
+  return {
+    x: it*it*it*p0.x + 3*it*it*t*c0.x + 3*it*t*t*c1.x + t*t*t*p1.x,
+    y: it*it*it*p0.y + 3*it*it*t*c0.y + 3*it*t*t*c1.y + t*t*t*p1.y
+  };
+}
+
+/* =================================================================
+   View-mode plumbing
+   ================================================================= */
+const LINK_PATH_FN = { radial:radialLinkPath, hierarchical:verticalLinkPath, cluster:elbowLinkPath, force:straightLinkPath };
+/* Every visible node gets a label automatically. Radial keeps domain (depth 1)
+   off the node itself since the curved sector-rim label already names it. */
+const LABEL_DEPTHS = { radial:[0,2,3,4], hierarchical:[0,1,2,3,4], cluster:[0,1,2,3,4], force:[0,1,2,3,4] };
+/* Relation label shown at the midpoint of each edge, keyed by the child's depth. */
+const EDGE_LABELS = { 1:'hasDomain', 2:'hasSubDomain', 3:'providesService', 4:'executedByProcess' };
+const CANVAS_HINTS = {
+  radial: 'drag node to reposition &middot; drag canvas to pan &middot; scroll to zoom',
+  hierarchical: 'drag node to reposition &middot; drag canvas to pan &middot; scroll to zoom',
+  cluster: 'drag node to reposition &middot; drag canvas to pan &middot; scroll to zoom',
+  force: 'drag node to pin in place (dashed ring) &middot; double-click to release &middot; scroll to zoom'
+};
+
+let viewMode = 'radial';
+const manualPos = {}; // `${mode}:${id}` -> {x,y}, ignored in force mode (uses pos.force + pinned instead)
+
+function getPos(n){
+  if(viewMode==='force') return n.pos.force || {x:0,y:0};
+  const key = viewMode+':'+n.id;
+  if(manualPos[key]) return manualPos[key];
+  return n.pos[viewMode] || {x:0,y:0};
+}
+function setManualPos(n, x, y){ manualPos[viewMode+':'+n.id] = {x,y}; }
+
+function resetLayout(){
+  Object.keys(manualPos).forEach(k=>{ if(k.startsWith(viewMode+':')) delete manualPos[k]; });
+  if(viewMode==='force'){
+    Object.values(NODES).forEach(n=>{ n.pinned=false; n.pos.force=null; });
+    startForce();
+  } else {
+    render();
+  }
+}
+
+/* ---------------- Rendering ---------------- */
+let currentDetail = 3;
+let selectedId = null;
+let opAreaFilter = '';
+let dimmedDomains = new Set();
+
+const ringGridG = document.getElementById('ring-grid');
+const sectorLayerG = document.getElementById('sector-layer');
+const linkLayerG = document.getElementById('link-layer');
+const nodeLayerG = document.getElementById('node-layer');
+const hubLayerG = document.getElementById('hub-layer');
+
+function buildRingGrid(){
+  ringGridG.innerHTML = '';
+  [1,2,3,4].forEach(depth=>{ el('circle', {cx:0, cy:0, r:RING_R[depth]}, ringGridG); });
+  for(let deg=0; deg<360; deg+=15){
+    const rad = deg*Math.PI/180;
+    const p0 = polar(RING_R[1]-10, rad);
+    const p1 = polar(RING_R[4]+16, rad);
+    el('line', {class:'tick', x1:p0.x, y1:p0.y, x2:p1.x, y2:p1.y, opacity:0.35}, ringGridG);
+  }
+}
+buildRingGrid();
+
+function buildHub(){
+  hubLayerG.innerHTML = '';
+  el('circle', {cx:0, cy:0, r:34}, hubLayerG);
+  const t = el('text', {x:0, y:4, 'text-anchor':'middle'}, hubLayerG);
+  t.textContent = 'HR / PEO';
+}
+buildHub();
+
+function buildSectors(){
+  sectorLayerG.innerHTML = '';
+  MODEL.tree.forEach(d=>{
+    const rec = NODES[d.id];
+    const rOuter = RING_R[4] + 30;
+    const rInner = RING_R[1] - 40;
+    const a0 = rec.sectorA0, a1 = rec.sectorA1;
+    const p0o = polar(rOuter, a0), p1o = polar(rOuter, a1);
+    const p0i = polar(rInner, a0), p1i = polar(rInner, a1);
+    const large = (a1-a0) > Math.PI ? 1 : 0;
+    const dpath = `M ${p0i.x} ${p0i.y} L ${p0o.x} ${p0o.y} A ${rOuter} ${rOuter} 0 ${large} 1 ${p1o.x} ${p1o.y} L ${p1i.x} ${p1i.y} A ${rInner} ${rInner} 0 ${large} 0 ${p0i.x} ${p0i.y} Z`;
+    el('path', {d:dpath, fill:domainColor(d.id), class:'sector-arc', 'data-domain':d.id}, sectorLayerG);
+
+    const labelR = rOuter + 2;
+    const midA = (a0+a1)/2;
+    const lp = polar(labelR, midA);
+    let rot = (midA*180/Math.PI);
+    let anchor = 'start';
+    if(rot > 90 && rot < 270){ rot += 180; anchor='end'; }
+    const txt = el('text', {
+      x:lp.x, y:lp.y, class:'domain-band-label', fill:domainColor(d.id),
+      'font-size':13, 'text-anchor':anchor,
+      transform:`rotate(${rot} ${lp.x} ${lp.y})`
+    }, sectorLayerG);
+    txt.textContent = rec.label.replace(' Domain','');
+  });
+}
+buildSectors();
+
+function collectVisible(){
+  const maxDepth = currentDetail;
+  return Object.values(NODES).filter(n=>depthOf(n)<=maxDepth);
+}
+function depthOf(n){
+  if(n.id===ROOT_ID) return 0;
+  return n.ancestry.length; // domain=1(0 ancestors+1? ) -- computed below via explicit map instead
+}
+/* Precompute a stable integer depth per node (root=0..process=4) once,
+   independent of which layout is active. */
+(function assignDepths(){
+  function walk(id, d){ NODES[id].depth = d; NODES[id].childIds.forEach(c=>walk(c, d+1)); }
+  walk(ROOT_ID, 0);
+})();
+depthOf = (n)=>n.depth;
+
+function pathToRoot(id){
+  const set = new Set();
+  let cur = NODES[id];
+  while(cur){ set.add(cur.id); cur = cur.parentId ? NODES[cur.parentId] : null; }
+  return set;
+}
+
+function isDescendantOfAnyProcess(n, procSet){
+  if(n.type==='process') return procSet.has(n.id);
+  return anyDescendantProcessMatches(n.id, procSet);
+}
+function anyDescendantProcessMatches(id, procSet){
+  const rec = NODES[id];
+  if(rec.type==='process') return procSet.has(id);
+  for(const cid of rec.childIds){ if(anyDescendantProcessMatches(cid, procSet)) return true; }
+  return false;
+}
+
+function syncLayoutDepth(){
+  if(viewMode==='hierarchical' && lastHierDepth!==currentDetail) layoutHierarchical(currentDetail);
+  if(viewMode==='cluster' && lastClusterDepth!==currentDetail) layoutCluster(currentDetail);
+}
+
+function render(){
+  if(viewMode==='list') return; // list view renders via renderTree()
+
+  syncLayoutDepth();
+
+  const visible = collectVisible();
+  const visibleIds = new Set(visible.map(n=>n.id));
+  const linkFn = LINK_PATH_FN[viewMode];
+  const labelDepths = LABEL_DEPTHS[viewMode];
+
+  let onPathSet = null;
+  if(selectedId && NODES[selectedId]){ onPathSet = pathToRoot(selectedId); }
+
+  let opFilterProcessSet = null;
+  if(opAreaFilter){ opFilterProcessSet = new Set(OPAREA_TO_PROCESSES[opAreaFilter]||[]); }
+
+  sectorLayerG.querySelectorAll('.sector-arc').forEach(p=>{
+    p.classList.toggle('dim', dimmedDomains.has(p.getAttribute('data-domain')));
+  });
+
+  /* links */
+  linkLayerG.innerHTML = '';
+  visible.forEach(n=>{
+    if(!n.parentId || !visibleIds.has(n.parentId)) return;
+    const parent = NODES[n.parentId];
+    const geom = linkFn(parent.id, n.id);
+    const isOnPath = onPathSet && onPathSet.has(n.id) && onPathSet.has(parent.id);
+    let dim = dimmedDomains.has(n.domainId);
+    let opHit = false;
+    if(opFilterProcessSet){
+      opHit = isDescendantOfAnyProcess(n, opFilterProcessSet);
+      dim = dim || !opHit;
+    }
+    el('path', {
+      d:geom.d, class:'link'+(isOnPath?' on-path':'')+(dim?' dim':'')+(opHit&&!dim?' op-hit':''),
+      stroke: isOnPath ? null : domainColor(n.domainId || parent.domainId),
+      'stroke-opacity': isOnPath ? null : 0.4
+    }, linkLayerG);
+
+    const relLabel = EDGE_LABELS[n.depth];
+    if(relLabel){
+      const w = relLabel.length*5.1 + 9;
+      const lg = el('g', {
+        class:'link-label'+(isOnPath?' on-path':'')+(dim?' dim':''),
+        transform:`translate(${geom.mid.x},${geom.mid.y})`
+      }, linkLayerG);
+      el('rect', {x:-w/2, y:-7.5, width:w, height:14, rx:3}, lg);
+      const lt = el('text', {x:0, y:3.5, 'text-anchor':'middle'}, lg);
+      lt.textContent = relLabel;
+    }
+  });
+
+  /* nodes */
+  nodeLayerG.innerHTML = '';
+  visible.forEach(n=>{
+    if(viewMode==='radial' && n.depth===0) return; // hub-layer already represents root
+
+    const r = NODE_R[n.depth];
+    const p = getPos(n);
+    const isOnPath = onPathSet && onPathSet.has(n.id);
+    let dim = dimmedDomains.has(n.domainId);
+    let opHit = false;
+    if(opFilterProcessSet){
+      opHit = isDescendantOfAnyProcess(n, opFilterProcessSet);
+      dim = dim || !opHit;
+    }
+    const isPinned = viewMode==='force' && n.pinned;
+    const g = el('g', {
+      class:'node'+(isOnPath?' on-path':'')+(n.id===selectedId?' selected':'')+(dim?' dim':'')+(opHit&&!dim&&n.type==='process'?' op-hit':'')+(isPinned?' pinned':''),
+      transform:`translate(${p.x},${p.y})`,
+      'data-id':n.id
+    }, nodeLayerG);
+    g.addEventListener('mousedown', (e)=>{ e.stopPropagation(); startNodeDrag(e, n); });
+    g.addEventListener('dblclick', (e)=>{
+      e.stopPropagation();
+      if(viewMode==='force' && n.pinned){ n.pinned=false; reheatForce(); }
+    });
+    g.addEventListener('mouseenter', (e)=>showTooltip(e, n));
+    g.addEventListener('mousemove', (e)=>moveTooltip(e));
+    g.addEventListener('mouseleave', hideTooltip);
+
+    const fill = n.type==='root' ? 'var(--accent)' : domainColor(n.domainId);
+    if(n.type==='domain'){
+      el('polygon', {points:octagon(0,0,r), class:'core', fill, 'stroke-width':2.5}, g);
+    } else {
+      el('circle', {r, class:'core', fill}, g);
+    }
+
+    if(labelDepths.includes(n.depth)){
+      let lx=0, ly=r+13, anchor='middle';
+      if(viewMode==='radial'){
+        const gap = r + 15;
+        const s = Math.sin(n.radialAngle);
+        anchor = s > 0.22 ? 'start' : (s < -0.22 ? 'end' : 'middle');
+        const padded = gap + (anchor==='middle' ? 3 : 0);
+        lx = padded*Math.sin(n.radialAngle); ly = -padded*Math.cos(n.radialAngle)+4;
+      } else if(viewMode==='cluster'){
+        anchor='start'; lx = r+8; ly = 4;
+      }
+      const t = el('text', {x:lx, y:ly, class:'label', 'text-anchor':anchor, 'font-size':LABEL_SIZE[n.depth]}, g);
+      t.textContent = truncate(n.label, viewMode==='cluster'?24:22);
+    }
+  });
+
+  renderLegend();
+  renderStats();
+}
+
+/* ---------------- Node drag (reposition) ---------------- */
+let nodeDragState = null;
+function startNodeDrag(e, n){
+  if(viewMode==='list') return;
+  const wrap = document.getElementById('canvas-wrap').getBoundingClientRect();
+  nodeDragState = { id:n.id, moved:false, startClientX:e.clientX, startClientY:e.clientY };
+
+  function toWorld(clientX, clientY){
+    return { x:(clientX-wrap.left-vw/2-tx)/scale, y:(clientY-wrap.top-vh/2-ty)/scale };
+  }
+  function onMove(ev){
+    if(!nodeDragState) return;
+    const dx = ev.clientX-nodeDragState.startClientX, dy = ev.clientY-nodeDragState.startClientY;
+    if(!nodeDragState.moved && Math.hypot(dx,dy) > 3) nodeDragState.moved = true;
+    if(!nodeDragState.moved) return;
+    const w = toWorld(ev.clientX, ev.clientY);
+    if(viewMode==='force'){
+      n.pinned = true;
+      n.pos.force = { x:w.x, y:w.y, vx:0, vy:0 };
+      reheatForce();
+    } else {
+      setManualPos(n, w.x, w.y);
+      render();
+    }
+  }
+  function onUp(){
+    window.removeEventListener('mousemove', onMove);
+    window.removeEventListener('mouseup', onUp);
+    if(nodeDragState && !nodeDragState.moved) selectNode(n.id);
+    nodeDragState = null;
+  }
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onUp);
+}
+
+function octagonOrCircleRadius(n){ return NODE_R[n.depth]; }
+
+/* ---------------- Tooltip ---------------- */
+const tooltipEl = document.getElementById('tooltip');
+function showTooltip(e, n){
+  tooltipEl.innerHTML = `<span class="tt-type">${TYPE_LABELS[n.type]||n.type}</span>${n.label}`;
+  tooltipEl.classList.add('show');
+  moveTooltip(e);
+}
+function moveTooltip(e){
+  const wrap = document.getElementById('canvas-wrap').getBoundingClientRect();
+  tooltipEl.style.left = (e.clientX - wrap.left) + 'px';
+  tooltipEl.style.top = (e.clientY - wrap.top - 12) + 'px';
+}
+function hideTooltip(){ tooltipEl.classList.remove('show'); }
+
+/* ---------------- Pan / zoom ---------------- */
+const stage = document.getElementById('stage');
+const viewport = document.getElementById('viewport');
+let vw=0, vh=0, tx=0, ty=0, scale=1;
+let dragging=false, dragStart=null;
+
+function fitStage(){
+  const rect = document.getElementById('canvas-wrap').getBoundingClientRect();
+  vw = rect.width; vh = rect.height;
+  stage.setAttribute('viewBox', `${-vw/2} ${-vh/2} ${vw} ${vh}`);
+}
+function applyTransform(){
+  viewport.setAttribute('transform', `translate(${tx},${ty}) scale(${scale})`);
+}
+function resetView(){
+  tx = 0; ty = 0;
+  syncLayoutDepth();
+  if(viewMode==='radial'){
+    scale = Math.min(1, 640/(RING_R[currentDetail]+80));
+  } else {
+    const vis = collectVisible();
+    let maxAbsX = 60, maxAbsY = 60;
+    vis.forEach(n=>{ const p=getPos(n); maxAbsX=Math.max(maxAbsX,Math.abs(p.x)); maxAbsY=Math.max(maxAbsY,Math.abs(p.y)); });
+    const fitScale = Math.min((vw/2-70)/maxAbsX, (vh/2-70)/maxAbsY, 1.15);
+    scale = (isFinite(fitScale) && fitScale>0) ? fitScale : 1;
+  }
+  applyTransform();
+}
+
+stage.addEventListener('wheel', (e)=>{
+  e.preventDefault();
+  zoomBy(e.deltaY < 0 ? 1.12 : 0.89);
+}, {passive:false});
+
+function zoomBy(factor){
+  scale = Math.max(0.15, Math.min(4, scale*factor));
+  applyTransform();
+}
+
+stage.addEventListener('mousedown', (e)=>{
+  dragging = true; dragStart = {x:e.clientX, y:e.clientY, tx, ty};
+  stage.classList.add('grabbing');
+});
+window.addEventListener('mousemove', (e)=>{
+  if(!dragging) return;
+  tx = dragStart.tx + (e.clientX - dragStart.x);
+  ty = dragStart.ty + (e.clientY - dragStart.y);
+  applyTransform();
+});
+window.addEventListener('mouseup', ()=>{ dragging=false; stage.classList.remove('grabbing'); });
+stage.addEventListener('click', ()=>{ selectNode(null); });
+window.addEventListener('resize', ()=>{ fitStage(); });
+
+/* ---------------- Legend ---------------- */
+function renderLegend(){
+  const strip = document.getElementById('legend-strip');
+  strip.innerHTML = '';
+  MODEL.tree.forEach(d=>{
+    const chip = document.createElement('div');
+    chip.className = 'legend-chip' + (dimmedDomains.has(d.id) ? ' dim' : '');
+    chip.innerHTML = `<span class="dot" style="background:${domainColor(d.id)}"></span>${d.label.replace(' Domain','')}`;
+    chip.onclick = ()=>{
+      if(dimmedDomains.has(d.id)) dimmedDomains.delete(d.id); else dimmedDomains.add(d.id);
+      if(viewMode==='list') renderTree(); else render();
+    };
+    strip.appendChild(chip);
+  });
+}
+
+function renderStats(){
+  const box = document.getElementById('header-stats');
+  if(box.dataset.built) return;
+  box.dataset.built = '1';
+  const s = MODEL.stats;
+  const entries = [['domains','Domains'],['subdomains','Contexts'],['services','Services'],['processes','Processes'],['operationalAreas','Op. Areas']];
+  box.innerHTML = entries.map(([k,label])=>`<div class="stat"><b>${s[k]}</b><span>${label}</span></div>`).join('');
+}
+
+/* ---------------- Operational area filter ---------------- */
+const opSelect = document.getElementById('oparea-filter');
+MODEL.operationalAreas.forEach(o=>{
+  const opt = document.createElement('option');
+  opt.value = o.id; opt.textContent = o.label;
+  opSelect.appendChild(opt);
+});
+opSelect.addEventListener('change', ()=>{
+  opAreaFilter = opSelect.value;
+  if(viewMode==='list') renderTree(); else render();
+});
+
+/* ---------------- Selection + Inspector ---------------- */
+function selectNode(id){
+  selectedId = id;
+  if(viewMode==='list') renderTree(); else render();
+  renderInspector(id);
+}
+
+function renderInspector(id){
+  const emptyEl = document.getElementById('insp-empty');
+  const contentEl = document.getElementById('insp-content');
+  if(!id){ emptyEl.style.display='flex'; contentEl.style.display='none'; return; }
+  const n = NODES[id];
+  emptyEl.style.display='none'; contentEl.style.display='block';
+
+  const crumbLabels = n.ancestry.map(aid=>NODES[aid].label.replace(' Domain','').replace(' Bounded Context',''));
+  const typeLabel = (TYPE_LABELS[n.type]||n.type) + (n.type==='domain'?' &middot; L1':n.type==='subdomain'?' &middot; L2':n.type==='service'?' &middot; L3':'');
+  const color = n.type==='root' ? 'var(--accent)' : domainColor(n.domainId);
+
+  let html = `
+    <div class="insp-header">
+      <div class="insp-breadcrumb">${crumbLabels.map(c=>`<span>${c}</span>`).join('')}</div>
+      <div class="insp-type-pill" style="background:${swap(color,0.14)}; color:${color}">${typeLabel}</div>
+      <div class="insp-title">${n.label}</div>
+    </div>
+  `;
+
+  if(n.type==='root'){
+    const s = MODEL.stats;
+    html += `<div class="insp-section">
+      <div class="insp-section-title">Scope</div>
+      <div class="stat-grid" style="grid-template-columns:repeat(4,1fr)">
+        <div class="stat-tile"><b>${s.domains}</b><span>Domains</span></div>
+        <div class="stat-tile"><b>${s.subdomains}</b><span>Contexts</span></div>
+        <div class="stat-tile"><b>${s.services}</b><span>Services</span></div>
+        <div class="stat-tile"><b>${s.processes}</b><span>Processes</span></div>
+      </div>
+    </div>`;
+    html += `<div class="insp-section">
+      <div class="insp-section-title">Business Domains</div>
+      <div class="child-list">
+        ${n.childIds.map(cid=>{
+          const c = NODES[cid];
+          return `<div class="child-row" onclick="selectNode('${cid}')"><span class="dot" style="background:${domainColor(cid)}"></span>${c.label}<span class="child-count">${countByType(cid,'service')} svc</span></div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }
+
+  if(n.type==='domain' || n.type==='subdomain'){
+    const subCount = n.type==='domain' ? n.childIds.length : 0;
+    const svcCount = countByType(n.id,'service');
+    const procCount = countByType(n.id,'process');
+    html += `<div class="insp-section">
+      <div class="insp-section-title">Scope</div>
+      <div class="stat-grid">
+        ${n.type==='domain' ? `<div class="stat-tile"><b>${subCount}</b><span>Contexts</span></div>` : ''}
+        <div class="stat-tile"><b>${svcCount}</b><span>Services</span></div>
+        <div class="stat-tile"><b>${procCount}</b><span>Processes</span></div>
+      </div>
+    </div>`;
+    html += `<div class="insp-section">
+      <div class="insp-section-title">${n.type==='domain'?'Bounded Contexts':'Domain Services'}</div>
+      <div class="child-list">
+        ${n.childIds.map(cid=>{
+          const c = NODES[cid];
+          const cnt = c.type==='service' ? '' : `<span class="child-count">${countByType(cid,'service')} svc</span>`;
+          return `<div class="child-row" onclick="selectNode('${cid}')"><span class="dot" style="background:${color}"></span>${c.label}${cnt}</div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }
+
+  if(n.type==='service'){
+    html += `<div class="insp-section">
+      <div class="insp-section-title">Mapped Ontology Concepts</div>
+      <div class="chip-row">${(n.concepts||[]).map(c=>`<span class="chip">${c.label}</span>`).join('')}</div>
+    </div>`;
+    html += `<div class="insp-section">
+      <div class="insp-section-title">Executing Business Processes</div>
+      <div class="proc-list">
+        ${n.childIds.map(pid=>{
+          const p = NODES[pid];
+          const ops = (p.operations||[]).map(o=>`<span class="op-tag">${o.label}</span>`).join('');
+          return `<div class="proc-item" onclick="selectNode('${pid}')"><div class="proc-item-name">${p.label}</div><div class="proc-item-ops">${ops}</div></div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }
+
+  if(n.type==='process'){
+    const svcId = n.parentId;
+    const svc = NODES[svcId];
+    html += `<div class="insp-section">
+      <div class="insp-section-title">Realizes Domain Service</div>
+      <div class="child-row" onclick="selectNode('${svcId}')" style="cursor:pointer; padding:0.5rem 0.6rem; background:var(--surface-2); border-radius:6px;">
+        <span class="dot" style="background:${color}"></span>${svc.label}
+      </div>
+    </div>`;
+    html += `<div class="insp-section">
+      <div class="insp-section-title">Supported By Operational Areas</div>
+      <div class="chip-row">${(n.operations||[]).map(o=>`<span class="chip">${o.label}</span>`).join('') || '<span class="chip">&mdash;</span>'}</div>
+    </div>`;
+    if(svc.concepts && svc.concepts.length){
+      html += `<div class="insp-section">
+        <div class="insp-section-title">Related Ontology Concepts</div>
+        <div class="chip-row">${svc.concepts.map(c=>`<span class="chip">${c.label}</span>`).join('')}</div>
+      </div>`;
+    }
+  }
+
+  html += `<div class="insp-section">
+    <div class="insp-section-title">Operational Areas Reference</div>
+    <div class="oparea-list">
+      ${MODEL.operationalAreas.map(o=>`
+        <div class="oparea-item ${opAreaFilter===o.id?'active-filter':''}" onclick="toggleOpAreaLens('${o.id}')">
+          <div class="oparea-name">${o.label}</div>
+          <div class="oparea-desc">${o.comment||''}</div>
+        </div>`).join('')}
+    </div>
+  </div>`;
+
+  contentEl.innerHTML = html;
+}
+
+function toggleOpAreaLens(id){
+  opAreaFilter = (opAreaFilter===id) ? '' : id;
+  opSelect.value = opAreaFilter;
+  if(viewMode==='list') renderTree(); else render();
+  if(selectedId) renderInspector(selectedId);
+}
+
+function countByType(id, type){
+  const rec = NODES[id];
+  if(rec.type===type) return 1;
+  let c = 0;
+  rec.childIds.forEach(cid=>{ c += countByType(cid, type); });
+  return c;
+}
+
+function swap(colorVar, alpha){
+  return `color-mix(in srgb, ${colorVar} ${Math.round(alpha*100)}%, transparent)`;
+}
+
+/* ---------------- Detail slider ---------------- */
+const detailSlider = document.getElementById('detail-slider');
+const detailLabelEl = document.getElementById('detail-label');
+const detailFieldEl = detailSlider.closest('.slider-field');
+const DETAIL_LABELS = {1:'Domains',2:'Contexts',3:'Services',4:'Processes'};
+detailSlider.addEventListener('input', ()=>{
+  currentDetail = parseInt(detailSlider.value,10);
+  detailLabelEl.textContent = DETAIL_LABELS[currentDetail];
+  render();
+  if(viewMode==='force') reheatForce();
+});
+
+/* ---------------- Node spacing ---------------- */
+const spacingSlider = document.getElementById('spacing-slider');
+const spacingLabelEl = document.getElementById('spacing-label');
+const spacingFieldEl = spacingSlider.closest('.slider-field');
+spacingSlider.addEventListener('input', ()=>{
+  spacingMult = parseFloat(spacingSlider.value);
+  spacingLabelEl.textContent = spacingMult.toFixed(1) + '×';
+  applySpacing();
+});
+function applySpacing(){
+  computeRingR();
+  HROW_GAP = HROW_GAP_BASE * spacingMult;
+  CCOL_GAP = CCOL_GAP_BASE * spacingMult;
+  buildRingGrid();
+  buildSectors();
+  layoutRadialSubtree(ROOT_ID, 0, 2*Math.PI, 0);
+  lastHierDepth = null;
+  lastClusterDepth = null;
+  if(viewMode==='list') return;
+  // Deliberately do NOT call resetView() here: fitting the new (larger or
+  // smaller) layout back to the viewport would rescale it right back to
+  // the same on-screen size, cancelling out the whole point of the slider.
+  // Keep the current pan/zoom so the added distance is actually visible;
+  // the user can hit "reset view" to re-fit if they want.
+  if(viewMode==='force') wakeForce();
+  render();
+}
+
+/* ---------------- View switch ---------------- */
+function setView(mode){
+  viewMode = mode;
+  document.querySelectorAll('#view-toggle button').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
+  document.getElementById('view-map').style.display = mode==='list' ? 'none' : 'block';
+  document.getElementById('view-tree').style.display = mode==='list' ? 'block' : 'none';
+  detailFieldEl.classList.toggle('disabled', mode==='list');
+  spacingFieldEl.classList.toggle('disabled', mode==='list');
+
+  ringGridG.style.display = mode==='radial' ? '' : 'none';
+  sectorLayerG.style.display = mode==='radial' ? '' : 'none';
+  hubLayerG.style.display = mode==='radial' ? '' : 'none';
+
+  document.getElementById('canvas-hint').innerHTML =
+    '<svg width="11" height="11" style="vertical-align:-1px; margin-right:3px;"><use href="#ic-cursor"/></svg>' + (CANVAS_HINTS[mode]||'');
+
+  if(mode==='force'){
+    startForce();
+  } else {
+    stopForce();
+  }
+
+  if(mode==='list'){
+    renderTree();
+  } else {
+    resetView();
+    render();
+  }
+}
+
+function renderTree(){
+  const target = document.getElementById('tree-target');
+  target.innerHTML = `<ul class="tnode-list">${MODEL.tree.map(d=>treeNodeHTML(d)).join('')}</ul>`;
+}
+function treeNodeHTML(n){
+  const rec = NODES[n.id];
+  const color = domainColor(rec.domainId);
+  const hasKids = n.children && n.children.length;
+  const countLabel = n.type==='process' ? '' : `<span class="n">${leafCountById(n.id)} proc</span>`;
+
+  let dim = dimmedDomains.has(rec.domainId);
+  if(opAreaFilter){
+    const set = new Set(OPAREA_TO_PROCESSES[opAreaFilter]||[]);
+    dim = dim || !isDescendantOfAnyProcess(rec, set);
+  }
+  const selCls = n.id===selectedId ? ' selected' : '';
+  const dimCls = dim ? ' dim' : '';
+
+  if(!hasKids){
+    return `<li><div class="tnode${selCls}${dimCls}" onclick="selectNode('${n.id}')"><span class="dot" style="background:${color}"></span><span class="name">${n.label}</span></div></li>`;
+  }
+  return `<li>
+    <div class="tnode${selCls}${dimCls}" onclick="toggleTwisty(this,'${n.id}')">
+      <svg class="twisty"><use href="#ic-chevron"/></svg>
+      <span class="dot" style="background:${color}"></span>
+      <span class="name">${n.label}</span>
+      ${countLabel}
+    </div>
+    <ul class="tchildren">${n.children.map(c=>treeNodeHTML(c)).join('')}</ul>
+  </li>`;
+}
+function toggleTwisty(elm, id){
+  const kids = elm.nextElementSibling;
+  const tw = elm.querySelector('.twisty');
+  kids.classList.toggle('open');
+  tw.classList.toggle('open');
+  selectNode(id);
+}
+
+/* ---------------- Search ---------------- */
+const searchInput = document.getElementById('search-input');
+const searchResults = document.getElementById('search-results');
+const SEARCH_INDEX = Object.values(NODES).filter(n=>n.id!==ROOT_ID).map(n=>({id:n.id, label:n.label, type:n.type, domainId:n.domainId}));
+
+searchInput.addEventListener('input', ()=>{
+  const q = searchInput.value.trim().toLowerCase();
+  if(!q){ searchResults.classList.remove('open'); return; }
+  const matches = SEARCH_INDEX.filter(n=>n.label.toLowerCase().includes(q)).slice(0,18);
+  if(!matches.length){ searchResults.innerHTML = '<div class="search-result-item">No matches</div>'; searchResults.classList.add('open'); return; }
+  searchResults.innerHTML = matches.map(m=>`
+    <div class="search-result-item" data-id="${m.id}">
+      <span class="sri-dot" style="background:${domainColor(m.domainId)}"></span>
+      <span class="sri-type">${m.type}</span>
+      <span>${m.label}</span>
+    </div>`).join('');
+  searchResults.classList.add('open');
+});
+searchResults.addEventListener('click', (e)=>{
+  const item = e.target.closest('.search-result-item');
+  if(!item || !item.dataset.id) return;
+  const id = item.dataset.id;
+  const targetDepth = NODES[id].depth;
+  if(viewMode!=='list' && targetDepth > currentDetail){
+    currentDetail = targetDepth;
+    detailSlider.value = targetDepth;
+    detailLabelEl.textContent = DETAIL_LABELS[targetDepth];
+  }
+  selectNode(id);
+  searchResults.classList.remove('open');
+  searchInput.value = NODES[id].label;
+  if(viewMode!=='list') panToNode(id);
+});
+document.addEventListener('click', (e)=>{
+  if(!e.target.closest('.search-box')) searchResults.classList.remove('open');
+});
+
+function panToNode(id){
+  const n = NODES[id];
+  const p = getPos(n);
+  tx = -p.x * scale;
+  ty = -p.y * scale;
+  applyTransform();
+}
+
+/* ---------------- Init ---------------- */
+fitStage();
+setView('radial');
+</script>
+
+</body>
+</html>
