@@ -1,0 +1,1231 @@
+<title>Assembly Decision Engine</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#0b0f14; --surface:#131a22; --surface-2:#182029; --border:#243040; --border-soft:#1c2530;
+  --text:#e8eef4; --text-dim:#93a5b8; --text-faint:#5c6c7d;
+  --accent:#e0a458; --accent-soft:#e0a45822;
+  --good:#5cb87a; --good-soft:#5cb87a1e; --bad:#e2685f; --bad-soft:#e2685f1e;
+  --dom-rd:#a690e0; --dom-sc:#4bb3a3; --dom-cy:#e2836f;
+  --slot-1:#e0a458; --slot-2:#6fa8d6; --slot-3:#c97bb0;
+  --radius:10px; --radius-sm:6px;
+  --font-display:'Familjen Grotesk',system-ui,sans-serif;
+  --font-body:'IBM Plex Sans',system-ui,sans-serif;
+  --font-mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#f6f4ef; --surface:#ffffff; --surface-2:#f0ede6; --border:#ddd7ca; --border-soft:#e8e3d8;
+    --text:#20242b; --text-dim:#5b6472; --text-faint:#93998f;
+    --accent:#b97a2e; --accent-soft:#b97a2e18;
+    --good:#2f8f52; --good-soft:#2f8f5218; --bad:#c8493f; --bad-soft:#c8493f18;
+    --dom-rd:#7a5fc4; --dom-sc:#2f8f7c; --dom-cy:#c15a3f;
+    --slot-1:#b97a2e; --slot-2:#3477ad; --slot-3:#a1478f;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#f6f4ef; --surface:#ffffff; --surface-2:#f0ede6; --border:#ddd7ca; --border-soft:#e8e3d8;
+  --text:#20242b; --text-dim:#5b6472; --text-faint:#93998f;
+  --accent:#b97a2e; --accent-soft:#b97a2e18;
+  --good:#2f8f52; --good-soft:#2f8f5218; --bad:#c8493f; --bad-soft:#c8493f18;
+  --dom-rd:#7a5fc4; --dom-sc:#2f8f7c; --dom-cy:#c15a3f;
+  --slot-1:#b97a2e; --slot-2:#3477ad; --slot-3:#a1478f;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg); color:var(--text); font-family:var(--font-body);
+  font-size:14px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:var(--font-display); font-weight:600; margin:0; text-wrap:balance;}
+.mono{font-family:var(--font-mono);}
+.num{font-variant-numeric:tabular-nums;}
+a{color:var(--accent);}
+button{font-family:inherit; cursor:pointer;}
+::selection{background:var(--accent-soft);}
+
+/* ---------- App shell ---------- */
+#app{display:flex; flex-direction:column; min-height:100vh;}
+
+header.top{
+  border-bottom:1px solid var(--border); background:var(--surface);
+  padding:14px 22px; display:flex; align-items:center; gap:22px; flex-wrap:wrap;
+  position:sticky; top:0; z-index:20;
+}
+.brand{display:flex; align-items:baseline; gap:9px; margin-right:8px;}
+.brand .mark{
+  width:26px; height:26px; border-radius:6px; background:var(--accent);
+  display:inline-flex; align-items:center; justify-content:center;
+  font-family:var(--font-mono); font-weight:600; font-size:12px; color:#171008; flex:none;
+}
+.brand h1{font-size:17px; letter-spacing:.2px;}
+.brand .tag{font-size:11px; color:var(--text-faint); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:.08em;}
+
+.domain-switch{display:flex; gap:6px; flex-wrap:wrap;}
+.domain-btn{
+  border:1px solid var(--border); background:var(--surface-2); color:var(--text-dim);
+  padding:7px 13px 7px 10px; border-radius:999px; font-size:12.5px; font-family:var(--font-body);
+  display:flex; align-items:center; gap:7px; transition:border-color .15s, color .15s, background .15s;
+}
+.domain-btn .dot{width:8px; height:8px; border-radius:50%; flex:none;}
+.domain-btn:hover{color:var(--text); border-color:var(--text-faint);}
+.domain-btn.active{background:var(--surface); color:var(--text); border-color:var(--dom-color); box-shadow:0 0 0 1px var(--dom-color) inset;}
+
+.top-right{margin-left:auto; font-size:11.5px; color:var(--text-faint); font-family:var(--font-mono); text-align:right; line-height:1.5;}
+
+.shell{display:flex; flex:1; min-height:0;}
+
+nav.rail{
+  width:206px; flex:none; border-right:1px solid var(--border); background:var(--surface);
+  padding:16px 10px; display:flex; flex-direction:column; gap:2px; overflow-y:auto;
+}
+nav.rail .rail-label{font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-faint); padding:10px 10px 6px;}
+.rail-btn{
+  text-align:left; border:none; background:transparent; color:var(--text-dim); padding:9px 11px;
+  border-radius:var(--radius-sm); font-size:13px; display:flex; align-items:center; gap:9px;
+}
+.rail-btn:hover{background:var(--surface-2); color:var(--text);}
+.rail-btn.active{background:var(--accent-soft); color:var(--text); font-weight:500;}
+.rail-btn .n{
+  margin-left:auto; font-family:var(--font-mono); font-size:10.5px; color:var(--text-faint);
+  background:var(--surface-2); border-radius:999px; padding:1px 6px;
+}
+
+main{flex:1; min-width:0; padding:22px 26px 60px; overflow-y:auto;}
+.section{display:none; animation:fade .25s ease;}
+.section.active{display:block;}
+@keyframes fade{from{opacity:0; transform:translateY(3px);} to{opacity:1; transform:translateY(0);}}
+@media (prefers-reduced-motion:reduce){.section{animation:none;}}
+
+.section-head{margin-bottom:16px;}
+.section-head h2{font-size:20px;}
+.section-head p{color:var(--text-dim); font-size:13px; margin:5px 0 0; max-width:72ch;}
+
+/* ---------- shared bits ---------- */
+.card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px;}
+.grid{display:grid; gap:14px;}
+.g-3{grid-template-columns:repeat(3,1fr);}
+.g-2{grid-template-columns:repeat(2,1fr);}
+@media (max-width:980px){.g-3{grid-template-columns:1fr;} .g-2{grid-template-columns:1fr;}}
+
+.kpi-strip{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:18px;}
+@media (max-width:900px){.kpi-strip{grid-template-columns:repeat(2,1fr);}}
+.kpi{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:13px 16px;}
+.kpi .label{font-size:10.5px; text-transform:uppercase; letter-spacing:.07em; color:var(--text-faint);}
+.kpi .value{font-family:var(--font-display); font-size:22px; margin-top:4px; font-weight:600;}
+.kpi .sub{font-size:11.5px; color:var(--text-dim); margin-top:2px;}
+
+.banner{
+  border:1px solid var(--dom-color); background:color-mix(in srgb, var(--dom-color) 10%, var(--surface));
+  border-radius:var(--radius); padding:15px 18px; margin-bottom:18px; display:flex; gap:14px; align-items:flex-start;
+}
+.banner .badge{
+  font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:.08em;
+  background:var(--dom-color); color:#12100c; padding:3px 8px; border-radius:5px; flex:none; margin-top:3px;
+}
+.banner p{margin:4px 0 0; font-size:13px; color:var(--text-dim); max-width:80ch;}
+.banner strong{color:var(--text); font-family:var(--font-display); font-weight:600;}
+
+table{border-collapse:collapse; width:100%; font-size:13px;}
+th{text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-faint); font-weight:500; padding:8px 10px; border-bottom:1px solid var(--border);}
+td{padding:8px 10px; border-bottom:1px solid var(--border-soft); color:var(--text-dim);}
+td.strong{color:var(--text); font-weight:500;}
+tr:last-child td{border-bottom:none;}
+.tablewrap{overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius);}
+.tablewrap table{min-width:520px;}
+
+.chip{display:inline-flex; align-items:center; gap:5px; font-family:var(--font-mono); font-size:11px; padding:2px 8px; border-radius:5px; background:var(--surface-2); border:1px solid var(--border); color:var(--text-dim);}
+.chip.good{color:var(--good); border-color:var(--good-soft); background:var(--good-soft);}
+.chip.bad{color:var(--bad); border-color:var(--bad-soft); background:var(--bad-soft);}
+
+.strategy-card{border:1px solid var(--border); border-radius:var(--radius); padding:15px 16px; background:var(--surface); position:relative;}
+.strategy-card .stripe{position:absolute; left:0; top:0; bottom:0; width:3px; border-radius:var(--radius) 0 0 var(--radius);}
+.strategy-card h3{font-size:15px; padding-left:8px;}
+.strategy-card .meta{display:flex; gap:14px; margin:10px 0 0; padding-left:8px; flex-wrap:wrap;}
+.strategy-card .meta div .label{font-size:10px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.06em;}
+.strategy-card .meta div .val{font-family:var(--font-mono); font-size:14px; margin-top:1px;}
+.strategy-card .prims{margin:11px 0 0; padding-left:8px; display:flex; gap:5px; flex-wrap:wrap;}
+
+.assembly-diagram{display:flex; align-items:center; gap:6px; padding:14px 8px 4px; flex-wrap:wrap;}
+.prim-node{
+  font-family:var(--font-mono); font-size:11.5px; border:1px solid var(--border); background:var(--surface-2);
+  border-radius:7px; padding:6px 10px; white-space:nowrap;
+}
+.join-op{font-size:16px; color:var(--text-faint);}
+
+.subnav{display:flex; gap:6px; margin-bottom:14px; flex-wrap:wrap;}
+.subnav button{
+  border:1px solid var(--border); background:var(--surface); color:var(--text-dim);
+  padding:6px 12px; border-radius:999px; font-size:12px;
+}
+.subnav button.active{background:var(--accent-soft); color:var(--text); border-color:var(--accent);}
+
+.heat-select{display:flex; align-items:center; gap:8px; margin-bottom:12px; font-size:12.5px; color:var(--text-dim);}
+.heat-select select{
+  background:var(--surface-2); color:var(--text); border:1px solid var(--border); border-radius:var(--radius-sm);
+  padding:5px 9px; font-family:var(--font-body); font-size:12.5px;
+}
+.heat-cell{font-family:var(--font-mono); text-align:right; border-radius:5px; padding:6px 9px !important;}
+
+.legend{display:flex; gap:14px; flex-wrap:wrap; margin:10px 0 4px; font-size:12px; color:var(--text-dim);}
+.legend .sw{width:9px; height:9px; border-radius:2px; display:inline-block; margin-right:6px;}
+
+.chart-wrap{position:relative; height:320px;}
+.chart-wrap.short{height:230px;}
+
+.explain-picker{display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap;}
+.explain-picker select{
+  background:var(--surface-2); color:var(--text); border:1px solid var(--border); border-radius:var(--radius-sm);
+  padding:7px 10px; font-family:var(--font-body); font-size:13px; min-width:200px;
+}
+.decomp-row{display:flex; align-items:center; gap:10px; margin:7px 0; font-size:12.5px;}
+.decomp-row .lbl{width:220px; color:var(--text-dim); flex:none;}
+.decomp-row .bar-track{flex:1; height:8px; background:var(--surface-2); border-radius:4px; overflow:hidden; position:relative;}
+.decomp-row .bar-fill{height:100%; border-radius:4px;}
+.decomp-row .amt{width:80px; text-align:right; font-family:var(--font-mono); flex:none;}
+.narrative{font-size:13.5px; line-height:1.65; color:var(--text-dim); background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px; margin-top:14px;}
+.narrative b{color:var(--text);}
+
+.tail-table td.lift-hi{color:var(--bad);}
+
+.audit-controls{display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; align-items:center;}
+.audit-controls input, .audit-controls select{
+  background:var(--surface-2); color:var(--text); border:1px solid var(--border); border-radius:var(--radius-sm);
+  padding:6px 10px; font-family:var(--font-body); font-size:12.5px;
+}
+.audit-controls input{flex:1; min-width:160px;}
+.audit-list{border:1px solid var(--border); border-radius:var(--radius); max-height:560px; overflow-y:auto;}
+.audit-row{border-bottom:1px solid var(--border-soft); padding:9px 13px; font-size:12px; cursor:pointer;}
+.audit-row:hover{background:var(--surface-2);}
+.audit-row:last-child{border-bottom:none;}
+.audit-row .line1{display:flex; gap:9px; align-items:center;}
+.audit-row .comp{font-family:var(--font-mono); font-size:10.5px; padding:1px 7px; border-radius:4px; background:var(--surface-2); border:1px solid var(--border); color:var(--text-dim);}
+.audit-row .ev{color:var(--text); font-size:12.5px;}
+.audit-row .hash{margin-left:auto; font-family:var(--font-mono); font-size:10.5px; color:var(--text-faint);}
+.audit-row .detail{display:none; margin-top:8px; font-family:var(--font-mono); font-size:11px; color:var(--text-dim); background:var(--bg); border:1px solid var(--border-soft); border-radius:6px; padding:9px 11px; white-space:pre-wrap; word-break:break-word;}
+.audit-row.open .detail{display:block;}
+
+.foot-note{margin-top:26px; padding-top:16px; border-top:1px solid var(--border); font-size:11.5px; color:var(--text-faint);}
+.pill-row{display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;}
+
+/* ---------- clickable affordances ---------- */
+.clickable{cursor:pointer; transition:border-color .15s, background-color .15s, outline-color .15s;}
+.strategy-card.clickable:hover, .card.clickable:hover{border-color:var(--accent);}
+tr.clickable:hover td{background:var(--surface-2);}
+.heat-cell.clickable{cursor:pointer;}
+.heat-cell.clickable:hover{outline:2px solid var(--text); outline-offset:-2px;}
+.prim-node.clickable:hover{border-color:var(--accent); background:var(--accent-soft);}
+.kpi.clickable:hover{border-color:var(--accent);}
+th.sortable{cursor:pointer; user-select:none; white-space:nowrap;}
+th.sortable:hover{color:var(--text);}
+th.sortable .arrow{margin-left:3px; opacity:.55; font-size:9px;}
+
+/* ---------- inspector drawer ---------- */
+.inspector-backdrop{position:fixed; inset:0; background:rgba(10,14,18,.4); opacity:0; pointer-events:none; transition:opacity .2s ease; z-index:40;}
+.inspector-backdrop.open{opacity:1; pointer-events:auto;}
+.inspector{position:fixed; top:0; right:0; bottom:0; width:430px; max-width:92vw; background:var(--surface); border-left:1px solid var(--border); box-shadow:-16px 0 40px rgba(0,0,0,.2); transform:translateX(100%); transition:transform .22s ease; z-index:41; display:flex; flex-direction:column;}
+.inspector.open{transform:translateX(0);}
+.inspector-head{padding:16px 18px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:flex-start; gap:10px; flex:none;}
+.inspector-head .eyebrow{font-size:10.5px; text-transform:uppercase; letter-spacing:.07em; color:var(--text-faint); margin-bottom:4px;}
+.inspector-head h3{font-size:15.5px; line-height:1.3;}
+.inspector-close{background:var(--surface-2); border:1px solid var(--border); border-radius:7px; width:28px; height:28px; display:flex; align-items:center; justify-content:center; color:var(--text-dim); flex:none; font-size:15px; line-height:1;}
+.inspector-close:hover{color:var(--text); border-color:var(--text-faint);}
+.inspector-body{padding:16px 18px; overflow-y:auto; flex:1;}
+.inspector-body .summary{font-size:13px; color:var(--text-dim); line-height:1.65; margin:0 0 14px;}
+.inspector-calc .row{display:flex; justify-content:space-between; gap:10px; font-size:12.5px; padding:7px 0; border-bottom:1px solid var(--border-soft);}
+.inspector-calc .row.total{border-top:1px solid var(--border); border-bottom:none; margin-top:2px; padding-top:9px; font-weight:600; color:var(--text);}
+.inspector-calc .row .k{color:var(--text-dim);}
+.inspector-calc .row .v{font-family:var(--font-mono); flex:none;}
+.inspector-actions{display:flex; gap:8px; margin-top:16px; flex-wrap:wrap;}
+.inspector-actions button{border:1px solid var(--border); background:var(--surface-2); color:var(--text); border-radius:999px; padding:7px 14px; font-size:12px;}
+.inspector-actions button:hover{border-color:var(--accent);}
+.inspector-raw{margin-top:16px;}
+.inspector-raw summary{cursor:pointer; font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:.06em;}
+.inspector-raw pre{font-family:var(--font-mono); font-size:11px; color:var(--text-dim); background:var(--bg); border:1px solid var(--border-soft); border-radius:6px; padding:10px 12px; white-space:pre-wrap; word-break:break-word; margin-top:8px; max-height:280px; overflow-y:auto;}
+.inspector-sub{font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--text-faint); margin:16px 0 8px;}
+
+/* ---------- simulate ---------- */
+.sim-controls{display:flex; align-items:center; gap:10px; margin-bottom:16px; flex-wrap:wrap;}
+.sim-controls select{background:var(--surface-2); color:var(--text); border:1px solid var(--border); border-radius:var(--radius-sm); padding:7px 10px; font-family:var(--font-body); font-size:12.5px;}
+.sim-btns{display:flex; gap:6px; margin-left:auto; align-items:center;}
+.sim-btn{border:1px solid var(--border); background:var(--surface-2); color:var(--text); border-radius:7px; width:34px; height:34px; display:flex; align-items:center; justify-content:center; font-size:14px;}
+.sim-btn:hover:not(:disabled){border-color:var(--accent);}
+.sim-btn.primary{background:var(--accent); border-color:var(--accent); color:#171008;}
+.sim-btn:disabled{opacity:.35; cursor:default;}
+.sim-timeline{display:flex; gap:3px; margin-bottom:18px;}
+.sim-q{flex:1; height:36px; border-radius:6px; background:var(--surface-2); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-family:var(--font-mono); font-size:10.5px; color:var(--text-faint); position:relative;}
+.sim-q.phase-build{background:var(--accent-soft); border-color:var(--accent);}
+.sim-q.phase-operate{background:var(--good-soft); border-color:var(--good);}
+.sim-q.phase-rework{background:var(--bad-soft); border-color:var(--bad);}
+.sim-q.future{opacity:.3;}
+.sim-q.current{outline:2px solid var(--text); outline-offset:2px;}
+.sim-q .evt-dot{position:absolute; top:-5px; right:-5px; width:9px; height:9px; border-radius:50%; background:var(--bad); border:1.5px solid var(--surface);}
+.sim-stat-row{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px;}
+@media (max-width:900px){.sim-stat-row{grid-template-columns:repeat(2,1fr);}}
+.sim-health-bar{height:7px; border-radius:4px; background:var(--surface-2); overflow:hidden; margin-top:7px;}
+.sim-health-fill{height:100%; border-radius:4px; transition:width .25s ease, background-color .25s ease;}
+.sim-log{border:1px solid var(--border); border-radius:var(--radius); max-height:230px; overflow-y:auto;}
+.sim-log-row{padding:8px 13px; font-size:12px; border-bottom:1px solid var(--border-soft); display:flex; gap:10px;}
+.sim-log-row:last-child{border-bottom:none;}
+.sim-log-row .q{font-family:var(--font-mono); color:var(--text-faint); flex:none; width:38px;}
+.sim-log-row.event{color:var(--bad);}
+.sim-log-empty{padding:32px; text-align:center; color:var(--text-faint); font-size:12.5px;}
+.sim-legend{display:flex; gap:16px; margin-top:10px; font-size:11.5px; color:var(--text-dim); flex-wrap:wrap;}
+.sim-legend .sw{width:10px; height:10px; border-radius:3px; display:inline-block; margin-right:5px; vertical-align:-1px;}
+
+/* ---------- epistemic graph ---------- */
+.epi-graph{width:100%; height:auto; margin:6px 0 20px;}
+.epi-graph .node-box{fill:var(--surface-2); stroke:var(--border);}
+.epi-graph .node-title{font-family:var(--font-mono); font-size:9.5px; letter-spacing:.04em; text-transform:uppercase; fill:var(--text-faint);}
+.epi-graph .node-value{font-family:var(--font-display); font-size:15px; font-weight:600; fill:var(--text);}
+.epi-graph .node-sub{font-family:var(--font-body); font-size:10.5px; fill:var(--text-dim);}
+.epi-graph .arrow-line{stroke:var(--text-faint); stroke-width:1.5;}
+.epi-graph .arrow-label{font-family:var(--font-body); font-size:10px; fill:var(--text-faint);}
+.epi-graph .arrowhead{fill:var(--text-faint);}
+
+@media (max-width:760px){
+  .inspector{width:100%;}
+  nav.rail{position:fixed; left:0; right:0; top:64px; bottom:0; width:auto; flex-direction:row; overflow-x:auto; padding:8px; z-index:15; display:none;}
+  nav.rail.open{display:flex;}
+  main{padding:16px;}
+}
+</style>
+
+<div id="app">
+  <header class="top">
+    <div class="brand">
+      <span class="mark">A×</span>
+      <div>
+        <h1>Assembly Decision Engine</h1>
+        <div class="tag">Assembly Theory · Bayesian Inference · Monte Carlo</div>
+      </div>
+    </div>
+    <div class="domain-switch" id="domainSwitch"></div>
+    <div class="top-right" id="topRight"></div>
+  </header>
+  <div class="shell">
+    <nav class="rail" id="rail"></nav>
+    <main id="main"></main>
+  </div>
+</div>
+<div class="inspector-backdrop" id="inspectorBackdrop"></div>
+<aside class="inspector" id="inspector">
+  <div class="inspector-head">
+    <div><div class="eyebrow" id="inspectorEyebrow"></div><h3 id="inspectorTitle"></h3></div>
+    <button class="inspector-close" id="inspectorClose" aria-label="Close">✕</button>
+  </div>
+  <div class="inspector-body" id="inspectorBody"></div>
+</aside>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script type="application/json" id="results-data">__RESULTS_JSON__</script>
+<script type="application/json" id="audit-data">__AUDIT_JSON__</script>
+<script>
+const DATA = JSON.parse(document.getElementById('results-data').textContent);
+const AUDIT = JSON.parse(document.getElementById('audit-data').textContent);
+
+const DOMAIN_META = {
+  rd_portfolio:   { key:'rd_portfolio',   label:'R&D Portfolio',   short:'R&D', color:'var(--dom-rd)', colorHex:{dark:'#a690e0',light:'#7a5fc4'} },
+  supply_chain:   { key:'supply_chain',   label:'Supply Chain',    short:'SC',  color:'var(--dom-sc)', colorHex:{dark:'#4bb3a3',light:'#2f8f7c'} },
+  cyber_defense:  { key:'cyber_defense',  label:'Cyber Defense',   short:'CY',  color:'var(--dom-cy)', colorHex:{dark:'#e2836f',light:'#c15a3f'} },
+};
+const SLOTS = ['#e0a458','#6fa8d6','#c97bb0','#5cb87a','#a690e0'];
+function isLight(){
+  const t = document.documentElement.getAttribute('data-theme');
+  if (t === 'light') return true;
+  if (t === 'dark') return false;
+  return window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+}
+function domainColor(k){ return DOMAIN_META[k].colorHex[isLight() ? 'light' : 'dark']; }
+function cssvar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+function fmt(n, d=1){ if (n===null||n===undefined||Number.isNaN(n)) return '—'; return Number(n).toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d}); }
+function money(n, d=1){ const s = n<0?'-':''; return s + '$' + fmt(Math.abs(n),d) + 'M'; }
+function pct(n, d=1){ return fmt(n*100,d)+'%'; }
+
+const SECTIONS = [
+  {id:'overview', label:'Overview'},
+  {id:'primitives', label:'Primitives'},
+  {id:'assembly', label:'Assembly & Ax'},
+  {id:'beliefs', label:'Bayesian Beliefs'},
+  {id:'simulate', label:'Simulate'},
+  {id:'impact', label:'Scenario Impact'},
+  {id:'risk', label:'Risk & Pareto'},
+  {id:'explain', label:'Explainability'},
+  {id:'special', label:null}, // label injected per domain
+  {id:'audit', label:'Audit Trail'},
+];
+const SPECIAL_LABEL = { rd_portfolio:'Value of Information', supply_chain:'Combinatorial Generator', cyber_defense:'ROI vs. Do Nothing' };
+
+let state = { domain:'rd_portfolio', section:'overview', explainKey:null };
+let charts = {};
+let riskSort = { key:'utility', dir:-1 };
+let simState = { strategy:null, scenario:'baseline', drawLabel:null, quarter:-1, playing:false, timer:null };
+
+function destroyCharts(){ Object.values(charts).forEach(c=>c && c.destroy()); charts = {}; }
+
+function strategyList(dd){ return Object.values(dd.strategies); }
+function strategySlot(dd, name){ const names = strategyList(dd).map(s=>s.name); return SLOTS[names.indexOf(name) % SLOTS.length]; }
+
+/* ================= Inspector drawer ================= */
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escapeXml(s){ return escapeHtml(s); }
+
+function openInspector(eyebrow, title, bodyHtml){
+  document.getElementById('inspectorEyebrow').textContent = eyebrow;
+  document.getElementById('inspectorTitle').textContent = title;
+  document.getElementById('inspectorBody').innerHTML = bodyHtml;
+  document.getElementById('inspector').classList.add('open');
+  document.getElementById('inspectorBackdrop').classList.add('open');
+}
+function closeInspector(){
+  document.getElementById('inspector').classList.remove('open');
+  document.getElementById('inspectorBackdrop').classList.remove('open');
+}
+function calcRow(k, v, cls){ return `<div class="row${cls?' '+cls:''}"><div class="k">${k}</div><div class="v">${v}</div></div>`; }
+
+function resultCalcRows(r){
+  return `
+    <div class="inspector-calc">
+      ${calcRow('Mean NPV (Monte Carlo)', money(r.mean_npv,1))}
+      ${calcRow('Median NPV', money(r.median_npv,1))}
+      ${calcRow('Std. dev. of NPV', money(r.std_npv,1))}
+      ${calcRow('VaR95 (5th pct. outcome)', money(r.var95,1))}
+      ${calcRow('CVaR95 (mean of worst 5%)', money(r.cvar95,1))}
+      ${calcRow('P(loss)', pct(r.prob_loss,1))}
+      ${calcRow('Assembly Index penalty', money(-r.assembly_penalty,1))}
+      ${calcRow('= Regularized utility', money(r.utility,1), 'total')}
+    </div>
+    <div class="inspector-sub">How this is computed</div>
+    <p class="summary" style="margin:0;">Utility = E[NPV] − (tail/complexity regularization) − Assembly-Index penalty. Mean and tail statistics come from independent Monte Carlo draws of this strategy under the <span class="mono">${escapeHtml(r.scenario)}</span> scenario; the Assembly Index penalty (Ax = ${r.assembly_index}) is a fixed structural-complexity regularizer applied identically regardless of scenario.</p>`;
+}
+function openResultInspector(dd, strategyName, scenarioName){
+  const r = dd.results.find(x=>x.strategy===strategyName && x.scenario===scenarioName);
+  if (!r) return;
+  const strat = strategyList(dd).find(s=>s.name===strategyName);
+  const body = `
+    <p class="summary">${escapeHtml(strategyName)} evaluated under the <b>${escapeHtml(scenarioName.replace(/_/g,' '))}</b> scenario, across ${dd._meta.n_simulations.toLocaleString()} correlated Monte Carlo draws.</p>
+    ${resultCalcRows(r)}
+    <div class="inspector-sub">Strategy composition</div>
+    <p class="summary" style="margin:0 0 4px;">Capital ${money(strat.total_cost,1)} · Assembly Index ${strat.assembly_index} · lead time ${strat.critical_path_lead_time}q · primitives ${strat.primitives.map(p=>p.id).join(' ⊕ ')}</p>
+    <div class="inspector-actions">
+      <button data-goto-explain="${strategyName}|${scenarioName}">Open in Explainability →</button>
+      ${dd.execution_traces && dd.execution_traces[strategyName] ? `<button data-goto-simulate="${strategyName}">Step through in Simulate →</button>` : ''}
+    </div>
+    <details class="inspector-raw"><summary>Raw result JSON</summary><pre>${escapeHtml(JSON.stringify(r,null,2))}</pre></details>`;
+  openInspector('Scenario result', strategyName, body);
+}
+function openPrimitiveInspector(dd, pid){
+  const p = dd.primitives[pid];
+  if (!p) return;
+  const belief = dd.beliefs[pid];
+  const usedBy = strategyList(dd).filter(s=>s.primitives.some(x=>x.id===pid));
+  const body = `
+    <p class="summary">Atomic action block — the reusable ⟨cost, lead time, prior hazard⟩ interface every domain's strategies assemble from.</p>
+    <div class="inspector-calc">
+      ${calcRow('Cost', money(p.cost,1))}
+      ${calcRow('Lead time', p.lead_time+' quarters')}
+      ${calcRow('Prior hazard / quarter', pct(p.prior_failure_rate,1))}
+      ${belief && 'alpha' in belief ? calcRow('Current belief', `Beta(${fmt(belief.alpha,1)}, ${fmt(belief.beta,1)}) → mean ${pct(belief.mean,1)}`) : ''}
+    </div>
+    <div class="inspector-sub">Used in</div>
+    <p class="summary" style="margin:0;">${usedBy.length ? usedBy.map(s=>escapeHtml(s.name)).join(', ') : 'Not used in any surviving strategy.'}</p>
+    <details class="inspector-raw"><summary>Raw primitive JSON</summary><pre>${escapeHtml(JSON.stringify(p,null,2))}</pre></details>`;
+  openInspector('Primitive', `${pid} — ${p.name}`, body);
+}
+function openBeliefInspector(dd, key){
+  const belief = dd.beliefs[key];
+  if (!belief) return;
+  if ('alpha' in belief) return openBetaBeliefInspector(dd, key);
+  return openContinuousBeliefInspector(dd, key);
+}
+function openBetaBeliefInspector(dd, key){
+  const belief = dd.beliefs[key];
+  const p = dd.primitives[key];
+  const body = `
+    <p class="summary">Beta–Binomial conjugate belief over ${p ? escapeHtml(p.name.toLowerCase()) : key}'s per-quarter hazard rate — updates in closed form as failure/success evidence arrives, no re-fitting required.</p>
+    <div class="inspector-calc">
+      ${calcRow('α (successes, prior + observed)', fmt(belief.alpha,1))}
+      ${calcRow('β (failures, prior + observed)', fmt(belief.beta,1))}
+      ${calcRow('Mean = α / (α+β)', pct(belief.mean,1), 'total')}
+    </div>
+    <div class="inspector-sub">What feeds this</div>
+    <p class="summary" style="margin:0;">Every Monte Carlo draw samples this primitive's per-quarter failure indicator from Beta(${fmt(belief.alpha,1)}, ${fmt(belief.beta,1)}) rather than a fixed rate, so both the central estimate and the sampler's own uncertainty about it propagate into the outcome distribution.</p>
+    <details class="inspector-raw"><summary>Raw belief JSON</summary><pre>${escapeHtml(JSON.stringify(belief,null,2))}</pre></details>`;
+  openInspector('Bayesian belief', belief.name || key, body);
+}
+function openContinuousBeliefInspector(dd, key){
+  const belief = dd.beliefs[key];
+  const body = `
+    <p class="summary">Normal–Normal conjugate belief — a posterior already updated from observed data, feeding the Monte Carlo sampler's exogenous-shock layer.</p>
+    <div class="inspector-calc">
+      ${calcRow('Posterior mean (μ)', fmt(belief.mu,2))}
+      ${calcRow('Posterior std. dev. (σ)', fmt(belief.sigma,2))}
+      ${calcRow('95% credible interval', `${fmt(belief.mu-1.96*belief.sigma,1)} – ${fmt(belief.mu+1.96*belief.sigma,1)}`, 'total')}
+    </div>
+    <details class="inspector-raw"><summary>Raw belief JSON</summary><pre>${escapeHtml(JSON.stringify(belief,null,2))}</pre></details>`;
+  openInspector('Bayesian belief', belief.name || key, body);
+}
+function openGeneratedCandidateInspector(dd, name){
+  const c = dd.generated_candidates.survivors.find(s=>s.name===name);
+  if (!c) return;
+  const body = `
+    <p class="summary">One survivor of the combinatorial generator — every combination of up to 3 primitives from the library, pruned by budget (≤$16M), lead time (≤6q) and Assembly Index (≤3).</p>
+    <div class="inspector-calc">
+      ${calcRow('Assembly Index', c.assembly_index)}
+      ${calcRow('Total cost', money(c.total_cost,1))}
+      ${calcRow('Critical-path lead time', c.critical_path_lead_time+'q')}
+      ${calcRow('Primitives', c.primitives.map(p=>p.id).join(' ⊕ '))}
+    </div>
+    <details class="inspector-raw"><summary>Raw candidate JSON</summary><pre>${escapeHtml(JSON.stringify(c,null,2))}</pre></details>`;
+  openInspector('Generated candidate', c.name, body);
+}
+function openRoiInspector(dd, strategyName){
+  const dn = dd.do_nothing_baseline;
+  const r = dd.results.find(x=>x.strategy===strategyName && x.scenario==='baseline');
+  const inc = dd.incremental_value_vs_do_nothing[strategyName];
+  const body = `
+    <p class="summary">${escapeHtml(strategyName)} priced against a synthetic "no investment" comparator that faces the same shocks with zero controls in place.</p>
+    <div class="inspector-calc">
+      ${calcRow('Do-nothing E[NPV]', money(dn.mean_npv,1))}
+      ${calcRow(escapeHtml(strategyName)+' E[NPV]', money(r.mean_npv,1))}
+      ${calcRow('= Incremental value protected', money(inc,1), 'total')}
+    </div>
+    <div class="inspector-sub">Tail risk comparison</div>
+    <p class="summary" style="margin:0;">Do-nothing CVaR95 ${money(dn.cvar95,1)} vs. ${escapeHtml(strategyName)} CVaR95 ${money(r.cvar95,1)} — ${r.cvar95>dn.cvar95?'a narrower':'a wider'} downside tail.</p>
+    <div class="inspector-actions"><button data-goto-simulate="${strategyName}">Step through in Simulate →</button></div>`;
+  openInspector('Incremental ROI', strategyName, body);
+}
+function handleSort(key){
+  if (riskSort.key === key) riskSort.dir *= -1;
+  else { riskSort.key = key; riskSort.dir = key==='prob_loss' ? 1 : -1; }
+  drawRiskTable(DATA[state.domain]);
+}
+
+document.addEventListener('click', (e) => {
+  if (e.target.closest('#inspectorClose') || e.target.closest('#inspectorBackdrop')){ closeInspector(); return; }
+  const dd = DATA[state.domain];
+
+  const gotoExplain = e.target.closest('[data-goto-explain]');
+  if (gotoExplain){ state.explainKey = gotoExplain.dataset.gotoExplain; state.section='explain'; closeInspector(); render(); return; }
+  const gotoSim = e.target.closest('[data-goto-simulate]');
+  if (gotoSim){ simPause(); simState = { strategy:gotoSim.dataset.gotoSimulate, scenario:'baseline', drawLabel:null, quarter:-1, playing:false, timer:null }; state.section='simulate'; closeInspector(); render(); return; }
+
+  const primEl = e.target.closest('[data-prim-id]');
+  if (primEl){ openPrimitiveInspector(dd, primEl.dataset.primId); return; }
+  const resEl = e.target.closest('[data-result-strategy]');
+  if (resEl){ openResultInspector(dd, resEl.dataset.resultStrategy, resEl.dataset.resultScenario); return; }
+  const beliefEl = e.target.closest('[data-belief-id]');
+  if (beliefEl){ openBeliefInspector(dd, beliefEl.dataset.beliefId); return; }
+  const genEl = e.target.closest('[data-gen-candidate]');
+  if (genEl){ openGeneratedCandidateInspector(dd, genEl.dataset.genCandidate); return; }
+  const roiEl = e.target.closest('[data-roi-strategy]');
+  if (roiEl){ openRoiInspector(dd, roiEl.dataset.roiStrategy); return; }
+  const sortTh = e.target.closest('th.sortable');
+  if (sortTh){ handleSort(sortTh.dataset.sortKey); return; }
+});
+document.addEventListener('keydown', e => { if (e.key==='Escape') closeInspector(); });
+
+/* ================= Simulate: step-through execution ================= */
+function currentSimTraces(dd){ return (dd.execution_traces[simState.strategy]||{})[simState.scenario] || []; }
+function currentSimTrace(dd){ return currentSimTraces(dd).find(t=>t.label===simState.drawLabel); }
+
+function sectionSimulate(dd){
+  const strategies = strategyList(dd).map(s=>s.name);
+  if (!simState.strategy || !strategies.includes(simState.strategy)) simState.strategy = strategies[0];
+  if (!dd.scenario_names.includes(simState.scenario)) simState.scenario = 'baseline';
+  const traces = currentSimTraces(dd);
+  const head = `
+    <div class="section-head"><h2>Simulate — Step Through Execution</h2>
+      <p>Replay individual Monte Carlo draws quarter-by-quarter — the same random draws that feed the aggregate statistics elsewhere in this dashboard, replayed with full per-quarter detail. Pick a downside / typical / upside draw and step (or play) through its execution.</p>
+    </div>
+    <div class="sim-controls">
+      <select id="simStrategy">${strategies.map(s=>`<option ${s===simState.strategy?'selected':''}>${escapeHtml(s)}</option>`).join('')}</select>
+      <select id="simScenario">${dd.scenario_names.map(sc=>`<option value="${sc}" ${sc===simState.scenario?'selected':''}>${escapeHtml(sc.replace(/_/g,' '))}</option>`).join('')}</select>`;
+  if (!traces.length){
+    return head + `</div><p style="color:var(--text-faint); font-size:12.5px;">No execution trace recorded for this strategy/scenario combination.</p>`;
+  }
+  if (!simState.drawLabel || !traces.find(t=>t.label===simState.drawLabel)) simState.drawLabel = traces[Math.floor(traces.length/2)].label;
+  if (simState.quarter < 0) simState.quarter = 0;
+  return head + `
+      <select id="simDraw">${traces.map(t=>`<option value="${t.label}" ${t.label===simState.drawLabel?'selected':''}>${t.label} draw (final NPV ${money(t.final_npv,1)})</option>`).join('')}</select>
+      <div class="sim-btns">
+        <button class="sim-btn" id="simReset" title="Reset to Q0">⟲</button>
+        <button class="sim-btn" id="simBack" title="Step back">◀</button>
+        <button class="sim-btn primary" id="simPlay" title="Play">▶</button>
+        <button class="sim-btn" id="simFwd" title="Step forward">▶</button>
+      </div>
+    </div>
+    <div class="sim-timeline" id="simTimeline"></div>
+    <div class="sim-stat-row" id="simStats"></div>
+    <div class="grid g-2">
+      <div class="card"><h3 style="font-size:13.5px; margin-bottom:8px;">Cumulative NPV so far</h3><div class="chart-wrap short"><canvas id="simChart"></canvas></div></div>
+      <div class="card">
+        <h3 style="font-size:13.5px; margin-bottom:8px;">Event log</h3>
+        <div class="sim-log" id="simLog"></div>
+      </div>
+    </div>
+    <div class="sim-legend">
+      <span><span class="sw" style="background:var(--accent)"></span>Build</span>
+      <span><span class="sw" style="background:var(--good)"></span>Operate</span>
+      <span><span class="sw" style="background:var(--bad)"></span>Rework / adverse event</span>
+    </div>`;
+}
+function drawSimulate(dd){
+  const trace = currentSimTrace(dd);
+  const timelineEl = document.getElementById('simTimeline');
+  if (!trace || !timelineEl) return;
+  const qs = trace.quarters;
+  simState.quarter = Math.max(0, Math.min(simState.quarter, qs.length-1));
+  const cur = qs[simState.quarter];
+
+  timelineEl.innerHTML = qs.map((q,i) => `
+    <div class="sim-q phase-${q.phase} ${i>simState.quarter?'future':''} ${i===simState.quarter?'current':''}" data-q-index="${i}" title="Q${q.t} — ${q.phase}">
+      Q${q.t}${q.events.length?'<span class="evt-dot"></span>':''}
+    </div>`).join('');
+  timelineEl.querySelectorAll('.sim-q').forEach(el => el.addEventListener('click', () => { simPause(); simState.quarter = +el.dataset.qIndex; drawSimulate(DATA[state.domain]); }));
+
+  const healthPct = Math.round(cur.health*100);
+  const healthColor = cur.health >= 0.99 ? 'var(--good)' : cur.health <= 0 ? 'var(--bad)' : 'var(--accent)';
+  const statsEl = document.getElementById('simStats');
+  if (statsEl) statsEl.innerHTML = `
+    <div class="kpi"><div class="label">Quarter</div><div class="value">${cur.t}<span style="font-size:13px; color:var(--text-faint);"> / ${qs[qs.length-1].t}</span></div><div class="sub">Phase: ${cur.phase}</div></div>
+    <div class="kpi"><div class="label">Quarterly cash flow</div><div class="value" style="color:${cur.cash>=0?'var(--good)':'var(--bad)'}">${money(cur.cash,2)}</div></div>
+    <div class="kpi"><div class="label">Cumulative NPV</div><div class="value" style="color:${cur.cumulative_npv>=0?'var(--good)':'var(--bad)'}">${money(cur.cumulative_npv,1)}</div></div>
+    <div class="kpi"><div class="label">Operational health</div><div class="value">${healthPct}%</div><div class="sim-health-bar"><div class="sim-health-fill" style="width:${healthPct}%; background:${healthColor}"></div></div></div>`;
+
+  const logEl = document.getElementById('simLog');
+  if (logEl){
+    const logRows = qs.slice(0, simState.quarter+1).filter(q=>q.events.length).map(q => `
+      <div class="sim-log-row event"><span class="q">Q${q.t}</span><span>Adverse event fired: ${q.events.join(', ')} — health drops, rework triggered.</span></div>`).join('');
+    logEl.innerHTML = logRows || `<div class="sim-log-empty">No adverse events yet in this draw through Q${cur.t}.</div>`;
+  }
+
+  drawSimChart(dd, trace);
+
+  const backBtn=document.getElementById('simBack'), fwdBtn=document.getElementById('simFwd'), playBtn=document.getElementById('simPlay');
+  if (backBtn) backBtn.disabled = simState.quarter<=0;
+  if (fwdBtn) fwdBtn.disabled = simState.quarter>=qs.length-1;
+  if (playBtn){ playBtn.textContent = simState.playing ? '⏸' : '▶'; playBtn.title = simState.playing ? 'Pause' : 'Play'; }
+}
+function drawSimChart(dd, trace){
+  const ctx = document.getElementById('simChart'); if (!ctx) return;
+  if (typeof Chart === 'undefined'){ chartsUnavailable('simChart'); return; }
+  const qs = trace.quarters;
+  const labels = qs.map(q=>'Q'+q.t);
+  const dataUpTo = qs.map((q,i) => i<=simState.quarter ? q.cumulative_npv : null);
+  if (charts.sim) charts.sim.destroy();
+  charts.sim = new Chart(ctx, { type:'line', data:{ labels, datasets:[
+    { data: qs.map(q=>q.cumulative_npv), borderColor:cssvar('--border'), borderDash:[3,3], pointRadius:0, borderWidth:1.5, tension:.2 },
+    { data: dataUpTo, borderColor:cssvar('--accent'), backgroundColor:cssvar('--accent-soft'), fill:true,
+      pointRadius:(c)=>c.dataIndex===simState.quarter?5:0, pointBackgroundColor:cssvar('--accent'), tension:.2, borderWidth:2.5 },
+  ]}, options:{ responsive:true, maintainAspectRatio:false, animation:false,
+    plugins:{ legend:{display:false}, tooltip:{ callbacks:{ title:(c)=>c[0].label, label:(c)=>'Cumulative NPV '+money(c.raw) } } },
+    scales:{ x:{ ticks:{color:cssvar('--text-faint'), font:{family:'IBM Plex Mono',size:10}}, grid:{color:cssvar('--border-soft')} },
+             y:{ title:{display:true,text:'Cumulative NPV ($M)',color:cssvar('--text-dim')}, ticks:{color:cssvar('--text-faint')}, grid:{color:cssvar('--border-soft')} } } } });
+}
+function simStep(delta){
+  simPause();
+  const dd = DATA[state.domain];
+  const trace = currentSimTrace(dd);
+  if (!trace) return;
+  simState.quarter = Math.max(0, Math.min(simState.quarter+delta, trace.quarters.length-1));
+  drawSimulate(dd);
+}
+function simPlay(){
+  const dd = DATA[state.domain];
+  const trace = currentSimTrace(dd);
+  if (!trace) return;
+  if (simState.playing){ simPause(); return; }
+  if (simState.quarter >= trace.quarters.length-1) simState.quarter = 0;
+  simState.playing = true;
+  simState.timer = setInterval(() => {
+    const dd2 = DATA[state.domain];
+    const tr = currentSimTrace(dd2);
+    if (!tr || simState.quarter >= tr.quarters.length-1){ simPause(); drawSimulate(dd2); return; }
+    simState.quarter++;
+    drawSimulate(dd2);
+  }, 700);
+  drawSimulate(dd);
+}
+function simPause(){
+  simState.playing = false;
+  if (simState.timer){ clearInterval(simState.timer); simState.timer=null; }
+  const el = document.getElementById('simPlay');
+  if (el){ el.textContent='▶'; el.title='Play'; }
+}
+
+/* ================= Risk & Pareto: sortable table ================= */
+const RISK_COLS = [
+  {key:'strategy', label:'Strategy'}, {key:'scenario', label:'Scenario'},
+  {key:'assembly_index', label:'Ax', num:true},
+  {key:'mean_npv', label:'E[NPV]', num:true, fmt:money},
+  {key:'cvar95', label:'CVaR95', num:true, fmt:money},
+  {key:'prob_loss', label:'P(loss)', num:true, fmt:pct},
+  {key:'utility', label:'Utility', num:true, fmt:money},
+];
+function drawRiskTable(dd){
+  const wrap = document.getElementById('riskTableWrap'); if (!wrap) return;
+  const frontier = new Set(dd.selection.pareto_frontier);
+  let rows = dd.results.slice();
+  rows.sort((a,b) => {
+    const k = riskSort.key; const av=a[k], bv=b[k];
+    if (typeof av==='string') return riskSort.dir * String(av).localeCompare(String(bv));
+    return riskSort.dir * ((av??0) - (bv??0));
+  });
+  const head = `<tr>${RISK_COLS.map(c=>`<th class="sortable" data-sort-key="${c.key}" style="${c.num?'text-align:right':''}">${c.label}${riskSort.key===c.key?`<span class="arrow">${riskSort.dir>0?'▲':'▼'}</span>`:''}</th>`).join('')}<th></th></tr>`;
+  const body = rows.map(r => {
+    const onFrontier = frontier.has(r.strategy) && r.scenario==='baseline';
+    return `<tr class="clickable" data-result-strategy="${r.strategy}" data-result-scenario="${r.scenario}">
+      ${RISK_COLS.map(c => {
+        const v = r[c.key];
+        const disp = c.key==='scenario' ? escapeHtml(String(v).replace(/_/g,' ')) : (c.fmt ? c.fmt(v,1) : escapeHtml(String(v)));
+        return `<td class="${c.num?'mono num':''}${c.key==='strategy'?' strong':''}">${disp}</td>`;
+      }).join('')}
+      <td>${onFrontier?'<span class="chip good">Pareto</span>':''}</td>
+    </tr>`;
+  }).join('');
+  wrap.innerHTML = `<table>${head}<tbody>${body}</tbody></table>`;
+}
+
+/* ================= Epistemic graph (R&D VOI tab) ================= */
+function logGamma(x){
+  const g = 7;
+  const c = [0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313,
+    -176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+  if (x < 0.5) return Math.log(Math.PI / Math.sin(Math.PI * x)) - logGamma(1 - x);
+  x -= 1;
+  let a = c[0];
+  const t = x + g + 0.5;
+  for (let i = 1; i < g + 2; i++) a += c[i] / (x + i);
+  return 0.5*Math.log(2*Math.PI) + (x+0.5)*Math.log(t) - t + Math.log(a);
+}
+function betaPdf(x, a, b){
+  if (x<=0 || x>=1) return 0;
+  const logB = logGamma(a) + logGamma(b) - logGamma(a+b);
+  return Math.exp((a-1)*Math.log(x) + (b-1)*Math.log(1-x) - logB);
+}
+function epistemicGraphSvg(dd){
+  const v = dd.value_of_information;
+  const priorKey = Object.keys(dd.beliefs).find(k => dd.beliefs[k].name === v.posterior_belief.name);
+  const prior = priorKey ? dd.beliefs[priorKey] : null;
+  const W = 900, H = 178, boxY = 56, boxH = 84;
+  const boxes = [
+    { x:10,  w:190, title:'PRIOR BELIEF', value: prior ? pct(prior.mean,1) : '—', sub: prior ? `Beta(${fmt(prior.alpha,1)}, ${fmt(prior.beta,1)})` : v.posterior_belief.name },
+    { x:250, w:190, title:'MILESTONE TEST', value: 'Lab pilot', sub: 'evidence observed' },
+    { x:490, w:190, title:'UPDATED POSTERIOR', value: pct(v.posterior_belief.mean,1), sub: `Beta(${fmt(v.posterior_belief.alpha,1)}, ${fmt(v.posterior_belief.beta,1)})` },
+    { x:730, w:160, title:'RE-PRICED STRATEGY', value: money(v.post_utility,1), sub: `was ${money(v.pre_utility,1)}` },
+  ];
+  const boxesSvg = boxes.map(b => `
+    <rect class="node-box" x="${b.x}" y="${boxY}" width="${b.w}" height="${boxH}" rx="8"></rect>
+    <text class="node-title" x="${b.x+14}" y="${boxY+22}">${escapeXml(b.title)}</text>
+    <text class="node-value" x="${b.x+14}" y="${boxY+46}">${escapeXml(b.value)}</text>
+    <text class="node-sub" x="${b.x+14}" y="${boxY+66}">${escapeXml(b.sub)}</text>`).join('');
+  const arrowY = boxY + boxH/2;
+  const arrows = [ {x1:200,x2:250,label:'run pilot'}, {x1:440,x2:490,label:'Bayes update'}, {x1:680,x2:730,label:'re-price'} ]
+    .map(a => `
+      <line class="arrow-line" x1="${a.x1}" y1="${arrowY}" x2="${a.x2-6}" y2="${arrowY}" marker-end="url(#epiArrow)"></line>
+      <text class="arrow-label" x="${(a.x1+a.x2)/2}" y="${arrowY-8}" text-anchor="middle">${escapeXml(a.label)}</text>`).join('');
+  return `
+    <svg class="epi-graph" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="epiArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path class="arrowhead" d="M0,0 L10,5 L0,10 z"></path></marker></defs>
+      ${boxesSvg}${arrows}
+      <text class="node-sub" x="10" y="${boxY+boxH+22}" style="fill:var(--good); font-weight:600;">Value of Information: ${money(v.voi,1)}</text>
+    </svg>`;
+}
+function drawEpiBeliefChart(dd){
+  const ctx = document.getElementById('epiBeliefChart'); if (!ctx) return;
+  if (typeof Chart === 'undefined'){ chartsUnavailable('epiBeliefChart'); return; }
+  const v = dd.value_of_information;
+  const priorKey = Object.keys(dd.beliefs).find(k => dd.beliefs[k].name === v.posterior_belief.name);
+  const prior = priorKey ? dd.beliefs[priorKey] : null;
+  const post = v.posterior_belief;
+  const n = 80; const labels=[], priorYs=[], postYs=[];
+  for (let i=1;i<n;i++){ const x = i/n; labels.push((x*100).toFixed(0)+'%');
+    priorYs.push(prior?betaPdf(x, prior.alpha, prior.beta):null); postYs.push(betaPdf(x, post.alpha, post.beta)); }
+  charts.epiBelief = new Chart(ctx, { type:'line', data:{ labels, datasets:[
+    { label:'Prior', data:priorYs, borderColor:cssvar('--text-faint'), pointRadius:0, borderWidth:2, tension:.3, borderDash:[4,3] },
+    { label:'Posterior (post-pilot)', data:postYs, borderColor:cssvar('--good'), backgroundColor:cssvar('--good-soft'), fill:true, pointRadius:0, borderWidth:2.5, tension:.3 },
+  ]}, options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{position:'bottom', labels:{color:cssvar('--text-dim'), boxWidth:12, font:{size:11}}} },
+    scales:{ x:{ ticks:{color:cssvar('--text-faint'), maxTicksLimit:8, font:{family:'IBM Plex Mono',size:10}}, grid:{color:cssvar('--border-soft')} },
+             y:{ display:false } } } });
+}
+function drawEpiUtilityChart(dd){
+  const ctx = document.getElementById('epiUtilChart'); if (!ctx) return;
+  if (typeof Chart === 'undefined'){ chartsUnavailable('epiUtilChart'); return; }
+  const v = dd.value_of_information;
+  charts.epiUtil = new Chart(ctx, { type:'bar', data:{ labels:['Pre-milestone','Post-milestone'], datasets:[{ data:[v.pre_utility, v.post_utility], backgroundColor:[cssvar('--text-faint'), cssvar('--good')] }]},
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ x:{ ticks:{color:cssvar('--text-dim')}, grid:{display:false} },
+               y:{ title:{display:true,text:'Strategy utility ($M)',color:cssvar('--text-dim')}, ticks:{color:cssvar('--text-faint')}, grid:{color:cssvar('--border-soft')} } } } });
+}
+
+function renderDomainSwitch(){
+  const el = document.getElementById('domainSwitch');
+  el.innerHTML = Object.values(DOMAIN_META).map(m => `
+    <button class="domain-btn ${state.domain===m.key?'active':''}" data-domain="${m.key}" style="--dom-color:${domainColor(m.key)}">
+      <span class="dot" style="background:${domainColor(m.key)}"></span>${m.label}
+    </button>`).join('');
+  el.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+    state.domain = b.dataset.domain; state.explainKey=null;
+    simPause();
+    simState = { strategy:null, scenario:'baseline', drawLabel:null, quarter:-1, playing:false, timer:null };
+    render();
+  }));
+}
+
+function renderRail(){
+  const dd = DATA[state.domain];
+  const rail = document.getElementById('rail');
+  rail.innerHTML = `<div class="rail-label">${DOMAIN_META[state.domain].label}</div>` + SECTIONS.map(s => {
+    const label = s.id==='special' ? SPECIAL_LABEL[state.domain] : s.label;
+    let n = '';
+    if (s.id==='primitives') n = Object.keys(dd.primitives).length;
+    if (s.id==='audit') n = AUDIT[state.domain].length;
+    return `<button class="rail-btn ${state.section===s.id?'active':''}" data-section="${s.id}">${label}${n!==''?`<span class="n">${n}</span>`:''}</button>`;
+  }).join('');
+  rail.querySelectorAll('button').forEach(b => b.addEventListener('click', () => { state.section = b.dataset.section; render(); }));
+}
+
+function renderTopRight(){
+  const dd = DATA[state.domain];
+  document.getElementById('topRight').innerHTML =
+    `N = ${dd._meta.n_simulations.toLocaleString()} Monte Carlo draws / strategy·scenario<br>audit chain hash ${dd._meta.audit_summary.chain_hash}`;
+}
+
+/* ---------------- Overview ---------------- */
+function sectionOverview(dd){
+  const sel = dd.selection;
+  const dom = DOMAIN_META[state.domain];
+  const strategies = strategyList(dd);
+  const baseline = name => dd.results.find(r => r.strategy===name && r.scenario==='baseline');
+  return `
+    <div class="section-head"><h2>${dd.title}</h2>
+      <p>${overviewCopy(state.domain)}</p>
+    </div>
+    <div class="banner" style="--dom-color:${domainColor(state.domain)}">
+      <span class="badge">Recommended</span>
+      <div><strong>${sel.recommended}</strong><p>${sel.rationale}</p></div>
+    </div>
+    <div class="grid g-3">
+      ${strategies.map((s,i) => {
+        const r = baseline(s.name);
+        const slot = SLOTS[i % SLOTS.length];
+        return `<div class="strategy-card clickable" data-result-strategy="${s.name}" data-result-scenario="baseline" title="Click to inspect the baseline calculation">
+          <span class="stripe" style="background:${slot}"></span>
+          <h3>${s.name}</h3>
+          <div class="meta">
+            <div><div class="label">Capital</div><div class="val">${money(s.total_cost,1)}</div></div>
+            <div><div class="label">Assembly Index</div><div class="val">${s.assembly_index}</div></div>
+            <div><div class="label">Lead time</div><div class="val">${s.critical_path_lead_time}q</div></div>
+          </div>
+          <div class="meta">
+            <div><div class="label">Baseline utility</div><div class="val" style="color:${r.utility>=0?'var(--good)':'var(--bad)'}">${money(r.utility,1)}</div></div>
+            <div><div class="label">CVaR95</div><div class="val" style="color:${r.cvar95>=0?'var(--good)':'var(--bad)'}">${money(r.cvar95,1)}</div></div>
+          </div>
+          <div class="prims">${s.primitives.map(p=>`<span class="chip clickable" data-prim-id="${p.id}">${p.id}</span>`).join('')}</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="foot-note">
+      Built from the same six reusable components (Primitive · Assembly · BayesianBeliefNode · MonteCarloEngine ·
+      state_transition_fn · RiskEvaluator) and the same four orchestration patterns (Assembly Pipeline · Active
+      Epistemic Graph · Assembly-Constrained Stress-Tester · Dual-Loop Optimizer) as every other domain in this
+      prototype — only the primitives, assemblies, beliefs, scenarios and physics function shown in the other tabs differ.
+    </div>`;
+}
+function overviewCopy(k){
+  return {
+    rd_portfolio: 'A $50M / 3-year capital allocation across three next-generation AI infrastructure platform strategies — monolithic custom silicon, a modular hybrid build, or a pure cloud-API approach.',
+    supply_chain: 'A critical-component sourcing decision over a 2.5-year horizon — stay single-sourced and cheap, invest in dual-source resilience, or vertically integrate by building an in-house plant.',
+    cyber_defense: 'A security-control investment decision protecting ~$18M/quarter of digital operations over 3 years — basic hygiene, a zero-trust build-out, or an outsourced SOC.',
+  }[k];
+}
+
+/* ---------------- Primitives ---------------- */
+function sectionPrimitives(dd){
+  const rows = Object.values(dd.primitives).map(p => `
+    <tr class="clickable" data-prim-id="${p.id}"><td class="strong mono">${p.id}</td><td>${p.name}</td>
+      <td class="mono num">${money(p.cost,1)}</td>
+      <td class="mono num">${p.lead_time}</td>
+      <td class="mono num">${pct(p.prior_failure_rate,1)}</td></tr>`).join('');
+  return `
+    <div class="section-head"><h2>Atomic Action Blocks</h2>
+      <p>The reusable primitive library this domain assembles strategies from — each one a standardized ⟨cost, lead time, prior hazard rate⟩ tuple, the same interface every domain in this prototype uses. Click a row to inspect it.</p>
+    </div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>ID</th><th>Primitive</th><th style="text-align:right">Cost</th><th style="text-align:right">Lead time (q)</th><th style="text-align:right">Prior hazard / quarter</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>`;
+}
+
+/* ---------------- Assembly & Ax ---------------- */
+function sectionAssembly(dd){
+  const strategies = strategyList(dd);
+  return `
+    <div class="section-head"><h2>Assembly Graphs &amp; Assembly Index</h2>
+      <p>Each strategy is a DAG of primitives. The Assembly Index (Ax) counts the join operations needed to build it, net of structural reuse — a complexity regularizer applied later as a utility penalty (Occam's razor on strategy design).</p>
+    </div>
+    <div class="grid g-2">
+    ${strategies.map((s,i) => `
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:baseline;">
+          <h3 style="font-size:15px">${s.name}</h3>
+          <span class="chip mono">Ax = ${s.assembly_index}</span>
+        </div>
+        <div class="assembly-diagram">
+          ${s.primitives.map((p,j) => (j>0?'<span class="join-op">⊕</span>':'') + `<span class="prim-node clickable" data-prim-id="${p.id}">${p.id}<br><span style="color:var(--text-faint); font-size:10px">${p.name}</span></span>`).join('')}
+        </div>
+        <div class="meta" style="padding-left:0; margin-top:10px;">
+          <div><div class="label">Total cost</div><div class="val">${money(s.total_cost,1)}</div></div>
+          <div><div class="label">Critical-path lead time</div><div class="val">${s.critical_path_lead_time} quarters</div></div>
+        </div>
+      </div>`).join('')}
+    </div>`;
+}
+
+/* ---------------- Beliefs ---------------- */
+function sectionBeliefs(dd){
+  const beliefEntries = Object.entries(dd.beliefs);
+  const continuous = beliefEntries.filter(([k,v]) => 'mu' in v);
+  const beta = beliefEntries.filter(([k,v]) => 'alpha' in v);
+  const contRows = continuous.map(([k,v]) => `
+    <div class="card clickable" data-belief-id="${k}">
+      <h3 style="font-size:14px">${v.name}</h3>
+      <div class="chart-wrap short"><canvas id="belief-${k}"></canvas></div>
+    </div>`).join('');
+  const betaRows = beta.map(([k,v]) => `
+    <tr class="clickable" data-belief-id="${k}"><td class="strong mono">${k}</td><td class="mono">Beta(${fmt(v.alpha,1)}, ${fmt(v.beta,1)})</td>
+      <td class="mono num">${pct(v.mean,1)}</td></tr>`).join('');
+  return `
+    <div class="section-head"><h2>Bayesian Belief Nodes</h2>
+      <p>Conjugate beliefs (Normal–Normal for the continuous demand/value belief above, Beta–Binomial for each primitive's hazard rate below) — the epistemic-uncertainty layer feeding the Monte Carlo sampler. The curve above is a posterior already updated from observed data; the hazard-rate table is each primitive's current prior, which the same BayesianBeliefNode class updates from new evidence as it arrives (see the R&D domain's Value-of-Information tab for a worked example of that update in action). Click any belief to inspect it.</p>
+    </div>
+    <div class="grid g-2" style="margin-bottom:16px;">${contRows}</div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Primitive</th><th>Belief distribution</th><th style="text-align:right">Mean hazard / quarter</th></tr></thead>
+      <tbody>${betaRows}</tbody>
+    </table></div>`;
+}
+function chartsUnavailable(containerId){
+  const el = document.getElementById(containerId);
+  if (el) el.closest('.chart-wrap, .card').innerHTML = '<p style="color:var(--text-faint); font-size:12.5px; padding:20px 0;">Chart library unavailable — showing data tables elsewhere on this page instead.</p>';
+}
+function drawBeliefCharts(dd){
+  if (typeof Chart === 'undefined'){ chartsUnavailable('belief-'+Object.keys(dd.beliefs).find(k=>'mu' in dd.beliefs[k])); return; }
+  const beliefEntries = Object.entries(dd.beliefs).filter(([k,v]) => 'mu' in v);
+  beliefEntries.forEach(([k,v]) => {
+    const ctx = document.getElementById('belief-'+k);
+    if (!ctx) return;
+    const mu = v.mu, sigma = v.sigma;
+    const xs = []; const priorMu = mu; // we only have posterior stored; show posterior curve + sigma band
+    const n = 60; const lo = mu - 4*sigma, hi = mu + 4*sigma;
+    const labels = [], ys = [];
+    for (let i=0;i<=n;i++){ const x = lo + (hi-lo)*i/n; labels.push(x.toFixed(1));
+      ys.push(Math.exp(-0.5*Math.pow((x-mu)/sigma,2)) / (sigma*Math.sqrt(2*Math.PI))); }
+    charts['belief-'+k] = new Chart(ctx, { type:'line', data:{ labels, datasets:[{
+      data:ys, borderColor:cssvar('--accent'), backgroundColor:cssvar('--accent-soft'), fill:true, pointRadius:0, tension:.35, borderWidth:2 }]},
+      options:{ responsive:true, maintainAspectRatio:false,
+        plugins:{legend:{display:false}, tooltip:{enabled:false}},
+        scales:{ x:{ ticks:{ color:cssvar('--text-faint'), maxTicksLimit:6, font:{family:'IBM Plex Mono',size:10} }, grid:{color:cssvar('--border-soft')} },
+                 y:{ display:false } } } });
+  });
+}
+
+/* ---------------- Scenario Impact ---------------- */
+const IMPACT_METRICS = [
+  {key:'utility', label:'Regularized Utility'}, {key:'mean_npv', label:'Expected NPV'},
+  {key:'cvar95', label:'CVaR95 (tail)'}, {key:'prob_loss', label:'P(loss)'},
+];
+function sectionImpact(dd){
+  return `
+    <div class="section-head"><h2>Scenario Impact Matrix</h2>
+      <p>Every strategy run through every named stress scenario (Pattern 3: Assembly-Constrained Stress-Tester). Color encodes relative performance within this metric for this domain. Click a cell to inspect that run.</p>
+    </div>
+    <div class="heat-select">Metric:
+      <select id="impactMetric">${IMPACT_METRICS.map(m=>`<option value="${m.key}">${m.label}</option>`).join('')}</select>
+    </div>
+    <div id="impactTable" class="tablewrap"></div>`;
+}
+function drawImpactTable(dd){
+  const sel = document.getElementById('impactMetric'); if (!sel) return;
+  const metric = sel.value || 'utility';
+  const strategies = strategyList(dd).map(s=>s.name);
+  const scenarios = dd.scenario_names;
+  const get = (s,sc) => dd.results.find(r=>r.strategy===s && r.scenario===sc)[metric];
+  const vals = dd.results.map(r=>r[metric]);
+  const lo = Math.min(...vals), hi = Math.max(...vals);
+  const colorFor = (v) => {
+    const t = hi===lo ? 0.5 : (v-lo)/(hi-lo);
+    const light = isLight();
+    const bad = light? [200,73,63] : [226,104,95];
+    const good = light? [47,143,82] : [92,184,122];
+    const mid = t<0.5 ? bad : good;
+    const w = t<0.5 ? t/0.5 : (t-0.5)/0.5;
+    const base = light? [255,255,255] : [19,26,34];
+    const c = mid.map((ch,i)=> Math.round(base[i] + (ch-base[i]) * (0.15 + 0.55*w)));
+    return `rgb(${c.join(',')})`;
+  };
+  const header = `<tr><th>Strategy \\ Scenario</th>${scenarios.map(sc=>`<th style="text-align:right">${sc.replace(/_/g,' ')}</th>`).join('')}</tr>`;
+  const rows = strategies.map(s => `<tr><td class="strong">${s}</td>${scenarios.map(sc => {
+    const v = get(s,sc);
+    const disp = metric==='prob_loss' ? pct(v,1) : money(v,1);
+    return `<td class="heat-cell clickable" data-result-strategy="${s}" data-result-scenario="${sc}" style="background:${colorFor(v)}">${disp}</td>`;
+  }).join('')}</tr>`).join('');
+  document.getElementById('impactTable').innerHTML = `<table>${header}${rows}</table>`;
+}
+
+/* ---------------- Risk & Pareto ---------------- */
+function sectionRisk(dd){
+  return `
+    <div class="section-head"><h2>Risk / Return / Complexity Frontier</h2>
+      <p>Every strategy-scenario run plotted as CVaR95 (downside) vs. expected NPV (upside). Pareto-frontier points (Pattern 4: Dual-Loop Optimizer, structure loop) are ringed. Click a point — or a row below — to inspect the exact calculation; click a column header to sort.</p>
+    </div>
+    <div class="card"><div class="chart-wrap"><canvas id="paretoChart"></canvas></div></div>
+    <div class="legend" id="paretoLegend"></div>
+    <h3 style="font-size:14px; margin:20px 0 10px;">All strategy × scenario runs</h3>
+    <div id="riskTableWrap" class="tablewrap"></div>`;
+}
+function drawParetoChart(dd){
+  const ctx = document.getElementById('paretoChart'); if (!ctx) return;
+  if (typeof Chart === 'undefined'){ chartsUnavailable('paretoChart'); return; }
+  const strategies = strategyList(dd).map(s=>s.name);
+  const frontier = new Set(dd.selection.pareto_frontier);
+  const datasets = strategies.map((s,i) => {
+    const pts = dd.results.filter(r=>r.strategy===s).map(r => ({ x:r.cvar95, y:r.mean_npv, scenario:r.scenario, ax:r.assembly_index, onFrontier: frontier.has(s) && r.scenario==='baseline' }));
+    return { label:s, data:pts, backgroundColor: SLOTS[i%SLOTS.length],
+      borderColor: SLOTS[i%SLOTS.length],
+      pointRadius: pts.map(p=>p.scenario==='baseline'?7:4.5),
+      pointBorderWidth: pts.map(p=>p.onFrontier?2.5:0),
+      pointBorderColor: cssvar('--text'),
+      pointStyle: pts.map(p=>p.scenario==='baseline'?'circle':'triangle') };
+  });
+  charts.pareto = new Chart(ctx, { type:'scatter', data:{ datasets },
+    options:{ responsive:true, maintainAspectRatio:false,
+      onClick:(evt, elements) => {
+        if (!elements.length) return;
+        const el = elements[0];
+        const ds = charts.pareto.data.datasets[el.datasetIndex];
+        const pt = ds.data[el.index];
+        openResultInspector(dd, ds.label, pt.scenario);
+      },
+      onHover:(evt, elements) => { evt.native.target.style.cursor = elements.length ? 'pointer' : 'default'; },
+      plugins:{ legend:{display:false},
+        tooltip:{ callbacks:{ label:(c)=>`${c.dataset.label} · ${c.raw.scenario} — CVaR95 ${money(c.raw.x)}, E[NPV] ${money(c.raw.y)}, Ax ${c.raw.ax} (click point to inspect)` } } },
+      scales:{
+        x:{ title:{display:true, text:'CVaR95 (downside, $M)', color:cssvar('--text-dim')}, ticks:{color:cssvar('--text-faint')}, grid:{color:cssvar('--border-soft')} },
+        y:{ title:{display:true, text:'Expected NPV ($M)', color:cssvar('--text-dim')}, ticks:{color:cssvar('--text-faint')}, grid:{color:cssvar('--border-soft')} } } } });
+  document.getElementById('paretoLegend').innerHTML = strategies.map((s,i)=>
+    `<span><span class="sw" style="background:${SLOTS[i%SLOTS.length]}"></span>${s}</span>`).join('') +
+    `<span style="color:var(--text-faint)">● baseline &nbsp; ▲ stress scenario &nbsp; bold ring = Pareto frontier (baseline)</span>`;
+}
+
+/* ---------------- Explainability ---------------- */
+function sectionExplain(dd){
+  const strategies = strategyList(dd).map(s=>s.name);
+  const scenarios = dd.scenario_names;
+  if (!state.explainKey) state.explainKey = `${strategies[0]}|baseline`;
+  return `
+    <div class="section-head"><h2>Explainability</h2>
+      <p>Every utility score decomposes into its exact contributions, and every audit trail is mined for which primitive's adverse event is over-represented in the worst 5% of outcomes — computed empirically from the Monte Carlo draws, not asserted.</p>
+    </div>
+    <div class="explain-picker">
+      <select id="explainStrategy">${strategies.map(s=>`<option ${state.explainKey.startsWith(s+'|')?'selected':''}>${s}</option>`).join('')}</select>
+      <select id="explainScenario">${scenarios.map(sc=>`<option ${state.explainKey.endsWith('|'+sc)?'selected':''}>${sc}</option>`).join('')}</select>
+    </div>
+    <div id="explainBody"></div>`;
+}
+function drawExplain(dd){
+  const stratSel = document.getElementById('explainStrategy'), scenSel = document.getElementById('explainScenario');
+  if (!stratSel) return;
+  const strategy = stratSel.value, scenario = scenSel.value;
+  state.explainKey = `${strategy}|${scenario}`;
+  const exp = dd.explanations.find(e => e.strategy===strategy && e.scenario===scenario);
+  const res = dd.results.find(r => r.strategy===strategy && r.scenario===scenario);
+  const d = exp.decomposition;
+  const keys = Object.keys(d).filter(k=>k!=='total_utility');
+  const maxAbs = Math.max(...keys.map(k=>Math.abs(d[k])), 1);
+  const rows = keys.map(k => {
+    const v = d[k]; const w = Math.min(Math.abs(v)/maxAbs*100, 100);
+    const color = v>=0 ? 'var(--good)' : 'var(--bad)';
+    return `<div class="decomp-row"><div class="lbl">${k}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${w}%; background:${color}; margin-left:${v<0?100-w+'%':'0'}"></div></div>
+      <div class="amt" style="color:${color}">${money(v,1)}</div></div>`;
+  }).join('');
+  const tailRows = exp.tail_drivers.length ? exp.tail_drivers.map(t => `
+    <tr><td class="strong mono">${t.primitive_id}</td><td class="mono num">${pct(t.overall_event_rate,1)}</td>
+      <td class="mono num">${pct(t['tail_event_rate (worst 5% of draws)'],1)}</td>
+      <td class="mono num ${t.tail_lift>1.3?'lift-hi':''}">${t.tail_lift ?? '—'}×</td></tr>`).join('')
+    : `<tr><td colspan="4" style="color:var(--text-faint)">No event-level attribution recorded for this run.</td></tr>`;
+  document.getElementById('explainBody').innerHTML = `
+    <div class="grid g-2">
+      <div class="card">
+        <h3 style="font-size:14px; margin-bottom:6px;">Utility decomposition</h3>
+        ${rows}
+        <div class="decomp-row" style="border-top:1px solid var(--border); padding-top:10px; margin-top:10px;">
+          <div class="lbl" style="color:var(--text); font-weight:600;">Total utility</div><div class="bar-track"></div>
+          <div class="amt" style="color:var(--text); font-weight:600;">${money(d.total_utility,1)}</div>
+        </div>
+      </div>
+      <div class="card">
+        <h3 style="font-size:14px; margin-bottom:10px;">Tail-risk attribution (worst 5% of draws)</h3>
+        <table class="tail-table"><thead><tr><th>Primitive</th><th style="text-align:right">Overall rate</th><th style="text-align:right">Tail rate</th><th style="text-align:right">Lift</th></tr></thead>
+        <tbody>${tailRows}</tbody></table>
+      </div>
+    </div>
+    <div class="narrative">${exp.narrative}</div>`;
+}
+
+/* ---------------- Domain-specific special section ---------------- */
+function sectionSpecial(dd){
+  if (state.domain === 'rd_portfolio') return specialVOI(dd);
+  if (state.domain === 'supply_chain') return specialGenerator(dd);
+  return specialROI(dd);
+}
+function specialVOI(dd){
+  const v = dd.value_of_information;
+  return `
+    <div class="section-head"><h2>Active Epistemic Graph — Value of Information</h2>
+      <p>Pattern 2: before committing full capital to ${v.strategy}, run a cheap milestone test, update the Bayesian posterior on the highest-risk primitive, and re-price the strategy.</p>
+    </div>
+    ${epistemicGraphSvg(dd)}
+    <div class="kpi-strip" style="grid-template-columns:repeat(3,1fr)">
+      <div class="kpi"><div class="label">Pre-milestone utility</div><div class="value">${money(v.pre_utility,1)}</div></div>
+      <div class="kpi"><div class="label">Post-milestone utility</div><div class="value">${money(v.post_utility,1)}</div></div>
+      <div class="kpi"><div class="label">Value of Information</div><div class="value" style="color:var(--good)">${money(v.voi,1)}</div></div>
+    </div>
+    <div class="grid g-2">
+      <div class="card"><h3 style="font-size:14px; margin-bottom:8px;">Prior vs. posterior belief density</h3><div class="chart-wrap short"><canvas id="epiBeliefChart"></canvas></div></div>
+      <div class="card"><h3 style="font-size:14px; margin-bottom:8px;">Strategy utility, before vs. after</h3><div class="chart-wrap short"><canvas id="epiUtilChart"></canvas></div></div>
+    </div>
+    <div class="card" style="margin-top:14px;"><h3 style="font-size:14px; margin-bottom:8px;">Posterior after the lab pilot</h3>
+      <p style="color:var(--text-dim); font-size:13px; margin:0;">${v.posterior_belief.name}: Beta(${fmt(v.posterior_belief.alpha,1)}, ${fmt(v.posterior_belief.beta,1)}) → mean hazard ${pct(v.posterior_belief.mean,1)} / quarter</p>
+    </div>
+    <div class="narrative">${v.narrative}</div>`;
+}
+function specialGenerator(dd){
+  const gc = dd.generated_candidates;
+  const rows = gc.survivors.map(s => `<tr class="clickable" data-gen-candidate="${s.name}"><td class="strong mono">${s.name}</td><td class="mono num">${s.assembly_index}</td>
+    <td class="mono num">${money(s.total_cost,1)}</td><td class="mono num">${s.critical_path_lead_time}q</td></tr>`).join('');
+  return `
+    <div class="section-head"><h2>Assembly Pipeline — Combinatorial Generator</h2>
+      <p>Pattern 1: instead of hand-specifying strategies, every combination of up to 3 primitives is generated from the library and pruned by budget (≤$16M), lead time (≤6q) and Assembly Index (≤3). Click a survivor to inspect it.</p>
+    </div>
+    <div class="kpi-strip" style="grid-template-columns:repeat(3,1fr)">
+      <div class="kpi"><div class="label">Candidates generated</div><div class="value">${gc.n_generated}</div></div>
+      <div class="kpi"><div class="label">Survived pruning</div><div class="value">${gc.n_survived}</div></div>
+      <div class="kpi"><div class="label">Pruned</div><div class="value">${gc.n_generated-gc.n_survived}</div></div>
+    </div>
+    <div class="tablewrap"><table><thead><tr><th>Candidate</th><th style="text-align:right">Ax</th><th style="text-align:right">Cost</th><th style="text-align:right">Lead time</th></tr></thead>
+    <tbody>${rows}</tbody></table></div>`;
+}
+function specialROI(dd){
+  const dn = dd.do_nothing_baseline;
+  const inc = dd.incremental_value_vs_do_nothing;
+  return `
+    <div class="section-head"><h2>ROI vs. an Unmanaged Baseline</h2>
+      <p>Every strategy re-run against a synthetic "no investment" comparator to quantify the incremental value each security program protects.</p>
+    </div>
+    <div class="card"><div class="chart-wrap short"><canvas id="roiChart"></canvas></div></div>
+    <p style="color:var(--text-dim); font-size:12.5px; margin:12px 2px 0;">Unmanaged baseline (no controls at all): expected NPV ${money(dn.mean_npv,1)}, CVaR95 ${money(dn.cvar95,1)} — the reference every "incremental value" figure below is measured against.</p>
+    <div class="tablewrap" style="margin-top:10px;"><table>
+      <thead><tr><th>Strategy</th><th style="text-align:right">Incremental value vs. do-nothing</th></tr></thead>
+      <tbody>${Object.entries(inc).map(([k,v])=>`<tr class="clickable" data-roi-strategy="${k}"><td class="strong">${k}</td><td class="mono num" style="color:var(--good)">+${money(v,1)}</td></tr>`).join('')}
+      </tbody></table></div>`;
+}
+function drawSpecialCharts(dd){
+  if (state.domain === 'rd_portfolio'){ drawEpiBeliefChart(dd); drawEpiUtilityChart(dd); return; }
+  if (state.domain !== 'cyber_defense') return;
+  const ctx = document.getElementById('roiChart'); if (!ctx) return;
+  if (typeof Chart === 'undefined'){ chartsUnavailable('roiChart'); return; }
+  const dn = dd.do_nothing_baseline;
+  const stratNames = Object.keys(dd.incremental_value_vs_do_nothing);
+  const labels = ['Do Nothing', ...stratNames];
+  const vals = [dn.mean_npv, ...stratNames.map(s => dd.results.find(r => r.strategy===s && r.scenario==='baseline').mean_npv)];
+  charts.roi = new Chart(ctx, { type:'bar', data:{ labels, datasets:[{ data:vals,
+    backgroundColor:[cssvar('--text-faint'), ...SLOTS] }]},
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}},
+      scales:{ x:{ ticks:{color:cssvar('--text-dim')}, grid:{display:false} },
+               y:{ title:{display:true,text:'Expected NPV ($M)',color:cssvar('--text-dim')}, ticks:{color:cssvar('--text-faint')}, grid:{color:cssvar('--border-soft')} } } } });
+}
+
+/* ---------------- Audit trail ---------------- */
+function sectionAudit(dd){
+  const comps = [...new Set(AUDIT[state.domain].map(e=>e.component))];
+  return `
+    <div class="section-head"><h2>Audit Trail</h2>
+      <p>Every component call in this run, in order — hashed inputs/outputs for tamper-evidence, full replay context. Chain hash for this domain's run: <span class="mono">${dd._meta.audit_summary.chain_hash}</span></p>
+    </div>
+    <div class="audit-controls">
+      <input id="auditSearch" placeholder="Filter by event, component, or id…">
+      <select id="auditComp"><option value="">All components</option>${comps.map(c=>`<option>${c}</option>`).join('')}</select>
+    </div>
+    <div class="audit-list" id="auditList"></div>`;
+}
+function drawAudit(){
+  const search = document.getElementById('auditSearch'), compSel = document.getElementById('auditComp');
+  if (!search) return;
+  const q = (search.value||'').toLowerCase(); const comp = compSel.value;
+  const events = AUDIT[state.domain].filter(e => (!comp || e.component===comp) &&
+    (!q || (e.event+e.component+e.id+JSON.stringify(e.inputs)).toLowerCase().includes(q)));
+  const list = document.getElementById('auditList');
+  list.innerHTML = events.slice(0,400).map(e => `
+    <div class="audit-row" data-id="${e.id}">
+      <div class="line1"><span class="comp">${e.component}</span><span class="ev">${e.event}</span><span class="hash">${e.id} · in ${e.inputs_hash} → out ${e.outputs_hash}</span></div>
+      <div class="detail">INPUTS\n${JSON.stringify(e.inputs,null,2)}\n\nOUTPUTS\n${JSON.stringify(e.outputs,null,2)}${Object.keys(e.meta||{}).length?`\n\nMETA\n${JSON.stringify(e.meta,null,2)}`:''}</div>
+    </div>`).join('') + (events.length>400 ? `<div style="padding:10px 13px; color:var(--text-faint); font-size:12px;">Showing first 400 of ${events.length} matching events — narrow your filter to see more.</div>` : '');
+  list.querySelectorAll('.audit-row').forEach(row => row.addEventListener('click', () => row.classList.toggle('open')));
+}
+
+/* ---------------- render orchestration ---------------- */
+function render(){
+  simPause();
+  destroyCharts();
+  renderDomainSwitch(); renderRail(); renderTopRight();
+  const dd = DATA[state.domain];
+  const main = document.getElementById('main');
+  let html = '';
+  if (state.section==='overview') html = sectionOverview(dd);
+  else if (state.section==='primitives') html = sectionPrimitives(dd);
+  else if (state.section==='assembly') html = sectionAssembly(dd);
+  else if (state.section==='beliefs') html = sectionBeliefs(dd);
+  else if (state.section==='simulate') html = sectionSimulate(dd);
+  else if (state.section==='impact') html = sectionImpact(dd);
+  else if (state.section==='risk') html = sectionRisk(dd);
+  else if (state.section==='explain') html = sectionExplain(dd);
+  else if (state.section==='special') html = sectionSpecial(dd);
+  else if (state.section==='audit') html = sectionAudit(dd);
+  main.innerHTML = `<div class="section active">${html}</div>`;
+
+  if (state.section==='beliefs') drawBeliefCharts(dd);
+  if (state.section==='simulate'){
+    drawSimulate(dd);
+    const stratSel=document.getElementById('simStrategy'), scenSel=document.getElementById('simScenario'), drawSel=document.getElementById('simDraw');
+    if (stratSel) stratSel.addEventListener('change', ()=>{ simState.strategy=stratSel.value; simState.drawLabel=null; simState.quarter=-1; render(); });
+    if (scenSel) scenSel.addEventListener('change', ()=>{ simState.scenario=scenSel.value; simState.drawLabel=null; simState.quarter=-1; render(); });
+    if (drawSel) drawSel.addEventListener('change', ()=>{ simState.drawLabel=drawSel.value; simState.quarter=0; drawSimulate(dd); });
+    const resetBtn=document.getElementById('simReset'), backBtn=document.getElementById('simBack'), fwdBtn=document.getElementById('simFwd'), playBtn=document.getElementById('simPlay');
+    if (resetBtn) resetBtn.addEventListener('click', ()=>{ simPause(); simState.quarter=0; drawSimulate(dd); });
+    if (backBtn) backBtn.addEventListener('click', ()=>simStep(-1));
+    if (fwdBtn) fwdBtn.addEventListener('click', ()=>simStep(1));
+    if (playBtn) playBtn.addEventListener('click', simPlay);
+  }
+  if (state.section==='impact'){ drawImpactTable(dd); document.getElementById('impactMetric').addEventListener('change', ()=>drawImpactTable(dd)); }
+  if (state.section==='risk'){ drawParetoChart(dd); drawRiskTable(dd); }
+  if (state.section==='explain'){
+    drawExplain(dd);
+    document.getElementById('explainStrategy').addEventListener('change', ()=>drawExplain(dd));
+    document.getElementById('explainScenario').addEventListener('change', ()=>drawExplain(dd));
+  }
+  if (state.section==='special') drawSpecialCharts(dd);
+  if (state.section==='audit'){
+    drawAudit();
+    document.getElementById('auditSearch').addEventListener('input', drawAudit);
+    document.getElementById('auditComp').addEventListener('change', drawAudit);
+  }
+}
+
+render();
+if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', render);
+</script>

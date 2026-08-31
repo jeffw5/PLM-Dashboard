@@ -1,0 +1,49 @@
+{
+  "rd_portfolio": {
+    "domain": "rd_portfolio",
+    "n_events": 91,
+    "by_component": {
+      "BayesianBeliefNode": 2,
+      "MonteCarloEngine": 28,
+      "ScenarioSampler": 14,
+      "Assembly": 17,
+      "RiskEvaluator": 14,
+      "Explainer": 12,
+      "AssemblyConstrainedStressTester": 1,
+      "DualLoopAssemblyOptimizer": 1,
+      "ActiveEpistemicGraph": 2
+    },
+    "chain_hash": "ac160e0d777cd8b9"
+  },
+  "supply_chain": {
+    "domain": "supply_chain",
+    "n_events": 118,
+    "by_component": {
+      "BayesianBeliefNode": 1,
+      "Assembly": 54,
+      "AssemblyPipeline": 1,
+      "MonteCarloEngine": 24,
+      "ScenarioSampler": 12,
+      "RiskEvaluator": 12,
+      "Explainer": 12,
+      "AssemblyConstrainedStressTester": 1,
+      "DualLoopAssemblyOptimizer": 1
+    },
+    "chain_hash": "b790a1b1fb94d199"
+  },
+  "cyber_defense": {
+    "domain": "cyber_defense",
+    "n_events": 83,
+    "by_component": {
+      "BayesianBeliefNode": 1,
+      "MonteCarloEngine": 26,
+      "ScenarioSampler": 13,
+      "Assembly": 16,
+      "RiskEvaluator": 13,
+      "Explainer": 12,
+      "AssemblyConstrainedStressTester": 1,
+      "DualLoopAssemblyOptimizer": 1
+    },
+    "chain_hash": "d04133e7fa5b4cb5"
+  }
+}
