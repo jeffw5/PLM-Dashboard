@@ -273,6 +273,45 @@ th.sortable .arrow{margin-left:3px; opacity:.55; font-size:9px;}
 .sim-legend{display:flex; gap:16px; margin-top:10px; font-size:11.5px; color:var(--text-dim); flex-wrap:wrap;}
 .sim-legend .sw{width:10px; height:10px; border-radius:3px; display:inline-block; margin-right:5px; vertical-align:-1px;}
 
+/* ---------- about / overview explainer ---------- */
+.about-lede{font-size:14.5px; color:var(--text-dim); line-height:1.7; max-width:82ch; margin:0 0 22px;}
+.about-lede b{color:var(--text); font-family:var(--font-display); font-weight:600;}
+.about-h3{font-size:13px; text-transform:uppercase; letter-spacing:.07em; color:var(--text-faint); margin:30px 0 12px;}
+.about-h3:first-of-type{margin-top:0;}
+.pipeline-row{display:flex; align-items:stretch; gap:0; flex-wrap:wrap; padding:2px 0 6px;}
+.concept-node{
+  cursor:pointer; flex:1 1 150px; min-width:140px; border:1px solid var(--border); background:var(--surface);
+  border-radius:var(--radius-sm); padding:11px 12px; transition:border-color .15s, background-color .15s;
+}
+.concept-node:hover{border-color:var(--accent); background:var(--accent-soft);}
+.concept-node .cn-n{font-family:var(--font-mono); font-size:10px; color:var(--text-faint);}
+.concept-node .cn-t{font-family:var(--font-display); font-weight:600; font-size:13px; margin-top:2px;}
+.pipe-arrow{display:flex; align-items:center; justify-content:center; padding:0 6px; color:var(--text-faint); font-size:16px; flex:none;}
+@media (max-width:900px){.pipe-arrow{width:100%; transform:rotate(90deg); padding:2px 0;}}
+.pattern-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px;}
+@media (max-width:900px){.pattern-grid{grid-template-columns:1fr;}}
+.pattern-card{border:1px solid var(--border); border-radius:var(--radius); padding:15px 16px; background:var(--surface); cursor:pointer; transition:border-color .15s;}
+.pattern-card:hover{border-color:var(--accent);}
+.pattern-card .pc-tag{font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:var(--accent);}
+.pattern-card h4{font-size:14.5px; margin:4px 0 6px;}
+.pattern-card p{font-size:12.5px; color:var(--text-dim); margin:0; line-height:1.55;}
+.audience-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:12px;}
+@media (max-width:980px){.audience-grid{grid-template-columns:1fr;}}
+.audience-card{border:1px solid var(--border); border-radius:var(--radius); padding:15px 16px; background:var(--surface-2);}
+.audience-card .ac-icon{font-family:var(--font-mono); font-size:11px; color:var(--accent); text-transform:uppercase; letter-spacing:.06em;}
+.audience-card h4{font-size:14px; margin:5px 0 7px;}
+.audience-card p{font-size:12.5px; color:var(--text-dim); margin:0; line-height:1.6;}
+.navmap{display:flex; flex-wrap:wrap; gap:8px;}
+.navmap-item{
+  cursor:pointer; display:flex; flex-direction:column; gap:2px; text-align:left; border:1px solid var(--border);
+  background:var(--surface); border-radius:var(--radius-sm); padding:9px 12px; flex:1 1 160px; min-width:150px;
+  transition:border-color .15s, background-color .15s;
+}
+.navmap-item:hover{border-color:var(--accent); background:var(--accent-soft);}
+.navmap-item .nm-t{font-size:12.5px; font-weight:500; color:var(--text);}
+.navmap-item .nm-d{font-size:11px; color:var(--text-faint); line-height:1.4;}
+.glossary-row{display:flex; flex-wrap:wrap; gap:7px; margin-top:6px;}
+
 /* ---------- epistemic graph ---------- */
 .epi-graph{width:100%; height:auto; margin:6px 0 20px;}
 .epi-graph .node-box{fill:var(--surface-2); stroke:var(--border);}
@@ -22398,7 +22437,8 @@ function money(n, d=1){ const s = n<0?'-':''; return s + '$' + fmt(Math.abs(n),d
 function pct(n, d=1){ return fmt(n*100,d)+'%'; }
 
 const SECTIONS = [
-  {id:'overview', label:'Overview'},
+  {id:'about', label:'Overview'},
+  {id:'overview', label:'3 Scenarios'},
   {id:'primitives', label:'Primitives'},
   {id:'assembly', label:'Assembly & Ax'},
   {id:'beliefs', label:'Bayesian Beliefs'},
@@ -22411,7 +22451,7 @@ const SECTIONS = [
 ];
 const SPECIAL_LABEL = { rd_portfolio:'Value of Information', supply_chain:'Combinatorial Generator', cyber_defense:'ROI vs. Do Nothing' };
 
-let state = { domain:'rd_portfolio', section:'overview', explainKey:null };
+let state = { domain:'rd_portfolio', section:'about', explainKey:null };
 let charts = {};
 let riskSort = { key:'utility', dir:-1 };
 let simState = { strategy:null, scenario:'baseline', drawLabel:null, quarter:-1, playing:false, timer:null };
@@ -22564,6 +22604,18 @@ document.addEventListener('click', (e) => {
   if (gotoExplain){ state.explainKey = gotoExplain.dataset.gotoExplain; state.section='explain'; closeInspector(); render(); return; }
   const gotoSim = e.target.closest('[data-goto-simulate]');
   if (gotoSim){ simPause(); simState = { strategy:gotoSim.dataset.gotoSimulate, scenario:'baseline', drawLabel:null, quarter:-1, playing:false, timer:null }; state.section='simulate'; closeInspector(); render(); return; }
+  const gotoSection = e.target.closest('[data-goto-section]');
+  if (gotoSection){
+    if (gotoSection.dataset.gotoDomain && gotoSection.dataset.gotoDomain !== state.domain){
+      state.domain = gotoSection.dataset.gotoDomain; state.explainKey = null;
+      simPause(); simState = { strategy:null, scenario:'baseline', drawLabel:null, quarter:-1, playing:false, timer:null };
+    }
+    state.section = gotoSection.dataset.gotoSection; closeInspector(); render(); return;
+  }
+  const conceptEl = e.target.closest('[data-concept-id]');
+  if (conceptEl){ openConceptInspector(conceptEl.dataset.conceptId); return; }
+  const patternEl = e.target.closest('[data-pattern-id]');
+  if (patternEl){ openPatternInspector(patternEl.dataset.patternId); return; }
 
   const primEl = e.target.closest('[data-prim-id]');
   if (primEl){ openPrimitiveInspector(dd, primEl.dataset.primId); return; }
@@ -22847,6 +22899,113 @@ function renderTopRight(){
   const dd = DATA[state.domain];
   document.getElementById('topRight').innerHTML =
     `N = ${dd._meta.n_simulations.toLocaleString()} Monte Carlo draws / strategy·scenario<br>audit chain hash ${dd._meta.audit_summary.chain_hash}`;
+}
+
+/* ---------------- Overview (About) explainer ---------------- */
+const CONCEPTS = {
+  primitive: { short:'Primitive', eyebrow:'Component 1 of 6', title:'Primitive — the atomic decision lever', gotoSection:'primitives', body:`
+    <p class="summary">A primitive is the smallest thing you could actually decide to do — described the same standardized way every time: what it costs, how long it takes, and how likely it is to fail. "Build the plant," "sign a single-source contract," "deploy zero-trust controls" — each is a primitive with a price tag and a risk tag already attached.</p>
+    <p class="summary">For a business reader, this is a menu of options priced consistently, so strategies can be compared like-for-like instead of on gut feel. For a decision scientist, it's the atomic random variable the whole simulation is built from. For an AI or automated planning system, forcing every option into the same ⟨cost, time, hazard⟩ shape is what makes the decision space machine-readable — an agent can enumerate, combine and search over primitives the way a compiler works with a fixed instruction set, instead of needing a human to hand-author each candidate.</p>`},
+  assembly: { short:'Assembly', eyebrow:'Component 2 of 6', title:'Assembly — a strategy is a graph, not a guess', gotoSection:'assembly', body:`
+    <p class="summary">An Assembly is a specific combination of primitives wired into a build-order graph — a strategy. Its Assembly Index (Ax) counts how many join operations were needed to construct it, discounting any structure that gets reused rather than rebuilt.</p>
+    <p class="summary">Ax is a built-in complexity penalty — an Occam's-razor tax that keeps both humans and automated planners from being seduced by needlessly baroque strategies. For a machine evaluating thousands of generated candidates, Ax is a cheap structural proxy for "how hard would this actually be to build, operate and explain" — available before a single simulation is run.</p>`},
+  belief: { short:'BayesianBeliefNode', eyebrow:'Component 3 of 6', title:'BayesianBeliefNode — what we believe, and how sure we are', gotoSection:'beliefs', body:`
+    <p class="summary">Every uncertain number in the model — a failure rate, expected demand — is represented as a probability distribution, not a single guess. New evidence (a pilot test, a quarter of real data) updates that belief in closed form via Bayes' rule, with no re-fitting required.</p>
+    <p class="summary">This is what lets the engine represent "I don't know, but here's my best distribution and how confident I am" — the same representation a human expert, a statistical model, or an autonomous agent needs in order to reason under uncertainty, and to know when it's worth paying for more information before acting (see the Active Epistemic Graph pattern below).</p>`},
+  montecarlo: { short:'MonteCarloEngine', eyebrow:'Component 4 of 6', title:'MonteCarloEngine — thousands of futures, not one', gotoSection:'risk', body:`
+    <p class="summary">Rather than computing a single expected outcome, the engine draws thousands of correlated random futures — demand shocks, cost spikes, primitive failures — from the beliefs above, and replays every strategy through each one using a Gaussian-copula sampler so related shocks move together realistically.</p>
+    <p class="summary">Business intuition ("what's the typical case?") and decision-science rigor ("what's the tail risk — the worst 5%?") come from the exact same draws — nothing is asserted, everything is observed empirically across simulated futures. This is also precisely the substrate an autonomous decision system needs to reason about downside risk before acting, not just expected value.</p>`},
+  transition: { short:'state_transition_fn', eyebrow:'Component 5 of 6', title:'state_transition_fn — the physics of this specific domain', gotoSection:'simulate', body:`
+    <p class="summary">This is the one domain-specific piece: a function stating exactly how cash, capacity and risk evolve quarter by quarter for this decision — an R&amp;D build-out, a supply-chain sourcing plan, a security posture. Everything else in the engine is domain-agnostic and unchanged across all three examples in this prototype.</p>
+    <p class="summary">Swapping in a new state_transition_fn is how the same reusable machinery gets pointed at a completely different decision — the interface is the reusable part, the physics is the pluggable part. It's the seam where a domain expert's knowledge (or, for a machine-decision context, a learned or simulated dynamics model) plugs into the general reasoning engine.</p>`},
+  risk: { short:'RiskEvaluator', eyebrow:'Component 6 of 6', title:'RiskEvaluator — turning a distribution into a decision', gotoSection:'explain', body:`
+    <p class="summary">Once every strategy has thousands of simulated outcomes, this component compresses each distribution into decision-ready numbers: expected value, VaR95/CVaR95 tail risk, probability of loss, and a single regularized utility score that also subtracts the Assembly Index penalty.</p>
+    <p class="summary">This is the last mile — turning a pile of simulated numbers into a ranked, explainable recommendation. For a human it's a decision memo; for a machine decision system it's the objective function an agent optimizes against, with the audit trail underneath so the choice stays inspectable after the fact.</p>`},
+};
+const PATTERNS = {
+  pattern1: { tag:'Pattern 1', title:"Assembly Pipeline — generate, don't hand-pick", teaser:'Enumerate every viable combination of primitives instead of hand-authoring 2–3 options, then prune by budget, lead time and Ax.', gotoDomain:'supply_chain', gotoSection:'special', body:`
+    <p class="summary">Instead of a human hand-specifying a handful of candidate strategies, this pattern enumerates every viable combination of primitives up to a complexity bound, then prunes by budget, lead time and Assembly Index — turning strategy design itself into a search problem rather than a one-off proposal.</p>
+    <p class="summary">This is the pattern that lets an automated planner — or an AI agent — propose the option set in the first place, instead of only ranking options a human already thought of.</p>
+    <div class="inspector-actions"><button data-goto-domain="supply_chain" data-goto-section="special">See it live: Supply Chain → Combinatorial Generator →</button></div>`},
+  pattern2: { tag:'Pattern 2', title:'Active Epistemic Graph — is it worth learning more first?', teaser:'Run a cheap test, update the Bayesian posterior, re-price the strategy — and quantify the exact dollar value of reducing uncertainty first.', gotoDomain:'rd_portfolio', gotoSection:'special', body:`
+    <p class="summary">Before committing full capital, run a cheap milestone test, update the Bayesian posterior on the highest-risk unknown, and re-price the strategy with the updated belief — quantifying the exact dollar value of reducing uncertainty before acting, rather than assuming more information is always worth gathering.</p>
+    <p class="summary">This is the pattern that answers "should we test first, or just commit?" with a number instead of a hunch — equally useful for a capital committee or for an agent deciding whether to query for more data before executing.</p>
+    <div class="inspector-actions"><button data-goto-domain="rd_portfolio" data-goto-section="special">See it live: R&amp;D Portfolio → Value of Information →</button></div>`},
+  pattern3: { tag:'Pattern 3', title:'Stress-Tester — same strategies, many worlds', teaser:"Re-run every strategy through every named stress scenario to separate what's robust from what's merely optimal in the base case.", gotoSection:'impact', body:`
+    <p class="summary">Every strategy is re-run against every named stress scenario — demand surge, supply shock, margin compression — to see which choices hold up across many plausible worlds versus which only look good in the base case.</p>
+    <p class="summary">This is the check against overfitting a decision to a single forecast — the same discipline a portfolio manager applies with scenario analysis, and the same discipline an automated system needs before trusting a plan built on one projected future.</p>
+    <div class="inspector-actions"><button data-goto-section="impact">See it live: Scenario Impact →</button></div>`},
+  pattern4: { tag:'Pattern 4', title:'Dual-Loop Optimizer — structure loop + risk loop', teaser:'An outer loop searches strategy structure; an inner loop searches the risk/return frontier — together they ground a recommendation in both engineering sense and statistics.', gotoSection:'risk', body:`
+    <p class="summary">An outer loop searches strategy structure — which primitives, what Assembly Index — while an inner loop searches the risk/return frontier via Monte Carlo, CVaR and Pareto dominance. The two loops together are what produce a recommendation that's both structurally sensible and statistically defensible, instead of optimizing one at the expense of the other.</p>
+    <p class="summary">This is the pattern underneath every "recommended" badge in this dashboard — and the general shape any optimizer, human-run or automated, needs when the thing being chosen is itself a designed object, not just a number on a slider.</p>
+    <div class="inspector-actions"><button data-goto-section="risk">See it live: Risk &amp; Pareto →</button></div>`},
+};
+const NAV_DESC = {
+  overview: 'The 3 candidate strategies for this domain, compared side by side.',
+  primitives: 'The atomic cost / time / hazard building blocks strategies assemble from.',
+  assembly: 'Each strategy as a DAG of primitives, and its Assembly Index (Ax).',
+  beliefs: 'The Bayesian probability distributions driving every simulated draw.',
+  simulate: 'Step through one simulated execution of a strategy, quarter by quarter.',
+  impact: 'Every strategy re-run under every stress scenario, side by side.',
+  risk: 'The risk / return / complexity frontier — chart and sortable table.',
+  explain: 'Why a given score is what it is, decomposed line by line.',
+  audit: 'Every component call in the run, hashed and replayable.',
+};
+const SPECIAL_NAV_DESC = {
+  rd_portfolio: 'Is it worth testing before committing full capital? The Bayesian value of information, in dollars.',
+  supply_chain: 'Every viable combination of primitives, generated and pruned automatically.',
+  cyber_defense: 'Every strategy priced against doing nothing at all.',
+};
+function openConceptInspector(key){
+  const c = CONCEPTS[key]; if (!c) return;
+  const body = c.body + `<div class="inspector-actions"><button data-goto-section="${c.gotoSection}">See it live →</button></div>`;
+  openInspector(c.eyebrow, c.title, body);
+}
+function openPatternInspector(key){
+  const p = PATTERNS[key]; if (!p) return;
+  openInspector(p.tag, p.title, p.body);
+}
+function sectionAbout(dd){
+  const navItems = SECTIONS.filter(s => s.id !== 'about').map(s => {
+    const label = s.id==='special' ? SPECIAL_LABEL[state.domain] : s.label;
+    const desc = s.id==='special' ? SPECIAL_NAV_DESC[state.domain] : NAV_DESC[s.id];
+    return `<div class="navmap-item clickable" data-goto-section="${s.id}"><span class="nm-t">${label}</span><span class="nm-d">${desc}</span></div>`;
+  }).join('');
+  const pipelineOrder = ['primitive','assembly','belief','montecarlo','transition','risk'];
+  return `
+    <div class="section-head"><h2>What Is the Assembly Decision Engine?</h2>
+      <p>A reusable decision-modeling engine, not a one-off spreadsheet — point it at a new problem by swapping only the domain-specific physics, and the uncertainty modeling, simulation, risk scoring and audit trail all carry over unchanged. Click any box or card below to see how a piece actually works.</p>
+    </div>
+    <p class="about-lede">The <b>${dd.title}</b> example currently selected is one of three domains this prototype runs — R&amp;D portfolio allocation, supply-chain sourcing, and cybersecurity investment — through the identical six components and four orchestration patterns below. Given a menu of options with real costs and real uncertainty, the engine answers one question well, repeatedly: which combination should we commit capital to, and can we prove exactly why, after the fact?</p>
+
+    <div class="about-h3">The six reusable components</div>
+    <div class="pipeline-row">
+      ${pipelineOrder.map((k,i) => (i>0?`<span class="pipe-arrow">→</span>`:'') +
+        `<div class="concept-node clickable" data-concept-id="${k}"><div class="cn-n">${i+1} / 6</div><div class="cn-t">${CONCEPTS[k].short}</div></div>`).join('')}
+    </div>
+
+    <div class="about-h3">Four ways these components get orchestrated</div>
+    <div class="pattern-grid">
+      ${Object.entries(PATTERNS).map(([k,p]) => `
+        <div class="pattern-card clickable" data-pattern-id="${k}">
+          <div class="pc-tag">${p.tag}</div>
+          <h4>${p.title}</h4>
+          <p>${p.teaser}</p>
+        </div>`).join('')}
+    </div>
+
+    <div class="about-h3">Why this matters — three lenses</div>
+    <div class="audience-grid">
+      <div class="audience-card"><div class="ac-icon">Business SME</div><h4>Decisions in plain language</h4>
+        <p>Speaks in capital, lead time, expected return, and worst-case loss — no black box. Every number on every tab traces back to a plain-English calculation you can click open, so you can interrogate a recommendation instead of just trusting it.</p></div>
+      <div class="audience-card"><div class="ac-icon">Decision Scientist</div><h4>Real machinery underneath</h4>
+        <p>Conjugate Bayesian updating, a Gaussian-copula Monte Carlo sampler, VaR95/CVaR95 tail statistics, Pareto-frontier search, and an Assembly-Theory complexity regularizer — all content-hashed into a replayable audit trail. Nothing here is asserted; every figure is computed from inspectable draws.</p></div>
+      <div class="audience-card"><div class="ac-icon">Modeling AI &amp; machine decisions</div><h4>Built to be machine-legible</h4>
+        <p>Options are standardized objects, uncertainty is an explicit distribution instead of a point guess, and every recommendation collapses to one audited utility score instead of a black-box verdict — the same objective function an autonomous agent could optimize against, generating and searching assemblies itself (Pattern 1) with the audit trail as its record of why it acted.</p></div>
+    </div>
+
+    <div class="about-h3">How to read this dashboard</div>
+    <div class="navmap">${navItems}</div>`;
 }
 
 /* ---------------- Overview ---------------- */
@@ -23241,7 +23400,8 @@ function render(){
   const dd = DATA[state.domain];
   const main = document.getElementById('main');
   let html = '';
-  if (state.section==='overview') html = sectionOverview(dd);
+  if (state.section==='about') html = sectionAbout(dd);
+  else if (state.section==='overview') html = sectionOverview(dd);
   else if (state.section==='primitives') html = sectionPrimitives(dd);
   else if (state.section==='assembly') html = sectionAssembly(dd);
   else if (state.section==='beliefs') html = sectionBeliefs(dd);
