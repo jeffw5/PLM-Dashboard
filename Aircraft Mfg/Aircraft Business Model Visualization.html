@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aircraft Capability Model</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+    <style>
+        :root {
+            --bg-color: #f2f4f7;
+            --canvas-bg: #f8fafc;
+            --canvas-dot: #cbd5e1;
+            --panel-bg: #ffffff;
+            --panel-alt: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-main: #1c2433;
+            --text-muted: #64748b;
+            --text-inverse: #f8fafc;
+            --header-bg: #0f1a2e;
+            --header-border: rgba(255,255,255,0.08);
+            --primary: #c2410c;
+            --primary-light: #fff7ed;
+            --accent-cap: #fb923c;
+            --node-label-halo: #f8fafc;
+            --link-color: #cbd5e1;
+            --shadow: rgba(15, 23, 42, 0.08);
+        }
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) {
+                --bg-color: #0b1220;
+                --canvas-bg: #0d1526;
+                --canvas-dot: #263149;
+                --panel-bg: #121b2e;
+                --panel-alt: #17233a;
+                --border-color: #26324a;
+                --text-main: #e7ecf5;
+                --text-muted: #93a1ba;
+                --text-inverse: #f8fafc;
+                --header-bg: #060a14;
+                --header-border: rgba(255,255,255,0.08);
+                --primary: #f0733a;
+                --primary-light: #2a1a10;
+                --accent-cap: #fb923c;
+                --node-label-halo: #0d1526;
+                --link-color: #33415c;
+                --shadow: rgba(0, 0, 0, 0.35);
+            }
+        }
+        :root[data-theme="dark"] {
+            --bg-color: #0b1220;
+            --canvas-bg: #0d1526;
+            --canvas-dot: #263149;
+            --panel-bg: #121b2e;
+            --panel-alt: #17233a;
+            --border-color: #26324a;
+            --text-main: #e7ecf5;
+            --text-muted: #93a1ba;
+            --text-inverse: #f8fafc;
+            --header-bg: #060a14;
+            --header-border: rgba(255,255,255,0.08);
+            --primary: #f0733a;
+            --primary-light: #2a1a10;
+            --accent-cap: #fb923c;
+            --node-label-halo: #0d1526;
+            --link-color: #33415c;
+            --shadow: rgba(0, 0, 0, 0.35);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { background: var(--bg-color); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+        header { background: var(--header-bg); border-bottom: 1px solid var(--header-border); padding: 0.75rem 1.5rem; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
+        .header-title { display: flex; align-items: center; gap: 0.75rem; font-size: 1.1rem; font-weight: 700; color: var(--text-inverse); letter-spacing: -0.01em; }
+        .header-title svg { color: var(--accent-cap); }
+        svg.icon-svg { width: 16px; height: 16px; vertical-align: middle; flex-shrink: 0; }
+        .header-sub { font-family: "IBM Plex Mono", monospace; font-size: 0.65rem; font-weight: 600; color: #cbd5e1; background: rgba(255,255,255,0.08); padding: 0.15rem 0.55rem; border-radius: 999px; margin-left: 0.5rem; letter-spacing: 0.02em; }
+        .header-actions { display: flex; align-items: center; gap: 1rem; color: #cbd5e1; }
+        .user-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-family: "IBM Plex Mono", monospace; font-size: 0.75rem; font-weight: 600; color: #ffffff; }
+
+        .controls-bar { background: var(--panel-bg); border-bottom: 1px solid var(--border-color); padding: 0.75rem 1.5rem; display: grid; grid-template-columns: 260px 190px 1fr 230px; gap: 1.25rem; align-items: center; z-index: 9; }
+        .search-box { position: relative; }
+        .search-box input { width: 100%; padding: 0.5rem 0.75rem 0.5rem 2.25rem; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.875rem; outline: none; background: var(--panel-alt); color: var(--text-main); }
+        .search-box input:focus { border-color: var(--primary); background: var(--panel-bg); }
+        .search-box svg { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); width: 16px; height: 16px; }
+
+        .control-group { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
+        select { padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.8rem; outline: none; background: var(--panel-bg); color: var(--text-main); width: 100%; cursor: pointer; }
+
+        .toggle-btn-group { display: flex; background: var(--panel-alt); padding: 2px; border-radius: 6px; border: 1px solid var(--border-color); }
+        .toggle-btn { padding: 0.375rem 0.65rem; border: none; background: transparent; font-size: 0.78rem; font-weight: 500; color: var(--text-muted); cursor: pointer; border-radius: 4px; transition: all 0.15s; white-space: nowrap; }
+        .toggle-btn.active { background: var(--primary); color: #fff; box-shadow: 0 1px 2px var(--shadow); }
+
+        .slider-container { display: flex; flex-direction: column; gap: 0.25rem; }
+        .slider-labels { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); }
+        input[type=range] { width: 100%; accent-color: var(--primary); cursor: pointer; }
+
+        .workspace { display: flex; flex: 1; overflow: hidden; position: relative; }
+        .canvas-container { flex: 1; position: relative; overflow: hidden; background-color: var(--canvas-bg); background-image: radial-gradient(var(--canvas-dot) 1px, transparent 1px); background-size: 24px 24px; }
+
+        #view-graph, #view-list { width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+        #view-list { display: none; padding: 2rem; overflow: auto; }
+
+        svg#graph-svg { width: 100%; height: 100%; cursor: grab; }
+        svg#graph-svg:active { cursor: grabbing; }
+
+        .node-group { cursor: pointer; }
+        .node-group.dimmed { opacity: 0.15; }
+        .node-group.highlighted .node-core { stroke: #f59e0b; stroke-width: 3.5px; }
+        .node-core { stroke-width: 2px; transition: stroke 0.2s, stroke-width 0.2s; }
+        .node-label { font-family: "IBM Plex Sans", sans-serif; font-size: 10px; font-weight: 600; fill: var(--text-main); text-anchor: middle; pointer-events: none; paint-order: stroke; stroke: var(--node-label-halo); stroke-width: 3px; }
+        .link-line { stroke: var(--link-color); stroke-width: 1.1px; }
+        .link-line.dimmed { opacity: 0.08; }
+        .link-line.highlighted { stroke: #f59e0b; stroke-width: 2px; }
+        .link-line.cap-link { stroke: var(--accent-cap); stroke-width: 1.4px; opacity: 0.55; }
+
+        .legend-panel { position: absolute; top: 1rem; left: 1rem; background: var(--panel-bg); opacity: 0.97; border: 1px solid var(--border-color); border-radius: 8px; padding: 0.6rem 0.75rem; font-size: 0.7rem; max-height: calc(100% - 6rem); overflow-y: auto; box-shadow: 0 2px 6px var(--shadow); }
+        .legend-title { font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.62rem; margin-bottom: 0.4rem; }
+        .legend-row { display: flex; align-items: center; gap: 0.4rem; padding: 0.12rem 0; color: var(--text-main); }
+        .legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+        .legend-count { margin-left: auto; color: var(--text-muted); font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
+
+        .inspector-panel { width: 400px; background: var(--panel-bg); border-left: 1px solid var(--border-color); display: flex; flex-direction: column; overflow-y: auto; z-index: 5; }
+        .panel-header { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .panel-header h3 { font-size: 1rem; font-weight: 700; color: var(--text-main); }
+        .panel-section { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--border-color); }
+        .panel-section-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: var(--text-muted); margin-bottom: 0.65rem; display: flex; align-items: center; justify-content: space-between; }
+
+        .tree-list { list-style: none; font-size: 0.85rem; max-height: 260px; overflow-y: auto; }
+        .tree-item { margin-bottom: 0.2rem; }
+        .tree-node { display: flex; align-items: center; gap: 0.45rem; padding: 0.3rem 0.4rem; border-radius: 4px; cursor: pointer; color: var(--text-main); }
+        .tree-node:hover { background: var(--panel-alt); }
+        .tree-node.selected { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+        .tree-children { margin-left: 1.1rem; padding-left: 0.5rem; border-left: 1px solid var(--border-color); display: none; }
+        .tree-children.open { display: block; }
+
+        .detail-card { background: var(--panel-alt); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.8rem; margin-bottom: 0.65rem; }
+        .detail-label { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 0.25rem; }
+        .detail-value { font-size: 0.85rem; font-weight: 600; color: var(--text-main); }
+        .detail-comment { font-size: 0.76rem; color: var(--text-muted); margin-top: 0.3rem; line-height: 1.35; }
+
+        .badge-list { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.35rem; }
+        .badge { background: var(--border-color); color: var(--text-main); font-size: 0.72rem; padding: 0.12rem 0.5rem; border-radius: 4px; cursor: default; }
+        .badge.clickable { cursor: pointer; }
+        .badge.clickable:hover { background: var(--link-color); }
+        .badge.cap-badge { background: var(--primary-light); color: var(--primary); font-weight: 600; }
+        .badge.cap-badge.clickable:hover { filter: brightness(0.95); }
+        .badge.category-tag { background: rgba(124, 58, 237, 0.14); color: #8b5cf6; font-weight: 600; }
+
+        .empty-hint { font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; }
+
+        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; }
+        .metric-card { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.65rem 0.75rem; }
+        .metric-num { font-family: "IBM Plex Mono", monospace; font-size: 1.35rem; font-weight: 600; color: var(--text-main); line-height: 1; font-variant-numeric: tabular-nums; }
+        .metric-label { font-size: 0.68rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+        .canvas-controls { position: absolute; bottom: 1.5rem; right: 1.5rem; background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 6px; box-shadow: 0 4px 6px -1px var(--shadow); display: flex; padding: 0.25rem; gap: 0.25rem; }
+        .icon-btn { border: none; background: transparent; width: 28px; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-muted); }
+        .icon-btn:hover { background: var(--panel-alt); color: var(--text-main); }
+
+        .impact-btn { width: 100%; margin-top: 0.5rem; padding: 0.45rem 0.6rem; border-radius: 6px; border: 1px solid var(--primary); background: var(--primary-light); color: var(--primary); font-weight: 600; font-size: 0.78rem; cursor: pointer; }
+        .impact-btn:hover { background: var(--primary); color: #fff; }
+        .impact-btn.active { background: var(--primary); color: #fff; }
+
+        .list-full-container { max-width: 980px; margin: 0 auto; background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; box-shadow: 0 1px 3px var(--shadow); }
+        .list-full-container .tree-children { display: block; }
+        .list-full-container .tree-list { max-height: none; overflow: visible; }
+        .list-full-container h2 { color: var(--text-main); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-title">
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            <span>Aircraft Manufacturer — Enterprise Business Capability Model</span>
+            <span class="header-sub">v2.0 · Domains + Services + Capabilities</span>
+        </div>
+        <div class="header-actions">
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor:pointer;width:18px;height:18px;" title="Click any node to inspect it. Move the Detail Level slider right to reveal the Capability layer and its Service/Domain relations. Select a node and click 'Show Blast Radius' to trace its connections."><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div class="user-avatar">TVE</div>
+        </div>
+    </header>
+
+    <div class="controls-bar">
+        <div class="search-box">
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="search-input" placeholder="Search domains, services, capabilities...">
+        </div>
+
+        <div class="control-group">
+            <label>Category</label>
+            <select id="domain-type-filter">
+                <option value="all">All Types</option>
+                <option value="Core">Core Business</option>
+                <option value="Commercial">Commercial</option>
+                <option value="Enabling">Enabling</option>
+            </select>
+        </div>
+
+        <div class="toggle-btn-group" id="view-toggle-group">
+            <button class="toggle-btn" data-view="list">List</button>
+            <button class="toggle-btn active" data-view="force">Force</button>
+            <button class="toggle-btn" data-view="radial">Radial</button>
+            <button class="toggle-btn" data-view="cluster">Cluster</button>
+            <button class="toggle-btn" data-view="hierarchy">Hierarchical</button>
+        </div>
+
+        <div class="slider-container">
+            <div class="slider-labels">
+                <span>Detail Level</span>
+                <span id="slider-value-label">Services</span>
+            </div>
+            <input type="range" id="detail-slider" min="1" max="4" value="3" step="1">
+            <div class="slider-labels" style="font-size: 8.5px; color: #94a3b8;">
+                <span>Domains</span>
+                <span>Capabilities/Ops</span>
+                <span>Services</span>
+                <span>Processes</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="workspace">
+        <div class="canvas-container">
+            <div id="view-graph">
+                <svg id="graph-svg">
+                    <g id="zoom-layer">
+                        <g id="links-layer"></g>
+                        <g id="nodes-layer"></g>
+                    </g>
+                </svg>
+                <div class="legend-panel" id="legend-panel"></div>
+                <div class="canvas-controls">
+                    <button class="icon-btn" title="Zoom In" id="btn-zoom-in"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></button>
+                    <button class="icon-btn" title="Zoom Out" id="btn-zoom-out"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg></button>
+                    <button class="icon-btn" title="Reset View" id="btn-zoom-reset"><svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></button>
+                </div>
+            </div>
+
+            <div id="view-list">
+                <div class="list-full-container">
+                    <h2 style="margin-bottom: 1rem; font-size: 1.1rem; color: #0f172a;">Enterprise Domain Hierarchy</h2>
+                    <div id="full-list-target"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="inspector-panel">
+            <div class="panel-header">
+                <h3>Inspector Panel</h3>
+                <svg class="icon-svg" id="btn-clear-selection" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor:pointer; width:18px; height:18px; color: var(--text-muted)"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </div>
+
+            <div class="panel-section">
+                <div class="panel-section-title">Expandable Tree</div>
+                <div style="font-size: 0.85rem; font-weight: 700; margin-bottom: 0.5rem; color: #1e293b;">Domain → Service → Process</div>
+                <div id="inspector-tree-target"></div>
+            </div>
+
+            <div class="panel-section">
+                <div class="panel-section-title">Node Details</div>
+
+                <div class="detail-card">
+                    <div class="detail-label">Selected Node</div>
+                    <div class="detail-value" id="ctx-name">Select a node to inspect it</div>
+                    <div class="detail-comment" id="ctx-comment"></div>
+                </div>
+
+                <div id="ctx-relations"></div>
+            </div>
+
+            <div class="panel-section" id="impact-section" style="display:none;">
+                <div class="panel-section-title">Blast Radius</div>
+                <button class="impact-btn" id="btn-blast-radius">Show Blast Radius</button>
+            </div>
+
+            <div class="panel-section" style="border-bottom: none;">
+                <div class="panel-section-title">Model Metrics</div>
+                <div class="metrics-grid" id="metrics-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <script id="viz-data" type="application/json">{"domainData": {"id": "root", "name": "Aircraft Manufacturer \u2014 Enterprise Business Capability Model", "children": [{"id": "aero:ProductEngineeringDomain", "name": "Product Engineering Domain", "kind": "Domain", "type": "Core", "color": "#0f766e", "comment": "Designing, certifying, and improving next-generation aircraft.", "operations": ["Manufacturing Operations", "Commercial Operations"], "children": [{"id": "aero:AircraftDesignService", "name": "Aircraft Design & Simulation", "kind": "DomainService", "processes": ["Conceptual Design (CAD/CAE)", "Aerodynamics & CFD Analysis", "Avionics Integration", "Material Science Research"], "capabilities": ["Engineering & Design Capability"], "children": [{"id": "aero:ProcCADDesign", "name": "Conceptual Design (CAD/CAE)", "kind": "Process", "operations": ["Manufacturing Operations", "Commercial Operations"]}, {"id": "aero:ProcCFDAnalysis", "name": "Aerodynamics & CFD Analysis", "kind": "Process", "operations": ["Manufacturing Operations", "Commercial Operations"]}, {"id": "aero:ProcAvionicsIntegration", "name": "Avionics Integration", "kind": "Process", "operations": ["Manufacturing Operations", "Commercial Operations"]}, {"id": "aero:ProcMaterialResearch", "name": "Material Science Research", "kind": "Process", "operations": ["Manufacturing Operations", "Commercial Operations"]}]}, {"id": "aero:CertificationService", "name": "Certification & Regulatory Compliance", "kind": "DomainService", "processes": ["FAA/EASA Type Certification Planning", "Flight Test Data Analysis", "Safety Case Development", "Continued Airworthiness Monitoring"], "capabilities": ["Regulatory Compliance & Certification Capability", "Quality Assurance Capability"], "children": [{"id": "aero:ProcTypeCert", "name": "FAA/EASA Type Certification Planning", "kind": "Process", "operations": ["Manufacturing Operations", "Commercial Operations"]}, {"id": "aero:ProcFlightTestData", "name": "Flight Test Data Analysis", "kind": "Process", "operations": ["Manufacturing Operations", "Commercial Operations"]}, {"id": "aero:ProcSafetyCase", "name": "Safety Case Development", "kind": "Process", "operations": ["Manufacturing Operations", "Commercial Operations"]}, {"id": "aero:ProcAirworthiness", "name": "Continued Airworthiness Monitoring", "kind": "Process", "operations": ["Manufacturing Operations", "Commercial Operations"]}]}, {"id": "aero:CapEngineeringDesign", "name": "Engineering & Design Capability", "kind": "Capability", "comment": "Ability to conceive, model, and simulate airworthy aircraft designs."}, {"id": "aero:CapRegulatoryCompliance", "name": "Regulatory Compliance & Certification Capability", "kind": "Capability", "comment": "Ability to secure and maintain type certification and airworthiness across the fleet lifecycle."}, {"id": "aero:CapQualityAssurance", "name": "Quality Assurance Capability", "kind": "Capability", "comment": "Ability to verify conformance, safety, and reliability across design, build, and support."}, {"id": "aero:OpManufacturing", "name": "Manufacturing Operations", "kind": "Operation"}, {"id": "aero:OpCommercial", "name": "Commercial Operations", "kind": "Operation"}]}, {"id": "aero:AircraftManufacturingDomain", "name": "Aircraft Manufacturing Domain", "kind": "Domain", "type": "Core", "color": "#0f766e", "comment": "Physical assembly, component fabrication, and final integration.", "operations": ["Manufacturing Operations", "Supply Chain Operations"], "children": [{"id": "aero:ComponentFabricationService", "name": "Component Fabrication", "kind": "DomainService", "processes": ["Composite Material Layering", "Precision Machining", "Sheet Metal Forming"], "capabilities": ["Manufacturing Execution Capability"], "children": [{"id": "aero:ProcCompositeLayering", "name": "Composite Material Layering", "kind": "Process", "operations": ["Manufacturing Operations", "Supply Chain Operations"]}, {"id": "aero:ProcPrecisionMachining", "name": "Precision Machining", "kind": "Process", "operations": ["Manufacturing Operations", "Supply Chain Operations"]}, {"id": "aero:ProcSheetMetalForming", "name": "Sheet Metal Forming", "kind": "Process", "operations": ["Manufacturing Operations", "Supply Chain Operations"]}]}, {"id": "aero:MajorAssemblyService", "name": "Major Assembly Integration (MAI)", "kind": "DomainService", "processes": ["Fuselage Joinery", "Wing-to-Body Mating", "Landing Gear Installation"], "capabilities": ["Manufacturing Execution Capability"], "children": [{"id": "aero:ProcFuselageJoinery", "name": "Fuselage Joinery", "kind": "Process", "operations": ["Manufacturing Operations", "Supply Chain Operations"]}, {"id": "aero:ProcWingBodyMating", "name": "Wing-to-Body Mating", "kind": "Process", "operations": ["Manufacturing Operations", "Supply Chain Operations"]}, {"id": "aero:ProcLandingGearInstall", "name": "Landing Gear Installation", "kind": "Process", "operations": ["Manufacturing Operations", "Supply Chain Operations"]}]}, {"id": "aero:FinalAssemblyService", "name": "Final Assembly Line (FAL)", "kind": "DomainService", "processes": ["Engine Mounting", "Cabin Completion & Outfitting", "System Power-On Tests"], "capabilities": ["Manufacturing Execution Capability", "Quality Assurance Capability"], "children": [{"id": "aero:ProcEngineMounting", "name": "Engine Mounting", "kind": "Process", "operations": ["Manufacturing Operations", "Supply Chain Operations"]}, {"id": "aero:ProcCabinOutfitting", "name": "Cabin Completion & Outfitting", "kind": "Process", "operations": ["Manufacturing Operations", "Supply Chain Operations"]}, {"id": "aero:ProcSystemPowerOn", "name": "System Power-On Tests", "kind": "Process", "operations": ["Manufacturing Operations", "Supply Chain Operations"]}]}, {"id": "aero:CapManufacturingExecution", "name": "Manufacturing Execution Capability", "kind": "Capability", "comment": "Ability to fabricate components and integrate them into a finished aircraft."}, {"id": "aero:CapQualityAssurance", "name": "Quality Assurance Capability", "kind": "Capability", "comment": "Ability to verify conformance, safety, and reliability across design, build, and support."}, {"id": "aero:OpManufacturing", "name": "Manufacturing Operations", "kind": "Operation"}, {"id": "aero:OpSupplyChain", "name": "Supply Chain Operations", "kind": "Operation"}]}, {"id": "aero:SupplyChainDomain", "name": "Supply Chain & Logistics Domain", "kind": "Domain", "type": "Enabling", "color": "#4338ca", "comment": "Global procurement, inventory management, and inbound logistics.", "operations": ["Supply Chain Operations", "Manufacturing Operations", "Business Operations"], "children": [{"id": "aero:SRMService", "name": "Supplier Relationship Management (SRM)", "kind": "DomainService", "processes": ["Supplier Selection & Auditing", "Contract Negotiation", "Performance Monitoring"], "capabilities": ["Supplier & Sourcing Management Capability"], "children": [{"id": "aero:ProcSupplierAuditing", "name": "Supplier Selection & Auditing", "kind": "Process", "operations": ["Supply Chain Operations", "Manufacturing Operations", "Business Operations"]}, {"id": "aero:ProcContractNegotiation", "name": "Contract Negotiation", "kind": "Process", "operations": ["Supply Chain Operations", "Manufacturing Operations", "Business Operations"]}, {"id": "aero:ProcPerfMonitoring", "name": "Performance Monitoring", "kind": "Process", "operations": ["Supply Chain Operations", "Manufacturing Operations", "Business Operations"]}]}, {"id": "aero:ProcurementService", "name": "Procurement & Strategic Sourcing", "kind": "DomainService", "processes": ["Raw Material Sourcing", "Long-Lead Item Ordering", "Just-In-Time (JIT) Delivery Planning"], "capabilities": ["Regulatory Compliance & Certification Capability", "Supplier & Sourcing Management Capability", "Logistics & Inventory Capability"], "children": [{"id": "aero:ProcRawMaterials", "name": "Raw Material Sourcing", "kind": "Process", "operations": ["Supply Chain Operations", "Manufacturing Operations", "Business Operations"]}, {"id": "aero:ProcLongLeadOrdering", "name": "Long-Lead Item Ordering", "kind": "Process", "operations": ["Supply Chain Operations", "Manufacturing Operations", "Business Operations"]}, {"id": "aero:ProcJITPlanning", "name": "Just-In-Time (JIT) Delivery Planning", "kind": "Process", "operations": ["Supply Chain Operations", "Manufacturing Operations", "Business Operations"]}]}, {"id": "aero:GlobalLogisticsService", "name": "Global Logistics & Warehousing", "kind": "DomainService", "processes": ["Parts Tracking", "Warehousing Optimization", "AOG (Aircraft on Ground) Logistics"], "capabilities": ["Logistics & Inventory Capability"], "children": [{"id": "aero:ProcPartsTracking", "name": "Parts Tracking", "kind": "Process", "operations": ["Supply Chain Operations", "Manufacturing Operations", "Business Operations"]}, {"id": "aero:ProcWarehouseOptimization", "name": "Warehousing Optimization", "kind": "Process", "operations": ["Supply Chain Operations", "Manufacturing Operations", "Business Operations"]}, {"id": "aero:ProcAOGLogistics", "name": "AOG (Aircraft on Ground) Logistics", "kind": "Process", "operations": ["Supply Chain Operations", "Manufacturing Operations", "Business Operations"]}]}, {"id": "aero:CapRegulatoryCompliance", "name": "Regulatory Compliance & Certification Capability", "kind": "Capability", "comment": "Ability to secure and maintain type certification and airworthiness across the fleet lifecycle."}, {"id": "aero:CapSupplierSourcing", "name": "Supplier & Sourcing Management Capability", "kind": "Capability", "comment": "Ability to select, qualify, and manage the supplier base and strategic sourcing."}, {"id": "aero:CapLogisticsInventory", "name": "Logistics & Inventory Capability", "kind": "Capability", "comment": "Ability to move parts and materials reliably across the global supply network."}, {"id": "aero:OpSupplyChain", "name": "Supply Chain Operations", "kind": "Operation"}, {"id": "aero:OpManufacturing", "name": "Manufacturing Operations", "kind": "Operation"}, {"id": "aero:OpBusiness", "name": "Business Operations", "kind": "Operation"}]}, {"id": "aero:SalesAndMarketingDomain", "name": "Sales & Marketing Domain", "kind": "Domain", "type": "Commercial", "color": "#b45309", "comment": "Client relationship building, fleet planning, and closing contracts.", "operations": ["Commercial Operations", "Business Operations"], "children": [{"id": "aero:CRMService", "name": "Customer Relationship Management (CRM)", "kind": "DomainService", "processes": ["Lead Generation", "Client Needs Assessment", "High-Net-Worth Individual Outreach"], "capabilities": ["Customer Relationship Capability", "Strategic Portfolio Management Capability"], "children": [{"id": "aero:ProcLeadGeneration", "name": "Lead Generation", "kind": "Process", "operations": ["Commercial Operations", "Business Operations"]}, {"id": "aero:ProcNeedsAssessment", "name": "Client Needs Assessment", "kind": "Process", "operations": ["Commercial Operations", "Business Operations"]}, {"id": "aero:ProcHNWIOutreach", "name": "High-Net-Worth Individual Outreach", "kind": "Process", "operations": ["Commercial Operations", "Business Operations"]}]}, {"id": "aero:SalesFinancingService", "name": "Aircraft Sales & Financing", "kind": "DomainService", "processes": ["Proposal Generation", "Price Negotiation", "Financing and Leasing Support", "Used Aircraft Trade-In"], "capabilities": ["Revenue & Financing Capability"], "children": [{"id": "aero:ProcProposalGeneration", "name": "Proposal Generation", "kind": "Process", "operations": ["Commercial Operations", "Business Operations"]}, {"id": "aero:ProcPriceNegotiation", "name": "Price Negotiation", "kind": "Process", "operations": ["Commercial Operations", "Business Operations"]}, {"id": "aero:ProcFinancingSupport", "name": "Financing and Leasing Support", "kind": "Process", "operations": ["Commercial Operations", "Business Operations"]}, {"id": "aero:ProcTradeIn", "name": "Used Aircraft Trade-In", "kind": "Process", "operations": ["Commercial Operations", "Business Operations"]}]}, {"id": "aero:CapCustomerRelationship", "name": "Customer Relationship Capability", "kind": "Capability", "comment": "Ability to build and sustain long-term relationships with operators and buyers."}, {"id": "aero:CapRevenueFinancing", "name": "Revenue & Financing Capability", "kind": "Capability", "comment": "Ability to structure, price, and finance aircraft transactions."}, {"id": "aero:CapStrategicPortfolio", "name": "Strategic Portfolio Management Capability", "kind": "Capability", "comment": "Ability to set enterprise direction: market position, brand, and M&A strategy."}, {"id": "aero:OpCommercial", "name": "Commercial Operations", "kind": "Operation"}, {"id": "aero:OpBusiness", "name": "Business Operations", "kind": "Operation"}]}, {"id": "aero:CustomerSupportDomain", "name": "Customer Support & Aftermarket Domain", "kind": "Domain", "type": "Commercial", "color": "#b45309", "comment": "Lifetime service, maintenance, and operational support.", "operations": ["Customer Support Operations", "Commercial Operations"], "children": [{"id": "aero:PlannedSupportServiceInst", "name": "Planned Support & Fleet Maintenance", "kind": "DomainService", "processes": ["Scheduled Inspection Planning", "Component Exchange Programs (CEP)", "Service Bulletin (SB) Implementations"], "capabilities": ["Customer Relationship Capability", "Aftermarket Service Delivery Capability"], "children": [{"id": "aero:ProcScheduledInspection", "name": "Scheduled Inspection Planning", "kind": "Process", "operations": ["Customer Support Operations", "Commercial Operations"]}, {"id": "aero:ProcComponentExchange", "name": "Component Exchange Programs (CEP)", "kind": "Process", "operations": ["Customer Support Operations", "Commercial Operations"]}, {"id": "aero:ProcServiceBulletin", "name": "Service Bulletin (SB) Implementations", "kind": "Process", "operations": ["Customer Support Operations", "Commercial Operations"]}]}, {"id": "aero:MROServiceInst", "name": "MRO (Maintenance, Repair, & Overhaul)", "kind": "DomainService", "processes": ["Engine Overhaul Management", "Structural Repairs", "Avionics Upgrades"], "capabilities": ["Regulatory Compliance & Certification Capability", "Quality Assurance Capability", "Aftermarket Service Delivery Capability"], "children": [{"id": "aero:ProcEngineOverhaul", "name": "Engine Overhaul Management", "kind": "Process", "operations": ["Customer Support Operations", "Commercial Operations"]}, {"id": "aero:ProcStructuralRepairs", "name": "Structural Repairs", "kind": "Process", "operations": ["Customer Support Operations", "Commercial Operations"]}, {"id": "aero:ProcAvionicsUpgrades", "name": "Avionics Upgrades", "kind": "Process", "operations": ["Customer Support Operations", "Commercial Operations"]}]}, {"id": "aero:OnDemandSupportServiceInst", "name": "On-Demand Support (AOG)", "kind": "DomainService", "processes": ["24/7 Technical Hotline", "Mobile Repair Team (MRT) Deployment", "Urgent Parts Dispatch"], "capabilities": ["Aftermarket Service Delivery Capability"], "children": [{"id": "aero:Proc247Hotline", "name": "24/7 Technical Hotline", "kind": "Process", "operations": ["Customer Support Operations", "Commercial Operations"]}, {"id": "aero:ProcMRTDeployment", "name": "Mobile Repair Team (MRT) Deployment", "kind": "Process", "operations": ["Customer Support Operations", "Commercial Operations"]}, {"id": "aero:ProcUrgentPartsDispatch", "name": "Urgent Parts Dispatch", "kind": "Process", "operations": ["Customer Support Operations", "Commercial Operations"]}]}, {"id": "aero:CapRegulatoryCompliance", "name": "Regulatory Compliance & Certification Capability", "kind": "Capability", "comment": "Ability to secure and maintain type certification and airworthiness across the fleet lifecycle."}, {"id": "aero:CapQualityAssurance", "name": "Quality Assurance Capability", "kind": "Capability", "comment": "Ability to verify conformance, safety, and reliability across design, build, and support."}, {"id": "aero:CapCustomerRelationship", "name": "Customer Relationship Capability", "kind": "Capability", "comment": "Ability to build and sustain long-term relationships with operators and buyers."}, {"id": "aero:CapAftermarketServiceDelivery", "name": "Aftermarket Service Delivery Capability", "kind": "Capability", "comment": "Ability to keep customer fleets flying through planned, unplanned, and overhaul support."}, {"id": "aero:OpCustomerSupport", "name": "Customer Support Operations", "kind": "Operation"}, {"id": "aero:OpCommercial", "name": "Commercial Operations", "kind": "Operation"}]}, {"id": "aero:CorporateStrategyDomain", "name": "Corporate Strategy & Finance Domain", "kind": "Domain", "type": "Enabling", "color": "#4338ca", "comment": "Strategic planning, financial control, and overall governance.", "operations": ["Business Operations"], "children": [{"id": "aero:FPAAnalysisService", "name": "Financial Planning & Analysis (FP&A)", "kind": "DomainService", "processes": ["Revenue Forecasting", "Cost Accounting & Control", "Investment Appraisal"], "capabilities": ["Revenue & Financing Capability", "Financial Planning & Control Capability"], "children": [{"id": "aero:ProcRevenueForecasting", "name": "Revenue Forecasting", "kind": "Process", "operations": ["Business Operations"]}, {"id": "aero:ProcCostAccounting", "name": "Cost Accounting & Control", "kind": "Process", "operations": ["Business Operations"]}, {"id": "aero:ProcInvestmentAppraisal", "name": "Investment Appraisal", "kind": "Process", "operations": ["Business Operations"]}]}, {"id": "aero:StrategicPlanningService", "name": "Strategic Planning", "kind": "DomainService", "processes": ["Market Analysis", "Mergers & Acquisitions Evaluation", "Brand Management"], "capabilities": ["Strategic Portfolio Management Capability"], "children": [{"id": "aero:ProcMarketAnalysis", "name": "Market Analysis", "kind": "Process", "operations": ["Business Operations"]}, {"id": "aero:ProcMAEvaluation", "name": "Mergers & Acquisitions Evaluation", "kind": "Process", "operations": ["Business Operations"]}, {"id": "aero:ProcBrandManagement", "name": "Brand Management", "kind": "Process", "operations": ["Business Operations"]}]}, {"id": "aero:CapRevenueFinancing", "name": "Revenue & Financing Capability", "kind": "Capability", "comment": "Ability to structure, price, and finance aircraft transactions."}, {"id": "aero:CapFinancialPlanningControl", "name": "Financial Planning & Control Capability", "kind": "Capability", "comment": "Ability to forecast, account for, and appraise the financial performance of the enterprise."}, {"id": "aero:CapStrategicPortfolio", "name": "Strategic Portfolio Management Capability", "kind": "Capability", "comment": "Ability to set enterprise direction: market position, brand, and M&A strategy."}, {"id": "aero:OpBusiness", "name": "Business Operations", "kind": "Operation"}]}]}, "nodeDetails": {"aero:ProductEngineeringDomain": {"id": "aero:ProductEngineeringDomain", "label": "Product Engineering Domain", "type": "Domain", "comment": "Designing, certifying, and improving next-generation aircraft.", "category": "Core", "operations": ["Manufacturing Operations", "Commercial Operations"], "services": ["Aircraft Design & Simulation", "Certification & Regulatory Compliance"], "capabilities": ["Engineering & Design Capability", "Quality Assurance Capability", "Regulatory Compliance & Certification Capability"]}, "aero:AircraftManufacturingDomain": {"id": "aero:AircraftManufacturingDomain", "label": "Aircraft Manufacturing Domain", "type": "Domain", "comment": "Physical assembly, component fabrication, and final integration.", "category": "Core", "operations": ["Manufacturing Operations", "Supply Chain Operations"], "services": ["Component Fabrication", "Major Assembly Integration (MAI)", "Final Assembly Line (FAL)"], "capabilities": ["Manufacturing Execution Capability", "Quality Assurance Capability"]}, "aero:SupplyChainDomain": {"id": "aero:SupplyChainDomain", "label": "Supply Chain & Logistics Domain", "type": "Domain", "comment": "Global procurement, inventory management, and inbound logistics.", "category": "Enabling", "operations": ["Supply Chain Operations", "Manufacturing Operations", "Business Operations"], "services": ["Supplier Relationship Management (SRM)", "Procurement & Strategic Sourcing", "Global Logistics & Warehousing"], "capabilities": ["Logistics & Inventory Capability", "Regulatory Compliance & Certification Capability", "Supplier & Sourcing Management Capability"]}, "aero:SalesAndMarketingDomain": {"id": "aero:SalesAndMarketingDomain", "label": "Sales & Marketing Domain", "type": "Domain", "comment": "Client relationship building, fleet planning, and closing contracts.", "category": "Commercial", "operations": ["Commercial Operations", "Business Operations"], "services": ["Customer Relationship Management (CRM)", "Aircraft Sales & Financing"], "capabilities": ["Customer Relationship Capability", "Revenue & Financing Capability", "Strategic Portfolio Management Capability"]}, "aero:CustomerSupportDomain": {"id": "aero:CustomerSupportDomain", "label": "Customer Support & Aftermarket Domain", "type": "Domain", "comment": "Lifetime service, maintenance, and operational support.", "category": "Commercial", "operations": ["Customer Support Operations", "Commercial Operations"], "services": ["Planned Support & Fleet Maintenance", "MRO (Maintenance, Repair, & Overhaul)", "On-Demand Support (AOG)"], "capabilities": ["Aftermarket Service Delivery Capability", "Customer Relationship Capability", "Quality Assurance Capability", "Regulatory Compliance & Certification Capability"]}, "aero:CorporateStrategyDomain": {"id": "aero:CorporateStrategyDomain", "label": "Corporate Strategy & Finance Domain", "type": "Domain", "comment": "Strategic planning, financial control, and overall governance.", "category": "Enabling", "operations": ["Business Operations"], "services": ["Financial Planning & Analysis (FP&A)", "Strategic Planning"], "capabilities": ["Financial Planning & Control Capability", "Revenue & Financing Capability", "Strategic Portfolio Management Capability"]}, "aero:AircraftDesignService": {"id": "aero:AircraftDesignService", "label": "Aircraft Design & Simulation", "type": "DomainService", "comment": "", "domain": "Product Engineering Domain", "processes": ["Conceptual Design (CAD/CAE)", "Aerodynamics & CFD Analysis", "Avionics Integration", "Material Science Research"], "capabilities": ["Engineering & Design Capability"]}, "aero:CertificationService": {"id": "aero:CertificationService", "label": "Certification & Regulatory Compliance", "type": "DomainService", "comment": "", "domain": "Product Engineering Domain", "processes": ["FAA/EASA Type Certification Planning", "Flight Test Data Analysis", "Safety Case Development", "Continued Airworthiness Monitoring"], "capabilities": ["Regulatory Compliance & Certification Capability", "Quality Assurance Capability"]}, "aero:ComponentFabricationService": {"id": "aero:ComponentFabricationService", "label": "Component Fabrication", "type": "DomainService", "comment": "", "domain": "Aircraft Manufacturing Domain", "processes": ["Composite Material Layering", "Precision Machining", "Sheet Metal Forming"], "capabilities": ["Manufacturing Execution Capability"]}, "aero:MajorAssemblyService": {"id": "aero:MajorAssemblyService", "label": "Major Assembly Integration (MAI)", "type": "DomainService", "comment": "", "domain": "Aircraft Manufacturing Domain", "processes": ["Fuselage Joinery", "Wing-to-Body Mating", "Landing Gear Installation"], "capabilities": ["Manufacturing Execution Capability"]}, "aero:FinalAssemblyService": {"id": "aero:FinalAssemblyService", "label": "Final Assembly Line (FAL)", "type": "DomainService", "comment": "", "domain": "Aircraft Manufacturing Domain", "processes": ["Engine Mounting", "Cabin Completion & Outfitting", "System Power-On Tests"], "capabilities": ["Manufacturing Execution Capability", "Quality Assurance Capability"]}, "aero:SRMService": {"id": "aero:SRMService", "label": "Supplier Relationship Management (SRM)", "type": "DomainService", "comment": "", "domain": "Supply Chain & Logistics Domain", "processes": ["Supplier Selection & Auditing", "Contract Negotiation", "Performance Monitoring"], "capabilities": ["Supplier & Sourcing Management Capability"]}, "aero:ProcurementService": {"id": "aero:ProcurementService", "label": "Procurement & Strategic Sourcing", "type": "DomainService", "comment": "", "domain": "Supply Chain & Logistics Domain", "processes": ["Raw Material Sourcing", "Long-Lead Item Ordering", "Just-In-Time (JIT) Delivery Planning"], "capabilities": ["Regulatory Compliance & Certification Capability", "Supplier & Sourcing Management Capability", "Logistics & Inventory Capability"]}, "aero:GlobalLogisticsService": {"id": "aero:GlobalLogisticsService", "label": "Global Logistics & Warehousing", "type": "DomainService", "comment": "", "domain": "Supply Chain & Logistics Domain", "processes": ["Parts Tracking", "Warehousing Optimization", "AOG (Aircraft on Ground) Logistics"], "capabilities": ["Logistics & Inventory Capability"]}, "aero:CRMService": {"id": "aero:CRMService", "label": "Customer Relationship Management (CRM)", "type": "DomainService", "comment": "", "domain": "Sales & Marketing Domain", "processes": ["Lead Generation", "Client Needs Assessment", "High-Net-Worth Individual Outreach"], "capabilities": ["Customer Relationship Capability", "Strategic Portfolio Management Capability"]}, "aero:SalesFinancingService": {"id": "aero:SalesFinancingService", "label": "Aircraft Sales & Financing", "type": "DomainService", "comment": "", "domain": "Sales & Marketing Domain", "processes": ["Proposal Generation", "Price Negotiation", "Financing and Leasing Support", "Used Aircraft Trade-In"], "capabilities": ["Revenue & Financing Capability"]}, "aero:PlannedSupportServiceInst": {"id": "aero:PlannedSupportServiceInst", "label": "Planned Support & Fleet Maintenance", "type": "DomainService", "comment": "", "domain": "Customer Support & Aftermarket Domain", "processes": ["Scheduled Inspection Planning", "Component Exchange Programs (CEP)", "Service Bulletin (SB) Implementations"], "capabilities": ["Customer Relationship Capability", "Aftermarket Service Delivery Capability"]}, "aero:MROServiceInst": {"id": "aero:MROServiceInst", "label": "MRO (Maintenance, Repair, & Overhaul)", "type": "DomainService", "comment": "", "domain": "Customer Support & Aftermarket Domain", "processes": ["Engine Overhaul Management", "Structural Repairs", "Avionics Upgrades"], "capabilities": ["Regulatory Compliance & Certification Capability", "Quality Assurance Capability", "Aftermarket Service Delivery Capability"]}, "aero:OnDemandSupportServiceInst": {"id": "aero:OnDemandSupportServiceInst", "label": "On-Demand Support (AOG)", "type": "DomainService", "comment": "", "domain": "Customer Support & Aftermarket Domain", "processes": ["24/7 Technical Hotline", "Mobile Repair Team (MRT) Deployment", "Urgent Parts Dispatch"], "capabilities": ["Aftermarket Service Delivery Capability"]}, "aero:FPAAnalysisService": {"id": "aero:FPAAnalysisService", "label": "Financial Planning & Analysis (FP&A)", "type": "DomainService", "comment": "", "domain": "Corporate Strategy & Finance Domain", "processes": ["Revenue Forecasting", "Cost Accounting & Control", "Investment Appraisal"], "capabilities": ["Revenue & Financing Capability", "Financial Planning & Control Capability"]}, "aero:StrategicPlanningService": {"id": "aero:StrategicPlanningService", "label": "Strategic Planning", "type": "DomainService", "comment": "", "domain": "Corporate Strategy & Finance Domain", "processes": ["Market Analysis", "Mergers & Acquisitions Evaluation", "Brand Management"], "capabilities": ["Strategic Portfolio Management Capability"]}, "aero:ProcCADDesign": {"id": "aero:ProcCADDesign", "label": "Conceptual Design (CAD/CAE)", "type": "Process", "comment": "", "service": "Aircraft Design & Simulation", "operations": ["Manufacturing Operations", "Commercial Operations"]}, "aero:ProcCFDAnalysis": {"id": "aero:ProcCFDAnalysis", "label": "Aerodynamics & CFD Analysis", "type": "Process", "comment": "", "service": "Aircraft Design & Simulation", "operations": ["Manufacturing Operations", "Commercial Operations"]}, "aero:ProcAvionicsIntegration": {"id": "aero:ProcAvionicsIntegration", "label": "Avionics Integration", "type": "Process", "comment": "", "service": "Aircraft Design & Simulation", "operations": ["Manufacturing Operations", "Commercial Operations"]}, "aero:ProcMaterialResearch": {"id": "aero:ProcMaterialResearch", "label": "Material Science Research", "type": "Process", "comment": "", "service": "Aircraft Design & Simulation", "operations": ["Manufacturing Operations", "Commercial Operations"]}, "aero:ProcTypeCert": {"id": "aero:ProcTypeCert", "label": "FAA/EASA Type Certification Planning", "type": "Process", "comment": "", "service": "Certification & Regulatory Compliance", "operations": ["Manufacturing Operations", "Commercial Operations"]}, "aero:ProcFlightTestData": {"id": "aero:ProcFlightTestData", "label": "Flight Test Data Analysis", "type": "Process", "comment": "", "service": "Certification & Regulatory Compliance", "operations": ["Manufacturing Operations", "Commercial Operations"]}, "aero:ProcSafetyCase": {"id": "aero:ProcSafetyCase", "label": "Safety Case Development", "type": "Process", "comment": "", "service": "Certification & Regulatory Compliance", "operations": ["Manufacturing Operations", "Commercial Operations"]}, "aero:ProcAirworthiness": {"id": "aero:ProcAirworthiness", "label": "Continued Airworthiness Monitoring", "type": "Process", "comment": "", "service": "Certification & Regulatory Compliance", "operations": ["Manufacturing Operations", "Commercial Operations"]}, "aero:ProcCompositeLayering": {"id": "aero:ProcCompositeLayering", "label": "Composite Material Layering", "type": "Process", "comment": "", "service": "Component Fabrication", "operations": ["Manufacturing Operations", "Supply Chain Operations"]}, "aero:ProcPrecisionMachining": {"id": "aero:ProcPrecisionMachining", "label": "Precision Machining", "type": "Process", "comment": "", "service": "Component Fabrication", "operations": ["Manufacturing Operations", "Supply Chain Operations"]}, "aero:ProcSheetMetalForming": {"id": "aero:ProcSheetMetalForming", "label": "Sheet Metal Forming", "type": "Process", "comment": "", "service": "Component Fabrication", "operations": ["Manufacturing Operations", "Supply Chain Operations"]}, "aero:ProcFuselageJoinery": {"id": "aero:ProcFuselageJoinery", "label": "Fuselage Joinery", "type": "Process", "comment": "", "service": "Major Assembly Integration (MAI)", "operations": ["Manufacturing Operations", "Supply Chain Operations"]}, "aero:ProcWingBodyMating": {"id": "aero:ProcWingBodyMating", "label": "Wing-to-Body Mating", "type": "Process", "comment": "", "service": "Major Assembly Integration (MAI)", "operations": ["Manufacturing Operations", "Supply Chain Operations"]}, "aero:ProcLandingGearInstall": {"id": "aero:ProcLandingGearInstall", "label": "Landing Gear Installation", "type": "Process", "comment": "", "service": "Major Assembly Integration (MAI)", "operations": ["Manufacturing Operations", "Supply Chain Operations"]}, "aero:ProcEngineMounting": {"id": "aero:ProcEngineMounting", "label": "Engine Mounting", "type": "Process", "comment": "", "service": "Final Assembly Line (FAL)", "operations": ["Manufacturing Operations", "Supply Chain Operations"]}, "aero:ProcCabinOutfitting": {"id": "aero:ProcCabinOutfitting", "label": "Cabin Completion & Outfitting", "type": "Process", "comment": "", "service": "Final Assembly Line (FAL)", "operations": ["Manufacturing Operations", "Supply Chain Operations"]}, "aero:ProcSystemPowerOn": {"id": "aero:ProcSystemPowerOn", "label": "System Power-On Tests", "type": "Process", "comment": "", "service": "Final Assembly Line (FAL)", "operations": ["Manufacturing Operations", "Supply Chain Operations"]}, "aero:ProcSupplierAuditing": {"id": "aero:ProcSupplierAuditing", "label": "Supplier Selection & Auditing", "type": "Process", "comment": "", "service": "Supplier Relationship Management (SRM)", "operations": ["Supply Chain Operations", "Manufacturing Operations", "Business Operations"]}, "aero:ProcContractNegotiation": {"id": "aero:ProcContractNegotiation", "label": "Contract Negotiation", "type": "Process", "comment": "", "service": "Supplier Relationship Management (SRM)", "operations": ["Supply Chain Operations", "Manufacturing Operations", "Business Operations"]}, "aero:ProcPerfMonitoring": {"id": "aero:ProcPerfMonitoring", "label": "Performance Monitoring", "type": "Process", "comment": "", "service": "Supplier Relationship Management (SRM)", "operations": ["Supply Chain Operations", "Manufacturing Operations", "Business Operations"]}, "aero:ProcRawMaterials": {"id": "aero:ProcRawMaterials", "label": "Raw Material Sourcing", "type": "Process", "comment": "", "service": "Procurement & Strategic Sourcing", "operations": ["Supply Chain Operations", "Manufacturing Operations", "Business Operations"]}, "aero:ProcLongLeadOrdering": {"id": "aero:ProcLongLeadOrdering", "label": "Long-Lead Item Ordering", "type": "Process", "comment": "", "service": "Procurement & Strategic Sourcing", "operations": ["Supply Chain Operations", "Manufacturing Operations", "Business Operations"]}, "aero:ProcJITPlanning": {"id": "aero:ProcJITPlanning", "label": "Just-In-Time (JIT) Delivery Planning", "type": "Process", "comment": "", "service": "Procurement & Strategic Sourcing", "operations": ["Supply Chain Operations", "Manufacturing Operations", "Business Operations"]}, "aero:ProcPartsTracking": {"id": "aero:ProcPartsTracking", "label": "Parts Tracking", "type": "Process", "comment": "", "service": "Global Logistics & Warehousing", "operations": ["Supply Chain Operations", "Manufacturing Operations", "Business Operations"]}, "aero:ProcWarehouseOptimization": {"id": "aero:ProcWarehouseOptimization", "label": "Warehousing Optimization", "type": "Process", "comment": "", "service": "Global Logistics & Warehousing", "operations": ["Supply Chain Operations", "Manufacturing Operations", "Business Operations"]}, "aero:ProcAOGLogistics": {"id": "aero:ProcAOGLogistics", "label": "AOG (Aircraft on Ground) Logistics", "type": "Process", "comment": "", "service": "Global Logistics & Warehousing", "operations": ["Supply Chain Operations", "Manufacturing Operations", "Business Operations"]}, "aero:ProcLeadGeneration": {"id": "aero:ProcLeadGeneration", "label": "Lead Generation", "type": "Process", "comment": "", "service": "Customer Relationship Management (CRM)", "operations": ["Commercial Operations", "Business Operations"]}, "aero:ProcNeedsAssessment": {"id": "aero:ProcNeedsAssessment", "label": "Client Needs Assessment", "type": "Process", "comment": "", "service": "Customer Relationship Management (CRM)", "operations": ["Commercial Operations", "Business Operations"]}, "aero:ProcHNWIOutreach": {"id": "aero:ProcHNWIOutreach", "label": "High-Net-Worth Individual Outreach", "type": "Process", "comment": "", "service": "Customer Relationship Management (CRM)", "operations": ["Commercial Operations", "Business Operations"]}, "aero:ProcProposalGeneration": {"id": "aero:ProcProposalGeneration", "label": "Proposal Generation", "type": "Process", "comment": "", "service": "Aircraft Sales & Financing", "operations": ["Commercial Operations", "Business Operations"]}, "aero:ProcPriceNegotiation": {"id": "aero:ProcPriceNegotiation", "label": "Price Negotiation", "type": "Process", "comment": "", "service": "Aircraft Sales & Financing", "operations": ["Commercial Operations", "Business Operations"]}, "aero:ProcFinancingSupport": {"id": "aero:ProcFinancingSupport", "label": "Financing and Leasing Support", "type": "Process", "comment": "", "service": "Aircraft Sales & Financing", "operations": ["Commercial Operations", "Business Operations"]}, "aero:ProcTradeIn": {"id": "aero:ProcTradeIn", "label": "Used Aircraft Trade-In", "type": "Process", "comment": "", "service": "Aircraft Sales & Financing", "operations": ["Commercial Operations", "Business Operations"]}, "aero:ProcScheduledInspection": {"id": "aero:ProcScheduledInspection", "label": "Scheduled Inspection Planning", "type": "Process", "comment": "", "service": "Planned Support & Fleet Maintenance", "operations": ["Customer Support Operations", "Commercial Operations"]}, "aero:ProcComponentExchange": {"id": "aero:ProcComponentExchange", "label": "Component Exchange Programs (CEP)", "type": "Process", "comment": "", "service": "Planned Support & Fleet Maintenance", "operations": ["Customer Support Operations", "Commercial Operations"]}, "aero:ProcServiceBulletin": {"id": "aero:ProcServiceBulletin", "label": "Service Bulletin (SB) Implementations", "type": "Process", "comment": "", "service": "Planned Support & Fleet Maintenance", "operations": ["Customer Support Operations", "Commercial Operations"]}, "aero:ProcEngineOverhaul": {"id": "aero:ProcEngineOverhaul", "label": "Engine Overhaul Management", "type": "Process", "comment": "", "service": "MRO (Maintenance, Repair, & Overhaul)", "operations": ["Customer Support Operations", "Commercial Operations"]}, "aero:ProcStructuralRepairs": {"id": "aero:ProcStructuralRepairs", "label": "Structural Repairs", "type": "Process", "comment": "", "service": "MRO (Maintenance, Repair, & Overhaul)", "operations": ["Customer Support Operations", "Commercial Operations"]}, "aero:ProcAvionicsUpgrades": {"id": "aero:ProcAvionicsUpgrades", "label": "Avionics Upgrades", "type": "Process", "comment": "", "service": "MRO (Maintenance, Repair, & Overhaul)", "operations": ["Customer Support Operations", "Commercial Operations"]}, "aero:Proc247Hotline": {"id": "aero:Proc247Hotline", "label": "24/7 Technical Hotline", "type": "Process", "comment": "", "service": "On-Demand Support (AOG)", "operations": ["Customer Support Operations", "Commercial Operations"]}, "aero:ProcMRTDeployment": {"id": "aero:ProcMRTDeployment", "label": "Mobile Repair Team (MRT) Deployment", "type": "Process", "comment": "", "service": "On-Demand Support (AOG)", "operations": ["Customer Support Operations", "Commercial Operations"]}, "aero:ProcUrgentPartsDispatch": {"id": "aero:ProcUrgentPartsDispatch", "label": "Urgent Parts Dispatch", "type": "Process", "comment": "", "service": "On-Demand Support (AOG)", "operations": ["Customer Support Operations", "Commercial Operations"]}, "aero:ProcRevenueForecasting": {"id": "aero:ProcRevenueForecasting", "label": "Revenue Forecasting", "type": "Process", "comment": "", "service": "Financial Planning & Analysis (FP&A)", "operations": ["Business Operations"]}, "aero:ProcCostAccounting": {"id": "aero:ProcCostAccounting", "label": "Cost Accounting & Control", "type": "Process", "comment": "", "service": "Financial Planning & Analysis (FP&A)", "operations": ["Business Operations"]}, "aero:ProcInvestmentAppraisal": {"id": "aero:ProcInvestmentAppraisal", "label": "Investment Appraisal", "type": "Process", "comment": "", "service": "Financial Planning & Analysis (FP&A)", "operations": ["Business Operations"]}, "aero:ProcMarketAnalysis": {"id": "aero:ProcMarketAnalysis", "label": "Market Analysis", "type": "Process", "comment": "", "service": "Strategic Planning", "operations": ["Business Operations"]}, "aero:ProcMAEvaluation": {"id": "aero:ProcMAEvaluation", "label": "Mergers & Acquisitions Evaluation", "type": "Process", "comment": "", "service": "Strategic Planning", "operations": ["Business Operations"]}, "aero:ProcBrandManagement": {"id": "aero:ProcBrandManagement", "label": "Brand Management", "type": "Process", "comment": "", "service": "Strategic Planning", "operations": ["Business Operations"]}, "aero:OpBusiness": {"id": "aero:OpBusiness", "label": "Business Operations", "type": "Operation", "comment": "", "domains": ["Supply Chain & Logistics Domain", "Sales & Marketing Domain", "Corporate Strategy & Finance Domain"]}, "aero:OpCommercial": {"id": "aero:OpCommercial", "label": "Commercial Operations", "type": "Operation", "comment": "", "domains": ["Product Engineering Domain", "Sales & Marketing Domain", "Customer Support & Aftermarket Domain"]}, "aero:OpCustomerSupport": {"id": "aero:OpCustomerSupport", "label": "Customer Support Operations", "type": "Operation", "comment": "", "domains": ["Customer Support & Aftermarket Domain"]}, "aero:OpSupplyChain": {"id": "aero:OpSupplyChain", "label": "Supply Chain Operations", "type": "Operation", "comment": "", "domains": ["Aircraft Manufacturing Domain", "Supply Chain & Logistics Domain"]}, "aero:OpManufacturing": {"id": "aero:OpManufacturing", "label": "Manufacturing Operations", "type": "Operation", "comment": "", "domains": ["Product Engineering Domain", "Aircraft Manufacturing Domain", "Supply Chain & Logistics Domain"]}, "aero:CapEngineeringDesign": {"id": "aero:CapEngineeringDesign", "label": "Engineering & Design Capability", "type": "Capability", "comment": "Ability to conceive, model, and simulate airworthy aircraft designs.", "enabledByServices": ["Aircraft Design & Simulation"], "supportsDomains": ["Product Engineering Domain"]}, "aero:CapRegulatoryCompliance": {"id": "aero:CapRegulatoryCompliance", "label": "Regulatory Compliance & Certification Capability", "type": "Capability", "comment": "Ability to secure and maintain type certification and airworthiness across the fleet lifecycle.", "enabledByServices": ["Certification & Regulatory Compliance", "MRO (Maintenance, Repair, & Overhaul)", "Procurement & Strategic Sourcing"], "supportsDomains": ["Product Engineering Domain", "Customer Support & Aftermarket Domain", "Supply Chain & Logistics Domain"]}, "aero:CapManufacturingExecution": {"id": "aero:CapManufacturingExecution", "label": "Manufacturing Execution Capability", "type": "Capability", "comment": "Ability to fabricate components and integrate them into a finished aircraft.", "enabledByServices": ["Component Fabrication", "Major Assembly Integration (MAI)", "Final Assembly Line (FAL)"], "supportsDomains": ["Aircraft Manufacturing Domain"]}, "aero:CapQualityAssurance": {"id": "aero:CapQualityAssurance", "label": "Quality Assurance Capability", "type": "Capability", "comment": "Ability to verify conformance, safety, and reliability across design, build, and support.", "enabledByServices": ["Final Assembly Line (FAL)", "Certification & Regulatory Compliance", "MRO (Maintenance, Repair, & Overhaul)"], "supportsDomains": ["Aircraft Manufacturing Domain", "Product Engineering Domain", "Customer Support & Aftermarket Domain"]}, "aero:CapSupplierSourcing": {"id": "aero:CapSupplierSourcing", "label": "Supplier & Sourcing Management Capability", "type": "Capability", "comment": "Ability to select, qualify, and manage the supplier base and strategic sourcing.", "enabledByServices": ["Supplier Relationship Management (SRM)", "Procurement & Strategic Sourcing"], "supportsDomains": ["Supply Chain & Logistics Domain"]}, "aero:CapLogisticsInventory": {"id": "aero:CapLogisticsInventory", "label": "Logistics & Inventory Capability", "type": "Capability", "comment": "Ability to move parts and materials reliably across the global supply network.", "enabledByServices": ["Global Logistics & Warehousing", "Procurement & Strategic Sourcing"], "supportsDomains": ["Supply Chain & Logistics Domain"]}, "aero:CapCustomerRelationship": {"id": "aero:CapCustomerRelationship", "label": "Customer Relationship Capability", "type": "Capability", "comment": "Ability to build and sustain long-term relationships with operators and buyers.", "enabledByServices": ["Customer Relationship Management (CRM)", "Planned Support & Fleet Maintenance"], "supportsDomains": ["Sales & Marketing Domain", "Customer Support & Aftermarket Domain"]}, "aero:CapRevenueFinancing": {"id": "aero:CapRevenueFinancing", "label": "Revenue & Financing Capability", "type": "Capability", "comment": "Ability to structure, price, and finance aircraft transactions.", "enabledByServices": ["Aircraft Sales & Financing", "Financial Planning & Analysis (FP&A)"], "supportsDomains": ["Sales & Marketing Domain", "Corporate Strategy & Finance Domain"]}, "aero:CapAftermarketServiceDelivery": {"id": "aero:CapAftermarketServiceDelivery", "label": "Aftermarket Service Delivery Capability", "type": "Capability", "comment": "Ability to keep customer fleets flying through planned, unplanned, and overhaul support.", "enabledByServices": ["Planned Support & Fleet Maintenance", "MRO (Maintenance, Repair, & Overhaul)", "On-Demand Support (AOG)"], "supportsDomains": ["Customer Support & Aftermarket Domain"]}, "aero:CapFinancialPlanningControl": {"id": "aero:CapFinancialPlanningControl", "label": "Financial Planning & Control Capability", "type": "Capability", "comment": "Ability to forecast, account for, and appraise the financial performance of the enterprise.", "enabledByServices": ["Financial Planning & Analysis (FP&A)"], "supportsDomains": ["Corporate Strategy & Finance Domain"]}, "aero:CapStrategicPortfolio": {"id": "aero:CapStrategicPortfolio", "label": "Strategic Portfolio Management Capability", "type": "Capability", "comment": "Ability to set enterprise direction: market position, brand, and M&A strategy.", "enabledByServices": ["Strategic Planning", "Customer Relationship Management (CRM)"], "supportsDomains": ["Corporate Strategy & Finance Domain", "Sales & Marketing Domain"]}}, "forceGraph": {"nodes": [{"id": "aero:ProductEngineeringDomain", "label": "Product Engineering Domain", "type": "Domain"}, {"id": "aero:AircraftManufacturingDomain", "label": "Aircraft Manufacturing Domain", "type": "Domain"}, {"id": "aero:SupplyChainDomain", "label": "Supply Chain & Logistics Domain", "type": "Domain"}, {"id": "aero:SalesAndMarketingDomain", "label": "Sales & Marketing Domain", "type": "Domain"}, {"id": "aero:CustomerSupportDomain", "label": "Customer Support & Aftermarket Domain", "type": "Domain"}, {"id": "aero:CorporateStrategyDomain", "label": "Corporate Strategy & Finance Domain", "type": "Domain"}, {"id": "aero:AircraftDesignService", "label": "Aircraft Design & Simulation", "type": "DomainService"}, {"id": "aero:CertificationService", "label": "Certification & Regulatory Compliance", "type": "DomainService"}, {"id": "aero:ComponentFabricationService", "label": "Component Fabrication", "type": "DomainService"}, {"id": "aero:MajorAssemblyService", "label": "Major Assembly Integration (MAI)", "type": "DomainService"}, {"id": "aero:FinalAssemblyService", "label": "Final Assembly Line (FAL)", "type": "DomainService"}, {"id": "aero:SRMService", "label": "Supplier Relationship Management (SRM)", "type": "DomainService"}, {"id": "aero:ProcurementService", "label": "Procurement & Strategic Sourcing", "type": "DomainService"}, {"id": "aero:GlobalLogisticsService", "label": "Global Logistics & Warehousing", "type": "DomainService"}, {"id": "aero:CRMService", "label": "Customer Relationship Management (CRM)", "type": "DomainService"}, {"id": "aero:SalesFinancingService", "label": "Aircraft Sales & Financing", "type": "DomainService"}, {"id": "aero:PlannedSupportServiceInst", "label": "Planned Support & Fleet Maintenance", "type": "DomainService"}, {"id": "aero:MROServiceInst", "label": "MRO (Maintenance, Repair, & Overhaul)", "type": "DomainService"}, {"id": "aero:OnDemandSupportServiceInst", "label": "On-Demand Support (AOG)", "type": "DomainService"}, {"id": "aero:FPAAnalysisService", "label": "Financial Planning & Analysis (FP&A)", "type": "DomainService"}, {"id": "aero:StrategicPlanningService", "label": "Strategic Planning", "type": "DomainService"}, {"id": "aero:ProcCADDesign", "label": "Conceptual Design (CAD/CAE)", "type": "Process"}, {"id": "aero:ProcCFDAnalysis", "label": "Aerodynamics & CFD Analysis", "type": "Process"}, {"id": "aero:ProcAvionicsIntegration", "label": "Avionics Integration", "type": "Process"}, {"id": "aero:ProcMaterialResearch", "label": "Material Science Research", "type": "Process"}, {"id": "aero:ProcTypeCert", "label": "FAA/EASA Type Certification Planning", "type": "Process"}, {"id": "aero:ProcFlightTestData", "label": "Flight Test Data Analysis", "type": "Process"}, {"id": "aero:ProcSafetyCase", "label": "Safety Case Development", "type": "Process"}, {"id": "aero:ProcAirworthiness", "label": "Continued Airworthiness Monitoring", "type": "Process"}, {"id": "aero:ProcCompositeLayering", "label": "Composite Material Layering", "type": "Process"}, {"id": "aero:ProcPrecisionMachining", "label": "Precision Machining", "type": "Process"}, {"id": "aero:ProcSheetMetalForming", "label": "Sheet Metal Forming", "type": "Process"}, {"id": "aero:ProcFuselageJoinery", "label": "Fuselage Joinery", "type": "Process"}, {"id": "aero:ProcWingBodyMating", "label": "Wing-to-Body Mating", "type": "Process"}, {"id": "aero:ProcLandingGearInstall", "label": "Landing Gear Installation", "type": "Process"}, {"id": "aero:ProcEngineMounting", "label": "Engine Mounting", "type": "Process"}, {"id": "aero:ProcCabinOutfitting", "label": "Cabin Completion & Outfitting", "type": "Process"}, {"id": "aero:ProcSystemPowerOn", "label": "System Power-On Tests", "type": "Process"}, {"id": "aero:ProcSupplierAuditing", "label": "Supplier Selection & Auditing", "type": "Process"}, {"id": "aero:ProcContractNegotiation", "label": "Contract Negotiation", "type": "Process"}, {"id": "aero:ProcPerfMonitoring", "label": "Performance Monitoring", "type": "Process"}, {"id": "aero:ProcRawMaterials", "label": "Raw Material Sourcing", "type": "Process"}, {"id": "aero:ProcLongLeadOrdering", "label": "Long-Lead Item Ordering", "type": "Process"}, {"id": "aero:ProcJITPlanning", "label": "Just-In-Time (JIT) Delivery Planning", "type": "Process"}, {"id": "aero:ProcPartsTracking", "label": "Parts Tracking", "type": "Process"}, {"id": "aero:ProcWarehouseOptimization", "label": "Warehousing Optimization", "type": "Process"}, {"id": "aero:ProcAOGLogistics", "label": "AOG (Aircraft on Ground) Logistics", "type": "Process"}, {"id": "aero:ProcLeadGeneration", "label": "Lead Generation", "type": "Process"}, {"id": "aero:ProcNeedsAssessment", "label": "Client Needs Assessment", "type": "Process"}, {"id": "aero:ProcHNWIOutreach", "label": "High-Net-Worth Individual Outreach", "type": "Process"}, {"id": "aero:ProcProposalGeneration", "label": "Proposal Generation", "type": "Process"}, {"id": "aero:ProcPriceNegotiation", "label": "Price Negotiation", "type": "Process"}, {"id": "aero:ProcFinancingSupport", "label": "Financing and Leasing Support", "type": "Process"}, {"id": "aero:ProcTradeIn", "label": "Used Aircraft Trade-In", "type": "Process"}, {"id": "aero:ProcScheduledInspection", "label": "Scheduled Inspection Planning", "type": "Process"}, {"id": "aero:ProcComponentExchange", "label": "Component Exchange Programs (CEP)", "type": "Process"}, {"id": "aero:ProcServiceBulletin", "label": "Service Bulletin (SB) Implementations", "type": "Process"}, {"id": "aero:ProcEngineOverhaul", "label": "Engine Overhaul Management", "type": "Process"}, {"id": "aero:ProcStructuralRepairs", "label": "Structural Repairs", "type": "Process"}, {"id": "aero:ProcAvionicsUpgrades", "label": "Avionics Upgrades", "type": "Process"}, {"id": "aero:Proc247Hotline", "label": "24/7 Technical Hotline", "type": "Process"}, {"id": "aero:ProcMRTDeployment", "label": "Mobile Repair Team (MRT) Deployment", "type": "Process"}, {"id": "aero:ProcUrgentPartsDispatch", "label": "Urgent Parts Dispatch", "type": "Process"}, {"id": "aero:ProcRevenueForecasting", "label": "Revenue Forecasting", "type": "Process"}, {"id": "aero:ProcCostAccounting", "label": "Cost Accounting & Control", "type": "Process"}, {"id": "aero:ProcInvestmentAppraisal", "label": "Investment Appraisal", "type": "Process"}, {"id": "aero:ProcMarketAnalysis", "label": "Market Analysis", "type": "Process"}, {"id": "aero:ProcMAEvaluation", "label": "Mergers & Acquisitions Evaluation", "type": "Process"}, {"id": "aero:ProcBrandManagement", "label": "Brand Management", "type": "Process"}, {"id": "aero:OpBusiness", "label": "Business Operations", "type": "Operation"}, {"id": "aero:OpCommercial", "label": "Commercial Operations", "type": "Operation"}, {"id": "aero:OpCustomerSupport", "label": "Customer Support Operations", "type": "Operation"}, {"id": "aero:OpSupplyChain", "label": "Supply Chain Operations", "type": "Operation"}, {"id": "aero:OpManufacturing", "label": "Manufacturing Operations", "type": "Operation"}, {"id": "aero:CapEngineeringDesign", "label": "Engineering & Design Capability", "type": "Capability"}, {"id": "aero:CapRegulatoryCompliance", "label": "Regulatory Compliance & Certification Capability", "type": "Capability"}, {"id": "aero:CapManufacturingExecution", "label": "Manufacturing Execution Capability", "type": "Capability"}, {"id": "aero:CapQualityAssurance", "label": "Quality Assurance Capability", "type": "Capability"}, {"id": "aero:CapSupplierSourcing", "label": "Supplier & Sourcing Management Capability", "type": "Capability"}, {"id": "aero:CapLogisticsInventory", "label": "Logistics & Inventory Capability", "type": "Capability"}, {"id": "aero:CapCustomerRelationship", "label": "Customer Relationship Capability", "type": "Capability"}, {"id": "aero:CapRevenueFinancing", "label": "Revenue & Financing Capability", "type": "Capability"}, {"id": "aero:CapAftermarketServiceDelivery", "label": "Aftermarket Service Delivery Capability", "type": "Capability"}, {"id": "aero:CapFinancialPlanningControl", "label": "Financial Planning & Control Capability", "type": "Capability"}, {"id": "aero:CapStrategicPortfolio", "label": "Strategic Portfolio Management Capability", "type": "Capability"}], "links": [{"source": "aero:ProductEngineeringDomain", "target": "aero:AircraftDesignService", "predicate": "hasService"}, {"source": "aero:ProductEngineeringDomain", "target": "aero:CertificationService", "predicate": "hasService"}, {"source": "aero:ProductEngineeringDomain", "target": "aero:OpManufacturing", "predicate": "mappedToOperation"}, {"source": "aero:ProductEngineeringDomain", "target": "aero:OpCommercial", "predicate": "mappedToOperation"}, {"source": "aero:AircraftManufacturingDomain", "target": "aero:ComponentFabricationService", "predicate": "hasService"}, {"source": "aero:AircraftManufacturingDomain", "target": "aero:MajorAssemblyService", "predicate": "hasService"}, {"source": "aero:AircraftManufacturingDomain", "target": "aero:FinalAssemblyService", "predicate": "hasService"}, {"source": "aero:AircraftManufacturingDomain", "target": "aero:OpManufacturing", "predicate": "mappedToOperation"}, {"source": "aero:AircraftManufacturingDomain", "target": "aero:OpSupplyChain", "predicate": "mappedToOperation"}, {"source": "aero:SupplyChainDomain", "target": "aero:SRMService", "predicate": "hasService"}, {"source": "aero:SupplyChainDomain", "target": "aero:ProcurementService", "predicate": "hasService"}, {"source": "aero:SupplyChainDomain", "target": "aero:GlobalLogisticsService", "predicate": "hasService"}, {"source": "aero:SupplyChainDomain", "target": "aero:OpSupplyChain", "predicate": "mappedToOperation"}, {"source": "aero:SupplyChainDomain", "target": "aero:OpManufacturing", "predicate": "mappedToOperation"}, {"source": "aero:SupplyChainDomain", "target": "aero:OpBusiness", "predicate": "mappedToOperation"}, {"source": "aero:SalesAndMarketingDomain", "target": "aero:CRMService", "predicate": "hasService"}, {"source": "aero:SalesAndMarketingDomain", "target": "aero:SalesFinancingService", "predicate": "hasService"}, {"source": "aero:SalesAndMarketingDomain", "target": "aero:OpCommercial", "predicate": "mappedToOperation"}, {"source": "aero:SalesAndMarketingDomain", "target": "aero:OpBusiness", "predicate": "mappedToOperation"}, {"source": "aero:CustomerSupportDomain", "target": "aero:PlannedSupportServiceInst", "predicate": "hasService"}, {"source": "aero:CustomerSupportDomain", "target": "aero:MROServiceInst", "predicate": "hasService"}, {"source": "aero:CustomerSupportDomain", "target": "aero:OnDemandSupportServiceInst", "predicate": "hasService"}, {"source": "aero:CustomerSupportDomain", "target": "aero:OpCustomerSupport", "predicate": "mappedToOperation"}, {"source": "aero:CustomerSupportDomain", "target": "aero:OpCommercial", "predicate": "mappedToOperation"}, {"source": "aero:CorporateStrategyDomain", "target": "aero:FPAAnalysisService", "predicate": "hasService"}, {"source": "aero:CorporateStrategyDomain", "target": "aero:StrategicPlanningService", "predicate": "hasService"}, {"source": "aero:CorporateStrategyDomain", "target": "aero:OpBusiness", "predicate": "mappedToOperation"}, {"source": "aero:AircraftDesignService", "target": "aero:ProcCADDesign", "predicate": "hasProcess"}, {"source": "aero:AircraftDesignService", "target": "aero:ProcCFDAnalysis", "predicate": "hasProcess"}, {"source": "aero:AircraftDesignService", "target": "aero:ProcAvionicsIntegration", "predicate": "hasProcess"}, {"source": "aero:AircraftDesignService", "target": "aero:ProcMaterialResearch", "predicate": "hasProcess"}, {"source": "aero:AircraftDesignService", "target": "aero:CapEngineeringDesign", "predicate": "enablesCapability"}, {"source": "aero:CertificationService", "target": "aero:ProcTypeCert", "predicate": "hasProcess"}, {"source": "aero:CertificationService", "target": "aero:ProcFlightTestData", "predicate": "hasProcess"}, {"source": "aero:CertificationService", "target": "aero:ProcSafetyCase", "predicate": "hasProcess"}, {"source": "aero:CertificationService", "target": "aero:ProcAirworthiness", "predicate": "hasProcess"}, {"source": "aero:CertificationService", "target": "aero:CapRegulatoryCompliance", "predicate": "enablesCapability"}, {"source": "aero:CertificationService", "target": "aero:CapQualityAssurance", "predicate": "enablesCapability"}, {"source": "aero:ComponentFabricationService", "target": "aero:ProcCompositeLayering", "predicate": "hasProcess"}, {"source": "aero:ComponentFabricationService", "target": "aero:ProcPrecisionMachining", "predicate": "hasProcess"}, {"source": "aero:ComponentFabricationService", "target": "aero:ProcSheetMetalForming", "predicate": "hasProcess"}, {"source": "aero:ComponentFabricationService", "target": "aero:CapManufacturingExecution", "predicate": "enablesCapability"}, {"source": "aero:MajorAssemblyService", "target": "aero:ProcFuselageJoinery", "predicate": "hasProcess"}, {"source": "aero:MajorAssemblyService", "target": "aero:ProcWingBodyMating", "predicate": "hasProcess"}, {"source": "aero:MajorAssemblyService", "target": "aero:ProcLandingGearInstall", "predicate": "hasProcess"}, {"source": "aero:MajorAssemblyService", "target": "aero:CapManufacturingExecution", "predicate": "enablesCapability"}, {"source": "aero:FinalAssemblyService", "target": "aero:ProcEngineMounting", "predicate": "hasProcess"}, {"source": "aero:FinalAssemblyService", "target": "aero:ProcCabinOutfitting", "predicate": "hasProcess"}, {"source": "aero:FinalAssemblyService", "target": "aero:ProcSystemPowerOn", "predicate": "hasProcess"}, {"source": "aero:FinalAssemblyService", "target": "aero:CapManufacturingExecution", "predicate": "enablesCapability"}, {"source": "aero:FinalAssemblyService", "target": "aero:CapQualityAssurance", "predicate": "enablesCapability"}, {"source": "aero:SRMService", "target": "aero:ProcSupplierAuditing", "predicate": "hasProcess"}, {"source": "aero:SRMService", "target": "aero:ProcContractNegotiation", "predicate": "hasProcess"}, {"source": "aero:SRMService", "target": "aero:ProcPerfMonitoring", "predicate": "hasProcess"}, {"source": "aero:SRMService", "target": "aero:CapSupplierSourcing", "predicate": "enablesCapability"}, {"source": "aero:ProcurementService", "target": "aero:ProcRawMaterials", "predicate": "hasProcess"}, {"source": "aero:ProcurementService", "target": "aero:ProcLongLeadOrdering", "predicate": "hasProcess"}, {"source": "aero:ProcurementService", "target": "aero:ProcJITPlanning", "predicate": "hasProcess"}, {"source": "aero:ProcurementService", "target": "aero:CapRegulatoryCompliance", "predicate": "enablesCapability"}, {"source": "aero:ProcurementService", "target": "aero:CapSupplierSourcing", "predicate": "enablesCapability"}, {"source": "aero:ProcurementService", "target": "aero:CapLogisticsInventory", "predicate": "enablesCapability"}, {"source": "aero:GlobalLogisticsService", "target": "aero:ProcPartsTracking", "predicate": "hasProcess"}, {"source": "aero:GlobalLogisticsService", "target": "aero:ProcWarehouseOptimization", "predicate": "hasProcess"}, {"source": "aero:GlobalLogisticsService", "target": "aero:ProcAOGLogistics", "predicate": "hasProcess"}, {"source": "aero:GlobalLogisticsService", "target": "aero:CapLogisticsInventory", "predicate": "enablesCapability"}, {"source": "aero:CRMService", "target": "aero:ProcLeadGeneration", "predicate": "hasProcess"}, {"source": "aero:CRMService", "target": "aero:ProcNeedsAssessment", "predicate": "hasProcess"}, {"source": "aero:CRMService", "target": "aero:ProcHNWIOutreach", "predicate": "hasProcess"}, {"source": "aero:CRMService", "target": "aero:CapCustomerRelationship", "predicate": "enablesCapability"}, {"source": "aero:CRMService", "target": "aero:CapStrategicPortfolio", "predicate": "enablesCapability"}, {"source": "aero:SalesFinancingService", "target": "aero:ProcProposalGeneration", "predicate": "hasProcess"}, {"source": "aero:SalesFinancingService", "target": "aero:ProcPriceNegotiation", "predicate": "hasProcess"}, {"source": "aero:SalesFinancingService", "target": "aero:ProcFinancingSupport", "predicate": "hasProcess"}, {"source": "aero:SalesFinancingService", "target": "aero:ProcTradeIn", "predicate": "hasProcess"}, {"source": "aero:SalesFinancingService", "target": "aero:CapRevenueFinancing", "predicate": "enablesCapability"}, {"source": "aero:PlannedSupportServiceInst", "target": "aero:ProcScheduledInspection", "predicate": "hasProcess"}, {"source": "aero:PlannedSupportServiceInst", "target": "aero:ProcComponentExchange", "predicate": "hasProcess"}, {"source": "aero:PlannedSupportServiceInst", "target": "aero:ProcServiceBulletin", "predicate": "hasProcess"}, {"source": "aero:PlannedSupportServiceInst", "target": "aero:CapCustomerRelationship", "predicate": "enablesCapability"}, {"source": "aero:PlannedSupportServiceInst", "target": "aero:CapAftermarketServiceDelivery", "predicate": "enablesCapability"}, {"source": "aero:MROServiceInst", "target": "aero:ProcEngineOverhaul", "predicate": "hasProcess"}, {"source": "aero:MROServiceInst", "target": "aero:ProcStructuralRepairs", "predicate": "hasProcess"}, {"source": "aero:MROServiceInst", "target": "aero:ProcAvionicsUpgrades", "predicate": "hasProcess"}, {"source": "aero:MROServiceInst", "target": "aero:CapRegulatoryCompliance", "predicate": "enablesCapability"}, {"source": "aero:MROServiceInst", "target": "aero:CapQualityAssurance", "predicate": "enablesCapability"}, {"source": "aero:MROServiceInst", "target": "aero:CapAftermarketServiceDelivery", "predicate": "enablesCapability"}, {"source": "aero:OnDemandSupportServiceInst", "target": "aero:Proc247Hotline", "predicate": "hasProcess"}, {"source": "aero:OnDemandSupportServiceInst", "target": "aero:ProcMRTDeployment", "predicate": "hasProcess"}, {"source": "aero:OnDemandSupportServiceInst", "target": "aero:ProcUrgentPartsDispatch", "predicate": "hasProcess"}, {"source": "aero:OnDemandSupportServiceInst", "target": "aero:CapAftermarketServiceDelivery", "predicate": "enablesCapability"}, {"source": "aero:FPAAnalysisService", "target": "aero:ProcRevenueForecasting", "predicate": "hasProcess"}, {"source": "aero:FPAAnalysisService", "target": "aero:ProcCostAccounting", "predicate": "hasProcess"}, {"source": "aero:FPAAnalysisService", "target": "aero:ProcInvestmentAppraisal", "predicate": "hasProcess"}, {"source": "aero:FPAAnalysisService", "target": "aero:CapRevenueFinancing", "predicate": "enablesCapability"}, {"source": "aero:FPAAnalysisService", "target": "aero:CapFinancialPlanningControl", "predicate": "enablesCapability"}, {"source": "aero:StrategicPlanningService", "target": "aero:ProcMarketAnalysis", "predicate": "hasProcess"}, {"source": "aero:StrategicPlanningService", "target": "aero:ProcMAEvaluation", "predicate": "hasProcess"}, {"source": "aero:StrategicPlanningService", "target": "aero:ProcBrandManagement", "predicate": "hasProcess"}, {"source": "aero:StrategicPlanningService", "target": "aero:CapStrategicPortfolio", "predicate": "enablesCapability"}, {"source": "aero:CapEngineeringDesign", "target": "aero:ProductEngineeringDomain", "predicate": "capabilitySupportsDomain"}, {"source": "aero:CapRegulatoryCompliance", "target": "aero:ProductEngineeringDomain", "predicate": "capabilitySupportsDomain"}, {"source": "aero:CapRegulatoryCompliance", "target": "aero:CustomerSupportDomain", "predicate": "capabilitySupportsDomain"}, {"source": "aero:CapRegulatoryCompliance", "target": "aero:SupplyChainDomain", "predicate": "capabilitySupportsDomain"}, {"source": "aero:CapManufacturingExecution", "target": "aero:AircraftManufacturingDomain", "predicate": "capabilitySupportsDomain"}, {"source": "aero:CapQualityAssurance", "target": "aero:AircraftManufacturingDomain", "predicate": "capabilitySupportsDomain"}, {"source": "aero:CapQualityAssurance", "target": "aero:ProductEngineeringDomain", "predicate": "capabilitySupportsDomain"}, {"source": "aero:CapQualityAssurance", "target": "aero:CustomerSupportDomain", "predicate": "capabilitySupportsDomain"}, {"source": "aero:CapSupplierSourcing", "target": "aero:SupplyChainDomain", "predicate": "capabilitySupportsDomain"}, {"source": "aero:CapLogisticsInventory", "target": "aero:SupplyChainDomain", "predicate": "capabilitySupportsDomain"}, {"source": "aero:CapCustomerRelationship", "target": "aero:SalesAndMarketingDomain", "predicate": "capabilitySupportsDomain"}, {"source": "aero:CapCustomerRelationship", "target": "aero:CustomerSupportDomain", "predicate": "capabilitySupportsDomain"}, {"source": "aero:CapRevenueFinancing", "target": "aero:SalesAndMarketingDomain", "predicate": "capabilitySupportsDomain"}, {"source": "aero:CapRevenueFinancing", "target": "aero:CorporateStrategyDomain", "predicate": "capabilitySupportsDomain"}, {"source": "aero:CapAftermarketServiceDelivery", "target": "aero:CustomerSupportDomain", "predicate": "capabilitySupportsDomain"}, {"source": "aero:CapFinancialPlanningControl", "target": "aero:CorporateStrategyDomain", "predicate": "capabilitySupportsDomain"}, {"source": "aero:CapStrategicPortfolio", "target": "aero:CorporateStrategyDomain", "predicate": "capabilitySupportsDomain"}, {"source": "aero:CapStrategicPortfolio", "target": "aero:SalesAndMarketingDomain", "predicate": "capabilitySupportsDomain"}]}, "typeCounts": {"Domain": 6, "DomainService": 15, "Process": 48, "Operation": 5, "Capability": 11}}</script>
+    <script>
+    // =====================================================================
+    // Aircraft Manufacturer — Enterprise Business Capability Model
+    // Domain -> Service -> Process (DDD tree) + cross-cutting Capability and
+    // Operation layers. New in v2.0: Service -enablesCapability-> Capability,
+    // and Capability -capabilitySupportsDomain-> Domain.
+    // 4 canvas layouts (Force / Radial / Cluster / Hierarchical) + full List.
+    // =====================================================================
+
+    const data = JSON.parse(document.getElementById('viz-data').textContent);
+
+    const COLOR_BY_TYPE = {
+        Domain: '#0f172a', DomainService: '#0369a1', Process: '#15803d',
+        Operation: '#78716c', Capability: '#c2410c'
+    };
+    const DOMAIN_BRAND = {};
+    Object.values(data.nodeDetails).filter(n => n.type === 'Domain').forEach((n, i) => {
+        const palette = ['#0284c7', '#0f766e', '#4338ca', '#b45309', '#be123c', '#334155'];
+        DOMAIN_BRAND[n.id] = palette[i % palette.length];
+    });
+    const RADIUS_BY_TYPE = { Domain: 24, Capability: 14, Operation: 12, DomainService: 10, Process: 6.5 };
+    const DEFAULT_RADIUS = 6;
+    const LEVEL_BY_TYPE = { Domain: 1, Capability: 2, Operation: 2, DomainService: 3, Process: 4 };
+    const CAP_PREDICATES = new Set(['enablesCapability', 'capabilitySupportsDomain']);
+
+    function colorFor(id, type) {
+        if (type === 'Domain' && DOMAIN_BRAND[id]) return DOMAIN_BRAND[id];
+        return COLOR_BY_TYPE[type] || '#94a3b8';
+    }
+    function radiusFor(type) { return RADIUS_BY_TYPE[type] || DEFAULT_RADIUS; }
+    function escapeHtml(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    // --------------------------- Index the tree once ---------------------------
+    const treeIndex = {};      // id -> tree node (name/kind/terms/processes/...)
+    const rootTypeOf = {};     // id -> Core|Commercial|Enabling (domain category), propagated to descendants
+
+    (function indexTree() {
+        function walk(node, rootType) {
+            treeIndex[node.id] = node;
+            // Capability/Operation are cross-cutting: the same node appears under every
+            // domain it supports, so it can't take on any single domain's category
+            // without the category filter hiding it inconsistently depending on which
+            // occurrence happened to be indexed last. Leave them unfiltered (always shown).
+            if (rootType && node.kind !== 'Capability' && node.kind !== 'Operation') rootTypeOf[node.id] = rootType;
+            (node.children || []).forEach(c => walk(c, rootType));
+        }
+        data.domainData.children.forEach(dom => walk(dom, dom.type));
+    })();
+
+    function levelOf(id) {
+        const nd = data.nodeDetails[id];
+        return (nd && LEVEL_BY_TYPE[nd.type]) || 4;
+    }
+
+    // label -> id (for clickable badges) — first match wins
+    const labelToId = {};
+    Object.values(data.nodeDetails).forEach(n => { if (!(n.label.toLowerCase() in labelToId)) labelToId[n.label.toLowerCase()] = n.id; });
+
+    // adjacency over the FULL relation graph (both directions) for blast-radius BFS
+    const adjList = {};
+    data.forceGraph.links.forEach(l => {
+        (adjList[l.source] = adjList[l.source] || new Set()).add(l.target);
+        (adjList[l.target] = adjList[l.target] || new Set()).add(l.source);
+    });
+    function bfs(startId, maxHops) {
+        const visited = new Map([[startId, 0]]);
+        let frontier = [startId];
+        for (let hop = 1; hop <= maxHops; hop++) {
+            const next = [];
+            frontier.forEach(id => {
+                (adjList[id] || new Set()).forEach(nb => {
+                    if (!visited.has(nb)) { visited.set(nb, hop); next.push(nb); }
+                });
+            });
+            frontier = next;
+        }
+        visited.delete(startId);
+        return new Set(visited.keys());
+    }
+
+    function getInfo(id) {
+        const nd = data.nodeDetails[id];
+        const tn = treeIndex[id];
+        const base = {
+            id,
+            label: (nd && nd.label) || (tn && tn.name) || id,
+            type: (nd && nd.type) || (tn && tn.kind) || 'Unknown',
+            comment: (nd && nd.comment) || ''
+        };
+        return Object.assign(base, nd || {});
+    }
+
+    // --------------------------- Inspector: Node Details ---------------------------
+    let selectedId = null;
+    let blastActive = false;
+
+    function badgeHtml(label, clickable, extraCls) {
+        const cls = 'badge' + (clickable ? ' clickable' : '') + (extraCls ? ' ' + extraCls : '');
+        return `<span class="${cls}" data-label="${escapeHtml(label)}">${escapeHtml(label)}</span>`;
+    }
+    function fieldRowHtml(label, arr, clickable, extraCls) {
+        if (!arr || !arr.length) return '';
+        const badges = arr.map(v => badgeHtml(v, clickable, extraCls)).join('');
+        return `<div class="detail-card"><div class="detail-label">${escapeHtml(label)}</div><div class="badge-list">${badges}</div></div>`;
+    }
+
+    document.addEventListener('click', (e) => {
+        const b = e.target.closest('.badge.clickable');
+        if (!b) return;
+        const label = b.getAttribute('data-label');
+        const id = labelToId[label.toLowerCase()];
+        if (id) selectNode(id);
+    });
+
+    function renderRelations(info) {
+        const box = document.getElementById('ctx-relations');
+        let html = '';
+        if (info.type === 'Domain') {
+            html += `<div class="detail-card"><div class="detail-label">Category</div><div class="badge-list"><span class="badge category-tag">${escapeHtml(info.category)}</span></div></div>`;
+            html += fieldRowHtml('Mapped Operations', info.operations);
+            html += fieldRowHtml('Provides Services', info.services, true);
+            html += fieldRowHtml('Capabilities Supported In This Domain', info.capabilities, true, 'cap-badge');
+        } else if (info.type === 'DomainService') {
+            html += fieldRowHtml('Parent Domain', [info.domain], true);
+            html += fieldRowHtml('Enables Capability', info.capabilities, true, 'cap-badge');
+            html += fieldRowHtml('Underlying Processes', info.processes, true);
+        } else if (info.type === 'Process') {
+            html += fieldRowHtml('Underlying Of Service', [info.service], true);
+            html += fieldRowHtml('Supported By Operations', info.operations);
+        } else if (info.type === 'Capability') {
+            html += fieldRowHtml('Enabled By Services', info.enabledByServices, true);
+            html += fieldRowHtml('Supports Domains', info.supportsDomains, true);
+        } else if (info.type === 'Operation') {
+            html += fieldRowHtml('Mapped From Domains', info.domains, true);
+        }
+        box.innerHTML = html || '<div class="empty-hint">No additional relations recorded.</div>';
+    }
+
+    function selectNode(id) {
+        selectedId = id;
+        const info = getInfo(id);
+        document.getElementById('ctx-name').textContent = info.label;
+        document.getElementById('ctx-comment').textContent = info.comment || '';
+
+        renderRelations(info);
+        if (blastActive) { clearHighlight(); blastActive = false; resetBlastButton(); }
+        document.getElementById('impact-section').style.display = 'block';
+
+        document.querySelectorAll('.tree-node').forEach(el => el.classList.toggle('selected', el.dataset.id === id));
+        d3.selectAll('.node-group').classed('selected-node', d => d && d.id === id);
+        d3.selectAll('.node-group .node-core').attr('stroke', d => (d && d.id === id) ? '#f59e0b' : '#ffffff')
+            .attr('stroke-width', d => (d && d.id === id) ? 3.5 : 2);
+    }
+
+    function resetBlastButton() {
+        const btn = document.getElementById('btn-blast-radius');
+        btn.classList.remove('active');
+        btn.textContent = 'Show Blast Radius';
+    }
+    function clearHighlight() {
+        d3.selectAll('.node-group').classed('dimmed', false).classed('highlighted', false);
+        d3.selectAll('.link-line').classed('dimmed', false).classed('highlighted', false);
+    }
+    function applyHighlight(idSet) {
+        d3.selectAll('.node-group').classed('dimmed', d => d && !idSet.has(d.id) && d.id !== selectedId)
+            .classed('highlighted', d => d && idSet.has(d.id));
+        d3.selectAll('.link-line').classed('dimmed', l => !(l && idSet.has(typeof l.source === 'object' ? l.source.id : l.source) && idSet.has(typeof l.target === 'object' ? l.target.id : l.target)) && !(l && (l.source.id === selectedId || l.source === selectedId) && idSet.has(typeof l.target === 'object' ? l.target.id : l.target)))
+            .classed('highlighted', l => l && ((typeof l.source === 'object' ? l.source.id : l.source) === selectedId || idSet.has(typeof l.source === 'object' ? l.source.id : l.source)) && ((typeof l.target === 'object' ? l.target.id : l.target) === selectedId || idSet.has(typeof l.target === 'object' ? l.target.id : l.target)));
+    }
+
+    document.getElementById('btn-blast-radius').addEventListener('click', () => {
+        if (!selectedId) return;
+        if (blastActive) { clearHighlight(); blastActive = false; resetBlastButton(); return; }
+        if (currentView !== 'force') setView('force');
+        document.getElementById('detail-slider').value = 4;
+        document.getElementById('slider-value-label').textContent = 'Processes';
+        renderCanvas();
+        const visited = bfs(selectedId, 2);
+        applyHighlight(visited);
+        blastActive = true;
+        const btn = document.getElementById('btn-blast-radius');
+        btn.classList.add('active');
+        btn.textContent = `Blast radius: ${visited.size} related nodes (click to clear)`;
+    });
+
+    document.getElementById('btn-clear-selection').addEventListener('click', () => {
+        selectedId = null;
+        document.getElementById('ctx-name').textContent = 'Select a node to inspect it';
+        document.getElementById('ctx-comment').textContent = '';
+        document.getElementById('ctx-relations').innerHTML = '';
+        document.getElementById('impact-section').style.display = 'none';
+        document.querySelectorAll('.tree-node').forEach(el => el.classList.remove('selected'));
+        if (blastActive) { clearHighlight(); blastActive = false; resetBlastButton(); }
+    });
+
+    // --------------------------- Expandable tree / full list ---------------------------
+    const ICON_PATHS = {
+        Domain: '<line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>',
+        DomainService: '<path d="M21 8v13H3V8"/><path d="M1 3h22l-3 5H4z"/><line x1="10" y1="12" x2="14" y2="12"/>',
+        Process: '<circle cx="12" cy="12" r="3"/><line x1="3" y1="12" x2="9" y2="12"/><line x1="15" y1="12" x2="21" y2="12"/>',
+        Capability: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+        Operation: '<circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/>',
+        Default: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/>'
+    };
+    function iconSvg(kind, style) {
+        const p = ICON_PATHS[kind] || ICON_PATHS.Default;
+        return `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="${style}">${p}</svg>`;
+    }
+    function createTreeHTML(node) {
+        const hasChildren = node.children && node.children.length > 0;
+        if (!hasChildren) {
+            return `<li class="tree-item">
+                <div class="tree-node" data-id="${node.id}" onclick="selectNode('${node.id}')">
+                    ${iconSvg(node.kind, 'width:14px;height:14px;color:var(--text-muted);')}
+                    <span>${escapeHtml(node.name)}</span>
+                </div>
+            </li>`;
+        }
+        return `<li class="tree-item">
+            <div class="tree-node" data-id="${node.id}" onclick="toggleTreeFolder(this, '${node.id}')">
+                <svg class="icon-svg chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><polyline points="9 6 15 12 9 18"/></svg>
+                ${iconSvg(node.kind, 'width:14px;height:14px;color:var(--primary);')}
+                <span>${escapeHtml(node.name)}</span>
+            </div>
+            <ul class="tree-children">${node.children.map(createTreeHTML).join('')}</ul>
+        </li>`;
+    }
+    function toggleTreeFolder(el, id) {
+        const kids = el.nextElementSibling;
+        const chevron = el.querySelector('.chevron-icon');
+        if (kids) {
+            kids.classList.toggle('open');
+            if (chevron) chevron.style.transform = kids.classList.contains('open') ? 'rotate(90deg)' : 'rotate(0deg)';
+        }
+        if (id) selectNode(id);
+    }
+    function renderTrees() {
+        const mini = `<ul class="tree-list">${data.domainData.children.map(createTreeHTML).join('')}</ul>`;
+        document.getElementById('inspector-tree-target').innerHTML = mini;
+        document.getElementById('full-list-target').innerHTML = mini;
+    }
+
+    // --------------------------- Filtering ---------------------------
+    function pruneTree(maxLevel, typeFilter) {
+        // Filter by each node's KIND-based level (same LEVEL_BY_TYPE used by Force view),
+        // not by raw tree depth: Capability/Operation are attached as children of Domain
+        // (level 2) so they can reveal before Service (level 3) even though, structurally,
+        // Process nodes also sit one level deeper than Capability/Operation under Service.
+        function rec(node) {
+            if ((LEVEL_BY_TYPE[node.kind] || 4) > maxLevel) return null;
+            if (typeFilter !== 'all' && rootTypeOf[node.id] && rootTypeOf[node.id] !== typeFilter) return null;
+            const clone = Object.assign({}, node);
+            if (node.children) {
+                const kids = node.children.map(c => rec(c)).filter(Boolean);
+                if (kids.length) clone.children = kids; else delete clone.children;
+            }
+            return clone;
+        }
+        const kids = data.domainData.children.map(c => rec(c)).filter(Boolean);
+        return { id: 'root', name: data.domainData.name, children: kids };
+    }
+    function filteredForce(maxLevel, typeFilter) {
+        const nodes = data.forceGraph.nodes.filter(n => {
+            if (levelOf(n.id) > maxLevel) return false;
+            if (typeFilter !== 'all' && rootTypeOf[n.id] && rootTypeOf[n.id] !== typeFilter) return false;
+            return true;
+        }).map(n => Object.assign({}, n));
+        const idSet = new Set(nodes.map(n => n.id));
+        const links = data.forceGraph.links.filter(l => idSet.has(l.source) && idSet.has(l.target)).map(l => Object.assign({}, l));
+        return { nodes, links };
+    }
+
+    // --------------------------- Canvas rendering ---------------------------
+    let currentView = 'force';
+    let simulation = null;
+    const svg = d3.select('#graph-svg');
+    const zoomLayer = d3.select('#zoom-layer');
+    const linksLayer = d3.select('#links-layer');
+    const nodesLayer = d3.select('#nodes-layer');
+    const zoomBehavior = d3.zoom().scaleExtent([0.15, 5]).on('zoom', (ev) => zoomLayer.attr('transform', ev.transform));
+    svg.call(zoomBehavior);
+
+    function svgSize() {
+        const el = document.getElementById('view-graph');
+        return { w: el.clientWidth || 900, h: el.clientHeight || 600 };
+    }
+
+    function clearCanvas() {
+        if (simulation) { simulation.stop(); simulation = null; }
+        linksLayer.selectAll('*').remove();
+        nodesLayer.selectAll('*').remove();
+        // Radial/Cluster/Hierarchical each offset linksLayer (and Cluster/Hierarchical
+        // offset nodesLayer too) to position their tree layout. Reset both here, on every
+        // render, so a layer's leftover offset from the previously viewed layout can't
+        // carry into the next one — otherwise, e.g., switching Cluster -> Force leaves
+        // linksLayer's old translate() in place while Force's nodes render at raw
+        // simulation coordinates, and the edges visibly detach from their nodes.
+        linksLayer.attr('transform', null);
+        nodesLayer.attr('transform', null);
+    }
+
+    function appendNode(sel) {
+        const g = sel.enter().append('g')
+            .attr('class', 'node-group')
+            .on('click', (ev, d) => selectNode(d.id));
+
+        g.each(function (d) {
+            const el = d3.select(this);
+            // `kind` (Domain/DomainService/Process) is the structural node type used for
+            // rendering; it must win over `type`, which on tree-derived Domain nodes holds
+            // the domain CATEGORY (Core/Commercial/Enabling), not a renderable kind. Nodes
+            // that only ever come from forceGraph (Capability/Operation, and Force-view
+            // Domain/Service/Process nodes) have no `kind` at all, so `type` is the correct
+            // fallback for them.
+            const kind = d.kind || d.type;
+            const r = radiusFor(kind);
+            const col = colorFor(d.id, kind);
+            if (kind === 'Domain') {
+                el.append('circle').attr('r', r + 10).attr('fill', col).attr('opacity', 0.15);
+                const pts = [];
+                for (let i = 0; i < 8; i++) {
+                    const a = (i * Math.PI / 4) + Math.PI / 8;
+                    pts.push(`${r * Math.cos(a)},${r * Math.sin(a)}`);
+                }
+                el.append('polygon').attr('points', pts.join(' ')).attr('fill', col)
+                    .attr('class', 'node-core').attr('stroke', '#fff');
+            } else if (kind === 'Capability') {
+                el.append('circle').attr('r', r + 5).attr('fill', col).attr('opacity', 0.16);
+                el.append('circle').attr('r', r).attr('fill', col).attr('class', 'node-core').attr('stroke', '#fff');
+            } else {
+                el.append('circle').attr('r', r).attr('fill', col).attr('class', 'node-core').attr('stroke', '#fff');
+            }
+            el.append('text').attr('class', 'node-label').attr('y', r + 12).text(d.label || d.name);
+        });
+        return g;
+    }
+
+    function renderForce() {
+        clearCanvas();
+        const level = parseInt(document.getElementById('detail-slider').value);
+        const typeFilter = document.getElementById('domain-type-filter').value;
+        const { nodes, links } = filteredForce(level, typeFilter);
+        const { w, h } = svgSize();
+
+        const link = linksLayer.selectAll('line').data(links).enter().append('line')
+            .attr('class', d => 'link-line' + (CAP_PREDICATES.has(d.predicate) ? ' cap-link' : ''));
+        const node = appendNode(nodesLayer.selectAll('g').data(nodes, d => d.id));
+
+        simulation = d3.forceSimulation(nodes)
+            .force('link', d3.forceLink(links).id(d => d.id).distance(50).strength(0.35))
+            .force('charge', d3.forceManyBody().strength(-140))
+            .force('center', d3.forceCenter(w / 2, h / 2))
+            .force('collide', d3.forceCollide(d => radiusFor(d.type) + 10))
+            .on('tick', () => {
+                link.attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+                    .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+                node.attr('transform', d => `translate(${d.x},${d.y})`);
+            });
+
+        node.call(d3.drag()
+            .on('start', (ev, d) => { if (!ev.active) simulation.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
+            .on('drag', (ev, d) => { d.fx = ev.x; d.fy = ev.y; })
+            .on('end', (ev, d) => { if (!ev.active) simulation.alphaTarget(0); d.fx = null; d.fy = null; }));
+    }
+
+    function renderRadial() {
+        clearCanvas();
+        const level = parseInt(document.getElementById('detail-slider').value);
+        const typeFilter = document.getElementById('domain-type-filter').value;
+        const pruned = pruneTree(level, typeFilter);
+        const { w, h } = svgSize();
+        const radius = Math.min(w, h) / 2 - 90;
+
+        const root = d3.hierarchy(pruned);
+        d3.tree().size([2 * Math.PI, radius])
+            .separation((a, b) => (a.parent === b.parent ? 1 : 2) / a.depth || 1)(root);
+
+        const cx = w / 2, cy = h / 2;
+        const project = (x, y) => [y * Math.cos(x - Math.PI / 2), y * Math.sin(x - Math.PI / 2)];
+
+        // exclude the synthetic wrapper root (depth 0) — it isn't a real domain/service/
+        // process entity, so it shouldn't render as a node or draw a link to every domain.
+        linksLayer.selectAll('path').data(root.links().filter(l => l.source.depth > 0)).enter().append('path')
+            .attr('class', 'link-line')
+            .attr('fill', 'none')
+            .attr('d', d3.linkRadial().angle(d => d.x).radius(d => d.y));
+        linksLayer.attr('transform', `translate(${cx},${cy})`);
+
+        const gnodes = root.descendants().filter(d => d.depth > 0).map(d => Object.assign({}, d.data, { _x: d.x, _y: d.y }));
+        const node = appendNode(nodesLayer.selectAll('g').data(gnodes, d => d.id + Math.random()));
+        node.attr('transform', d => { const [x, y] = project(d._x, d._y); return `translate(${x + cx},${y + cy})`; });
+    }
+
+    function renderCluster() {
+        clearCanvas();
+        const level = parseInt(document.getElementById('detail-slider').value);
+        const typeFilter = document.getElementById('domain-type-filter').value;
+        const pruned = pruneTree(level, typeFilter);
+        const { w, h } = svgSize();
+        const margin = 60;
+
+        const root = d3.hierarchy(pruned);
+        d3.cluster().size([h - margin * 2, w - margin * 2 - 160])(root);
+
+        linksLayer.attr('transform', `translate(${margin + 140},${margin})`);
+
+        linksLayer.selectAll('path').data(root.links().filter(l => l.source.depth > 0)).enter().append('path')
+            .attr('class', 'link-line').attr('fill', 'none')
+            .attr('d', d3.linkHorizontal().x(d => d.y).y(d => d.x));
+
+        const gnodes = root.descendants().filter(d => d.depth > 0).map(d => Object.assign({}, d.data, { _x: d.x, _y: d.y }));
+        const node = appendNode(nodesLayer.selectAll('g').data(gnodes, d => d.id + Math.random()));
+        node.attr('transform', d => `translate(${d._y + margin + 140},${d._x + margin})`);
+    }
+
+    function renderHierarchy() {
+        clearCanvas();
+        const level = parseInt(document.getElementById('detail-slider').value);
+        const typeFilter = document.getElementById('domain-type-filter').value;
+        const pruned = pruneTree(level, typeFilter);
+        const { w, h } = svgSize();
+        const margin = 70;
+
+        const root = d3.hierarchy(pruned);
+        d3.tree().size([w - margin * 2, h - margin * 2])(root);
+
+        linksLayer.attr('transform', `translate(${margin},${margin})`);
+
+        linksLayer.selectAll('path').data(root.links().filter(l => l.source.depth > 0)).enter().append('path')
+            .attr('class', 'link-line').attr('fill', 'none')
+            .attr('d', d3.linkVertical().x(d => d.x).y(d => d.y));
+
+        const gnodes = root.descendants().filter(d => d.depth > 0).map(d => Object.assign({}, d.data, { _x: d.x, _y: d.y }));
+        const node = appendNode(nodesLayer.selectAll('g').data(gnodes, d => d.id + Math.random()));
+        node.attr('transform', d => `translate(${d._x + margin},${d._y + margin})`);
+    }
+
+    function renderCanvas() {
+        if (currentView === 'force') renderForce();
+        else if (currentView === 'radial') renderRadial();
+        else if (currentView === 'cluster') renderCluster();
+        else if (currentView === 'hierarchy') renderHierarchy();
+        if (selectedId) {
+            d3.selectAll('.node-group .node-core').attr('stroke', d => (d && d.id === selectedId) ? '#f59e0b' : '#ffffff')
+                .attr('stroke-width', d => (d && d.id === selectedId) ? 3.5 : 2);
+        }
+    }
+
+    // --------------------------- View / filter controls ---------------------------
+    function setView(view) {
+        currentView = view;
+        document.querySelectorAll('#view-toggle-group .toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+        const isList = view === 'list';
+        document.getElementById('view-graph').style.display = isList ? 'none' : 'block';
+        document.getElementById('view-list').style.display = isList ? 'block' : 'none';
+        document.getElementById('legend-panel').style.display = isList ? 'none' : 'block';
+        if (!isList) renderCanvas();
+    }
+    document.getElementById('view-toggle-group').addEventListener('click', (e) => {
+        const btn = e.target.closest('.toggle-btn');
+        if (btn) setView(btn.dataset.view);
+    });
+    document.getElementById('detail-slider').addEventListener('input', function () {
+        const labels = ['Domains', 'Capabilities & Operations', 'Services', 'Processes'];
+        document.getElementById('slider-value-label').textContent = labels[this.value - 1];
+        if (currentView !== 'list') renderCanvas();
+    });
+    document.getElementById('domain-type-filter').addEventListener('change', () => { if (currentView !== 'list') renderCanvas(); });
+
+    document.getElementById('btn-zoom-in').addEventListener('click', () => svg.transition().duration(200).call(zoomBehavior.scaleBy, 1.3));
+    document.getElementById('btn-zoom-out').addEventListener('click', () => svg.transition().duration(200).call(zoomBehavior.scaleBy, 1 / 1.3));
+    document.getElementById('btn-zoom-reset').addEventListener('click', () => svg.transition().duration(300).call(zoomBehavior.transform, d3.zoomIdentity));
+
+    // --------------------------- Legend ---------------------------
+    function renderLegend() {
+        const target = document.getElementById('legend-panel');
+        const rows = Object.keys(COLOR_BY_TYPE).map(t => {
+            const count = (data.typeCounts && data.typeCounts[t]) || 0;
+            return `<div class="legend-row" data-type="${t}"><span class="legend-dot" style="background:${COLOR_BY_TYPE[t]}"></span><span>${t}</span><span class="legend-count">${count}</span></div>`;
+        }).join('');
+        target.innerHTML = `<div class="legend-title">Entity Types</div>${rows}<div class="legend-title" style="margin-top:0.5rem;">Relations</div><div class="legend-row"><span style="width:14px;height:2px;background:#fb923c;display:inline-block;"></span><span>Service ↔ Capability ↔ Domain</span></div>`;
+    }
+
+    // --------------------------- Search ---------------------------
+    document.getElementById('search-input').addEventListener('input', (e) => {
+        const q = e.target.value.trim().toLowerCase();
+        if (!q) return;
+        const hit = Object.values(data.nodeDetails).find(n => n.label.toLowerCase().includes(q));
+        if (hit) selectNode(hit.id);
+    });
+
+    // --------------------------- Metrics ---------------------------
+    function renderMetrics() {
+        const tc = data.typeCounts || {};
+        const cards = [
+            ['Domains', tc.Domain || 0], ['Services', tc.DomainService || 0],
+            ['Capabilities', tc.Capability || 0], ['Processes', tc.Process || 0],
+            ['Relations', data.forceGraph.links.length], ['Operations', tc.Operation || 0]
+        ];
+        document.getElementById('metrics-grid').innerHTML = cards.map(([label, num]) =>
+            `<div class="metric-card"><div class="metric-num">${num}</div><div class="metric-label">${label}</div></div>`
+        ).join('');
+    }
+
+    // --------------------------- Init ---------------------------
+    window.addEventListener('DOMContentLoaded', () => {
+        renderTrees();
+        renderLegend();
+        renderMetrics();
+        setView('force');
+        window.addEventListener('resize', () => { if (currentView !== 'list') renderCanvas(); });
+    });
+
+    </script>
+</body>
+</html>
