@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PLM Assessment Platform — Federated Ontology Setup (§6a)</title>
+<style>
+:root{
+  --navy:#0B1F3A;--navy2:#12305A;--navy-soft:#1C3A63;
+  --gold:#C8A951;--gold-hi:#E4C572;
+  --ice:#EDF2F8;--ice2:#F6F9FC;--surface:#FFFFFF;
+  --ink:#20344B;--muted:#5E7188;--hair:#D8E1EC;
+  --det:#2E7D5B;--det-bg:#E6F1EC;      /* deterministic */
+  --inf:#7A5AA6;--inf-bg:#EDE7F4;      /* inferred */
+  --reg:#B23A3A;--reg-bg:#F6E4E4;      /* regulated */
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,monospace;
+  --radius:10px;
+}
+*{box-sizing:border-box}html,body{margin:0}
+body{font-family:var(--sans);color:var(--ink);background:var(--ice);line-height:1.55;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{margin:0;font-weight:600}
+.wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+a{color:var(--navy2)}
+header.top{background:var(--navy);color:#fff;border-bottom:3px solid var(--gold)}
+.top .wrap{display:flex;align-items:center;gap:16px;padding:16px 22px;flex-wrap:wrap}
+.brandmark{width:34px;height:34px;flex:0 0 auto}
+.brandtext .k{font-family:var(--serif);font-size:20px}
+.brandtext .s{font-size:12px;color:#9db4d4;letter-spacing:.06em;text-transform:uppercase}
+.top .spacer{flex:1}
+.doctag{font-size:12px;color:var(--gold-hi);border:1px solid rgba(200,169,81,.5);border-radius:999px;padding:6px 12px}
+.applinks{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.applink{font-size:12.5px;font-weight:600;text-decoration:none;color:var(--navy);background:var(--gold);border:1px solid var(--gold);border-radius:999px;padding:6px 13px;display:inline-flex;align-items:center;gap:6px}
+.applink::before{content:"\2197";font-size:12px;opacity:.7}
+.applink:hover{background:var(--gold-hi)}
+.hero{background:linear-gradient(180deg,var(--navy2),var(--navy));color:#fff;padding:30px 0 34px}
+.hero .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-hi)}
+.hero h1{font-family:var(--serif);font-size:31px;margin:8px 0 10px;line-height:1.13}
+.hero p{color:#c9d7ea;max-width:84ch;margin:0 0 6px}
+.hero .legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:16px;font-size:12px;color:#c9d7ea}
+.hero .legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+main{padding:26px 0 70px}
+section.doc{margin-bottom:38px;scroll-margin-top:20px}
+.sec-h{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+.sec-h .no{font-family:var(--mono);font-size:13px;color:var(--gold);background:var(--navy);padding:3px 8px;border-radius:5px}
+.sec-h h2{font-family:var(--serif);font-size:23px}
+.lead{color:var(--muted);max-width:90ch;margin:2px 0 18px}
+.card{background:var(--surface);border:1px solid var(--hair);border-radius:var(--radius);padding:18px 20px;margin-bottom:16px}
+.card h3{font-family:var(--serif);font-size:17px;margin-bottom:6px}
+.card h4{font-size:13px;letter-spacing:.05em;text-transform:uppercase;color:var(--navy2);margin:14px 0 6px}
+p.tight{margin:6px 0}
+ul.tick{margin:6px 0;padding-left:20px}ul.tick li{margin:5px 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.mono{font-family:var(--mono);font-size:12px}
+.pill{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:5px;margin:2px 4px 2px 0}
+.pDet{background:var(--det-bg);color:var(--det)}.pInf{background:var(--inf-bg);color:var(--inf)}.pReg{background:var(--reg-bg);color:var(--reg)}
+.callout{border-left:3px solid var(--gold);background:var(--ice2);border-radius:0 8px 8px 0;padding:10px 14px;margin:12px 0;font-size:13px}
+/* federation diagram */
+.fed{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;margin:8px 0}
+.core{background:var(--navy);color:#fff;border-radius:12px;padding:16px 18px;text-align:center}
+.core .kt{font-family:var(--serif);font-size:16px;color:var(--gold-hi)}
+.core .ks{font-size:11px;color:#c9d7ea;margin-top:4px}
+.mods{display:flex;flex-direction:column;gap:8px}
+.modbox{background:#fff;border:1px solid var(--hair);border-left:4px solid var(--det);border-radius:8px;padding:9px 12px;font-size:13px}
+.modbox.reg{border-left-color:var(--reg)}
+.modbox .mn{font-weight:600}
+.modbox .md{font-size:11px;color:var(--muted)}
+.imparrow{display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--gold);font-size:12px;font-family:var(--mono)}
+.imparrow .ar{font-size:22px;line-height:1}
+/* flow */
+.flow{display:flex;align-items:stretch;gap:0;overflow-x:auto;padding:6px 2px}
+.fnode{flex:0 0 auto;background:#fff;border:1px solid var(--hair);border-radius:9px;padding:10px 12px;min-width:118px;display:flex;flex-direction:column;gap:3px}
+.fnode.det{border-top:3px solid var(--det)}.fnode.inf{border-top:3px solid var(--inf)}
+.fnode .ft{font-weight:600;font-size:12.5px}
+.fnode .fs{font-size:11px;color:var(--muted)}
+.farrow{flex:0 0 auto;display:flex;align-items:center;color:var(--gold);font-size:20px;padding:0 7px}
+/* code */
+pre.code{background:#0C1B30;color:#D8E3F2;border-radius:9px;padding:13px 15px;overflow-x:auto;font-family:var(--mono);font-size:12px;line-height:1.5;margin:8px 0}
+pre.code .c{color:#7A93B4}          /* comment */
+pre.code .k{color:var(--gold-hi)}   /* keyword/prefix */
+pre.code .s{color:#8FD0A6}          /* string */
+pre.code .p{color:#C79BE0}          /* property */
+pre.out{background:#08131F;color:#CFE8D9;border-radius:9px;padding:13px 15px;overflow-x:auto;font-family:var(--mono);font-size:11.5px;line-height:1.5;border:1px solid #16324a}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--hair);vertical-align:top}
+th{background:var(--ice2);font-size:12px;color:var(--navy2)}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--hair);border-radius:var(--radius)}
+footer{border-top:1px solid var(--hair);color:var(--muted);font-size:12px;padding:22px 0 60px}
+@media (max-width:900px){.grid2{grid-template-columns:1fr}.fed{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <svg class="brandmark" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="none" stroke="#C8A951" stroke-width="1.5"/><path d="M20 7 L31 26 H9 Z" fill="none" stroke="#C8A951" stroke-width="1.5"/><circle cx="20" cy="21" r="3.5" fill="#C8A951"/></svg>
+  <div class="brandtext"><div class="k">PLM Assessment Platform</div><div class="s">§6a · Federated Ontology Setup</div></div>
+  <div class="spacer"></div>
+  <nav class="applinks" aria-label="Companion tools">
+    <a class="applink" href="PLM%20Solution%20Architecture.html">Solution Architecture</a>
+    <a class="applink" href="PLM%20Skills%20Catalog.html">Skills Catalog</a>
+  </nav>
+  <div class="doctag">v1.0 · addendum to §6</div>
+</div></header>
+
+<section class="hero"><div class="wrap">
+  <div class="eyebrow">How the scoring model binds to the semantic layer</div>
+  <h1>Every standard is a federated OWL module imported into HSGA</h1>
+  <p>The Defect &amp; Risk Scoring Model doesn't hard-code rules. Each discipline, standard, and governance regime — 15288, 42010, 29148, 62304, ICH Q8–Q12, GxP, ISO 42001 — is its own ontology module that <span class="mono">owl:imports</span> HSGA core, asserts its mandate as an OWL axiom <em>and</em> a SHACL shape, and declares the defect it emits. A conformance failure is then a <b>proven</b> defect, not an inferred one — and the whole thing carries a determinism ratio.</p>
+  <div class="legend">
+    <span><span class="sw" style="background:var(--det)"></span>Deterministic — SHACL / OWL (decidable)</span>
+    <span><span class="sw" style="background:var(--inf)"></span>Inferred — LLM judgment (MTBH-gated)</span>
+    <span><span class="sw" style="background:var(--reg)"></span>Regulated regime — higher impact weight</span>
+  </div>
+</div></section>
+
+<main><div class="wrap">
+
+<!-- A. THE PATTERN -->
+<section class="doc">
+  <div class="sec-h"><span class="no">A</span><h2>The federation pattern (identical for every standard)</h2></div>
+  <p class="lead">A module is four moves. Once written, it plugs into the pipeline with zero changes to the Evaluate stage — the shape engine finds it, and the defect it emits is self-describing.</p>
+  <div class="card">
+    <div class="flow">
+      <div class="fnode det"><span class="ft">1 · Import</span><span class="fs">owl:imports hsga-core</span></div><div class="farrow">→</div>
+      <div class="fnode det"><span class="ft">2 · Specialise</span><span class="fs">subclass a core artifact type</span></div><div class="farrow">→</div>
+      <div class="fnode det"><span class="ft">3 · Assert mandate</span><span class="fs">OWL cardinality + SHACL shape</span></div><div class="farrow">→</div>
+      <div class="fnode det"><span class="ft">4 · Declare defect</span><span class="fs">shape → defect class · severity · derivation</span></div>
+    </div>
+    <p class="tight" style="margin-top:12px">The core carries the <b>join key</b> that makes deterministic-vs-inferred first-class: every <span class="mono">DefectClass</span> has a <span class="mono">classDerivation</span> of <span class="pill pDet">SHACL</span> <span class="pill pDet">OWLEntailment</span> or <span class="pill pInf">LLMJudgment</span>. That single property is what lets the assessment report how much of its verdict is provable.</p>
+  </div>
+</section>
+
+<!-- B. MODULE GRAPH -->
+<section class="doc">
+  <div class="sec-h"><span class="no">B</span><h2>Modules import the core</h2></div>
+  <p class="lead">HSGA core is the shared substrate (holarchy, artifact-slot model, defect / derivation vocabulary, causal classes). Each regime is a satellite that imports it. Regulated regimes carry a heavier <span class="mono">impactWeight</span>.</p>
+  <div class="card">
+    <div class="fed">
+      <div class="mods">
+        <div class="modbox"><div class="mn">ISO/IEC/IEEE 42010</div><div class="md">architecture description · weight 1.0</div></div>
+        <div class="modbox"><div class="mn">IEEE 29148</div><div class="md">requirements · weight 1.0</div></div>
+        <div class="modbox"><div class="mn">ISO/IEC/IEEE 15288</div><div class="md">life-cycle processes · weight 1.0</div></div>
+      </div>
+      <div class="imparrow"><span class="ar">→</span><span>owl:imports</span></div>
+      <div class="core"><div class="kt">HSGA core</div><div class="ks">value-kb · GraphDB<br>holarchy · slots · defect/derivation · causal graph</div></div>
+    </div>
+    <div class="fed" style="margin-top:4px">
+      <div class="mods">
+        <div class="modbox reg"><div class="mn">IEC 62304 <span class="pill pReg">regulated</span></div><div class="md">medical-device SW · weight 1.5</div></div>
+        <div class="modbox reg"><div class="mn">ICH Q8–Q12 <span class="pill pReg">regulated</span></div><div class="md">pharma QbD · weight 1.5</div></div>
+        <div class="modbox reg"><div class="mn">GxP · ISO 42001 <span class="pill pReg">regulated</span></div><div class="md">records / AI governance · weight 1.5</div></div>
+      </div>
+      <div class="imparrow"><span class="ar">→</span><span>owl:imports</span></div>
+      <div style="text-align:center;color:var(--muted);font-size:12px">same core —<br>higher impact weight<br>flows through deterministically</div>
+    </div>
+  </div>
+</section>
+
+<!-- C. ANATOMY -->
+<section class="doc">
+  <div class="sec-h"><span class="no">C</span><h2>Anatomy of one module — ISO/IEC/IEEE 42010</h2></div>
+  <p class="lead">The mandate "an architecture description shall frame at least one viewpoint" becomes both an OWL restriction (entailment-decidable) and a SHACL shape (validation-decidable) that <em>declares the defect it produces</em>.</p>
+  <div class="card">
+<pre class="code"><span class="c"># (a) import core · (b) specialise the artifact class</span>
+<span class="k">std4:</span>ArchitectureDescription <span class="p">a</span> owl:Class ;
+    <span class="p">rdfs:subClassOf</span> <span class="k">hsga:</span>LifecycleArtifact .
+
+<span class="c"># (c-OWL) entailment-decidable mandate</span>
+<span class="k">std4:</span>ArchitectureDescription <span class="p">rdfs:subClassOf</span>
+    [ <span class="p">a</span> owl:Restriction ; <span class="p">owl:onProperty</span> <span class="k">std4:</span>hasViewpoint ;
+      <span class="p">owl:minCardinality</span> 1 ] .
+
+<span class="c"># (c-SHACL) validation-decidable mandate + (d) defect declaration</span>
+<span class="k">std4:</span>ViewpointConstraint <span class="p">a</span> sh:PropertyShape ;
+    <span class="p">sh:path</span> <span class="k">std4:</span>hasViewpoint ;
+    <span class="p">sh:minCount</span> 1 ;
+    <span class="p">sh:message</span> <span class="s">"ISO/IEC/IEEE 42010 §5.5: frames no viewpoint…"</span> ;
+    <span class="p">hsga:producesDefectClass</span> <span class="k">std4:</span>MissingArchitectureViewpoint ;
+    <span class="p">hsga:defectSeverity</span> <span class="k">hsga:</span>Major ;
+    <span class="p">hsga:emitsDerivation</span> <span class="k">hsga:</span>SHACL ;      <span class="c"># &lt;-- PROVEN, not inferred</span>
+    <span class="p">hsga:moduleRef</span> <span class="k">std4:</span>Module .</pre>
+    <p class="tight">The four <span class="mono">hsga:</span> annotations on the shape are what make a raw <span class="mono">sh:ValidationResult</span> self-compile into a governed <span class="mono">hsga:Defect</span> — see the CONSTRUCT in step 4 below.</p>
+  </div>
+</section>
+
+<!-- D. FLOW -->
+<section class="doc">
+  <div class="sec-h"><span class="no">D</span><h2>From shape to causal impact</h2></div>
+  <p class="lead">The green run is fully deterministic; the purple node is the only inferred input, and it enters the graph only after passing the MTBH gate. Everything downstream of the gate is graph computation.</p>
+  <div class="card">
+    <div class="flow">
+      <div class="fnode det"><span class="ft">Instance</span><span class="fs">AD with no viewpoint</span></div><div class="farrow">→</div>
+      <div class="fnode det"><span class="ft">SHACL validate</span><span class="fs">GraphDB engine</span></div><div class="farrow">→</div>
+      <div class="fnode det"><span class="ft">ValidationResult</span><span class="fs">focusNode + sourceShape</span></div><div class="farrow">→</div>
+      <div class="fnode det"><span class="ft">CONSTRUCT → Defect</span><span class="fs">derivation = SHACL</span></div><div class="farrow">→</div>
+      <div class="fnode det"><span class="ft">Impact</span><span class="fs">weight×phase×criticality</span></div><div class="farrow">→</div>
+      <div class="fnode det"><span class="ft">Roll-up</span><span class="fs">transitive holarchy</span></div><div class="farrow">→</div>
+      <div class="fnode det"><span class="ft">Causal graph</span><span class="fs">→ value stream</span></div>
+    </div>
+    <div class="flow" style="margin-top:8px">
+      <div class="fnode inf"><span class="ft">LLM skill</span><span class="fs">"ambiguous req?"</span></div><div class="farrow">→</div>
+      <div class="fnode inf"><span class="ft">Confidence 0.82</span><span class="fs">MTBH gate</span></div><div class="farrow">→</div>
+      <div class="fnode det"><span class="ft">Committed to graph</span><span class="fs">derivation = LLMJudgment, tagged</span></div>
+    </div>
+<pre class="code" style="margin-top:14px"><span class="c"># Step 4 — the CONSTRUCT that turns a validation result into a governed defect</span>
+<span class="k">CONSTRUCT</span> { ?defect <span class="p">a</span> <span class="k">hsga:</span>Defect ; <span class="p">hsga:onArtifact</span> ?focus ;
+    <span class="p">hsga:defectClass</span> ?dclass ; <span class="p">hsga:severity</span> ?sev ;
+    <span class="p">hsga:derivation</span> ?deriv ; <span class="p">hsga:raisedByModule</span> ?module . }
+<span class="k">WHERE</span> {
+  ?result <span class="p">a</span> sh:ValidationResult ; <span class="p">sh:focusNode</span> ?focus ; <span class="p">sh:sourceShape</span> ?shape .
+  ?shape <span class="p">hsga:producesDefectClass</span> ?dclass ; <span class="p">hsga:defectSeverity</span> ?sev ;
+         <span class="p">hsga:emitsDerivation</span> ?deriv ; <span class="p">hsga:moduleRef</span> ?module . }</pre>
+  </div>
+</section>
+
+<!-- E. LIVE OUTPUT -->
+<section class="doc">
+  <div class="sec-h"><span class="no">E</span><h2>Live output — the pipeline actually run</h2></div>
+  <p class="lead">The reference runner over the sample portfolio. Note the same "missing element" pattern scores <b>13.65</b> under 62304 versus <b>6.0</b> under 42010 — the regulated regime lifts impact deterministically, with no separate rule to maintain.</p>
+  <div class="card">
+<pre class="out">[1] DETERMINISTIC DEFECTS (SHACL over federated modules — PROVEN)
+    - AD_LineTwin      MissingArchitectureViewpoint  [ISO/IEC/IEEE 42010]  Major  impact=6.0
+    - SW_ControlLoop   MissingSafetyClassification   [IEC 62304]           Major  impact=13.65
+    - SW_ControlLoop   MissingVnVEvidence            [IEC 62304]           Major  impact=13.65
+
+[2] INFERRED DEFECTS (LLM judgment — MTBH-gated, confidence-banded)
+    - ReqSpec_LineTwin AmbiguousRequirement          [IEEE 29148]          Minor  conf=0.82
+
+[3] DETERMINISTIC HOLARCHY ROLL-UP (transitive rollsUpTo)
+    - Project_LineTwin        defects rolled up: 4
+    - Program_ConnectedMfg    defects rolled up: 4
+    - Portfolio_FY26          defects rolled up: 4
+
+[4] DETERMINISM RATIO (governance headline)
+    proven=3  inferred=1  ratio=0.75  (of 4 defects)
+
+[5] CAUSAL PROPAGATION (curated edges deterministic; estimated flagged)
+    Cap_PredictiveQuality -> VS_RightFirstTime  pathFactor=0.428
+    edge provenance=[curated, estimated]  =>  DIRECTIONAL (contains estimated edge)</pre>
+    <div class="callout"><b>Why this matters for the causal assessment.</b> The determinism ratio (0.75) and the per-path edge provenance travel <em>with</em> the ROI number. An executive reading D4 sees not just "value stream uplift," but that it rests on three SHACL-provable majors, one gated inference at 0.82 confidence, and a causal path that is directional (not strategy-weighted) because one edge coefficient is still estimated. The determinism is auditable rather than laundering uncertainty.</div>
+  </div>
+</section>
+
+<!-- F. FILES -->
+<section class="doc">
+  <div class="sec-h"><span class="no">F</span><h2>The deliverable files</h2></div>
+  <div class="card">
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>File</th><th>Role</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">hsga-core.ttl</td><td>Core substrate — holarchy, slots, defect/derivation vocabulary, causal classes</td></tr>
+        <tr><td class="mono">mod-iso-iec-ieee-42010.ttl</td><td>Federated module (advisory standard, weight 1.0)</td></tr>
+        <tr><td class="mono">mod-iec-62304.ttl</td><td>Federated module (regulated regime, weight 1.5)</td></tr>
+        <tr><td class="mono">mod-ich-q8-q12.ttl</td><td>Federated governance module + one inferred (29148) defect class</td></tr>
+        <tr><td class="mono">data-portfolio-fy26-sample.ttl</td><td>Sample instance — holarchy, artifacts, causal graph</td></tr>
+        <tr><td class="mono">federation-queries.rq</td><td>ValidationResult→Defect CONSTRUCT, impact, roll-up, ratio, causal path</td></tr>
+        <tr><td class="mono">federation_demo.py</td><td>Zero-dependency runner (the output above)</td></tr>
+      </tbody>
+    </table></div>
+    <p class="tight" style="margin-top:10px">Load the <span class="mono">.ttl</span> files into <span class="mono">value-kb</span>; the <span class="mono">owl:imports</span> statements wire the modules to core. Run the SHACL validation, then <span class="mono">federation-queries.rq</span>.</p>
+  </div>
+</section>
+
+</div></main>
+<footer><div class="wrap">PLM Assessment Platform · §6a Federated Ontology Setup · addendum to the Solution Architecture Defect &amp; Risk Scoring Model. Deterministic conformance over federated modules; inference gated at the graph-commit boundary.</div></footer>
+</body>
+</html>
