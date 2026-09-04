@@ -1,364 +1,464 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gulfstream DDD Business Model Interactive</title>
-    <style>
-        :root {
-            --primary: #2c3e50;
-            --secondary: #34495e;
-            --accent: #2980b9;
-            --light: #ecf0f1;
-            --shadow: 0 4px 6px rgba(0,0,0,0.1);
-            --transition: all 0.3s ease;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gulfstream Capability Model</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+    :root {
+        --canvas: #f4f6f8;
+        --paper: #ffffff;
+        --paper-alt: #f8fafb;
+        --border: #dde3e8;
+        --ink: #1b2733;
+        --slate: #56687a;
+        --slate-soft: #7c8b9a;
+        --accent-domain: #2980b9;
+        --accent-domain-bg: #eaf3fa;
+        --accent-cap: #c2410c;
+        --accent-cap-bg: #fdf1ea;
+        --core-color: #0f766e;
+        --commercial-color: #b45309;
+        --enabling-color: #4338ca;
+        --shadow: 0 1px 2px rgba(27,39,51,0.06), 0 8px 20px -12px rgba(27,39,51,0.12);
+    }
+    @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+            --canvas: #0f1620;
+            --paper: #161f2b;
+            --paper-alt: #1b2532;
+            --border: #2a3542;
+            --ink: #e8edf2;
+            --slate: #9aa9b8;
+            --slate-soft: #71818f;
+            --accent-domain: #5ba8db;
+            --accent-domain-bg: #1b2f3d;
+            --accent-cap: #f0733a;
+            --accent-cap-bg: #2c1c11;
+            --core-color: #34a897;
+            --commercial-color: #d99a4e;
+            --enabling-color: #8b7ff0;
+            --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 20px -12px rgba(0,0,0,0.5);
         }
+    }
+    :root[data-theme="dark"] {
+        --canvas: #0f1620;
+        --paper: #161f2b;
+        --paper-alt: #1b2532;
+        --border: #2a3542;
+        --ink: #e8edf2;
+        --slate: #9aa9b8;
+        --slate-soft: #71818f;
+        --accent-domain: #5ba8db;
+        --accent-domain-bg: #1b2f3d;
+        --accent-cap: #f0733a;
+        --accent-cap-bg: #2c1c11;
+        --core-color: #34a897;
+        --commercial-color: #d99a4e;
+        --enabling-color: #8b7ff0;
+        --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 20px -12px rgba(0,0,0,0.5);
+    }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-        }
+    * { box-sizing: border-box; }
+    body {
+        font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: var(--canvas);
+        color: var(--ink);
+        margin: 0;
+        padding: 2rem 1.5rem 4rem;
+    }
 
-        h1, h2, h3 { text-align: center; color: var(--primary); }
-        p.subtitle { text-align: center; color: var(--secondary); margin-bottom: 30px; font-style: italic; }
+    .page { max-width: 1240px; margin: 0 auto; }
 
-        /* Ontology Mapping Header */
-        #ontology-mapping {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            margin-bottom: 30px;
-            text-align: center;
-        }
+    header.hero { text-align: center; margin-bottom: 1.75rem; }
+    h1 { font-size: 1.7rem; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 0.35rem; text-wrap: balance; }
+    p.subtitle { color: var(--slate); margin: 0; font-size: 0.95rem; }
+    .eyebrow {
+        display: inline-flex; align-items: center; gap: 0.4rem;
+        font-family: "IBM Plex Mono", monospace; font-size: 0.68rem; font-weight: 600;
+        letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-cap);
+        background: var(--accent-cap-bg); padding: 0.25rem 0.6rem; border-radius: 999px;
+        margin-bottom: 0.75rem;
+    }
 
-        .ontology-btn {
-            background-color: #e0e0e0;
-            border: 2px solid transparent;
-            color: var(--primary);
-            padding: 10px 20px;
-            margin: 5px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: var(--transition);
-        }
+    .control-panel {
+        background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+        box-shadow: var(--shadow); padding: 1.1rem 1.3rem; margin-bottom: 1.75rem;
+        display: flex; flex-direction: column; gap: 0.9rem;
+    }
+    .control-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .control-row.between { justify-content: space-between; }
+    .control-label {
+        font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+        color: var(--slate-soft); white-space: nowrap;
+    }
 
-        .ontology-btn:hover {
-            background-color: #d0d0d0;
-        }
+    .view-toggle { display: flex; background: var(--paper-alt); border: 1px solid var(--border); border-radius: 8px; padding: 3px; }
+    .view-btn {
+        border: none; background: transparent; padding: 0.4rem 0.9rem; font-size: 0.82rem; font-weight: 600;
+        color: var(--slate); cursor: pointer; border-radius: 6px; transition: background 0.15s, color 0.15s;
+    }
+    .view-btn.active { background: var(--accent-domain); color: #fff; }
+    .view-btn.active[data-view="capability"] { background: var(--accent-cap); }
 
-        .ontology-btn.active {
-            background-color: var(--accent);
-            color: white;
-            border-color: #1a5276;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
-        }
+    .chip-row { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .filter-chip {
+        border: 1px solid var(--border); background: var(--paper-alt); color: var(--slate);
+        padding: 0.35rem 0.8rem; border-radius: 999px; font-size: 0.78rem; font-weight: 600;
+        cursor: pointer; transition: var(--transition, all 0.15s ease);
+    }
+    .filter-chip:hover { border-color: var(--accent-domain); color: var(--ink); }
+    .filter-chip.active { background: var(--accent-domain); border-color: var(--accent-domain); color: #fff; }
+    #capability-filters .filter-chip.active { background: var(--accent-cap); border-color: var(--accent-cap); }
 
-        /* Domain Container */
-        #domain-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-        }
+    /* ---------- Domain view ---------- */
+    #domain-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.1rem; }
 
-        /* Domain Cards */
-        .domain-card {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: var(--shadow);
-            width: 300px;
-            overflow: hidden;
-            border-top: 5px solid var(--primary);
-            transition: var(--transition), opacity 0.5s ease;
-            opacity: 1;
-        }
+    .domain-card {
+        background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+        box-shadow: var(--shadow); overflow: hidden;
+        transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+    .domain-card.filtered-out { opacity: 0.12; transform: scale(0.98); pointer-events: none; }
 
-        .domain-card.filtered-out {
-            opacity: 0.1;
-            pointer-events: none;
-        }
+    .domain-header { padding: 1.1rem 1.2rem 1rem; border-bottom: 1px solid var(--border); border-top: 3px solid var(--cat-color, var(--accent-domain)); }
+    .domain-eyebrow { font-family: "IBM Plex Mono", monospace; font-size: 0.65rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--cat-color, var(--accent-domain)); margin-bottom: 0.3rem; }
+    .domain-title { font-size: 1.05rem; font-weight: 700; margin: 0 0 0.35rem; letter-spacing: -0.005em; }
+    .domain-description { font-size: 0.85rem; color: var(--slate); margin: 0 0 0.65rem; line-height: 1.4; }
+    .domain-caps { display: flex; flex-wrap: wrap; gap: 0.3rem; }
 
-        .domain-header {
-            background-color: var(--light);
-            padding: 15px;
-            border-bottom: 1px solid #ddd;
-        }
+    .badge {
+        display: inline-block; font-size: 0.68rem; font-weight: 600; padding: 0.18rem 0.55rem;
+        border-radius: 5px; line-height: 1.5; white-space: nowrap;
+    }
+    .badge.cap { background: var(--accent-cap-bg); color: var(--accent-cap); cursor: pointer; }
+    .badge.cap:hover { filter: brightness(0.95); }
+    .badge.dom { background: var(--dom-color-bg, var(--accent-domain-bg)); color: var(--dom-color, var(--accent-domain)); cursor: pointer; }
+    .badge.dom:hover { filter: brightness(0.95); }
+    .badge.svc { background: var(--paper-alt); color: var(--slate); border: 1px solid var(--border); }
 
-        .domain-title { font-size: 1.2em; font-weight: bold; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
-        .domain-description { font-size: 0.9em; color: #666; margin: 5px 0 0 0; }
+    .services-list { padding: 0.9rem 1.2rem 1.1rem; display: flex; flex-direction: column; gap: 0.6rem; }
+    .service-item { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .service-title {
+        background: var(--paper-alt); padding: 0.6rem 0.8rem; font-weight: 600; font-size: 0.87rem;
+        cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;
+    }
+    .service-title:hover { background: var(--accent-domain-bg); }
+    .chevron { font-size: 0.7rem; color: var(--slate-soft); transition: transform 0.2s ease; flex-shrink: 0; }
+    .service-item.expanded .chevron { transform: rotate(90deg); }
+    .service-body { display: none; padding: 0.7rem 0.9rem 0.85rem; border-top: 1px solid var(--border); }
+    .service-item.expanded .service-body { display: block; }
+    .service-body-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--slate-soft); margin: 0 0 0.4rem; }
+    .service-body-label:not(:first-child) { margin-top: 0.7rem; }
+    ul.process-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.3rem; }
+    .process-item { font-size: 0.83rem; color: var(--slate); position: relative; padding-left: 1.1rem; line-height: 1.4; }
+    .process-item::before { content: '↪'; position: absolute; left: 0; color: var(--accent-domain); font-weight: 700; }
+    .service-cap-row { display: flex; flex-wrap: wrap; gap: 0.3rem; }
 
-        .services-list {
-            padding: 15px;
-        }
+    /* ---------- Capability view ---------- */
+    #capability-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1.1rem; }
+    .capability-card {
+        background: var(--paper); border: 1px solid var(--border); border-radius: 12px;
+        box-shadow: var(--shadow); padding: 1.1rem 1.2rem; display: flex; flex-direction: column; gap: 0.75rem;
+        transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+    .capability-card.filtered-out { opacity: 0.12; transform: scale(0.98); pointer-events: none; }
+    .capability-head { display: flex; align-items: flex-start; gap: 0.7rem; }
+    .capability-icon {
+        width: 34px; height: 34px; border-radius: 8px; background: var(--accent-cap-bg); color: var(--accent-cap);
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1rem;
+    }
+    .capability-title { font-size: 1rem; font-weight: 700; margin: 0 0 0.2rem; letter-spacing: -0.005em; }
+    .capability-description { font-size: 0.83rem; color: var(--slate); margin: 0; line-height: 1.42; }
+    .capability-section-label { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--slate-soft); margin: 0 0 0.4rem; }
+    .capability-section { border-top: 1px solid var(--border); padding-top: 0.65rem; }
+    .stat-row { display: flex; gap: 1.25rem; font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
+    .stat { display: flex; flex-direction: column; }
+    .stat b { font-size: 1.15rem; color: var(--ink); line-height: 1.1; }
+    .stat span { font-size: 0.63rem; color: var(--slate-soft); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.15rem; }
 
-        .service-item {
-            margin-bottom: 15px;
-            border: 1px solid #eee;
-            border-radius: 8px;
-            overflow: hidden;
-            transition: var(--transition);
-        }
+    .theme-toggle {
+        width: 34px; height: 34px; flex-shrink: 0; border-radius: 8px; border: 1px solid var(--border);
+        background: var(--paper-alt); color: var(--slate); display: flex; align-items: center; justify-content: center;
+        cursor: pointer; transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .theme-toggle:hover { border-color: var(--accent-domain); color: var(--ink); }
+    .theme-toggle svg { width: 17px; height: 17px; }
+    .theme-toggle .icon-moon { display: none; }
+    .theme-toggle .icon-sun { display: block; }
+    @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) .theme-toggle .icon-sun { display: none; }
+        :root:not([data-theme="light"]) .theme-toggle .icon-moon { display: block; }
+    }
+    :root[data-theme="dark"] .theme-toggle .icon-sun { display: none; }
+    :root[data-theme="dark"] .theme-toggle .icon-moon { display: block; }
+    :root[data-theme="light"] .theme-toggle .icon-sun { display: block; }
+    :root[data-theme="light"] .theme-toggle .icon-moon { display: none; }
 
-        .service-item:hover {
-            border-color: var(--accent);
-            background-color: #fbfdff;
-        }
+    .empty-state { text-align: center; padding: 3rem 1rem; color: var(--slate-soft); font-size: 0.9rem; }
 
-        .service-title {
-            background-color: #f9f9f9;
-            padding: 10px 15px;
-            font-weight: bold;
-            font-size: 1em;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #eee;
-        }
-
-        .service-title:hover {
-            background-color: #f0f0f0;
-        }
-
-        .service-title::after {
-            content: '▼';
-            font-size: 0.8em;
-            transition: transform 0.3s ease;
-        }
-
-        .service-item.expanded .service-title::after {
-            transform: rotate(180deg);
-        }
-
-        .processes-list {
-            display: none;
-            padding: 10px 15px;
-            background-color: #fafafa;
-            border-top: 1px solid #eee;
-        }
-
-        .service-item.expanded .processes-list {
-            display: block;
-        }
-
-        .process-item {
-            list-style-type: none;
-            padding: 5px 0;
-            font-size: 0.9em;
-            color: #555;
-            position: relative;
-            padding-left: 20px;
-        }
-
-        .process-item::before {
-            content: '↪';
-            position: absolute;
-            left: 0;
-            color: var(--accent);
-            font-weight: bold;
-        }
-    </style>
+    @media (max-width: 640px) {
+        .control-row.between { flex-direction: column; align-items: flex-start; }
+    }
+</style>
 </head>
 <body>
 
-    <h1>Gulfstream Aerospace Business Model</h1>
-    <p class="subtitle">An Interactive DDD Domain Map with Ontology Mapping</p>
 
-    <div id="ontology-mapping">
-        <h3>Map to Domain Operations (Ontologies)</h3>
-        <button class="ontology-btn active" data-ontology="all" onclick="filterByOntology('all')">All Domains</button>
-        <button class="ontology-btn" data-ontology="business" onclick="filterByOntology('business')">Business Operations</button>
-        <button class="ontology-btn" data-ontology="commercial" onclick="filterByOntology('commercial')">Commercial Operations</button>
-        <button class="ontology-btn" data-ontology="customer-support" onclick="filterByOntology('customer-support')">Customer Support Operations</button>
-        <button class="ontology-btn" data-ontology="supply-chain" onclick="filterByOntology('supply-chain')">Supply Chain Operations</button>
-        <button class="ontology-btn" data-ontology="manufacturing" onclick="filterByOntology('manufacturing')">Manufacturing Operations</button>
-    </div>
+<div class="page">
+    <header class="hero">
+        <div class="eyebrow">v2.0 · Capability Layer</div>
+        <h1>Gulfstream Aerospace Business Model</h1>
+        <p class="subtitle">An interactive domain map — now with the cross-cutting capabilities that connect services back to every domain they support.</p>
+    </header>
 
-    <div id="domain-container">
-        <!-- Domains will be injected here by JavaScript -->
-    </div>
-
-    <script>
-        const businessModel = {
-            domains: [
-                {
-                    id: "engineering",
-                    title: "Product Engineering",
-                    description: "Designing, certifying, and improving the next-generation aircraft.",
-                    ontologies: ["manufacturing", "commercial"],
-                    services: [
-                        {
-                            title: "Aircraft Design & Simulation",
-                            processes: ["Conceptual Design (CAD/CAE)", "Aerodynamics & CFD Analysis", "Avionics Integration", "Material Science Research"]
-                        },
-                        {
-                            title: "Certification & Regulatory Compliance",
-                            processes: ["FAA/EASA Type Certification Planning", "Flight Test Data Analysis", "Safety Case Development", "Continued Airworthiness Monitoring"]
-                        }
-                    ]
-                },
-                {
-                    id: "manufacturing",
-                    title: "Aircraft Manufacturing",
-                    description: "Physical assembly, component fabrication, and final integration.",
-                    ontologies: ["manufacturing", "supply-chain"],
-                    services: [
-                        {
-                            title: "Component Fabrication",
-                            processes: ["Composite Material Layering", "Precision Machining", "Sheet Metal Forming"]
-                        },
-                        {
-                            title: "Major Assembly Integration (MAI)",
-                            processes: ["Fuselage Joinery", "Wing-to-Body Mating", "Landing Gear Installation"]
-                        },
-                        {
-                            title: "Final Assembly Line (FAL)",
-                            processes: ["Engine Mounting", "Cabin Completion & Outfitting", "System Power-On Tests"]
-                        }
-                    ]
-                },
-                {
-                    id: "supply-chain",
-                    title: "Supply Chain & Logistics",
-                    description: "Global procurement, inventory management, and inbound logistics.",
-                    ontologies: ["supply-chain", "manufacturing", "business"],
-                    services: [
-                        {
-                            title: "Supplier Relationship Management (SRM)",
-                            processes: ["Supplier Selection & Auditing", "Contract Negotiation", "Performance Monitoring"]
-                        },
-                        {
-                            title: "Procurement & Strategic Sourcing",
-                            processes: ["Raw Material Sourcing", "Long-Lead Item Ordering", "Just-In-Time (JIT) Delivery Planning"]
-                        },
-                        {
-                            title: "Global Logistics & Warehousing",
-                            processes: ["Parts Tracking", "Warehousing Optimization", "AOG (Aircraft on Ground) Logistics"]
-                        }
-                    ]
-                },
-                {
-                    id: "sales",
-                    title: "Sales & Marketing",
-                    description: "Client relationship building, fleet planning, and closing contracts.",
-                    ontologies: ["commercial", "business"],
-                    services: [
-                        {
-                            title: "Customer Relationship Management (CRM)",
-                            processes: ["Lead Generation", "Client Needs Assessment", "High-Net-Worth Individual (HNWI) Outreach"]
-                        },
-                        {
-                            title: "Aircraft Sales & Financing",
-                            processes: ["Proposal Generation", "Price Negotiation", "Financing and Leasing Support", "Used Aircraft Trade-In"]
-                        }
-                    ]
-                },
-                {
-                    id: "customer-support",
-                    title: "Customer Support & Aftermarket",
-                    description: "Lifetime service, maintenance, and operational support.",
-                    ontologies: ["customer-support", "commercial"],
-                    services: [
-                        {
-                            title: "Planned Support & Fleet Maintenance",
-                            processes: ["Scheduled Inspection Planning", "Component Exchange Programs (CEP)", "Service Bulletin (SB) Implementations"]
-                        },
-                        {
-                            title: "MRO (Maintenance, Repair, & Overhaul)",
-                            processes: ["Engine Overhaul Management", "Structural Repairs", "Avionics Upgrades"]
-                        },
-                        {
-                            title: "On-Demand Support (AOG)",
-                            processes: ["24/7 technical hotline", "Mobile Repair Team (MRT) Deployment", "Urgent Parts Dispatch"]
-                        }
-                    ]
-                },
-                {
-                    id: "corporate",
-                    title: "Corporate Strategy & Finance",
-                    description: "Strategic planning, financial control, and overall governance.",
-                    ontologies: ["business"],
-                    services: [
-                        {
-                            title: "Financial Planning & Analysis (FP&A)",
-                            processes: ["Revenue Forecasting", "Cost Accounting & Control", "Investment Appraisal"]
-                        },
-                        {
-                            title: "Strategic Planning",
-                            processes: ["Market Analysis", "Mergers & Acquisitions (M&A) Evaluation", "Brand Management"]
-                        }
-                    ]
-                }
-            ]
-        };
-
-        const container = document.getElementById('domain-container');
-
-        // Initial render
-        renderDomains(businessModel.domains);
-
-        function renderDomains(domains) {
-            container.innerHTML = '';
-            domains.forEach(domain => {
-                const domainCard = document.createElement('div');
-                domainCard.className = 'domain-card';
-                domainCard.id = `domain-${domain.id}`;
-                domainCard.setAttribute('data-ontologies', domain.ontologies.join(' '));
-
-                domainCard.innerHTML = `
-                    <div class="domain-header">
-                        <h4 class="domain-title">${domain.title}</h4>
-                        <p class="domain-description">${domain.description}</p>
-                    </div>
-                    <div class="services-list">
-                        ${domain.services.map((service, index) => renderService(service, domain.id, index)).join('')}
-                    </div>
-                `;
-                container.appendChild(domainCard);
-            });
-        }
-
-        function renderService(service, domainId, serviceIndex) {
-            const serviceId = `${domainId}-service-${serviceIndex}`;
-            return `
-                <div class="service-item" id="${serviceId}">
-                    <div class="service-title" onclick="toggleService('${serviceId}')">
-                        ${service.title}
-                    </div>
-                    <ul class="processes-list">
-                        ${service.processes.map(process => `<li class="process-item">${process}</li>`).join('')}
-                    </ul>
+    <div class="control-panel">
+        <div class="control-row between">
+            <div class="control-row">
+                <span class="control-label">View</span>
+                <div class="view-toggle" id="view-toggle">
+                    <button class="view-btn active" data-view="domain">By Domain</button>
+                    <button class="view-btn" data-view="capability">By Capability</button>
                 </div>
-            `;
-        }
+            </div>
+            <div class="control-row" style="gap: 1rem;">
+                <div class="stat-row" id="header-stats"></div>
+                <button class="theme-toggle" id="theme-toggle" title="Toggle light / dark" aria-label="Toggle light and dark theme">
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                </button>
+            </div>
+        </div>
+        <div class="control-row" id="domain-filter-row">
+            <span class="control-label">Operation</span>
+            <div class="chip-row" id="ontology-filters"></div>
+        </div>
+        <div class="control-row" id="capability-filter-row" style="display:none;">
+            <span class="control-label">Domain category</span>
+            <div class="chip-row" id="capability-filters"></div>
+        </div>
+    </div>
 
-        function toggleService(serviceId) {
-            const serviceItem = document.getElementById(serviceId);
-            if (serviceItem) {
-                serviceItem.classList.toggle('expanded');
-            }
-        }
+    <div id="domain-container"></div>
+    <div id="capability-container" style="display:none;"></div>
+</div>
 
-        function filterByOntology(ontology) {
-            // Update button states
-            document.querySelectorAll('.ontology-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`.ontology-btn[data-ontology="${ontology}"]`).classList.add('active');
+<script id="model-data" type="application/json">{"domains": [{"id": "ProductEngineeringDomain", "title": "Product Engineering Domain", "description": "Designing, certifying, and improving next-generation aircraft.", "category": "Core", "ontologies": ["manufacturing", "commercial"], "capabilities": ["Engineering & Design Capability", "Quality Assurance Capability", "Regulatory Compliance & Certification Capability"], "services": [{"title": "Aircraft Design & Simulation", "processes": ["Conceptual Design (CAD/CAE)", "Aerodynamics & CFD Analysis", "Avionics Integration", "Material Science Research"], "capabilities": ["Engineering & Design Capability"]}, {"title": "Certification & Regulatory Compliance", "processes": ["FAA/EASA Type Certification Planning", "Flight Test Data Analysis", "Safety Case Development", "Continued Airworthiness Monitoring"], "capabilities": ["Regulatory Compliance & Certification Capability", "Quality Assurance Capability"]}]}, {"id": "AircraftManufacturingDomain", "title": "Aircraft Manufacturing Domain", "description": "Physical assembly, component fabrication, and final integration.", "category": "Core", "ontologies": ["manufacturing", "supply-chain"], "capabilities": ["Manufacturing Execution Capability", "Quality Assurance Capability"], "services": [{"title": "Component Fabrication", "processes": ["Composite Material Layering", "Precision Machining", "Sheet Metal Forming"], "capabilities": ["Manufacturing Execution Capability"]}, {"title": "Major Assembly Integration (MAI)", "processes": ["Fuselage Joinery", "Wing-to-Body Mating", "Landing Gear Installation"], "capabilities": ["Manufacturing Execution Capability"]}, {"title": "Final Assembly Line (FAL)", "processes": ["Engine Mounting", "Cabin Completion & Outfitting", "System Power-On Tests"], "capabilities": ["Manufacturing Execution Capability", "Quality Assurance Capability"]}]}, {"id": "SupplyChainDomain", "title": "Supply Chain & Logistics Domain", "description": "Global procurement, inventory management, and inbound logistics.", "category": "Enabling", "ontologies": ["supply-chain", "manufacturing", "business"], "capabilities": ["Logistics & Inventory Capability", "Regulatory Compliance & Certification Capability", "Supplier & Sourcing Management Capability"], "services": [{"title": "Supplier Relationship Management (SRM)", "processes": ["Supplier Selection & Auditing", "Contract Negotiation", "Performance Monitoring"], "capabilities": ["Supplier & Sourcing Management Capability"]}, {"title": "Procurement & Strategic Sourcing", "processes": ["Raw Material Sourcing", "Long-Lead Item Ordering", "Just-In-Time (JIT) Delivery Planning"], "capabilities": ["Regulatory Compliance & Certification Capability", "Supplier & Sourcing Management Capability", "Logistics & Inventory Capability"]}, {"title": "Global Logistics & Warehousing", "processes": ["Parts Tracking", "Warehousing Optimization", "AOG (Aircraft on Ground) Logistics"], "capabilities": ["Logistics & Inventory Capability"]}]}, {"id": "SalesAndMarketingDomain", "title": "Sales & Marketing Domain", "description": "Client relationship building, fleet planning, and closing contracts.", "category": "Commercial", "ontologies": ["commercial", "business"], "capabilities": ["Customer Relationship Capability", "Revenue & Financing Capability", "Strategic Portfolio Management Capability"], "services": [{"title": "Customer Relationship Management (CRM)", "processes": ["Lead Generation", "Client Needs Assessment", "High-Net-Worth Individual Outreach"], "capabilities": ["Customer Relationship Capability", "Strategic Portfolio Management Capability"]}, {"title": "Aircraft Sales & Financing", "processes": ["Proposal Generation", "Price Negotiation", "Financing and Leasing Support", "Used Aircraft Trade-In"], "capabilities": ["Revenue & Financing Capability"]}]}, {"id": "CustomerSupportDomain", "title": "Customer Support & Aftermarket Domain", "description": "Lifetime service, maintenance, and operational support.", "category": "Commercial", "ontologies": ["customer-support", "commercial"], "capabilities": ["Aftermarket Service Delivery Capability", "Customer Relationship Capability", "Quality Assurance Capability", "Regulatory Compliance & Certification Capability"], "services": [{"title": "Planned Support & Fleet Maintenance", "processes": ["Scheduled Inspection Planning", "Component Exchange Programs (CEP)", "Service Bulletin (SB) Implementations"], "capabilities": ["Customer Relationship Capability", "Aftermarket Service Delivery Capability"]}, {"title": "MRO (Maintenance, Repair, & Overhaul)", "processes": ["Engine Overhaul Management", "Structural Repairs", "Avionics Upgrades"], "capabilities": ["Regulatory Compliance & Certification Capability", "Quality Assurance Capability", "Aftermarket Service Delivery Capability"]}, {"title": "On-Demand Support (AOG)", "processes": ["24/7 Technical Hotline", "Mobile Repair Team (MRT) Deployment", "Urgent Parts Dispatch"], "capabilities": ["Aftermarket Service Delivery Capability"]}]}, {"id": "CorporateStrategyDomain", "title": "Corporate Strategy & Finance Domain", "description": "Strategic planning, financial control, and overall governance.", "category": "Enabling", "ontologies": ["business"], "capabilities": ["Financial Planning & Control Capability", "Revenue & Financing Capability", "Strategic Portfolio Management Capability"], "services": [{"title": "Financial Planning & Analysis (FP&A)", "processes": ["Revenue Forecasting", "Cost Accounting & Control", "Investment Appraisal"], "capabilities": ["Revenue & Financing Capability", "Financial Planning & Control Capability"]}, {"title": "Strategic Planning", "processes": ["Market Analysis", "Mergers & Acquisitions Evaluation", "Brand Management"], "capabilities": ["Strategic Portfolio Management Capability"]}]}], "capabilities": [{"id": "CapEngineeringDesign", "title": "Engineering & Design Capability", "description": "Ability to conceive, model, and simulate airworthy aircraft designs.", "enabledBy": [{"service": "Aircraft Design & Simulation", "domain": "Product Engineering Domain"}], "supports": [{"domain": "Product Engineering Domain", "category": "Core", "color": "#0f766e"}]}, {"id": "CapRegulatoryCompliance", "title": "Regulatory Compliance & Certification Capability", "description": "Ability to secure and maintain type certification and airworthiness across the fleet lifecycle.", "enabledBy": [{"service": "Certification & Regulatory Compliance", "domain": "Product Engineering Domain"}, {"service": "MRO (Maintenance, Repair, & Overhaul)", "domain": "Customer Support & Aftermarket Domain"}, {"service": "Procurement & Strategic Sourcing", "domain": "Supply Chain & Logistics Domain"}], "supports": [{"domain": "Product Engineering Domain", "category": "Core", "color": "#0f766e"}, {"domain": "Customer Support & Aftermarket Domain", "category": "Commercial", "color": "#b45309"}, {"domain": "Supply Chain & Logistics Domain", "category": "Enabling", "color": "#4338ca"}]}, {"id": "CapManufacturingExecution", "title": "Manufacturing Execution Capability", "description": "Ability to fabricate components and integrate them into a finished aircraft.", "enabledBy": [{"service": "Component Fabrication", "domain": "Aircraft Manufacturing Domain"}, {"service": "Major Assembly Integration (MAI)", "domain": "Aircraft Manufacturing Domain"}, {"service": "Final Assembly Line (FAL)", "domain": "Aircraft Manufacturing Domain"}], "supports": [{"domain": "Aircraft Manufacturing Domain", "category": "Core", "color": "#0f766e"}]}, {"id": "CapQualityAssurance", "title": "Quality Assurance Capability", "description": "Ability to verify conformance, safety, and reliability across design, build, and support.", "enabledBy": [{"service": "Final Assembly Line (FAL)", "domain": "Aircraft Manufacturing Domain"}, {"service": "Certification & Regulatory Compliance", "domain": "Product Engineering Domain"}, {"service": "MRO (Maintenance, Repair, & Overhaul)", "domain": "Customer Support & Aftermarket Domain"}], "supports": [{"domain": "Aircraft Manufacturing Domain", "category": "Core", "color": "#0f766e"}, {"domain": "Product Engineering Domain", "category": "Core", "color": "#0f766e"}, {"domain": "Customer Support & Aftermarket Domain", "category": "Commercial", "color": "#b45309"}]}, {"id": "CapSupplierSourcing", "title": "Supplier & Sourcing Management Capability", "description": "Ability to select, qualify, and manage the supplier base and strategic sourcing.", "enabledBy": [{"service": "Supplier Relationship Management (SRM)", "domain": "Supply Chain & Logistics Domain"}, {"service": "Procurement & Strategic Sourcing", "domain": "Supply Chain & Logistics Domain"}], "supports": [{"domain": "Supply Chain & Logistics Domain", "category": "Enabling", "color": "#4338ca"}]}, {"id": "CapLogisticsInventory", "title": "Logistics & Inventory Capability", "description": "Ability to move parts and materials reliably across the global supply network.", "enabledBy": [{"service": "Global Logistics & Warehousing", "domain": "Supply Chain & Logistics Domain"}, {"service": "Procurement & Strategic Sourcing", "domain": "Supply Chain & Logistics Domain"}], "supports": [{"domain": "Supply Chain & Logistics Domain", "category": "Enabling", "color": "#4338ca"}]}, {"id": "CapCustomerRelationship", "title": "Customer Relationship Capability", "description": "Ability to build and sustain long-term relationships with operators and buyers.", "enabledBy": [{"service": "Customer Relationship Management (CRM)", "domain": "Sales & Marketing Domain"}, {"service": "Planned Support & Fleet Maintenance", "domain": "Customer Support & Aftermarket Domain"}], "supports": [{"domain": "Sales & Marketing Domain", "category": "Commercial", "color": "#b45309"}, {"domain": "Customer Support & Aftermarket Domain", "category": "Commercial", "color": "#b45309"}]}, {"id": "CapRevenueFinancing", "title": "Revenue & Financing Capability", "description": "Ability to structure, price, and finance aircraft transactions.", "enabledBy": [{"service": "Aircraft Sales & Financing", "domain": "Sales & Marketing Domain"}, {"service": "Financial Planning & Analysis (FP&A)", "domain": "Corporate Strategy & Finance Domain"}], "supports": [{"domain": "Sales & Marketing Domain", "category": "Commercial", "color": "#b45309"}, {"domain": "Corporate Strategy & Finance Domain", "category": "Enabling", "color": "#4338ca"}]}, {"id": "CapAftermarketServiceDelivery", "title": "Aftermarket Service Delivery Capability", "description": "Ability to keep customer fleets flying through planned, unplanned, and overhaul support.", "enabledBy": [{"service": "Planned Support & Fleet Maintenance", "domain": "Customer Support & Aftermarket Domain"}, {"service": "MRO (Maintenance, Repair, & Overhaul)", "domain": "Customer Support & Aftermarket Domain"}, {"service": "On-Demand Support (AOG)", "domain": "Customer Support & Aftermarket Domain"}], "supports": [{"domain": "Customer Support & Aftermarket Domain", "category": "Commercial", "color": "#b45309"}]}, {"id": "CapFinancialPlanningControl", "title": "Financial Planning & Control Capability", "description": "Ability to forecast, account for, and appraise the financial performance of the enterprise.", "enabledBy": [{"service": "Financial Planning & Analysis (FP&A)", "domain": "Corporate Strategy & Finance Domain"}], "supports": [{"domain": "Corporate Strategy & Finance Domain", "category": "Enabling", "color": "#4338ca"}]}, {"id": "CapStrategicPortfolio", "title": "Strategic Portfolio Management Capability", "description": "Ability to set enterprise direction: market position, brand, and M&A strategy.", "enabledBy": [{"service": "Strategic Planning", "domain": "Corporate Strategy & Finance Domain"}, {"service": "Customer Relationship Management (CRM)", "domain": "Sales & Marketing Domain"}], "supports": [{"domain": "Corporate Strategy & Finance Domain", "category": "Enabling", "color": "#4338ca"}, {"domain": "Sales & Marketing Domain", "category": "Commercial", "color": "#b45309"}]}]}</script>
+<script>
+(function () {
+    const model = JSON.parse(document.getElementById('model-data').textContent);
+    const CATEGORY_COLOR = { Core: 'var(--core-color)', Commercial: 'var(--commercial-color)', Enabling: 'var(--enabling-color)' };
+    const domainById = {};
+    model.domains.forEach(d => { domainById[d.title] = d; });
 
-            const domainCards = document.querySelectorAll('.domain-card');
+    const ONTOLOGY_LABEL = {
+        all: 'All Domains', business: 'Business Operations', commercial: 'Commercial Operations',
+        'customer-support': 'Customer Support Operations', 'supply-chain': 'Supply Chain Operations',
+        manufacturing: 'Manufacturing Operations'
+    };
 
-            domainCards.forEach(card => {
-                if (ontology === 'all' || card.getAttribute('data-ontologies').includes(ontology)) {
-                    card.classList.remove('filtered-out');
-                } else {
-                    card.classList.add('filtered-out');
-                }
-            });
-        }
-    </script>
+    let currentView = 'domain';
+    let domainFilter = 'all';
+    let capabilityFilter = 'all';
+
+    function escapeHtml(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+    function capBadge(label) { return `<span class="badge cap" data-jump-cap="${escapeHtml(label)}">${escapeHtml(label)}</span>`; }
+    function domBadge(title, color) {
+        return `<span class="badge dom" data-jump-dom="${escapeHtml(title)}" style="--dom-color:${color};--dom-color-bg:color-mix(in srgb, ${color} 14%, transparent)">${escapeHtml(title)}</span>`;
+    }
+
+    // ---------------- Domain view ----------------
+    function renderDomainFilters() {
+        const target = document.getElementById('ontology-filters');
+        const keys = ['all', 'business', 'commercial', 'customer-support', 'supply-chain', 'manufacturing'];
+        target.innerHTML = keys.map(k =>
+            `<button class="filter-chip ${k === domainFilter ? 'active' : ''}" data-ontology="${k}">${ONTOLOGY_LABEL[k]}</button>`
+        ).join('');
+    }
+
+    function renderService(service) {
+        return `
+            <div class="service-item">
+                <div class="service-title">
+                    <span>${escapeHtml(service.title)}</span>
+                    <span class="chevron">&#9656;</span>
+                </div>
+                <div class="service-body">
+                    ${service.capabilities.length ? `
+                        <div class="service-body-label">Enables Capability</div>
+                        <div class="service-cap-row">${service.capabilities.map(capBadge).join('')}</div>
+                    ` : ''}
+                    <div class="service-body-label">Underlying Processes</div>
+                    <ul class="process-list">${service.processes.map(p => `<li class="process-item">${escapeHtml(p)}</li>`).join('')}</ul>
+                </div>
+            </div>`;
+    }
+
+    function renderDomains() {
+        const target = document.getElementById('domain-container');
+        if (!model.domains.length) { target.innerHTML = '<div class="empty-state">No domains in this model.</div>'; return; }
+        target.innerHTML = model.domains.map(d => `
+            <div class="domain-card" id="domain-${d.id}" data-ontologies="${d.ontologies.join(' ')}" style="--cat-color:${CATEGORY_COLOR[d.category]}">
+                <div class="domain-header">
+                    <div class="domain-eyebrow">${escapeHtml(d.category)} Domain</div>
+                    <h3 class="domain-title">${escapeHtml(d.title)}</h3>
+                    <p class="domain-description">${escapeHtml(d.description)}</p>
+                    ${d.capabilities.length ? `<div class="domain-caps">${d.capabilities.map(capBadge).join('')}</div>` : ''}
+                </div>
+                <div class="services-list">${d.services.map(renderService).join('')}</div>
+            </div>
+        `).join('');
+    }
+
+    function applyDomainFilter() {
+        document.querySelectorAll('#ontology-filters .filter-chip').forEach(b => b.classList.toggle('active', b.dataset.ontology === domainFilter));
+        document.querySelectorAll('.domain-card').forEach(card => {
+            const match = domainFilter === 'all' || card.getAttribute('data-ontologies').split(' ').includes(domainFilter);
+            card.classList.toggle('filtered-out', !match);
+        });
+    }
+
+    // ---------------- Capability view ----------------
+    function renderCapabilityFilters() {
+        const target = document.getElementById('capability-filters');
+        const cats = ['all', 'Core', 'Commercial', 'Enabling'];
+        target.innerHTML = cats.map(c =>
+            `<button class="filter-chip ${c === capabilityFilter ? 'active' : ''}" data-category="${c}">${c === 'all' ? 'All Categories' : c}</button>`
+        ).join('');
+    }
+
+    function renderCapabilities() {
+        const target = document.getElementById('capability-container');
+        if (!model.capabilities.length) { target.innerHTML = '<div class="empty-state">No capabilities in this model.</div>'; return; }
+        target.innerHTML = model.capabilities.map(c => `
+            <div class="capability-card" id="capability-${c.id}" data-categories="${c.supports.map(s => s.category).join(' ')}">
+                <div class="capability-head">
+                    <div class="capability-icon">&#9889;</div>
+                    <div>
+                        <h3 class="capability-title">${escapeHtml(c.title)}</h3>
+                        <p class="capability-description">${escapeHtml(c.description)}</p>
+                    </div>
+                </div>
+                <div class="capability-section">
+                    <div class="capability-section-label">Enabled By (${c.enabledBy.length})</div>
+                    <div class="chip-row">${c.enabledBy.map(e => `<span class="badge svc" title="${escapeHtml(e.domain)}">${escapeHtml(e.service)}</span>`).join('')}</div>
+                </div>
+                <div class="capability-section">
+                    <div class="capability-section-label">Supports Domain (${c.supports.length})</div>
+                    <div class="chip-row">${c.supports.map(s => domBadge(s.domain, s.color)).join('')}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function applyCapabilityFilter() {
+        document.querySelectorAll('#capability-filters .filter-chip').forEach(b => b.classList.toggle('active', b.dataset.category === capabilityFilter));
+        document.querySelectorAll('.capability-card').forEach(card => {
+            const match = capabilityFilter === 'all' || card.getAttribute('data-categories').split(' ').includes(capabilityFilter);
+            card.classList.toggle('filtered-out', !match);
+        });
+    }
+
+    // ---------------- View switching ----------------
+    function setView(view) {
+        currentView = view;
+        document.querySelectorAll('#view-toggle .view-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+        document.getElementById('domain-container').style.display = view === 'domain' ? 'grid' : 'none';
+        document.getElementById('capability-container').style.display = view === 'capability' ? 'grid' : 'none';
+        document.getElementById('domain-filter-row').style.display = view === 'domain' ? 'flex' : 'none';
+        document.getElementById('capability-filter-row').style.display = view === 'capability' ? 'flex' : 'none';
+    }
+
+    function jumpToCapability(label) {
+        const cap = model.capabilities.find(c => c.title === label);
+        if (!cap) return;
+        setView('capability');
+        capabilityFilter = 'all';
+        applyCapabilityFilter();
+        const el = document.getElementById('capability-' + cap.id);
+        if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.animate([{ boxShadow: '0 0 0 3px var(--accent-cap)' }, { boxShadow: '0 0 0 0px transparent' }], { duration: 1100 }); }
+    }
+    function jumpToDomain(title) {
+        const dom = model.domains.find(d => d.title === title);
+        if (!dom) return;
+        setView('domain');
+        domainFilter = 'all';
+        applyDomainFilter();
+        const el = document.getElementById('domain-' + dom.id);
+        if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); el.animate([{ boxShadow: '0 0 0 3px var(--accent-domain)' }, { boxShadow: '0 0 0 0px transparent' }], { duration: 1100 }); }
+    }
+
+    // ---------------- Event delegation ----------------
+    document.getElementById('view-toggle').addEventListener('click', e => {
+        const btn = e.target.closest('.view-btn');
+        if (btn) setView(btn.dataset.view);
+    });
+    document.getElementById('ontology-filters').addEventListener('click', e => {
+        const btn = e.target.closest('.filter-chip');
+        if (btn) { domainFilter = btn.dataset.ontology; applyDomainFilter(); }
+    });
+    document.getElementById('capability-filters').addEventListener('click', e => {
+        const btn = e.target.closest('.filter-chip');
+        if (btn) { capabilityFilter = btn.dataset.category; applyCapabilityFilter(); }
+    });
+    document.getElementById('domain-container').addEventListener('click', e => {
+        const capBtn = e.target.closest('[data-jump-cap]');
+        if (capBtn) { jumpToCapability(capBtn.dataset.jumpCap); return; }
+        const title = e.target.closest('.service-title');
+        if (title) title.closest('.service-item').classList.toggle('expanded');
+    });
+    document.getElementById('capability-container').addEventListener('click', e => {
+        const domBtn = e.target.closest('[data-jump-dom]');
+        if (domBtn) jumpToDomain(domBtn.dataset.jumpDom);
+    });
+
+    // ---------------- Header stats ----------------
+    function renderStats() {
+        const totalServices = model.domains.reduce((n, d) => n + d.services.length, 0);
+        const totalProcesses = model.domains.reduce((n, d) => n + d.services.reduce((m, s) => m + s.processes.length, 0), 0);
+        const cards = [
+            [model.domains.length, 'Domains'], [totalServices, 'Services'],
+            [model.capabilities.length, 'Capabilities'], [totalProcesses, 'Processes']
+        ];
+        document.getElementById('header-stats').innerHTML = cards.map(([n, l]) => `<div class="stat"><b>${n}</b><span>${l}</span></div>`).join('');
+    }
+
+    // ---------------- Theme toggle ----------------
+    // localStorage is per-viewer/per-origin for a published artifact; treat it purely as
+    // a convenience for remembering an explicit choice, and fail quiet if it's unavailable.
+    function getStoredTheme() {
+        try { return localStorage.getItem('gulfstream-cap-model-theme'); } catch (e) { return null; }
+    }
+    function setStoredTheme(v) {
+        try { localStorage.setItem('gulfstream-cap-model-theme', v); } catch (e) {}
+    }
+    function applyTheme(theme) {
+        if (theme === 'light' || theme === 'dark') document.documentElement.setAttribute('data-theme', theme);
+        else document.documentElement.removeAttribute('data-theme');
+    }
+    function effectiveTheme() {
+        const stamped = document.documentElement.getAttribute('data-theme');
+        if (stamped) return stamped;
+        return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+    }
+    applyTheme(getStoredTheme()); // null/missing -> follow system, same as an un-stamped page
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+        const next = effectiveTheme() === 'dark' ? 'light' : 'dark';
+        applyTheme(next);
+        setStoredTheme(next);
+    });
+
+    renderDomainFilters();
+    renderCapabilityFilters();
+    renderDomains();
+    renderCapabilities();
+    renderStats();
+    setView('domain');
+})();
+</script>
+
 </body>
 </html>
