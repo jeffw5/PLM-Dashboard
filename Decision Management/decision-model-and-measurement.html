@@ -4,17 +4,23 @@
 <meta charset="UTF-8">
 <title>Decision Model &amp; Measurement</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,680&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#0e1520; --panel:#141d29; --panel2:#1a2532; --border:#2a3849;
     --text:#e7edf5; --muted:#8fa0b3; --accent:#49b0ff; --accent2:#8b6bff;
     --amber:#f5a623; --green:#2ecc71; --gray:#7f8c8d; --red:#e0483e;
+    --planet:#2FAE8C; --people:#D9A15C; --profit:#A796CF;
     --mono:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;
+    --display:'Fraunces', Georgia, 'Times New Roman', serif;
+    --modebar-h:44px;
   }
   *{box-sizing:border-box;}
   html,body{height:100%;}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:14px;
-    display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:14px;}
+  #modelApp{display:flex;flex-direction:column;height:calc(100vh - var(--modebar-h));overflow:hidden;}
   header{flex:none;padding:14px 20px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,#111a26,#0e1520);}
   header h1{margin:0 0 2px;font-size:18px;font-weight:650;letter-spacing:.2px;}
   header .sub{color:var(--muted);font-size:12.5px;margin-bottom:12px;}
@@ -66,6 +72,16 @@
   .breadcrumb{position:absolute;top:10px;left:12px;right:12px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none;z-index:5;}
   .breadcrumb .txt{background:rgba(20,29,41,.85);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--muted);max-width:560px;pointer-events:auto;}
   .breadcrumb .txt b{color:var(--text);}
+  .drill-trail{display:flex;align-items:center;gap:6px;background:rgba(20,29,41,.9);border:1px solid var(--accent);border-radius:8px;padding:6px 10px;font-size:11px;color:var(--muted);pointer-events:auto;max-width:400px;}
+  .drill-trail .drill-path{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);font-weight:600;}
+  .btn.small{width:auto;padding:4px 8px;margin-top:0;font-size:10.5px;flex:none;}
+  .impact-cat-strategy{color:#8b6bff;background:#8b6bff22;border:1px solid #8b6bff55;}
+  .impact-cat-service{color:#49b0ff;background:#49b0ff22;border:1px solid #49b0ff55;}
+  .impact-cat-process{color:#f5a623;background:#f5a62322;border:1px solid #f5a62355;}
+  .impact-cat-asset-biological{color:#2ecc71;background:#2ecc7122;border:1px solid #2ecc7155;}
+  .impact-cat-asset-digital{color:#35b8b0;background:#35b8b022;border:1px solid #35b8b055;}
+  .impact-cat-asset-physical{color:#7f93ad;background:#7f93ad22;border:1px solid #7f93ad55;}
+  .dir-ind{color:var(--muted);font-weight:800;margin-right:4px;}
   .canvas-tools{position:absolute;bottom:12px;right:12px;display:flex;gap:6px;z-index:5;}
   .canvas-tools button{background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:14px;}
   svg{display:block;width:100%;height:100%;cursor:grab;}
@@ -122,14 +138,509 @@
   footer span{min-width:0;}
   .concept-svg{width:100%;height:auto;display:block;margin-top:4px;}
   .concept-svg text{fill:var(--muted);font-size:8.5px;}
-  .concept-svg .ring{fill:none;stroke:var(--border);}
-  .concept-svg .ring.active{stroke:var(--accent);}
+  .gog-layer .band-rect{fill:rgba(255,255,255,.025);stroke:var(--border);stroke-width:1;transition:stroke .2s, fill .2s;}
+  .gog-layer.active .band-rect{stroke:var(--accent);stroke-width:1.8;fill:rgba(73,176,255,.07);}
+  .gog-layer .band-label{font-family:var(--mono);font-size:7px;letter-spacing:.04em;fill:var(--muted);font-weight:700;}
+  .gog-layer.active .band-label{fill:var(--text);}
+  .gog-core, .gog-reach{cursor:pointer;}
+  .gog-core circle, .gog-reach circle{stroke:#0b1220;stroke-width:1.1;transition:filter .15s;}
+  .gog-core:hover circle, .gog-reach:hover circle{filter:brightness(1.25);}
+  .gog-core-label{font-size:7.5px;font-weight:700;fill:var(--text);}
+  .gog-reach-label{font-size:7px;fill:var(--muted);}
+  .gog-peer{fill:#3c4d61;}
+  .gog-hint{font-size:6.5px;font-style:italic;fill:var(--muted);opacity:.8;}
+  .gog-arrow-solid{stroke:#8fa0b3;stroke-width:1.4;marker-end:url(#gog-arrow);}
+  .gog-arrow-dash{stroke:#8b6bff;stroke-width:1;stroke-dasharray:3 3;fill:none;marker-end:url(#gog-arrow-dash);opacity:.7;}
   ::-webkit-scrollbar{width:8px;height:8px;}
   ::-webkit-scrollbar-thumb{background:#2a3849;border-radius:4px;}
+
+  /* ================= OVERVIEW (installed business summary + architecture model) ================= */
+  .ov-modebar{
+    position:sticky; top:0; z-index:50; height:var(--modebar-h);
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    padding:0 18px; background:linear-gradient(180deg,#111a26,#0e1520); border-bottom:1px solid var(--border);
+  }
+  .ov-modebar-brand{ font-family:var(--mono); font-size:10.5px; letter-spacing:.07em; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ov-modebar-tabs{ display:flex; gap:6px; flex:none; }
+  .ov-modebar-tab{ font-family:inherit; background:var(--panel2); border:1px solid var(--border); color:var(--muted); font-size:12px; font-weight:600; padding:7px 14px; border-radius:7px; cursor:pointer; }
+  .ov-modebar-tab:hover{ color:var(--text); }
+  .ov-modebar-tab.active{ background:var(--accent); color:#03121f; border-color:var(--accent); }
+
+  #overviewApp{ color:var(--text); font-size:15px; line-height:1.6; }
+  #overviewApp .ov-wrap{ max-width:1080px; margin:0 auto; padding:0 24px; }
+  #overviewApp h1, #overviewApp h2, #overviewApp h3{ font-family:var(--display); font-weight:650; letter-spacing:-.01em; margin:0; text-wrap:balance; }
+  #overviewApp p{ margin:0 0 14px; max-width:66ch; color:var(--text); }
+  #overviewApp .ov-muted{ color:var(--muted); }
+  #overviewApp b{ color:var(--text); }
+  #overviewApp a{ color:#8fd0ff; }
+  #overviewApp :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+  #overviewApp .ov-cover{ padding:48px 0 36px; border-bottom:1px solid var(--border); }
+  #overviewApp .ov-eyebrow{ font-family:var(--mono); font-size:11px; letter-spacing:.08em; color:#8fd0ff; margin-bottom:12px; }
+  #overviewApp .ov-cover h1{ font-size:clamp(30px,4.6vw,48px); line-height:1.05; margin-bottom:14px; }
+  #overviewApp .ov-thesis{ font-size:16.5px; color:var(--muted); max-width:64ch; margin-bottom:24px; }
+  #overviewApp .ov-cover-grid{ display:grid; grid-template-columns:1.5fr 1fr; gap:36px; align-items:start; }
+  @media (max-width:860px){ #overviewApp .ov-cover-grid{ grid-template-columns:1fr; } }
+
+  #overviewApp .ov-quote{ background:var(--panel2); border:1px solid var(--border); border-radius:10px; padding:22px 20px; position:sticky; top:calc(var(--modebar-h) + 14px); }
+  #overviewApp .ov-quote .ov-qmark{ font-family:var(--display); font-size:38px; line-height:1; color:var(--accent); opacity:.6; margin-bottom:-4px; }
+  #overviewApp .ov-quote blockquote{ margin:0 0 14px; font-family:var(--display); font-size:20px; line-height:1.3; font-weight:600; }
+  #overviewApp .ov-quote .g1{ color:var(--planet); }
+  #overviewApp .ov-quote .g2{ color:var(--people); }
+  #overviewApp .ov-quote .g3{ color:var(--profit); }
+  #overviewApp .ov-quote .ov-cap{ font-size:12px; color:var(--muted); border-top:1px solid var(--border); padding-top:10px; }
+
+  #overviewApp .ov-cta{ display:inline-flex; align-items:center; gap:8px; margin-top:8px; background:linear-gradient(180deg,#2a8fe0,#1c6fbf); border:1px solid #1c6fbf; color:#fff; font-weight:700; font-size:13px; padding:10px 16px; border-radius:8px; cursor:pointer; font-family:inherit; }
+  #overviewApp .ov-cta:hover{ filter:brightness(1.08); }
+
+  #overviewApp .ov-stat-row{ display:flex; flex-wrap:wrap; border-top:1px solid var(--border); margin-top:10px; }
+  #overviewApp .ov-stat{ flex:1 1 160px; padding:14px 18px 14px 0; border-right:1px solid var(--border); }
+  #overviewApp .ov-stat:last-child{ border-right:none; }
+  #overviewApp .ov-stat .n{ font-family:var(--mono); font-size:24px; font-weight:700; color:#8fd0ff; }
+  #overviewApp .ov-stat .l{ font-size:12px; color:var(--muted); margin-top:2px; }
+  #overviewApp .ov-stat .d{ font-family:var(--mono); font-size:10px; color:var(--gray); margin-top:6px; line-height:1.5; }
+
+  #overviewApp .ov-sheet{ padding:48px 0; border-bottom:1px solid var(--border); }
+  #overviewApp .ov-sheet-head{ display:flex; align-items:baseline; gap:12px; margin-bottom:22px; flex-wrap:wrap; }
+  #overviewApp .ov-sheet-no{ font-family:var(--mono); font-size:11.5px; color:var(--muted); letter-spacing:.05em; }
+  #overviewApp .ov-sheet-head h2{ font-size:clamp(20px,2.8vw,28px); }
+  #overviewApp .ov-sheet-lede{ font-size:14.5px; color:var(--muted); max-width:74ch; margin:-10px 0 24px; }
+  #overviewApp .ov-col-2{ display:grid; grid-template-columns:1.15fr .85fr; gap:32px; align-items:start; }
+  @media (max-width:860px){ #overviewApp .ov-col-2{ grid-template-columns:1fr; } }
+  #overviewApp .ov-prose-grid{ display:grid; grid-template-columns:1fr 1fr; gap:36px; align-items:start; }
+  @media (max-width:860px){ #overviewApp .ov-prose-grid{ grid-template-columns:1fr; } }
+
+  #overviewApp .ov-rail{ background:var(--panel2); border:1px solid var(--border); border-radius:10px; padding:18px 20px; position:sticky; top:calc(var(--modebar-h) + 14px); }
+  #overviewApp .ov-rail .ov-tag{ display:inline-block; font-family:var(--mono); font-size:9.5px; letter-spacing:.05em; text-transform:uppercase; color:#8fd0ff; background:rgba(73,176,255,.12); border:1px solid rgba(73,176,255,.35); padding:3px 8px; border-radius:20px; margin-bottom:10px; }
+  #overviewApp .ov-rail h3{ font-size:18px; margin-bottom:6px; }
+  #overviewApp .ov-rail p{ font-size:13.5px; margin-bottom:0; }
+  #overviewApp .ov-rail .ov-ex{ margin-top:12px; padding-top:10px; border-top:1px dashed var(--border); font-size:12px; color:var(--muted); }
+
+  #overviewApp svg.ov-diagram{ display:block; width:100%; height:auto; }
+  #overviewApp .ov-diagram text{ font-family:var(--mono); fill:var(--muted); }
+  #overviewApp .ov-diagram .lbl{ font-size:12.5px; font-weight:700; fill:var(--text); }
+  #overviewApp .ov-diagram .sub{ font-size:9.5px; fill:var(--muted); }
+  #overviewApp .ov-diagram .edge-lbl{ font-size:9px; fill:var(--muted); }
+  #overviewApp .ov-diagram .node-box{ fill:var(--panel2); stroke:var(--border); stroke-width:1.3; transition:stroke .15s, fill .15s; }
+  #overviewApp .ov-diagram [data-key]{ cursor:pointer; }
+  #overviewApp .ov-diagram [data-key]:hover .node-box, #overviewApp .ov-diagram [data-key]:focus-visible .node-box{ stroke:var(--accent); fill:rgba(73,176,255,.12); }
+  #overviewApp .ov-diagram [data-key].active .node-box{ stroke:var(--accent); stroke-width:2; fill:rgba(73,176,255,.14); }
+  #overviewApp .ov-diagram [data-key].active .lbl{ fill:#8fd0ff; }
+  #overviewApp .ov-diagram .edge{ stroke:var(--border); stroke-width:1.3; fill:none; }
+  #overviewApp .ov-diagram .edge.dash{ stroke-dasharray:4 3; }
+  #overviewApp .ov-diagram .edge.hero{ stroke:var(--accent); stroke-width:2; }
+  #overviewApp figure{ margin:0; }
+  #overviewApp figcaption{ font-size:12px; color:var(--muted); margin-top:10px; }
+
+  #overviewApp .ov-level-list{ display:flex; flex-direction:column; border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-top:16px; }
+  #overviewApp .ov-level-item{ display:flex; align-items:center; gap:12px; padding:9px 14px; background:var(--panel2); border-top:1px solid var(--border); cursor:pointer; font-size:13px; }
+  #overviewApp .ov-level-item:first-child{ border-top:none; }
+  #overviewApp .ov-level-item .num{ font-family:var(--mono); font-size:12px; color:var(--muted); width:16px; flex:none; }
+  #overviewApp .ov-level-item .name{ font-weight:700; flex:1; }
+  #overviewApp .ov-level-item:hover, #overviewApp .ov-level-item.active{ background:rgba(73,176,255,.12); }
+  #overviewApp .ov-level-item.active .num, #overviewApp .ov-level-item.active .name{ color:#8fd0ff; }
+
+  #overviewApp .ov-diagram-wrap{ background:var(--panel2); border:1px solid var(--border); border-radius:10px; padding:18px; }
+
+  #overviewApp .ov-badge-row{ display:flex; gap:8px; flex-wrap:wrap; margin:12px 0 4px; }
+  #overviewApp .ov-badge{ font-family:var(--mono); font-size:10.5px; padding:4px 9px; border-radius:20px; border:1px solid; }
+  #overviewApp .ov-badge.planet{ color:var(--planet); background:rgba(47,174,140,.12); border-color:rgba(47,174,140,.4); }
+  #overviewApp .ov-badge.people{ color:var(--people); background:rgba(217,161,92,.12); border-color:rgba(217,161,92,.4); }
+  #overviewApp .ov-badge.profit{ color:var(--profit); background:rgba(167,150,207,.12); border-color:rgba(167,150,207,.4); }
+
+  #overviewApp .ov-footer{ padding:36px 0 56px; }
+  #overviewApp .ov-links-out{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px; }
+  #overviewApp .ov-links-out a{ display:block; font-size:13px; text-decoration:none; color:var(--text); background:var(--panel2); border:1px solid var(--border); border-radius:10px; padding:12px 14px; flex:1 1 220px; }
+  #overviewApp .ov-links-out a:hover{ border-color:var(--accent); }
+  #overviewApp .ov-links-out .k{ font-family:var(--mono); font-size:10px; color:var(--muted); display:block; margin-top:4px; }
+  #overviewApp .ov-cite{ font-size:11.5px; color:var(--muted); line-height:1.7; max-width:90ch; }
+
+  @media (max-width:640px){
+    #overviewApp .ov-stat-row{ flex-direction:column; }
+    #overviewApp .ov-stat{ border-right:none; border-top:1px solid var(--border); padding:12px 0; }
+    #overviewApp .ov-stat:first-child{ border-top:none; }
+    #overviewApp .ov-rail, #overviewApp .ov-quote{ position:static; }
+    .ov-modebar-brand{ display:none; }
+  }
 </style>
 </head>
 <body>
 
+<div class="ov-modebar" id="modeBar">
+  <span class="ov-modebar-brand mono">TVE GROUP — DECISION ARCHITECTURE PLATFORM</span>
+  <div class="ov-modebar-tabs">
+    <button id="modeOverviewBtn" class="ov-modebar-tab">Overview</button>
+    <button id="modeToolBtn" class="ov-modebar-tab">Interactive Model</button>
+  </div>
+</div>
+
+<div id="overviewApp">
+<div class="ov-wrap">
+
+  <header class="ov-cover" id="ov-summary">
+    <div class="ov-eyebrow">SHEET 00 — BUSINESS SUMMARY</div>
+    <h1>Decision Model &amp; Measurement</h1>
+    <div class="ov-cover-grid">
+      <div>
+        <p class="ov-thesis">A logical architecture for making every decision traceable, federated across the organizations it touches, measurable against what actually happens — and answerable, in strict order, to the planet, the people, and only then the balance sheet.</p>
+        <p>Most organizations decide the way they always have: informally, locally, and without a record of what was chosen or why. A decision made inside one team's process quietly reaches into a partner's supply chain, a regulator's rulebook, or a customer's daily life — and nobody traces that reach until something breaks.</p>
+        <p>This platform treats every decision as a first-class, decomposable object — a <b>Decision Breakdown Structure (DBS)</b> — with its own class, governance status, criteria, and candidate alternatives. Any node opens into its own DBS, recursively. Those structures don't stop at a team's boundary: a <b>Graph of Graphs</b> federates five organizational strata — Intra-Domain through Ecosystem — so a decision's real reach is visible, not assumed.</p>
+        <p>Two disciplines close the loop. A <b>Causal Impact Map</b> forecasts how each alternative ripples into strategy, services, processes, and assets before anything is committed. What gets measured afterward — inside a digital twin or the real operation — is compared back against that prediction, and the difference is what makes the next decision better than this one.</p>
+        <button class="ov-cta" data-open-tool>Open the Interactive Model →</button>
+      </div>
+      <div class="ov-quote">
+        <div class="ov-qmark">&ldquo;</div>
+        <blockquote>The <span class="g1">Planet</span>, then the <span class="g2">People</span>, then the <span class="g3">Profit</span> — in that order, without exception.</blockquote>
+        <div class="ov-cap">Every alternative clears this gate before it's eligible for selection. Not a weighted score — a strict, lexicographic order. Sheet 04 shows the mechanism.</div>
+      </div>
+    </div>
+
+    <div class="ov-stat-row">
+      <div class="ov-stat"><div class="n">5</div><div class="l">Organizational strata</div><div class="d">INTRA-DOMAIN → INTER-DOMAIN → BUSINESS OP → VALUE CHAIN → ECOSYSTEM</div></div>
+      <div class="ov-stat"><div class="n">3</div><div class="l">Guardrail gates, strict order</div><div class="d">PLANET → PEOPLE → PROFIT</div></div>
+      <div class="ov-stat"><div class="n">4</div><div class="l">Causal impact categories</div><div class="d">STRATEGY / SERVICE / PROCESS / ASSET</div></div>
+      <div class="ov-stat"><div class="n">3</div><div class="l">Asset sub-types</div><div class="d">BIOLOGICAL / DIGITAL / PHYSICAL</div></div>
+    </div>
+  </header>
+
+  <!-- SHEET 01 — ARCHITECTURE -->
+  <section class="ov-sheet" id="ov-architecture">
+    <div class="ov-sheet-head"><span class="ov-sheet-no">SHEET 01</span><h2>Logical Architecture Model</h2></div>
+    <p class="ov-sheet-lede">Eight components, three tiers. Governance constrains the decision engine; the engine tests alternatives against a digital twin; measurement closes the loop back into the next decision. Click any box.</p>
+    <div class="ov-col-2">
+      <figure>
+        <svg class="ov-diagram" viewBox="0 0 900 470" role="img" aria-label="Logical architecture: a governance tier constrains a core engine of the DBS, Decision Queue, and Causal Impact Map; the engine simulates against a Digital Twin over a Graph of Graphs federation substrate; the twin feeds Measurement, which loops back to refine the DBS.">
+          <defs>
+            <marker id="ov-arrH" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+            <marker id="ov-arrM" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--border)"/></marker>
+          </defs>
+          <path class="edge" d="M290,86 Q290,130 205,170" marker-end="url(#ov-arrM)"/>
+          <text class="edge-lbl" x="220" y="122" text-anchor="middle">constrains</text>
+          <path class="edge" d="M610,86 Q610,130 690,170" marker-end="url(#ov-arrM)"/>
+          <text class="edge-lbl" x="670" y="122" text-anchor="middle">grounds claims</text>
+          <path class="edge" d="M290,200 L325,200" marker-end="url(#ov-arrM)"/>
+          <text class="edge-lbl" x="307" y="192" text-anchor="middle">prioritizes</text>
+          <path class="edge" d="M575,200 L610,200" marker-end="url(#ov-arrM)"/>
+          <text class="edge-lbl" x="592" y="192" text-anchor="middle">feeds</text>
+          <path class="edge" d="M700,230 Q650,290 575,345" marker-end="url(#ov-arrM)"/>
+          <text class="edge-lbl" x="660" y="290" text-anchor="middle">tests alternatives</text>
+          <path class="edge" d="M575,375 L610,375" marker-end="url(#ov-arrM)"/>
+          <text class="edge-lbl" x="592" y="367" text-anchor="middle">telemetry</text>
+          <path class="edge dash" d="M165,340 Q160,270 165,231" marker-end="url(#ov-arrM)"/>
+          <text class="edge-lbl" x="205" y="285" text-anchor="middle">federates 5 strata</text>
+          <path class="edge hero" d="M780,345 Q885,190 700,132 Q460,80 258,166" marker-end="url(#ov-arrH)"/>
+          <text class="edge-lbl" x="560" y="102" text-anchor="middle" style="fill:#8fd0ff;font-weight:700;">learns → refines next decision</text>
+          <g data-key="guardrail" tabindex="0" role="button" aria-label="Planet, People, Profit guardrail gate">
+            <rect class="node-box" x="150" y="30" width="280" height="56" rx="8"/>
+            <text class="lbl" x="290" y="55" text-anchor="middle">Guardrail Gate</text>
+            <text class="sub" x="290" y="70" text-anchor="middle">Planet › People › Profit</text>
+          </g>
+          <g data-key="holonic" tabindex="0" role="button" aria-label="Holonic governance and circuit breaker">
+            <rect class="node-box" x="470" y="30" width="280" height="56" rx="8"/>
+            <text class="lbl" x="610" y="55" text-anchor="middle">Holonic Governance</text>
+            <text class="sub" x="610" y="70" text-anchor="middle">&amp; Circuit Breaker</text>
+          </g>
+          <g data-key="dbs" tabindex="0" role="button" aria-label="Decision Breakdown Structure">
+            <rect class="node-box" x="40" y="170" width="250" height="60" rx="8"/>
+            <text class="lbl" x="165" y="196" text-anchor="middle">Decision Breakdown</text>
+            <text class="lbl" x="165" y="212" text-anchor="middle">Structure (DBS)</text>
+          </g>
+          <g data-key="queue" tabindex="0" role="button" aria-label="Design-Time Decision Queue">
+            <rect class="node-box" x="325" y="170" width="250" height="60" rx="8"/>
+            <text class="lbl" x="450" y="196" text-anchor="middle">Design-Time</text>
+            <text class="lbl" x="450" y="212" text-anchor="middle">Decision Queue</text>
+          </g>
+          <g data-key="causal" tabindex="0" role="button" aria-label="Causal Impact Map">
+            <rect class="node-box" x="610" y="170" width="250" height="60" rx="8"/>
+            <text class="lbl" x="735" y="196" text-anchor="middle">Causal Impact Map</text>
+            <text class="sub" x="735" y="212" text-anchor="middle">strategy · service · process · asset</text>
+          </g>
+          <g data-key="gog" tabindex="0" role="button" aria-label="Graph of Graphs, federation substrate">
+            <rect class="node-box" x="40" y="345" width="250" height="60" rx="8"/>
+            <text class="lbl" x="165" y="371" text-anchor="middle">Graph of Graphs</text>
+            <text class="sub" x="165" y="387" text-anchor="middle">federation substrate</text>
+          </g>
+          <g data-key="twin" tabindex="0" role="button" aria-label="Digital Twin Sync Layer">
+            <rect class="node-box" x="325" y="345" width="250" height="60" rx="8"/>
+            <text class="lbl" x="450" y="371" text-anchor="middle">Digital Twin</text>
+            <text class="sub" x="450" y="387" text-anchor="middle">sync layer</text>
+          </g>
+          <g data-key="measure" tabindex="0" role="button" aria-label="Measurement and Feedback Loop">
+            <rect class="node-box" x="610" y="345" width="250" height="60" rx="8"/>
+            <text class="lbl" x="735" y="371" text-anchor="middle">Measurement &amp;</text>
+            <text class="lbl" x="735" y="387" text-anchor="middle">Feedback Loop</text>
+          </g>
+        </svg>
+        <figcaption>Governance (top) constrains the core engine (middle); the engine simulates against the twin over the federation substrate (bottom); measurement closes the loop back to the top of the DBS.</figcaption>
+      </figure>
+      <div class="ov-rail" id="ov-archRail"></div>
+    </div>
+  </section>
+
+  <!-- SHEET 02 — FIVE LEVELS -->
+  <section class="ov-sheet" id="ov-levels">
+    <div class="ov-sheet-head"><span class="ov-sheet-no">SHEET 02</span><h2>The Five-Level Progression</h2></div>
+    <p class="ov-sheet-lede">Each stratum is a bounded graph you can inspect on its own. A solid chain specializes one into the next; a dashed federation edge lets a domain-level decision reach an outer stratum directly.</p>
+    <div class="ov-col-2">
+      <div>
+        <figure>
+          <svg class="ov-diagram" viewBox="0 0 900 360" role="img" aria-label="Five organizational strata in a containment chain from Intra-Domain to Ecosystem, with dashed federation edges reaching directly from Intra-Domain into each of the other four strata.">
+            <defs><marker id="ov-arrLv" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--border)"/></marker></defs>
+            <g data-key="lvl1" tabindex="0" role="button" aria-label="Level 1, Intra-Domain">
+              <rect class="node-box" x="30" y="230" width="150" height="70" rx="8"/>
+              <text class="lbl" x="105" y="260" text-anchor="middle">1 · Intra-Domain</text>
+              <text class="sub" x="105" y="277" text-anchor="middle">one domain's DBS</text>
+            </g>
+            <g data-key="lvl2" tabindex="0" role="button" aria-label="Level 2, Inter-Domain">
+              <rect class="node-box" x="210" y="175" width="150" height="70" rx="8"/>
+              <text class="lbl" x="285" y="205" text-anchor="middle">2 · Inter-Domain</text>
+              <text class="sub" x="285" y="222" text-anchor="middle">peer domains</text>
+            </g>
+            <g data-key="lvl3" tabindex="0" role="button" aria-label="Level 3, Business Operation">
+              <rect class="node-box" x="390" y="120" width="150" height="70" rx="8"/>
+              <text class="lbl" x="465" y="150" text-anchor="middle">3 · Business Op.</text>
+              <text class="sub" x="465" y="167" text-anchor="middle">run-time loop</text>
+            </g>
+            <g data-key="lvl4" tabindex="0" role="button" aria-label="Level 4, Value Chain">
+              <rect class="node-box" x="570" y="65" width="150" height="70" rx="8"/>
+              <text class="lbl" x="645" y="95" text-anchor="middle">4 · Value Chain</text>
+              <text class="sub" x="645" y="112" text-anchor="middle">companies</text>
+            </g>
+            <g data-key="lvl5" tabindex="0" role="button" aria-label="Level 5, Ecosystem">
+              <rect class="node-box" x="750" y="10" width="150" height="70" rx="8"/>
+              <text class="lbl" x="825" y="40" text-anchor="middle">5 · Ecosystem</text>
+              <text class="sub" x="825" y="57" text-anchor="middle">3rd parties</text>
+            </g>
+            <path class="edge" d="M180,255 L210,220" marker-end="url(#ov-arrLv)"/>
+            <path class="edge" d="M360,200 L390,165" marker-end="url(#ov-arrLv)"/>
+            <path class="edge" d="M540,145 L570,110" marker-end="url(#ov-arrLv)"/>
+            <path class="edge" d="M720,90 L750,55" marker-end="url(#ov-arrLv)"/>
+            <path class="edge dash" d="M120,230 Q160,150 285,180" marker-end="url(#ov-arrLv)"/>
+            <path class="edge dash" d="M110,230 Q220,90 465,135" marker-end="url(#ov-arrLv)"/>
+            <path class="edge dash" d="M100,230 Q280,30 645,80" marker-end="url(#ov-arrLv)"/>
+            <path class="edge dash" d="M90,230 Q330,-30 825,25" marker-end="url(#ov-arrLv)"/>
+          </svg>
+          <figcaption>Solid: each stratum specializes into the next. Dashed: a domain-level decision reaches directly into any outer stratum.</figcaption>
+        </figure>
+        <div class="ov-level-list" id="ov-levelList"></div>
+      </div>
+      <div class="ov-rail" id="ov-levelRail"></div>
+    </div>
+  </section>
+
+  <!-- SHEET 03 — DIGITAL TWINS -->
+  <section class="ov-sheet" id="ov-twins">
+    <div class="ov-sheet-head"><span class="ov-sheet-no">SHEET 03</span><h2>Digital Twins</h2></div>
+    <p class="ov-sheet-lede">Decision-making and measurement aren't bolted onto the twin from outside — they live inside it. The decision layer sits at the twin's core; instrumentation is woven through its surface.</p>
+    <div class="ov-prose-grid">
+      <div>
+        <p>A digital twin is only useful to a decision architecture if it's addressable by the same structure that makes the decision — otherwise it's a dashboard, not a sandbox. Here, the <b>Decision Layer</b> (the DBS plus its Causal Impact Map) doesn't sit beside the twin — it sits at the center of it, as the twin's own decision-making core. "What happens to fulfillment throughput if we choose parallel intake instead of linear sequential flow" is answerable against the twin's live state, from inside the loop, not argued about in a room outside it.</p>
+        <p>Measurement is instrumented the same way — not a downstream report, but sensors woven through the twin's surface, continuously comparing simulated state to real-world telemetry. That's what makes the twin immersive rather than illustrative: a person or an agent working inside it is deciding, simulating, and measuring in the same continuous space, not switching between three disconnected tools.</p>
+        <p>Federation from Sheet 02 still applies at every layer: a decision inside one domain's twin can reach an outer stratum's twin through the same dashed edges — a Process Architecture change simulated at Intra-Domain can be checked against its downstream effect on a Value Chain twin before it ships.</p>
+      </div>
+      <div class="ov-diagram-wrap">
+        <figure>
+          <svg class="ov-diagram" viewBox="0 0 480 560" role="img" aria-label="Concentric diagram: a Decision Layer core sits inside a Digital Twin ring, which sits inside a Real-World Operation ring. Sensors instrument the twin's surface. Telemetry flows down to a Measurement and Feedback panel, which loops back through both rings into the Decision Layer core.">
+            <defs>
+              <marker id="ov-arrT" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--border)"/></marker>
+              <marker id="ov-arrTh" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+              <radialGradient id="ov-coreGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" style="stop-color:var(--accent2);stop-opacity:.32"/>
+                <stop offset="100%" style="stop-color:var(--accent2);stop-opacity:.04"/>
+              </radialGradient>
+              <radialGradient id="ov-twinGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="55%" style="stop-color:var(--accent);stop-opacity:0"/>
+                <stop offset="100%" style="stop-color:var(--accent);stop-opacity:.10"/>
+              </radialGradient>
+            </defs>
+
+            <circle cx="240" cy="230" r="205" fill="none" stroke="var(--border)" stroke-dasharray="3 4"/>
+            <text class="sub" x="240" y="45" text-anchor="middle" style="letter-spacing:.06em;">REAL-WORLD OPERATION</text>
+
+            <circle cx="240" cy="230" r="150" fill="url(#ov-twinGlow)" stroke="var(--accent)" stroke-width="1.4"/>
+            <text class="lbl" x="240" y="103" text-anchor="middle" style="fill:#8fd0ff;">DIGITAL TWIN</text>
+            <text class="sub" x="240" y="118" text-anchor="middle">synchronized state</text>
+
+            <!-- sensors instrumenting the twin surface -->
+            <g aria-hidden="true">
+              <circle cx="346" cy="124" r="5" fill="var(--amber)" stroke="var(--bg)" stroke-width="1.5"><title>Measurement sensor</title></circle>
+              <circle cx="346" cy="336" r="5" fill="var(--amber)" stroke="var(--bg)" stroke-width="1.5"><title>Measurement sensor</title></circle>
+              <circle cx="134" cy="336" r="5" fill="var(--amber)" stroke="var(--bg)" stroke-width="1.5"><title>Measurement sensor</title></circle>
+              <circle cx="134" cy="124" r="5" fill="var(--amber)" stroke="var(--bg)" stroke-width="1.5"><title>Measurement sensor</title></circle>
+            </g>
+
+            <circle cx="240" cy="230" r="72" fill="url(#ov-coreGlow)" stroke="var(--accent2)" stroke-width="1.6"/>
+            <text class="lbl" x="240" y="216" text-anchor="middle" style="fill:#c3b6ff;">DECISION LAYER</text>
+            <text class="sub" x="240" y="233" text-anchor="middle">DBS +</text>
+            <text class="sub" x="240" y="246" text-anchor="middle">Causal Impact Map</text>
+
+            <!-- real world <-> twin sync -->
+            <path class="edge" d="M205,32 L205,78" marker-end="url(#ov-arrT)"/>
+            <text class="edge-lbl" x="140" y="58" text-anchor="end">telemetry →</text>
+            <path class="edge" d="M277,78 L277,32" marker-end="url(#ov-arrT)"/>
+            <text class="edge-lbl" x="342" y="58" text-anchor="start">← commit / act</text>
+
+            <!-- decision core tests against twin -->
+            <path class="edge" d="M312,230 L390,230" marker-end="url(#ov-arrT)"/>
+            <text class="edge-lbl" x="351" y="221" text-anchor="middle">tests alt.</text>
+
+            <!-- twin -> measurement panel -->
+            <path class="edge" d="M240,380 L240,458" marker-end="url(#ov-arrT)"/>
+            <text class="edge-lbl" x="256" y="418" text-anchor="start">telemetry</text>
+
+            <rect x="140" y="462" width="200" height="76" rx="8" fill="var(--panel2)" stroke="var(--accent)" stroke-width="1.4"/>
+            <text class="lbl" x="240" y="487" text-anchor="middle" style="fill:#8fd0ff;">MEASUREMENT &amp; FEEDBACK</text>
+            <text class="sub" x="240" y="504" text-anchor="middle">actual vs. predicted outcome</text>
+            <text class="sub" x="240" y="519" text-anchor="middle">(digital twin + real telemetry)</text>
+
+            <!-- learns loop, punches back through both rings into the core -->
+            <path class="edge hero" d="M155,460 Q15,345 60,228 Q92,128 188,178" marker-end="url(#ov-arrTh)"/>
+            <text class="edge-lbl" x="60" y="345" text-anchor="middle" style="fill:#8fd0ff;font-weight:700;">learns →</text>
+            <text class="edge-lbl" x="60" y="358" text-anchor="middle" style="fill:#8fd0ff;font-weight:700;">refines decisions</text>
+          </svg>
+          <figcaption>The Decision Layer is the twin's core, not an outside caller. Sensors instrument the twin's surface continuously; the feedback loop punches back through both rings into the same core it started from.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHEET 04 — GUARDRAILS -->
+  <section class="ov-sheet" id="ov-guardrails">
+    <div class="ov-sheet-head"><span class="ov-sheet-no">SHEET 04</span><h2>Guardrails: Planet › People › Profit</h2></div>
+    <div class="ov-prose-grid">
+      <div>
+        <p>Planet, People, Profit is not a values statement hung on a wall — it's a decision gate, evaluated in that order, every time. An alternative that degrades a planetary boundary doesn't advance to the People gate no matter how it scores there; an alternative that clears Planet but degrades safety, dignity, or equity doesn't advance to Profit no matter how much cheaper it is.</p>
+        <p>This is a <b>lexicographic ordering</b>, not a weighted score. A weighted score lets a large enough Profit number buy back a Planet or People failure; a lexicographic gate structurally cannot. Of three candidate alternatives entering the funnel below, watch the count narrow at each gate — that's the mechanism, not a metaphor.</p>
+        <p>A rejection at Gate 1 or Gate 2 isn't a dead end — both routes converge into a single redesign task that re-enters at the top as a new candidate alternative, not a closed door.</p>
+        <div class="ov-badge-row">
+          <span class="ov-badge planet">PLANET — first, non-negotiable</span>
+          <span class="ov-badge people">PEOPLE — second, non-negotiable</span>
+          <span class="ov-badge profit">PROFIT — optimized last, within what remains</span>
+        </div>
+      </div>
+      <div class="ov-diagram-wrap">
+        <figure>
+          <svg class="ov-diagram" viewBox="0 0 460 400" role="img" aria-label="Three candidate alternatives enter a funnel of three sequential gates — Planet, People, then Profit. Two survive Gate 1, one survives Gate 2, and that one is optimized at Gate 3. Rejections from Gate 1 and Gate 2 converge into a single redesign task that re-enters at the top.">
+            <defs>
+              <marker id="ov-arrG" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--border)"/></marker>
+              <marker id="ov-arrGh" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+            </defs>
+
+            <text class="sub" x="270" y="12" text-anchor="middle">3 candidate alternatives</text>
+            <circle cx="245" cy="24" r="5" fill="var(--muted)"/><circle cx="270" cy="24" r="5" fill="var(--muted)"/><circle cx="295" cy="24" r="5" fill="var(--muted)"/>
+            <path class="edge" d="M270,31 L270,50" marker-end="url(#ov-arrG)"/>
+
+            <polygon points="130,50 410,50 350,100 190,100" fill="rgba(47,174,140,.10)" stroke="var(--planet)" stroke-width="1.4"/>
+            <g aria-hidden="true"><path d="M420,58 Q427,48 438,50 Q433,60 420,58 Z" fill="var(--planet)"/></g>
+            <text class="lbl" x="270" y="71" text-anchor="middle" style="fill:var(--planet);">GATE 1 · PLANET</text>
+            <text class="edge-lbl" x="270" y="88" text-anchor="middle">reversible / within boundary?</text>
+
+            <path class="edge" d="M270,100 L270,122" marker-end="url(#ov-arrG)"/>
+            <text class="sub" x="258" y="118" text-anchor="end">2 survive</text>
+            <circle cx="258" cy="128" r="4.5" fill="var(--muted)"/><circle cx="282" cy="128" r="4.5" fill="var(--muted)"/>
+            <path class="edge" d="M270,132 L270,150" marker-end="url(#ov-arrG)"/>
+
+            <polygon points="190,150 350,150 305,196 235,196" fill="rgba(217,161,92,.10)" stroke="var(--people)" stroke-width="1.4"/>
+            <g aria-hidden="true"><circle cx="420" cy="160" r="2.1" fill="var(--people)"/><circle cx="426" cy="164" r="2.1" fill="var(--people)"/><circle cx="414" cy="164" r="2.1" fill="var(--people)"/></g>
+            <text class="lbl" x="270" y="171" text-anchor="middle" style="fill:var(--people);">GATE 2 · PEOPLE</text>
+            <text class="edge-lbl" x="270" y="188" text-anchor="middle">safe / equitable / dignified?</text>
+
+            <path class="edge" d="M270,196 L270,218" marker-end="url(#ov-arrG)"/>
+            <text class="sub" x="270" y="230" text-anchor="middle">1 survives</text>
+            <circle cx="270" cy="238" r="4.5" fill="var(--profit)"/>
+            <path class="edge" d="M270,242 L270,262" marker-end="url(#ov-arrG)"/>
+
+            <polygon points="235,262 305,262 288,306 252,306" fill="rgba(167,150,207,.10)" stroke="var(--profit)" stroke-width="1.4"/>
+            <g aria-hidden="true"><rect x="420" y="292" width="4" height="6" fill="var(--profit)"/><rect x="426" y="288" width="4" height="10" fill="var(--profit)"/><rect x="432" y="284" width="4" height="14" fill="var(--profit)"/></g>
+            <text class="lbl" x="270" y="277" text-anchor="middle" style="fill:var(--profit);">GATE 3 · PROFIT</text>
+            <text class="edge-lbl" x="270" y="294" text-anchor="middle" style="opacity:0;">.</text>
+
+            <path class="edge hero" d="M270,306 L270,332" marker-end="url(#ov-arrGh)"/>
+            <rect x="200" y="332" width="140" height="46" rx="8" class="node-box" style="stroke:var(--accent);"/>
+            <text class="lbl" x="270" y="360" text-anchor="middle" style="fill:#8fd0ff;">Approved decision</text>
+
+            <rect x="20" y="150" width="130" height="58" rx="8" fill="var(--panel2)" stroke="var(--border)" stroke-width="1.3" stroke-dasharray="4 3"/>
+            <text class="edge-lbl" x="85" y="173" text-anchor="middle" style="font-weight:700;">Redesign task</text>
+            <text class="edge-lbl" x="85" y="188" text-anchor="middle">back into the DBS</text>
+
+            <path class="edge dash" d="M190,80 Q100,95 90,150" marker-end="url(#ov-arrG)"/>
+            <path class="edge dash" d="M235,168 Q195,178 150,179" marker-end="url(#ov-arrG)"/>
+            <path class="edge hero" d="M60,150 Q30,70 250,26" marker-end="url(#ov-arrGh)"/>
+            <text class="edge-lbl" x="70" y="90" text-anchor="middle" style="fill:#8fd0ff;font-weight:700;">redesigned alternative</text>
+          </svg>
+          <figcaption>Three enter, two survive Planet, one survives People, one gets optimized. Both rejection paths converge into one redesign task, not a discard pile.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- SHEET 05 — CAUSAL LOOP -->
+  <section class="ov-sheet" id="ov-loop" style="border-bottom:none;">
+    <div class="ov-sheet-head"><span class="ov-sheet-no">SHEET 05</span><h2>Causal Analysis → Measurement → Better Decisions</h2></div>
+    <div class="ov-prose-grid">
+      <div>
+        <p>Causal analysis and measurement are two ends of the same loop, and neither means anything without the other. The Causal Impact Map is a prediction — what should happen to strategy, services, processes, and assets if this alternative is chosen. Measurement is what actually happened, captured from the digital twin or the operation itself. The gap between the two is the signal.</p>
+        <p>When the gap is small, the model behind the prediction gets more trustworthy, and the next decision in the same category can lean on it with more confidence — the same logic the platform already applies to RSM surrogate strategies and Pareto frontiers in engineering decisions, generalized to every category of decision. When the gap is large, the causal assumption itself gets revised.</p>
+        <p>This is what "optimize decision making for people and machines" means in practice: a person choosing an alternative and an AI agent proposing one draw on the same measured history, checked against the same guardrail order, and both improve at the same rate the loop turns. The loop is the optimizer.</p>
+      </div>
+      <div class="ov-diagram-wrap">
+        <figure>
+          <svg class="ov-diagram" viewBox="0 0 440 390" role="img" aria-label="A four-stage flywheel: Decide, then Predict impact with the Causal Impact Map (tagged by strategy, service, process, and asset), then Measure actual outcome from the twin or operation, then Learn by comparing predicted to actual and refining the model, looping clockwise back to Decide.">
+            <defs><marker id="ov-arrC" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker></defs>
+            <circle cx="220" cy="190" r="145" fill="none" stroke="var(--border)"/>
+            <g fill="var(--accent)" opacity=".55">
+              <polygon points="0,-7 6,5 -6,5" transform="translate(322,88) rotate(135)"/>
+              <polygon points="0,-7 6,5 -6,5" transform="translate(322,292) rotate(225)"/>
+              <polygon points="0,-7 6,5 -6,5" transform="translate(118,292) rotate(315)"/>
+              <polygon points="0,-7 6,5 -6,5" transform="translate(118,88) rotate(45)"/>
+            </g>
+
+            <rect class="node-box" x="160" y="17" width="120" height="56" rx="8"/>
+            <text class="lbl" x="220" y="41" text-anchor="middle">1 · Decide</text>
+            <text class="sub" x="220" y="57" text-anchor="middle">commit an alternative</text>
+
+            <rect class="node-box" x="305" y="162" width="120" height="56" rx="8"/>
+            <text class="lbl" x="365" y="184" text-anchor="middle">2 · Predict</text>
+            <g transform="translate(333,194)">
+              <rect width="9" height="9" fill="var(--accent2)"/><rect x="12" width="9" height="9" fill="var(--accent)"/>
+              <rect x="24" width="9" height="9" fill="var(--amber)"/><rect x="36" width="9" height="9" fill="#35b8b0"/>
+            </g>
+
+            <rect class="node-box" x="160" y="307" width="120" height="56" rx="8"/>
+            <text class="lbl" x="220" y="331" text-anchor="middle">3 · Measure</text>
+            <text class="sub" x="220" y="347" text-anchor="middle">twin + real telemetry</text>
+
+            <rect class="node-box" x="15" y="162" width="120" height="56" rx="8"/>
+            <text class="lbl" x="75" y="184" text-anchor="middle">4 · Learn</text>
+            <g transform="translate(95,190)">
+              <rect y="4" width="7" height="14" fill="var(--muted)"/><text x="3" y="26" text-anchor="middle" class="sub" style="font-size:7.5px;">P</text>
+              <rect x="11" y="-6" width="7" height="24" fill="var(--accent)"/><text x="14" y="26" text-anchor="middle" class="sub" style="font-size:7.5px;">A</text>
+            </g>
+
+            <path class="edge hero" d="M270,60 Q345,90 355,160" marker-end="url(#ov-arrC)"/>
+            <path class="edge hero" d="M375,218 Q350,270 270,308" marker-end="url(#ov-arrC)"/>
+            <path class="edge hero" d="M170,320 Q80,290 65,220" marker-end="url(#ov-arrC)"/>
+            <path class="edge hero" d="M85,160 Q110,90 170,62" marker-end="url(#ov-arrC)"/>
+          </svg>
+          <figcaption>Predict tags impact by the same four categories as Sheet 01. Learn holds predicted (P) against actual (A) — the gap between the two bars is what gets fed forward.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <footer class="ov-footer">
+    <div class="ov-links-out">
+      <a href="https://claude.ai/artifact/R2FCGapAqq94Doq1pGheqs">Decision Architecture Platform <span class="k">MBSE + RSM + PARETO + HOLONIC GOVERNANCE</span></a>
+      <a href="https://claude.ai/artifact/Yc6ixPRoxHibNU4mUTyRJq">Holonic Decision Architecture <span class="k">DOMAIN-BOUNDED ONTOLOGIES</span></a>
+      <a href="https://claude.ai/artifact/RTZDcbjZAiUKbnqLJJTNLa">Decision Engineering Map <span class="k">DESIGN-TIME / RUN-TIME</span></a>
+    </div>
+    <p class="ov-cite">Framework synthesized from: Fitch — "All Faults are Decision Faults" (2017), "Exploiting Decision to Requirements Traceability" (2009), "Leveraging Decision Patterns to Tame Complexity" (2022), "Extending MBSE for Decision Patterns and Traceability" (2024), PPI SyEN #107 "Introduction to Decision Patterns" (2021); The Value Enablement Group — "Business Sensory Platform" v3, "Decision Architecture Platform" (MBSE + RSM + Pareto + Holonic Governance, 2026).</p>
+  </footer>
+
+</div>
+</div>
+
+<div id="modelApp">
 <header>
   <h1>Decision Model &amp; Measurement</h1>
   <div class="sub">Intra-domain &amp; inter-domain decision management — impact assessment across domain, company and 3rd-party strata. Each stratum is a bounded graph you can inspect in isolation; together they nest into an evolving graph of graphs.</div>
@@ -158,29 +669,17 @@
           <option value="product">Product — Field Sensor Unit</option>
           <option value="data">Data — Customer 360 Asset</option>
           <option value="analytics">Analytics — Churn Model</option>
+          <option value="engineering">Engineering Program — MBSE/RSM/Pareto + Holonic Governance</option>
         </select>
         <div class="empty-hint" id="patternSource" style="padding-top:8px;"></div>
       </div>
-      <div class="card">
+      <div class="card" id="scopeCard">
         <h3>Containment scope</h3>
         <div class="toggle">
           <button id="scopeIsolated" class="on">Isolated</button>
           <button id="scopeAggregate">Aggregate</button>
         </div>
         <div class="empty-hint" style="padding-top:8px;">Isolated shows only this domain's decision network. Aggregate reveals where its decisions reach across the boundary into inter-domain, value-chain or ecosystem strata.</div>
-      </div>
-      <div class="card">
-        <h3>Design-time view</h3>
-        <div class="toggle">
-          <button id="frontierAll" class="on">All decisions</button>
-          <button id="frontierOnly">Frontier only</button>
-        </div>
-        <div class="empty-hint" style="padding-top:8px;">"Frontier only" dims every <b style="color:var(--text)">closed</b> decision so the undecided edge of the design — what still needs to be decided before this domain is fully specified — stands out.</div>
-      </div>
-      <div class="card">
-        <h3>Design-Time Decision Queue</h3>
-        <div class="empty-hint" style="padding-bottom:4px;">Open, at-risk and overlooked decisions for this domain, ranked by priority where assigned. Click a row to open it.</div>
-        <ul class="queue-list" id="queueList"></ul>
       </div>
       <div class="card">
         <h3>Legend — Decision class</h3>
@@ -210,6 +709,22 @@
     <div id="step5-left" style="display:none;">
       <h2 class="panel-title">Ecosystem Frame</h2>
       <div class="card"><div class="empty-hint">3rd parties are heterogeneous: individuals, automated agents, other companies, and institutions each decide under different authority and incentive structures. Model each as its own decision-capable node.</div></div>
+    </div>
+
+    <div id="treeControls" style="display:none;">
+      <div class="card">
+        <h3>Design-time view</h3>
+        <div class="toggle">
+          <button id="frontierAll" class="on">All decisions</button>
+          <button id="frontierOnly">Frontier only</button>
+        </div>
+        <div class="empty-hint" style="padding-top:8px;">"Frontier only" dims every <b style="color:var(--text)">closed</b> decision so the undecided edge of the design — what still needs to be decided before this view is fully specified — stands out. Applies to any Decision Breakdown Structure, at any of the 5 levels, at any drill depth.</div>
+      </div>
+      <div class="card">
+        <h3>Design-Time Decision Queue</h3>
+        <div class="empty-hint" style="padding-bottom:4px;">Open, at-risk and overlooked decisions for the DBS you're currently inside, ranked by priority where assigned. Click a row to open it.</div>
+        <ul class="queue-list" id="queueList"></ul>
+      </div>
     </div>
 
     <div class="card">
@@ -255,6 +770,7 @@
   <main class="canvas">
     <div class="breadcrumb">
       <div class="txt" id="breadcrumbTxt"><b>Step 1 — Intra-Domain.</b> One domain's Decision Breakdown Structure (DBS). Click a decision to inspect it; click "Trace Downstream Impact" to ripple the consequence through dependent decisions.</div>
+      <div class="drill-trail" id="drillTrail" style="display:none;"></div>
     </div>
     <div id="step1-canvas" class="step-canvas"></div>
     <div id="step2-canvas" class="step-canvas" style="display:none;"></div>
@@ -277,27 +793,107 @@
 
     <h2 class="panel-title" style="margin-top:16px;">Graph of Graphs</h2>
     <div class="card">
-      <svg class="concept-svg" viewBox="0 0 220 190">
-        <circle class="ring active" cx="110" cy="105" r="16"/>
-        <circle class="ring" cx="110" cy="105" r="36"/>
-        <circle class="ring" cx="110" cy="105" r="56"/>
-        <circle class="ring" cx="110" cy="105" r="76" opacity="0.75"/>
-        <circle class="ring" cx="110" cy="105" r="96" opacity="0.5"/>
-        <text x="110" y="108" text-anchor="middle" fill="#e7edf5" font-weight="700">Domain</text>
-        <text x="110" y="71" text-anchor="middle">Inter-Domain</text>
-        <text x="110" y="51" text-anchor="middle">Biz Operation</text>
-        <text x="110" y="31" text-anchor="middle">Value Chain</text>
-        <text x="110" y="11" text-anchor="middle">Ecosystem</text>
+      <svg class="concept-svg gog-svg" viewBox="0 0 260 428">
+        <defs>
+          <marker id="gog-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8fa0b3"/></marker>
+          <marker id="gog-arrow-dash" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8b6bff"/></marker>
+        </defs>
+
+        <!-- lateral federation reach: Domain core cuts directly into every outer layer -->
+        <g class="gog-reach-lines">
+          <path class="gog-arrow-dash" d="M26,63 Q90,100 170,138"/>
+          <path class="gog-arrow-dash" d="M26,63 Q70,150 170,222"/>
+          <path class="gog-arrow-dash" d="M26,63 Q55,220 170,306"/>
+          <path class="gog-arrow-dash" d="M26,63 Q40,280 170,390"/>
+        </g>
+
+        <!-- containment/specialization chain: each layer feeds the next -->
+        <g class="gog-chain">
+          <line class="gog-arrow-solid" x1="26" y1="63" x2="26" y2="129"/>
+          <line class="gog-arrow-solid" x1="26" y1="147" x2="26" y2="213"/>
+          <line class="gog-arrow-solid" x1="26" y1="231" x2="26" y2="297"/>
+          <line class="gog-arrow-solid" x1="26" y1="315" x2="26" y2="381"/>
+        </g>
+
+        <g class="gog-layer" id="gogLayer1" data-step="1">
+          <rect class="band-rect" x="6" y="8" width="248" height="76" rx="7"/>
+          <text class="band-label" x="14" y="22">1 · DOMAIN (this pattern)</text>
+          <g class="gog-core" id="gogDomainCore">
+            <circle cx="26" cy="54" r="9" fill="#49b0ff"/>
+            <text class="gog-core-label" id="gogDomainCoreLbl" x="40" y="57">Capability Concept</text>
+          </g>
+          <circle class="gog-peer" cx="150" cy="54" r="3.5"><title>A direct child decision (peer view)</title></circle>
+          <circle class="gog-peer" cx="185" cy="54" r="3.5"><title>Another direct child decision</title></circle>
+          <text class="gog-hint" x="26" y="72">↳ whichever decision pattern is selected at left</text>
+        </g>
+
+        <g class="gog-layer" id="gogLayer2" data-step="2">
+          <rect class="band-rect" x="6" y="92" width="248" height="76" rx="7"/>
+          <text class="band-label" x="14" y="106">2 · INTER-DOMAIN</text>
+          <g class="gog-core" data-jump="2:core">
+            <circle cx="26" cy="138" r="9" fill="#8b6bff"/>
+            <text class="gog-core-label" x="40" y="141">Marketing Mgmt (core)</text>
+          </g>
+          <g class="gog-reach" data-jump="2:prodmgmt">
+            <circle cx="170" cy="138" r="6" fill="#8b6bff"/>
+            <text class="gog-reach-label" x="180" y="141">Product Mgmt</text>
+          </g>
+          <circle class="gog-peer" cx="248" cy="138" r="3"><title>Financial Mgmt (peer)</title></circle>
+        </g>
+
+        <g class="gog-layer" id="gogLayer3" data-step="3">
+          <rect class="band-rect" x="6" y="176" width="248" height="76" rx="7"/>
+          <text class="band-label" x="14" y="190">3 · BUSINESS OPERATION</text>
+          <g class="gog-core" data-jump="3:choosefix">
+            <circle cx="26" cy="222" r="9" fill="#f5a623"/>
+            <text class="gog-core-label" x="40" y="225">Choose Fix (DA)</text>
+          </g>
+          <g class="gog-reach" data-jump="3:identify">
+            <circle cx="170" cy="222" r="6" fill="#f5a623"/>
+            <text class="gog-reach-label" x="180" y="225">Identify Defects</text>
+          </g>
+          <circle class="gog-peer" cx="248" cy="222" r="3"><title>Value Stream (peer)</title></circle>
+        </g>
+
+        <g class="gog-layer" id="gogLayer4" data-step="4">
+          <rect class="band-rect" x="6" y="260" width="248" height="76" rx="7"/>
+          <text class="band-label" x="14" y="274">4 · VALUE CHAIN</text>
+          <g class="gog-core" data-jump="4:us">
+            <circle cx="26" cy="306" r="9" fill="#2ecc71"/>
+            <text class="gog-core-label" x="40" y="309">Our Company (agg.)</text>
+          </g>
+          <g class="gog-reach" data-jump="4:supplier">
+            <circle cx="170" cy="306" r="6" fill="#2ecc71"/>
+            <text class="gog-reach-label" x="180" y="309">Supplier(s)</text>
+          </g>
+          <circle class="gog-peer" cx="248" cy="306" r="3"><title>Distributor(s) (peer)</title></circle>
+        </g>
+
+        <g class="gog-layer" id="gogLayer5" data-step="5">
+          <rect class="band-rect" x="6" y="344" width="248" height="76" rx="7"/>
+          <text class="band-label" x="14" y="358">5 · ECOSYSTEM</text>
+          <g class="gog-core" data-jump="5:valuechain">
+            <circle cx="26" cy="390" r="9" fill="#35b8b0"/>
+            <text class="gog-core-label" x="40" y="393">Value Chain (agg.)</text>
+          </g>
+          <g class="gog-reach" data-jump="5:institutions">
+            <circle cx="170" cy="390" r="6" fill="#35b8b0"/>
+            <text class="gog-reach-label" x="180" y="393">Institutions</text>
+          </g>
+          <circle class="gog-peer" cx="248" cy="390" r="3"><title>Individuals (peer)</title></circle>
+        </g>
       </svg>
-      <div class="empty-hint">Each ring is itself a graph whose nodes are, one level in, graphs of their own — a containment hierarchy that still allows lateral edges within a ring (peer domains, peer companies, peer 3rd parties).</div>
+      <div class="empty-hint">Solid arrows: each layer specializes into the next. Dashed arrows: a single domain-level decision reaches directly into an outer layer without waiting for containment to catch up — that's the actual federation, not just nesting. Click any node to jump there.</div>
     </div>
   </aside>
 </div>
 
 <footer>
-  <span>Framework synthesized from: Fitch — "All Faults are Decision Faults" (2017), "Exploiting Decision to Requirements Traceability" (2009), "Leveraging Decision Patterns to Tame Complexity" (2022), "Extending MBSE for Decision Patterns and Traceability" (2024), PPI SyEN #107 "Introduction to Decision Patterns" (2021); The Value Enablement Group — "Business Sensory Platform" v3.</span>
-  <span>Prototype — Step 1 fully modeled; Steps 2–5 are scaffolds to populate as decisions are traced outward.</span>
+  <span>Framework synthesized from: Fitch — "All Faults are Decision Faults" (2017), "Exploiting Decision to Requirements Traceability" (2009), "Leveraging Decision Patterns to Tame Complexity" (2022), "Extending MBSE for Decision Patterns and Traceability" (2024), PPI SyEN #107 "Introduction to Decision Patterns" (2021); The Value Enablement Group — "Business Sensory Platform" v3, "Decision Architecture Platform" (MBSE + RSM + Pareto + Holonic Governance, 2026).</span>
+  <span>Prototype — every node at every level (1–5) drills recursively into its own Decision Breakdown Structure; a Causal Impact Map (Strategy / Services / Processes / Assets — biological, digital, physical) is authored for a representative subset and auto-scaffolded elsewhere.</span>
 </footer>
+
+</div><!-- /modelApp -->
 
 <script>
 (function(){
@@ -325,7 +921,24 @@ var PATTERNS = {
       {id:"p1.3", parent:"p1", label:"Process Architecture", cls:"Multi-part", q:"What process architecture, framework or flow will we use to deploy this capability?", status:"open",
         priority:1, analysisTask:"Architecture trade study: linear vs. parallel vs. hub-and-spoke flow. Result shapes Organization Design (1.5) and Platform (1.6).",
         alternatives:["Linear sequential flow","Parallel intake + review","Hub-and-spoke with regional hubs"],
-        risks:[{risk:"Architecture chosen without evaluating Org Design/Platform cost together", impact:"A cheaper-looking architecture turns out to require a full re-org and platform rebuild.", likelihood:"Med", severity:"High"}]},
+        risks:[{risk:"Architecture chosen without evaluating Org Design/Platform cost together", impact:"A cheaper-looking architecture turns out to require a full re-org and platform rebuild.", likelihood:"Med", severity:"High"}],
+        impactByAlt:{
+          "Linear sequential flow":[
+            {cat:"strategy", target:"Time-to-market objective", dir:"down", mag:"Med", note:"Simple to implement but each stage waits on the last — slows overall cycle time."},
+            {cat:"process", target:"Fulfillment throughput", dir:"down", mag:"Low", note:"Predictable but not parallelizable."},
+            {cat:"asset", assetType:"digital", target:"Workflow engine complexity", dir:"down", mag:"Low", note:"Minimal orchestration logic needed."}
+          ],
+          "Parallel intake + review":[
+            {cat:"strategy", target:"Time-to-market objective", dir:"up", mag:"Med", note:"Overlapping stages compress cycle time."},
+            {cat:"service", target:"Customer Onboarding Service", dir:"up", mag:"Med", note:"Faster turnaround improves onboarding experience."},
+            {cat:"asset", assetType:"biological", target:"Reviewer team workload", dir:"up", mag:"Med", note:"Reviewers must handle concurrent cases — staffing pressure increases."}
+          ],
+          "Hub-and-spoke with regional hubs":[
+            {cat:"strategy", target:"Regional responsiveness", dir:"up", mag:"High", note:"Local hubs can tailor to regional regulatory/market nuance."},
+            {cat:"process", target:"Process standardization", dir:"down", mag:"Med", note:"Hubs risk drifting from a common playbook without strong governance."},
+            {cat:"asset", assetType:"physical", target:"Regional facility footprint", dir:"up", mag:"High", note:"Requires standing up or contracting regional hub locations."}
+          ]
+        }},
       {id:"p1.3.1", parent:"p1.3", label:"Process Design", cls:"Single", q:"How will this part of our process operate?", status:"open",
         analysisTask:"Detail step-level design once the parent Process Architecture (1.3) alternative is selected.",
         alternatives:["Manual + checklist","Semi-automated with exception queue","Fully automated, human-in-the-loop review"]},
@@ -420,7 +1033,24 @@ var PATTERNS = {
       {id:"pr1.3.1", parent:"pr1.3", label:"Behaviors to Exploit/Control", cls:"Multiple", q:"Which behaviors are exploited or controlled in this regime?", status:"atrisk",
         priority:1, analysisTask:"Safety and performance engineering disagree on which regime behaviors are exploitable vs. must be constrained — needs a joint review.",
         alternatives:["Exploit-first, add guardrails later","Control-first, relax once validated","Split by subsystem criticality"],
-        risks:[{risk:"Exploit vs. control behaviors unresolved between Safety and Performance", impact:"A behavior shipped as 'exploitable' turns out to be a safety hazard in the field.", likelihood:"Low", severity:"High"}]},
+        risks:[{risk:"Exploit vs. control behaviors unresolved between Safety and Performance", impact:"A behavior shipped as 'exploitable' turns out to be a safety hazard in the field.", likelihood:"Low", severity:"High"}],
+        impactByAlt:{
+          "Exploit-first, add guardrails later":[
+            {cat:"strategy", target:"Speed-to-capability objective", dir:"up", mag:"High", note:"Fastest path to demonstrating the behavior works at all."},
+            {cat:"process", target:"Verification & Safety Review process", dir:"down", mag:"High", note:"Guardrails retrofitted after the fact are harder to verify exhaustively."},
+            {cat:"asset", assetType:"physical", target:"Field sensor unit hardware", dir:"mixed", mag:"Med", note:"May need late hardware rework if guardrails require sensors not in the original BOM."}
+          ],
+          "Control-first, relax once validated":[
+            {cat:"strategy", target:"Speed-to-capability objective", dir:"down", mag:"Med", note:"Slower to first demonstrated behavior."},
+            {cat:"process", target:"Verification & Safety Review process", dir:"up", mag:"High", note:"Every behavior is bounded before it ships — review is straightforward."},
+            {cat:"asset", assetType:"digital", target:"Control software complexity", dir:"up", mag:"Med", note:"More upfront logic to bound behavior safely."}
+          ],
+          "Split by subsystem criticality":[
+            {cat:"strategy", target:"Risk-adjusted delivery objective", dir:"up", mag:"High", note:"Matches rigor to actual criticality instead of a blanket policy."},
+            {cat:"process", target:"Program Phase Integration (see 1.7)", dir:"mixed", mag:"Med", note:"Two verification tracks running in parallel adds coordination overhead."},
+            {cat:"asset", assetType:"digital", target:"Traceability graph (see 1.6)", dir:"up", mag:"Med", note:"Needs a criticality tag per subsystem to route review correctly."}
+          ]
+        }},
       {id:"pr1.4", parent:"pr1", label:"Solution Architecture", cls:"Multi-part", q:"What is the logical & physical architecture of the solution?", status:"open"},
       {id:"pr1.4.1", parent:"pr1.4", label:"Function X Technology", cls:"Single", q:"What technology realizes function X?", status:"open"},
       {id:"pr1.4.2", parent:"pr1.4", label:"Hardware Platform", cls:"Multi-part", q:"What hardware architecture underlies the solution?", status:"open"},
@@ -449,7 +1079,24 @@ var PATTERNS = {
       {id:"d1.2", parent:"d1", label:"Data Model / Schema", cls:"Multi-part", q:"What is the schema/structure of this data asset?", status:"atrisk",
         priority:1, analysisTask:"Two upstream source systems use conflicting entity definitions — schema can't close until that's reconciled.",
         alternatives:["Canonical schema, sources conform","Federated schema, per-source mapping layer","Hybrid: canonical core + source-specific extensions"],
-        risks:[{risk:"Conflicting entity definitions across source systems", impact:"Downstream analytics silently mis-joins records, corrupting reported metrics.", likelihood:"Med", severity:"High"}]},
+        risks:[{risk:"Conflicting entity definitions across source systems", impact:"Downstream analytics silently mis-joins records, corrupting reported metrics.", likelihood:"Med", severity:"High"}],
+        impactByAlt:{
+          "Canonical schema, sources conform":[
+            {cat:"strategy", target:"Single-source-of-truth objective", dir:"up", mag:"High", note:"Cleanest realization of the Customer 360 concept."},
+            {cat:"service", target:"Source system teams", dir:"down", mag:"Med", note:"Every source team must build/maintain a conformance mapping."},
+            {cat:"asset", assetType:"digital", target:"Data pipeline complexity", dir:"down", mag:"Med", note:"Conformance logic lives once, upstream, rather than scattered downstream."}
+          ],
+          "Federated schema, per-source mapping layer":[
+            {cat:"strategy", target:"Time-to-onboard-new-source objective", dir:"up", mag:"Med", note:"New sources plug in without renegotiating a canonical model."},
+            {cat:"asset", assetType:"digital", target:"Mapping layer maintenance burden", dir:"up", mag:"High", note:"Every consumer query must reconcile per-source differences."},
+            {cat:"process", target:"Data Quality Rules process", dir:"down", mag:"Med", note:"Harder to enforce one quality bar across divergent source shapes."}
+          ],
+          "Hybrid: canonical core + source-specific extensions":[
+            {cat:"strategy", target:"Single-source-of-truth objective", dir:"mixed", mag:"Med", note:"Core fields are trustworthy; extension fields still vary by source."},
+            {cat:"asset", assetType:"digital", target:"Data pipeline complexity", dir:"mixed", mag:"Med", note:"Two conformance paths instead of one, but each is narrower in scope."},
+            {cat:"service", target:"Governance & Stewardship (see 1.4)", dir:"up", mag:"Med", note:"Clear boundary between what's governed centrally vs. per-source."}
+          ]
+        }},
       {id:"d1.3", parent:"d1", label:"Quality Rules", cls:"Multiple", q:"What quality/validation rules apply?", status:"open"},
       {id:"d1.4", parent:"d1", label:"Governance & Stewardship", cls:"Multi-part", q:"Who classifies, owns and grants access to this data?", status:"overlooked",
         priority:2, analysisTask:"No steward assigned yet — the asset is being built and consumed before anyone owns its classification or access policy.",
@@ -485,6 +1132,88 @@ var PATTERNS = {
       {from:"a1.3", to:"a1.2", label:"bounds"},
       {from:"a1.2", to:"a1.6", label:"drives retrain cadence"}
     ]
+  },
+  engineering: {
+    label: "Decision Architecture Platform pattern (18 decisions) — condensed from MBSE + RSM + Pareto + Holonic Governance (The Value Enablement Group, 2026)",
+    nodes: [
+      {id:"eng1", parent:null, label:"Decision Acceleration Architecture", cls:"Multi-part", q:"What is the top-level architecture for compressing decision latency across an engineering program's full lifecycle — design-time and run-time?", status:"closed",
+        chosenAlt:"MBSE simulation + RSM surrogate + Pareto frontier, closed by a holonic governance extension for run-time operation (chosen)"},
+      {id:"eng1.1", parent:"eng1", label:"MBSE Simulation", cls:"Multi-part", q:"What will this system actually do when all physics and behaviors interact?", status:"closed",
+        chosenAlt:"SysML-authoritative model, physics validated via full co-simulation (chosen)"},
+      {id:"eng1.1.1", parent:"eng1.1", label:"SysML Version", cls:"Single", q:"SysML v1 (mature tooling) or SysML v2 (native units, REST-versioned commit model)?", status:"open",
+        priority:1, analysisTask:"Trade study: v1 tooling maturity vs. v2's native ISO-80000 typed ports and REST commit API. Affects every downstream interface decision, including whether the knowledge graph (1.6) can query the model live.",
+        alternatives:["SysML v1 (mature tooling)","SysML v2 (native units, REST API)","Hybrid: v1 now, migrate at next major release"],
+        risks:[{risk:"Team commits to v1 tooling ecosystem while the knowledge graph actually needs v2's REST API", impact:"Architecture model can't be queried live by decision-support agents without a costly bolt-on integration.", likelihood:"Med", severity:"Med"}]},
+      {id:"eng1.1.2", parent:"eng1.1", label:"AADL Supplement", cls:"Single", q:"Does the software layer need a formal schedulability proof, or is SysML timing analysis sufficient?", status:"open",
+        analysisTask:"Required only if certifying under DO-178C or ISO 26262; otherwise skip and revisit if a safety-critical subsystem is added later.",
+        alternatives:["SysML only","SysML + AADL for safety-critical software","AADL for the full software stack"]},
+      {id:"eng1.2", parent:"eng1", label:"RSM Surrogate Strategy", cls:"Single", q:"How does performance vary across the design space, and where is the optimum, without a full physics run per query?", status:"closed",
+        chosenAlt:"Second-order polynomial RSM fit via central composite design, cross-validated against MBSE simulation (chosen)"},
+      {id:"eng1.2.1", parent:"eng1.2", label:"Design of Experiments Method", cls:"Single", q:"Which DoE strategy samples the design space to fit the surrogate?", status:"atrisk",
+        priority:2, analysisTask:"CCD assumes a smooth response; early results show a discontinuity near the thermal boundary — may need Kriging + LHS instead. Needs a lack-of-fit re-test before this closes.",
+        alternatives:["Central Composite Design (CCD)","Box-Behnken","Full factorial","Kriging + Latin Hypercube Sampling"],
+        risks:[{risk:"CCD's smoothness assumption doesn't hold across the whole design space", impact:"Surrogate silently mispredicts near the boundary, producing a Pareto frontier that recommends an infeasible point.", likelihood:"Med", severity:"High"}]},
+      {id:"eng1.3", parent:"eng1", label:"Pareto Selection Method", cls:"Single", q:"What trade-offs are genuinely unavoidable, and how does a stakeholder pick from the frontier?", status:"open",
+        priority:3, analysisTask:"Frontier is already computed every sprint (NSGA-II); the selection method a stakeholder uses to pick from it is still open.",
+        alternatives:["Weighted-sum scalarization","Reference-point method","Automatic knee-point selection"],
+        risks:[{risk:"No agreed selection method while the frontier is already in weekly use", impact:"Each stakeholder eyeballs a different point on the frontier, so the 'chosen' design changes depending on who's in the room.", likelihood:"High", severity:"Med"}]},
+      {id:"eng1.4", parent:"eng1", label:"Physics Co-Simulation", cls:"Multi-part", q:"How are multi-domain physical interactions (thermal, structural, electrical) jointly modeled?", status:"closed",
+        chosenAlt:"Modelica acausal models coupled via FMI (chosen)"},
+      {id:"eng1.4.1", parent:"eng1.4", label:"Co-Simulation Coordination Scheme", cls:"Single", q:"Jacobi, Gauss-Seidel, or iterative coupling — and at what communication step size?", status:"atrisk",
+        priority:4, analysisTask:"Step size is currently set above the 10x-fastest-time-constant rule for the controls loop — the critical-boundary risk this program's own RSM guidance warns against.",
+        alternatives:["Jacobi (parallel, fastest)","Gauss-Seidel (sequential, more stable)","Iterative (most accurate, slowest)"],
+        risks:[{risk:"Communication step size set above the 10x-fastest-time-constant rule", impact:"Co-simulation produces numerically 'reasonable' results that are physically meaningless at the controls boundary.", likelihood:"Med", severity:"High"}]},
+      {id:"eng1.5", parent:"eng1", label:"Controls Verification Progression", cls:"Multi-part", q:"How does the design move through Model-in-the-Loop, Software-in-the-Loop, Processor-in-the-Loop and Hardware-in-the-Loop verification?", status:"open",
+        priority:5, analysisTask:"MiL/SiL stages are automated in CI; PiL/HiL bench time is not yet reserved on the program's critical path.",
+        alternatives:["Schedule HiL early (higher upfront cost, catches integration risk sooner)","Defer HiL to late integration (cheaper now, riskier schedule)"],
+        risks:[{risk:"HiL bench time not reserved on the critical path", impact:"The program's last inexpensive opportunity to catch closed-loop failures gets squeezed out by schedule pressure.", likelihood:"Med", severity:"High"}]},
+      {id:"eng1.6", parent:"eng1", label:"Knowledge Graph & Traceability", cls:"Multi-part", q:"How is every architecture element, simulation, surrogate, frontier and verification result kept traceable to the requirement it satisfies?", status:"closed",
+        chosenAlt:"Five-node-type schema (ArchitectureElement, SimulationConfiguration, SurrogateModel, ParetoFrontier, VerificationResult), commit-versioned (chosen)"},
+      {id:"eng1.6.1", parent:"eng1.6", label:"AI-Assisted Claim Grounding", cls:"Single", q:"When an AI agent proposes or summarizes a decision, how is its claim checked against the graph before anyone acts on it?", status:"open",
+        priority:6, analysisTask:"The Circuit Breaker pattern (flat, single-hop check, tracked via MTBH — Mean Time Between Hallucinations) is designed but not yet wired into the agents drafting trade-study memos.",
+        alternatives:["Flat Circuit Breaker (single-hop check)","Recursive Circuit Breaker (holonic, cross-domain check — see 1.8)","No automated check (manual review only)"],
+        risks:[{risk:"AI-drafted trade-study claims ship without a grounding check", impact:"An ungrounded claim about surrogate accuracy gets treated as fact in a go/no-go review.", likelihood:"Med", severity:"High"}]},
+      {id:"eng1.7", parent:"eng1", label:"Program Phase Integration", cls:"Multi-part", q:"How does this architecture operate across Concept, Preliminary Design, Detailed Design, Verification and Operate & Sustain?", status:"open",
+        analysisTask:"The first four phases have an owning gate review; Operate & Sustain — the run-time phase — does not yet have one defined.",
+        alternatives:["Extend the existing gate-review cadence into Operate & Sustain","Define a new continuous-monitoring gate for Operate & Sustain","No formal gate at run-time (rely on alerting only)"]},
+      {id:"eng1.8", parent:"eng1", label:"Holonic Governance Extension (v2)", cls:"Multi-part", q:"Once the system is live and multiple AI agents act on it concurrently, how does the architecture stay coherent without a single point of failure?", status:"open",
+        priority:7, analysisTask:"This is the run-time gap the original design-time architecture (1.1–1.6) leaves open — closing it is what the Decision Architecture Platform's Part IV extension is for.",
+        alternatives:["Centralized model authority (simpler, single point of failure)","Holonic federation: domain-bounded ontologies + meta-governance scaffold (chosen direction, not yet implemented)","No formal run-time governance (status quo)"],
+        risks:[{risk:"Multiple AI agents write back to the same live model with no domain boundary", impact:"An agent's unaligned local objective silently drifts a shared assumption no one owns, discovered only after two domains disagree in production.", likelihood:"Med", severity:"High"}],
+        impactByAlt:{
+          "Centralized model authority (simpler, single point of failure)":[
+            {cat:"strategy", target:"Run-time coherence objective", dir:"up", mag:"Med", note:"One authority is easy to reason about — until it's the single point of failure."},
+            {cat:"process", target:"Cross-domain audit process", dir:"up", mag:"Med", note:"One place to check for provenance and claim grounding."},
+            {cat:"asset", assetType:"digital", target:"Central governance service availability", dir:"down", mag:"High", note:"Every agent query depends on one service staying up and scaling."}
+          ],
+          "Holonic federation: domain-bounded ontologies + meta-governance scaffold (chosen direction, not yet implemented)":[
+            {cat:"strategy", target:"Run-time coherence objective", dir:"up", mag:"High", note:"No single point of failure; each domain stays coherent even if others degrade."},
+            {cat:"service", target:"AI-Assisted Claim Grounding (see 1.6.1)", dir:"up", mag:"High", note:"Recursive circuit breaker can check claims against the bounded domain closest to the claim."},
+            {cat:"asset", assetType:"digital", target:"Meta-Governance Scaffold build effort", dir:"down", mag:"High", note:"Not yet implemented — this is the largest unbuilt asset in the architecture."}
+          ],
+          "No formal run-time governance (status quo)":[
+            {cat:"strategy", target:"Run-time coherence objective", dir:"down", mag:"High", note:"Multiple concurrent agents can act on inconsistent views with nothing to catch it."},
+            {cat:"process", target:"Cross-domain audit process", dir:"down", mag:"High", note:"No systematic way to trace an agent's claim back to a bounded, checkable source."},
+            {cat:"asset", assetType:"biological", target:"Engineer trust in AI-proposed decisions", dir:"down", mag:"Med", note:"Without grounding, engineers must independently re-verify every AI claim, eroding the intended time savings."}
+          ]
+        }},
+      {id:"eng1.8.1", parent:"eng1.8", label:"Domain Holon Boundaries", cls:"Multiple", q:"Which domains (thermal, structures, controls, ...) get their own bounded local ontology, enforced by SHACL shapes and SWRL rules?", status:"overlooked",
+        priority:8, analysisTask:"No domain has been formally bounded yet — everyone still edits one shared, ungoverned model. The fix is designed but has no owner or start date, the classic 'decision overlooked' pattern.",
+        alternatives:["(none evaluated yet)"],
+        risks:[{risk:"No domain-boundary decision has an owner or start date", impact:"The shared model keeps growing ungoverned until a cross-domain conflict forces an emergency redesign under schedule pressure.", likelihood:"High", severity:"High"}]},
+      {id:"eng1.8.2", parent:"eng1.8", label:"Meta-Governance Scaffold", cls:"Single", q:"What holds cryptographic identity, scoped trust boundaries and cross-domain audit once domains are bounded?", status:"open",
+        analysisTask:"Depends on Domain Holon Boundaries (1.8.1) closing first — this layer mediates between them and never lets two domains talk directly.",
+        alternatives:["Build a custom scaffold","Adopt an existing federated-identity + policy-graph product","Defer until after the first domain boundary ships"]},
+      {id:"eng1.8.3", parent:"eng1.8", label:"Virtual Graph Performance Cache", cls:"Single", q:"How do high-throughput agent queries stay fast once the ontology is federated across domain boundaries?", status:"open",
+        analysisTask:"The same surrogate pattern RSM already uses for physics (1.2), applied to governance: a reconciled cache in front of the federated graph.",
+        alternatives:["No cache — query the federated graph directly (simplest, slowest)","Fixed-cadence reconciled virtual graph","Real-time reconciliation (most complex)"]}
+    ],
+    influences: [
+      {from:"eng1.1", to:"eng1.2", label:"ground truth"},
+      {from:"eng1.2", to:"eng1.3", label:"feeds frontier"},
+      {from:"eng1.5", to:"eng1.6", label:"results traced"},
+      {from:"eng1.7", to:"eng1.8", label:"exposes run-time gap"}
+    ]
   }
 };
 
@@ -501,6 +1230,136 @@ var GHOSTS = [
    {risk, impact, likelihood:'Low'|'Med'|'High', severity:'Low'|'Med'|'High'}
 ----------------------------------------------------------------*/
 var SEV_COLOR = {Low:"#2ecc71", Med:"#f5a623", High:"#e0483e"};
+
+/* ---------------------------------------------------------------
+   SUBPATTERNS — recursive drill-down detail, keyed by node id.
+   Any node anywhere (Step 1 tree, Steps 2-5 fixed graphs, or a
+   node inside an already-drilled sub-pattern) can be drilled into.
+   Authored entries below are real Decision Breakdown Structures;
+   any node without an entry gets an auto-scaffold (see
+   getSubPatternFor) so drilling never dead-ends.
+----------------------------------------------------------------*/
+var SUBPATTERNS = {
+  prodmgmt: {
+    label: "Product Management — Domain DBS",
+    nodes: [
+      {id:"prodmgmt", parent:null, label:"Product Management", cls:"Multi-part", q:"How does the Product Management domain make its portfolio & feature decisions?", status:"open"},
+      {id:"prodmgmt.1", parent:"prodmgmt", label:"Portfolio Prioritization", cls:"Multiple", q:"Which products/features get investment this cycle?", status:"open",
+        priority:1, analysisTask:"Score backlog items against RICE; validate against strategic OKRs.",
+        alternatives:["RICE scoring","Weighted shortest job first","Executive judgment call"],
+        risks:[{risk:"Prioritization method changes each cycle", impact:"Teams can't build a reliable roadmap; feature commitments slip mid-quarter.", likelihood:"Med", severity:"Med"}]},
+      {id:"prodmgmt.2", parent:"prodmgmt", label:"Positioning Strategy", cls:"Single", q:"How is each product positioned against internal siblings and market competitors?", status:"atrisk",
+        priority:2, analysisTask:"Resolve positioning before Commercial Management finalizes pricing (Step 2 edge).",
+        alternatives:["Segment-first positioning","Price-tier positioning","Use-case positioning"],
+        risks:[{risk:"Positioning decided without portfolio-wide visibility", impact:"Two products cannibalize the same segment, diluting both business cases.", likelihood:"Med", severity:"Med"}],
+        impactByAlt:{
+          "Segment-first positioning":[
+            {cat:"strategy", target:"Market differentiation objective", dir:"up", mag:"High", note:"Sharpest competitive story per segment."},
+            {cat:"service", target:"Customer Management peer domain", dir:"mixed", mag:"Med", note:"Onboarding messaging must fork by segment."},
+            {cat:"asset", assetType:"digital", target:"CRM segmentation model", dir:"up", mag:"Med", note:"Needs richer segment attributes than today's CRM schema carries."}
+          ],
+          "Price-tier positioning":[
+            {cat:"strategy", target:"Revenue-per-account objective", dir:"up", mag:"Med", note:"Clear upsell ladder."},
+            {cat:"service", target:"Commercial Management peer domain", dir:"up", mag:"Med", note:"Aligns cleanly with the pricing decisions Commercial Mgmt already owns."},
+            {cat:"asset", assetType:"digital", target:"Billing/tiering system", dir:"up", mag:"Med", note:"Needs tier-based entitlement logic."}
+          ],
+          "Use-case positioning":[
+            {cat:"strategy", target:"Market differentiation objective", dir:"mixed", mag:"Med", note:"Strong for buyers who search by use case, weaker for segment-driven sales motions."},
+            {cat:"process", target:"Sales enablement process", dir:"down", mag:"Med", note:"Sales needs a use-case-matching playbook instead of a segment script."},
+            {cat:"asset", assetType:"biological", target:"Sales team enablement time", dir:"down", mag:"Low", note:"Retraining on a use-case pitch takes time away from active selling."}
+          ]
+        }},
+      {id:"prodmgmt.3", parent:"prodmgmt", label:"Feature Sunset Policy", cls:"Single", q:"When and how are underperforming features retired?", status:"overlooked",
+        analysisTask:"Not yet on the backlog — no owner assigned.", alternatives:["(none evaluated yet)"]}
+    ],
+    influences: [{from:"prodmgmt.1", to:"prodmgmt.2", label:"funds the position"}]
+  },
+  "prodmgmt.2": {
+    label: "Positioning Strategy — Detail",
+    nodes: [
+      {id:"prodmgmt.2", parent:null, label:"Positioning Strategy", cls:"Multi-part", q:"How is positioning actually operationalized once a direction is picked?", status:"atrisk"},
+      {id:"prodmgmt.2.1", parent:"prodmgmt.2", label:"Competitive Response Cadence", cls:"Single", q:"How often do we re-evaluate our position against competitor moves?", status:"open",
+        priority:1, analysisTask:"Pick a review cadence before the next competitor launch cycle.",
+        alternatives:["Quarterly repositioning review","Continuous/always-on monitoring","Annual only"]},
+      {id:"prodmgmt.2.2", parent:"prodmgmt.2", label:"Messaging Ownership", cls:"Single", q:"Who owns approving positioning messaging changes?", status:"overlooked",
+        analysisTask:"Not yet on the backlog — no owner assigned.", alternatives:["(none evaluated yet)"]}
+    ],
+    influences: []
+  },
+  choosefix: {
+    label: "Choose Fix (DA) — Decision Analysis DBS",
+    nodes: [
+      {id:"choosefix", parent:null, label:"Choose Fix (DA)", cls:"Multi-part", q:"How is the Decision Analysis (DA) step of the operational loop itself structured?", status:"open"},
+      {id:"choosefix.1", parent:"choosefix", label:"Candidate Fix Generation", cls:"Multiple", q:"Where do candidate fixes come from?", status:"open",
+        analysisTask:"Define the intake channel(s) for candidate fixes before the next defect cycle.",
+        alternatives:["Brainstorm with cross-functional pod","Pull from historical fix library","Vendor-proposed fix"]},
+      {id:"choosefix.2", parent:"choosefix", label:"Fix Selection Criteria", cls:"Multiple", q:"What criteria decide among candidate fixes?", status:"atrisk",
+        priority:1, analysisTask:"Fix is chosen without evaluating implementation cost across the value stream — needs an agreed criteria set.",
+        alternatives:["Cost + time-to-implement only","Full risk-weighted scorecard","Cost + risk, no time weighting"],
+        risks:[{risk:"Fix is chosen without evaluating implementation cost across the value stream", impact:"A fix that looks cheap in isolation triggers rework in three other domains.", likelihood:"Med", severity:"High"}],
+        impactByAlt:{
+          "Cost + time-to-implement only":[
+            {cat:"process", target:"Plan/Protect Fix (PPA) step", dir:"down", mag:"Med", note:"Risk isn't scored going in, so PPA has to catch everything after the fact."},
+            {cat:"asset", assetType:"digital", target:"Fix cost model", dir:"up", mag:"Low", note:"Simple model — just cost and schedule."},
+            {cat:"strategy", target:"Speed-of-resolution objective", dir:"up", mag:"Med", note:"Fastest path to picking a fix."}
+          ],
+          "Full risk-weighted scorecard":[
+            {cat:"strategy", target:"Speed-of-resolution objective", dir:"down", mag:"Med", note:"Scoring every candidate against a full risk model takes longer."},
+            {cat:"process", target:"Plan/Protect Fix (PPA) step", dir:"up", mag:"High", note:"PPA inherits a fix that's already been risk-scored — less to catch downstream."},
+            {cat:"asset", assetType:"biological", target:"Cross-functional pod time", dir:"down", mag:"Med", note:"Scorecard requires input from multiple domain experts, not just the fix owner."}
+          ],
+          "Cost + risk, no time weighting":[
+            {cat:"strategy", target:"Speed-of-resolution objective", dir:"mixed", mag:"Med", note:"Balances rigor and speed but can pick a fix that's right yet late."},
+            {cat:"process", target:"Value Stream throughput", dir:"mixed", mag:"Med", note:"Risk is caught, but a slow-to-implement fix still delays the value stream."},
+            {cat:"asset", assetType:"digital", target:"Fix cost model", dir:"up", mag:"Med", note:"Adds a risk dimension to the existing cost model."}
+          ]
+        }},
+      {id:"choosefix.3", parent:"choosefix", label:"Rollback Trigger", cls:"Single", q:"What signal forces a rollback of the chosen fix?", status:"overlooked",
+        analysisTask:"Not yet on the backlog — no owner assigned.", alternatives:["(none evaluated yet)"]}
+    ],
+    influences: [{from:"choosefix.1", to:"choosefix.2", label:"feeds candidates"}]
+  },
+  supplier: {
+    label: "Supplier Co. — Interface-View DBS",
+    nodes: [
+      {id:"supplier", parent:null, label:"Supplier Co. (their domain, interface view)", cls:"Multi-part", q:"What does the supplier's own decision-making look like from the outside — the interface we actually see?", status:"open"},
+      {id:"supplier.1", parent:"supplier", label:"Capacity Commitment Policy", cls:"Single", q:"How much of their capacity do they commit to us in advance?", status:"open",
+        analysisTask:"Confirm capacity terms in the next supplier review.",
+        alternatives:["Firm capacity reservation","Spot allocation, no reservation","Tiered SLA by customer volume"]},
+      {id:"supplier.2", parent:"supplier", label:"Spec Change Notice Policy", cls:"Single", q:"How much warning do we get before they change a component spec?", status:"atrisk",
+        priority:1, analysisTask:"Single-source dependency on component specification — needs a contractual notice window.",
+        alternatives:["30-day advance notice","Best-effort notice","Notice only after change is live"],
+        risks:[{risk:"Single-source dependency on component specification", impact:"Supplier's own open decision blocks our production schedule with no alternative.", likelihood:"Med", severity:"High"}]}
+    ],
+    influences: []
+  },
+  institutions: {
+    label: "Institutions — Regulatory Decision Frame DBS",
+    nodes: [
+      {id:"institutions", parent:null, label:"Institutions (regulatory decision frame)", cls:"Multi-part", q:"How do regulators and standards bodies decide what constrains our decision space?", status:"open"},
+      {id:"institutions.1", parent:"institutions", label:"Rulemaking Cadence", cls:"Single", q:"How often do new rules/standards get issued?", status:"open",
+        analysisTask:"Track the regulator's published cadence for the next planning cycle.",
+        alternatives:["Fixed annual rulemaking cycle","Continuous/rolling guidance","Reactive (post-incident) rulemaking"]},
+      {id:"institutions.2", parent:"institutions", label:"Compliance Verification Method", cls:"Single", q:"How do they verify our compliance — audit, self-attestation, continuous monitoring?", status:"overlooked",
+        analysisTask:"Not yet on the backlog — no owner assigned.", alternatives:["(none evaluated yet)"]}
+    ],
+    influences: []
+  }
+};
+
+function getSubPatternFor(node){
+  if(SUBPATTERNS[node.id]) return SUBPATTERNS[node.id];
+  return {
+    label: node.label + " — Detail (auto-scaffold)",
+    nodes: [
+      {id:node.id, parent:null, label:node.label, cls:node.cls||"Multi-part", q:node.q||"Composite decision — detail not yet authored.", status:node.status||"open"},
+      {id:node.id+".auto1", parent:node.id, label:"Sub-decision A", cls:"Single", q:"Placeholder — author SUBPATTERNS['"+node.id+"'] to replace this scaffold.", status:"open", alternatives:["(none evaluated yet)"]},
+      {id:node.id+".auto2", parent:node.id, label:"Sub-decision B", cls:"Single", q:"Placeholder — author SUBPATTERNS['"+node.id+"'] to replace this scaffold.", status:"overlooked", alternatives:["(none evaluated yet)"]}
+    ],
+    influences: [],
+    autoScaffold: true
+  };
+}
 
 /* ---------------------------------------------------------------
    DATA: Steps 2-5 — fixed-layout illustrative graphs
@@ -617,7 +1476,7 @@ var STEP5 = {
 /* ---------------------------------------------------------------
    STATE
 ----------------------------------------------------------------*/
-var state = { step:1, pattern:"process", scope:"isolated", frontier:"all", selected:null, view:{} };
+var state = { step:1, pattern:"process", scope:"isolated", frontier:"all", selected:null, view:{}, drill:{1:[],2:[],3:[],4:[],5:[]} };
 var svgNS = "http://www.w3.org/2000/svg";
 
 function el(tag, attrs, parent){
@@ -683,8 +1542,8 @@ function layoutTree(nodes){
 var PHASE_BY_DEPTH = ["Concept","Preliminary Design","Detailed Design","Detailed Design"];
 function targetPhaseForDepth(d){ return PHASE_BY_DEPTH[Math.min(d, PHASE_BY_DEPTH.length-1)]; }
 
-function depthOf(patKey, id){
-  var pat = PATTERNS[patKey], byId={}; pat.nodes.forEach(function(n){byId[n.id]=n;});
+function depthOf(nodes, id){
+  var byId={}; nodes.forEach(function(n){byId[n.id]=n;});
   var d=0, cur=byId[id];
   while(cur && cur.parent){ d++; cur=byId[cur.parent]; }
   return d;
@@ -703,13 +1562,13 @@ function defaultPlan(node){
   return { alternatives: alts, analysisTask: task, priority: null };
 }
 
-function planFor(patKey, node){
+function planFor(nodes, node){
   var base = defaultPlan(node);
   return {
     priority: (node.priority!==undefined) ? node.priority : base.priority,
     analysisTask: node.analysisTask || base.analysisTask,
     alternatives: node.alternatives || base.alternatives,
-    targetPhase: targetPhaseForDepth(depthOf(patKey, node.id))
+    targetPhase: targetPhaseForDepth(depthOf(nodes, node.id))
   };
 }
 
@@ -719,30 +1578,86 @@ function nodeShapeSize(cls){
   return {w:96,h:44};
 }
 
-function renderStep1(){
-  var pat = PATTERNS[state.pattern];
-  document.getElementById("patternSource").textContent = pat.label;
-  var container = document.getElementById("step1-canvas");
+/* ---------------------------------------------------------------
+   RECURSIVE DRILL-DOWN — resolve the active frame for any step
+----------------------------------------------------------------*/
+function currentFrameNodes(step){
+  var d = state.drill[step] || [];
+  if(d.length===0){
+    if(step===1){
+      var pat = PATTERNS[state.pattern];
+      return {nodes:pat.nodes, influences:pat.influences||[], isTree:true, base:true, label:pat.label};
+    }
+    var F = (step===2?STEP2:step===3?STEP3:step===4?STEP4:STEP5);
+    return {nodes:F.nodes, edges:F.edges, containers:F.containers, isTree:false, base:true};
+  }
+  var lastId = d[d.length-1];
+  var sp = SUBPATTERNS[lastId];
+  if(!sp){
+    // find the node object we drilled from, to scaffold it
+    var srcNode = findNodeAnywhere(lastId);
+    sp = getSubPatternFor(srcNode || {id:lastId, label:lastId});
+  }
+  return {nodes:sp.nodes, influences:sp.influences||[], isTree:true, base:false, label:sp.label, autoScaffold:!!sp.autoScaffold};
+}
+
+function findNodeAnywhere(id){
+  var i;
+  for(var pk in PATTERNS){ for(i=0;i<PATTERNS[pk].nodes.length;i++){ if(PATTERNS[pk].nodes[i].id===id) return PATTERNS[pk].nodes[i]; } }
+  var fixed=[STEP2,STEP3,STEP4,STEP5];
+  for(i=0;i<fixed.length;i++){ for(var j=0;j<fixed[i].nodes.length;j++){ if(fixed[i].nodes[j].id===id) return fixed[i].nodes[j]; } }
+  for(var sk in SUBPATTERNS){ for(i=0;i<SUBPATTERNS[sk].nodes.length;i++){ if(SUBPATTERNS[sk].nodes[i].id===id) return SUBPATTERNS[sk].nodes[i]; } }
+  return null;
+}
+
+function edgesForTree(nodes, influences){
+  var edges=[];
+  nodes.forEach(function(n){ if(n.parent) edges.push({from:n.parent,to:n.id}); });
+  (influences||[]).forEach(function(inf){ edges.push({from:inf.from,to:inf.to}); });
+  return edges;
+}
+
+function dataForStep(step){
+  var frame = currentFrameNodes(step);
+  if(frame.isTree) return {nodes:frame.nodes, edges:edgesForTree(frame.nodes, frame.influences)};
+  return {nodes:frame.nodes, edges:frame.edges};
+}
+
+function renderStepCanvas(step){
+  var frame = currentFrameNodes(step);
+  var canvasId = "step"+step+"-canvas";
+  if(frame.isTree) renderTreeCanvas(step, canvasId, frame);
+  else renderFixedStep(step, frame, canvasId);
+  renderDrillTrail();
+  updateTreeControlsVisibility(frame.isTree);
+}
+
+function renderTreeCanvas(step, canvasId, frame){
+  if(step===1){
+    var srcEl = document.getElementById("patternSource");
+    if(srcEl) srcEl.textContent = frame.label + (frame.autoScaffold?" (auto-scaffold — not yet authored)":"");
+  }
+  var container = document.getElementById(canvasId);
   container.innerHTML = "";
-  var layout = layoutTree(pat.nodes);
-  var svg = el("svg",{viewBox:"0 0 "+layout.width+" "+layout.height, id:"svg-step1"});
+  var layout = layoutTree(frame.nodes);
+  var svg = el("svg",{viewBox:"0 0 "+layout.width+" "+layout.height, id:"svg-"+canvasId});
   container.appendChild(svg);
   addDefs(svg);
   var gEdges = el("g",{},svg), gGhosts = el("g",{},svg), gNodes = el("g",{},svg);
 
   // hierarchy edges
-  pat.nodes.forEach(function(n){
+  frame.nodes.forEach(function(n){
     if(!n.parent) return;
     drawEdge(gEdges, layout.x[n.parent], layout.y[n.parent]+22, layout.x[n.id], layout.y[n.id]-22, false, null, n.parent, n.id, 1);
   });
   // influence edges
-  (pat.influences||[]).forEach(function(inf){
+  (frame.influences||[]).forEach(function(inf){
     var a = layout, fx=a.x[inf.from], fy=a.y[inf.from], tx=a.x[inf.to], ty=a.y[inf.to];
     drawEdge(gEdges, fx, fy, tx, ty, true, inf.label, inf.from, inf.to, 1);
   });
 
-  // ghost aggregate stubs off the root
-  if(state.scope==="aggregate"){
+  // ghost aggregate stubs off the root — only for the un-drilled Step 1 domain
+  if(step===1 && frame.base && state.scope==="aggregate"){
     var rx = layout.x[layout.root], ry = layout.y[layout.root];
     var positions = [{dx:-330,dy:-30},{dx:-115,dy:-70},{dx:115,dy:-70},{dx:330,dy:-30}];
     GHOSTS.forEach(function(g,i){
@@ -757,7 +1672,7 @@ function renderStep1(){
   }
 
   // decision nodes
-  pat.nodes.forEach(function(n){
+  frame.nodes.forEach(function(n){
     var cx=layout.x[n.id], cy=layout.y[n.id];
     var isDimmed = state.frontier==="frontier" && n.status==="closed";
     var grp = el("g",{class:"dnode"+(isDimmed?" frontier-dim":""), "data-id":n.id},gNodes);
@@ -780,24 +1695,27 @@ function renderStep1(){
       el("circle",{class:"prio-badge",cx:badgeX,cy:badgeY,r:9},grp);
       var pt = textEl(badgeX, badgeY+3.5, String(n.priority), "prio-badge-text", grp); pt.setAttribute("text-anchor","middle");
     }
-    var title = el("title",{},grp); title.textContent = n.label+" — "+n.q;
-    grp.addEventListener("click", (function(id){ return function(){ selectNode("step1", id); }; })(n.id));
+    var title = el("title",{},grp); title.textContent = n.label+(n.q?" — "+n.q:"");
+    grp.addEventListener("click", (function(id){ return function(){ selectNode(step, id); }; })(n.id));
   });
 
   attachPanZoom(svg);
   applySelectionVisual();
-  renderQueue();
-  renderRiskSummary("step1");
+  renderQueue(step, frame);
+  renderRiskSummary(step);
 }
 
 /* ---------------------------------------------------------------
    DESIGN-TIME DECISION QUEUE (left panel)
 ----------------------------------------------------------------*/
-function renderQueue(){
+function renderQueue(step, frame){
   var listEl = document.getElementById("queueList");
   if(!listEl) return;
-  var pat = PATTERNS[state.pattern];
-  var open = pat.nodes.filter(function(n){ return n.status!=="closed"; });
+  step = step || state.step;
+  frame = frame || currentFrameNodes(step);
+  if(!frame.isTree){ listEl.innerHTML = ""; return; }
+  var nodes = frame.nodes;
+  var open = nodes.filter(function(n){ return n.status && n.status!=="closed"; });
   var sevRank = {overlooked:0, atrisk:1, open:2};
   open.sort(function(a,b){
     var ap = a.priority || 999, bp = b.priority || 999;
@@ -808,12 +1726,12 @@ function renderQueue(){
   if(open.length===0){
     var li0 = document.createElement("li");
     li0.className = "empty-hint";
-    li0.textContent = "Every decision in this domain is closed.";
+    li0.textContent = "Every decision in this view is closed.";
     listEl.appendChild(li0);
     return;
   }
   open.forEach(function(n){
-    var plan = planFor(state.pattern, n);
+    var plan = planFor(nodes, n);
     var li = document.createElement("li");
     li.className = "queue-item";
     var rank = document.createElement("div");
@@ -827,7 +1745,7 @@ function renderQueue(){
     var dot = document.createElement("div");
     dot.className = "dot"; dot.style.background = STATUS_COLOR[n.status] || "#f5a623";
     li.appendChild(rank); li.appendChild(info); li.appendChild(dot);
-    li.addEventListener("click", (function(id){ return function(){ selectNode("step1", id); }; })(n.id));
+    li.addEventListener("click", (function(id){ return function(){ selectNode(step, id); }; })(n.id));
     listEl.appendChild(li);
   });
 }
@@ -838,10 +1756,10 @@ function renderQueue(){
    one severity-ranked list so teams can measure exposure as they
    step from Intra-Domain through Ecosystem.
 ----------------------------------------------------------------*/
-function renderRiskSummary(key){
+function renderRiskSummary(step){
   var listEl = document.getElementById("riskList");
   if(!listEl) return;
-  var data = dataForStepKey(key);
+  var data = dataForStep(step);
   var rows = [];
   data.nodes.forEach(function(n){
     (n.risks||[]).forEach(function(r){ rows.push({node:n, r:r}); });
@@ -867,7 +1785,7 @@ function renderRiskSummary(key){
     var ph = document.createElement("div"); ph.className="ph"; ph.textContent = row.node.label+" · "+row.r.severity+" sev / "+row.r.likelihood+" likelihood";
     info.appendChild(lbl); info.appendChild(ph);
     li.appendChild(dot); li.appendChild(info);
-    li.addEventListener("click", (function(k,id){ return function(){ selectNode(k, id); }; })(key, row.node.id));
+    li.addEventListener("click", (function(s,id){ return function(){ selectNode(s, id); }; })(step, row.node.id));
     listEl.appendChild(li);
   });
 }
@@ -925,39 +1843,19 @@ function renderFixedStep(stepNum, data, canvasId){
     var startY = n.y - (lines.length-1)*6 + 3;
     lines.forEach(function(ln,li){ textEl(n.x, startY+li*12, ln, "light", grp); });
     var title = el("title",{},grp); title.textContent = n.label+" — "+n.q;
-    grp.addEventListener("click", (function(id){ return function(){ selectNode("fixed"+stepNum, id); }; })(n.id));
+    grp.addEventListener("click", (function(id){ return function(){ selectNode(stepNum, id); }; })(n.id));
   });
 
   attachPanZoom(svg);
   applySelectionVisual();
-  renderRiskSummary("fixed"+stepNum);
+  renderRiskSummary(stepNum);
 }
-
-function renderStep2(){ renderFixedStep(2, STEP2, "step2-canvas"); }
-function renderStep3(){ renderFixedStep(3, STEP3, "step3-canvas"); }
-function renderStep4(){ renderFixedStep(4, STEP4, "step4-canvas"); }
-function renderStep5(){ renderFixedStep(5, STEP5, "step5-canvas"); }
 
 /* ---------------------------------------------------------------
    SELECTION, DETAIL PANEL, IMPACT TRACE
 ----------------------------------------------------------------*/
-function dataForStepKey(key){
-  if(key==="step1") return {nodes:PATTERNS[state.pattern].nodes, edges:edgesForPattern(state.pattern)};
-  if(key==="fixed2") return {nodes:STEP2.nodes, edges:STEP2.edges};
-  if(key==="fixed3") return {nodes:STEP3.nodes, edges:STEP3.edges};
-  if(key==="fixed4") return {nodes:STEP4.nodes, edges:STEP4.edges};
-  if(key==="fixed5") return {nodes:STEP5.nodes, edges:STEP5.edges};
-  return {nodes:[], edges:[]};
-}
-function edgesForPattern(patKey){
-  var pat = PATTERNS[patKey], edges=[];
-  pat.nodes.forEach(function(n){ if(n.parent) edges.push({from:n.parent,to:n.id}); });
-  (pat.influences||[]).forEach(function(inf){ edges.push({from:inf.from,to:inf.to}); });
-  return edges;
-}
-
-function selectNode(key, id){
-  state.selected = {key:key, id:id};
+function selectNode(step, id){
+  state.selected = {step:step, id:id};
   applySelectionVisual();
   renderDetail();
 }
@@ -974,7 +1872,8 @@ function cssEscape(s){ return s; } // safe as-is: id sits inside a quoted attrib
 function renderDetail(){
   var panel = document.getElementById("detailPanel");
   if(!state.selected){ panel.innerHTML = '<div class="empty-hint">Select any decision or domain node.</div>'; return; }
-  var data = dataForStepKey(state.selected.key);
+  var frame = currentFrameNodes(state.selected.step);
+  var data = dataForStep(state.selected.step);
   var node = data.nodes.filter(function(n){return n.id===state.selected.id;})[0];
   if(!node){ panel.innerHTML = ""; return; }
 
@@ -996,7 +1895,7 @@ function renderDetail(){
     html += '<div class="card" style="padding:8px;"><h3>Governance status</h3><div class="status-row" id="statusRow"></div></div>';
   }
 
-  var plan = (node.cls && state.selected.key==="step1") ? planFor(state.pattern, node) : null;
+  var plan = (node.cls && frame.isTree) ? planFor(frame.nodes, node) : null;
   if(plan){
     var isClosed = node.status==="closed";
     html += '<div class="card" style="padding:8px;"><h3>Design-Time Decision Plan</h3>';
@@ -1036,6 +1935,9 @@ function renderDetail(){
     html += '</div></div>';
   }
 
+  html += buildImpactMapHtml(node);
+
+  html += '<button class="btn primary" id="drillBtn">Drill In → Full Decision Breakdown ↴</button>';
   html += '<button class="btn primary" id="traceBtn">Trace Downstream Impact →</button>';
   html += '<button class="btn ghost" id="clearBtn">Clear trace</button>';
   html += '<div id="impactResults"></div>';
@@ -1060,12 +1962,61 @@ function renderDetail(){
     });
   }
 
-  document.getElementById("traceBtn").addEventListener("click", function(){ traceImpact(state.selected.key, state.selected.id); });
+  document.getElementById("drillBtn").addEventListener("click", function(){
+    var step = state.selected.step, id = state.selected.id;
+    state.drill[step].push(id);
+    state.selected = null;
+    refreshActiveCanvas();
+    renderDetail();
+  });
+  document.getElementById("traceBtn").addEventListener("click", function(){ traceImpact(state.selected.step, state.selected.id); });
   document.getElementById("clearBtn").addEventListener("click", function(){ applySelectionVisual(); document.getElementById("impactResults").innerHTML=""; });
 }
 
-function traceImpact(key, id){
-  var data = dataForStepKey(key);
+/* ---------------------------------------------------------------
+   CAUSAL IMPACT MAP — per-decision, per-alternative mapping of a
+   decision's ripple into Strategy, Services, Processes and Assets
+   (biological / digital / physical). Direction (up/down/mixed) is
+   deliberately neutral — increase/decrease, not good/bad; read it
+   against the note. Magnitude is High/Med/Low.
+----------------------------------------------------------------*/
+function impactCategoryClass(entry){
+  if(entry.cat==="asset") return "impact-cat-asset-"+(entry.assetType||"digital");
+  return "impact-cat-"+entry.cat;
+}
+function impactCategoryLabel(entry){
+  if(entry.cat==="asset") return "Asset · "+(entry.assetType||"digital");
+  return entry.cat.charAt(0).toUpperCase()+entry.cat.slice(1);
+}
+function impactDirArrow(dir){ return dir==="up" ? "↑" : dir==="down" ? "↓" : "↔"; }
+
+function buildImpactMapHtml(node){
+  var h = '<div class="card" style="padding:8px;"><h3>Causal Impact Map</h3>';
+  if(!node.impactByAlt){
+    h += '<div class="empty-hint">No causal impact data authored for this decision yet. Impact mapping links a chosen alternative to Strategy, Services, Processes and Assets (biological, digital, physical) — enough to evaluate options and optimize this decision once authored.</div></div>';
+    return h;
+  }
+  h += '<div class="empty-hint" style="padding-bottom:6px;">How each alternative ripples into strategy, services, processes and assets — compare before committing. Arrows are neutral (increase/decrease), not good/bad; read them against the note.</div>';
+  Object.keys(node.impactByAlt).forEach(function(altName){
+    var entries = node.impactByAlt[altName];
+    h += '<div style="margin-top:8px;border-top:1px solid var(--border);padding-top:8px;">';
+    h += '<div style="font-size:11.5px;font-weight:700;color:var(--text);margin-bottom:6px;">'+altName+'</div>';
+    entries.forEach(function(en){
+      h += '<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;">';
+      h += '<span class="badge '+impactCategoryClass(en)+'" style="flex:none;white-space:nowrap;">'+impactCategoryLabel(en)+'</span>';
+      h += '<div style="flex:1;min-width:0;">';
+      h += '<div style="font-size:11.5px;color:var(--text);"><span class="dir-ind" title="'+en.dir+'">'+impactDirArrow(en.dir)+'</span>'+en.target+' <span style="color:var(--muted);font-size:10px;">('+en.mag+' magnitude)</span></div>';
+      if(en.note) h += '<div style="font-size:11px;color:var(--muted);margin-top:2px;">'+en.note+'</div>';
+      h += '</div></div>';
+    });
+    h += '</div>';
+  });
+  h += '</div>';
+  return h;
+}
+
+function traceImpact(step, id){
+  var data = dataForStep(step);
   var adj = {};
   data.edges.forEach(function(e){ if(!adj[e.from]) adj[e.from]=[]; adj[e.from].push(e.to); });
   var visited = {}, queue=[id], order=[];
@@ -1098,16 +2049,14 @@ function traceImpact(key, id){
 }
 
 function jumpToGhost(g){
+  state.drill[g.step] = [];
   setActiveStep(g.step);
-  setTimeout(function(){ selectNode("fixed"+g.step, g.target); },80);
+  renderStepCanvas(g.step);
+  setTimeout(function(){ selectNode(g.step, g.target); },80);
 }
 
 function refreshActiveCanvas(){
-  if(state.step===1) renderStep1();
-  if(state.step===2) renderStep2();
-  if(state.step===3) renderStep3();
-  if(state.step===4) renderStep4();
-  if(state.step===5) renderStep5();
+  renderStepCanvas(state.step);
 }
 
 /* ---------------------------------------------------------------
@@ -1176,13 +2125,79 @@ function setActiveStep(n){
     var lp = document.getElementById("step"+i+"-left"); if(lp) lp.style.display = (i===n?"block":"none");
   });
   document.getElementById("breadcrumbTxt").innerHTML = BREADCRUMBS[n];
-  if(n===1 && !document.getElementById("svg-step1")) renderStep1();
-  if(n===2 && !document.getElementById("svg-step2-canvas")) renderStep2();
-  if(n===3 && !document.getElementById("svg-step3-canvas")) renderStep3();
-  if(n===4 && !document.getElementById("svg-step4-canvas")) renderStep4();
-  if(n===5 && !document.getElementById("svg-step5-canvas")) renderStep5();
-  renderRiskSummary(n===1 ? "step1" : "fixed"+n);
+  if(!document.getElementById("svg-step"+n+"-canvas")){
+    renderStepCanvas(n);
+  } else {
+    renderDrillTrail();
+    updateTreeControlsVisibility(currentFrameNodes(n).isTree);
+    renderRiskSummary(n);
+    renderQueue(n);
+  }
+  updateGraphOfGraphs(n);
 }
+
+function renderDrillTrail(){
+  var wrap = document.getElementById("drillTrail");
+  if(!wrap) return;
+  var step = state.step;
+  var d = state.drill[step] || [];
+  if(!d.length){ wrap.style.display = "none"; wrap.innerHTML = ""; return; }
+  wrap.style.display = "flex";
+  var topLabel = step===1 ? PATTERNS[state.pattern].label.split(" — ")[0].split(" (")[0] : ("Step "+step+" base graph");
+  var names = [topLabel];
+  d.forEach(function(id){
+    var sp = SUBPATTERNS[id];
+    var lbl = sp ? sp.label.replace(" — Detail","").replace(" — Domain DBS","").replace(" DBS","") : (findNodeAnywhere(id) ? findNodeAnywhere(id).label : id);
+    names.push(lbl);
+  });
+  var html = '<button class="btn ghost small" id="drillTop" title="Back to top">⌂ Top</button>';
+  html += '<button class="btn ghost small" id="drillBack" title="One level up">← Back</button>';
+  html += '<span class="drill-path">'+names.join(" › ")+'</span>';
+  wrap.innerHTML = html;
+  document.getElementById("drillTop").addEventListener("click", function(){ state.drill[step]=[]; state.selected=null; refreshActiveCanvas(); renderDetail(); });
+  document.getElementById("drillBack").addEventListener("click", function(){ state.drill[step].pop(); state.selected=null; refreshActiveCanvas(); renderDetail(); });
+}
+
+function updateTreeControlsVisibility(isTree){
+  var tc = document.getElementById("treeControls");
+  if(tc) tc.style.display = isTree ? "block" : "none";
+  var scopeCard = document.getElementById("scopeCard");
+  if(scopeCard) scopeCard.style.display = (state.step===1 && (state.drill[1]||[]).length===0) ? "block" : "none";
+}
+
+function updateGraphOfGraphs(n){
+  [1,2,3,4,5].forEach(function(i){
+    var layer = document.getElementById("gogLayer"+i); if(layer) layer.classList.toggle("active", i===n);
+  });
+}
+
+function updateGogDomainLabel(){
+  var lbl = document.getElementById("gogDomainCoreLbl");
+  if(!lbl) return;
+  var root = PATTERNS[state.pattern].nodes.filter(function(n){ return !n.parent; })[0];
+  lbl.textContent = root ? root.label : "";
+}
+
+function jumpToLayerNode(step, id){
+  state.drill[step] = [];
+  setActiveStep(step);
+  renderStepCanvas(step);
+  setTimeout(function(){ selectNode(step, id); }, 80);
+}
+
+document.querySelectorAll(".gog-core, .gog-reach").forEach(function(g){
+  g.addEventListener("click", function(){
+    if(g.id==="gogDomainCore"){
+      var root = PATTERNS[state.pattern].nodes.filter(function(n){ return !n.parent; })[0];
+      if(root) jumpToLayerNode(1, root.id);
+      return;
+    }
+    var jump = g.getAttribute("data-jump");
+    if(!jump) return;
+    var parts = jump.split(":");
+    jumpToLayerNode(Number(parts[0]), parts[1]);
+  });
+});
 
 document.getElementById("stepTabs").addEventListener("click", function(e){
   var tab = e.target.closest(".step-tab");
@@ -1193,30 +2208,32 @@ document.getElementById("stepTabs").addEventListener("click", function(e){
 document.getElementById("patternSelect").addEventListener("change", function(e){
   state.pattern = e.target.value;
   state.selected = null;
-  renderStep1();
+  state.drill[1] = [];
+  renderStepCanvas(1);
   renderDetail();
+  updateGogDomainLabel();
 });
 
 document.getElementById("scopeIsolated").addEventListener("click", function(){
   state.scope="isolated";
   this.classList.add("on"); document.getElementById("scopeAggregate").classList.remove("on");
-  renderStep1();
+  refreshActiveCanvas();
 });
 document.getElementById("scopeAggregate").addEventListener("click", function(){
   state.scope="aggregate";
   this.classList.add("on"); document.getElementById("scopeIsolated").classList.remove("on");
-  renderStep1();
+  refreshActiveCanvas();
 });
 
 document.getElementById("frontierAll").addEventListener("click", function(){
   state.frontier="all";
   this.classList.add("on"); document.getElementById("frontierOnly").classList.remove("on");
-  renderStep1();
+  refreshActiveCanvas();
 });
 document.getElementById("frontierOnly").addEventListener("click", function(){
   state.frontier="frontier";
   this.classList.add("on"); document.getElementById("frontierAll").classList.remove("on");
-  renderStep1();
+  refreshActiveCanvas();
 });
 
 document.getElementById("zoomIn").addEventListener("click", function(){ zoomActive(0.85); });
@@ -1224,7 +2241,110 @@ document.getElementById("zoomOut").addEventListener("click", function(){ zoomAct
 document.getElementById("zoomReset").addEventListener("click", resetActive);
 
 /* init */
-renderStep1();
+renderStepCanvas(1);
+updateGraphOfGraphs(1);
+updateGogDomainLabel();
+})();
+</script>
+
+<script>
+(function(){
+
+  var OV_ARCH = {
+    guardrail: { tag:"Governance", title:"Guardrail Gate", tier:"Row 1 — governs everything below it",
+      body:"Before an alternative is eligible for selection, it passes three gates in fixed order: Planet, People, Profit. Profit is optimized only across alternatives that already cleared the first two — it never buys back an earlier failure. See Sheet 04.",
+      ex:"Lexicographic, not weighted — a cheaper alternative that degrades a planetary boundary does not advance." },
+    holonic: { tag:"Governance", title:"Holonic Governance & Circuit Breaker", tier:"Row 1 — governs everything below it",
+      body:"Once multiple automated agents read and write to the same decision graph concurrently, one shared model becomes a single point of failure. Each domain is bounded into its own local ontology; a Circuit Breaker checks any AI-proposed claim against the bounded graph closest to it before anyone acts on it.",
+      ex:"Tracked via Mean Time Between Hallucinations (MTBH) — a real reliability metric for agent-proposed claims." },
+    dbs: { tag:"Core engine", title:"Decision Breakdown Structure (DBS)", tier:"Row 2 — the decomposition engine",
+      body:"Every decision — from a top-level concept down to a single tool choice — is a node with a class (Single / Multiple / Multi-part), a governance status (overlooked, open, at-risk, closed), and a framing question. Any node opens into its own DBS, recursively, to whatever depth the decision warrants.",
+      ex:"e.g. “Choose Fix” opens into candidate-fix generation, selection criteria, and a rollback trigger." },
+    queue: { tag:"Core engine", title:"Design-Time Decision Queue", tier:"Row 2 — the decomposition engine",
+      body:"Closed decisions validate commitments already made; open, at-risk, and overlooked decisions are the design-time frontier. The Queue ranks that frontier by priority and target phase — Concept, Preliminary Design, Detailed Design — so a decision buried three levels deep doesn't stay invisible.",
+      ex:"An overlooked decision with no owner is the single most dangerous item in this queue." },
+    causal: { tag:"Core engine", title:"Causal Impact Map", tier:"Row 2 — the decomposition engine",
+      body:"For each candidate alternative, impact is traced into four categories — Strategy, Services, Processes, and Assets (biological / digital / physical) — with a direction (up / down / mixed) and a magnitude. Direction is deliberately neutral: a cost on one category is often a benefit on another, in the same alternative.",
+      ex:"Comparing alternatives category-by-category is what makes a trade-off visible instead of assumed." },
+    gog: { tag:"Substrate", title:"Graph of Graphs — Federation Substrate", tier:"Row 3 — grounding and the feedback loop",
+      body:"Each of the five strata is itself a bounded graph. Two edge types connect them: a solid containment chain (each stratum specializes into the next) and a dashed federation reach (a domain-level decision touches an outer stratum directly). The dashed edge is the one most architectures miss.",
+      ex:"It's how a Process Architecture decision inside one domain ends up on a regulator's desk. See Sheet 02." },
+    twin: { tag:"Substrate", title:"Digital Twin Sync Layer", tier:"Row 3 — grounding and the feedback loop",
+      body:"Gives the Causal Impact Map somewhere to run its predictions before the organization commits. Alternatives simulate against current twin state — inventory, throughput, component specs — and the twin's own telemetry becomes the ground truth Measurement compares against later.",
+      ex:"See Sheet 03 for the full forward/backward mechanism." },
+    measure: { tag:"Substrate", title:"Measurement & Feedback Loop", tier:"Row 3 — grounding and the feedback loop",
+      body:"After a decision is implemented, its real outcome — from the twin, from operational telemetry, or direct observation — is compared against what the Causal Impact Map predicted. The gap refines the next decision's criteria, the next surrogate model, and the next agent's grounding data.",
+      ex:"The gap is the input, not an error to hide. See Sheet 05." }
+  };
+
+  var OV_LEVELS = {
+    lvl1: { name:"1 · Intra-Domain", body:"One domain, one Decision Breakdown Structure. A capability, product, service, data asset, or analytics model gets its concept, methods, architecture, organization design, platform, and metrics decided in isolation from its neighbors — so the decision can actually get made.",
+      ex:"Engineering Program domain: MBSE simulation → RSM surrogate strategy → Pareto selection method." },
+    lvl2: { name:"2 · Inter-Domain", body:"The domain's decisions now sit among peers pursuing their own capabilities under shared strategic direction. Positioning, pricing, budget, and experience decisions made in isolation at Level 1 start to interact — two products can end up competing for the same segment without anyone deciding that on purpose.",
+      ex:"Product Management's Positioning Strategy decision, competing for the same segment as Commercial Management's pricing tier." },
+    lvl3: { name:"3 · Business Operation", body:"Above the design-time decisions of Levels 1–2 sits the recurring operational loop that runs the business day to day: identify the defect, find the cause, choose the fix, plan and protect the fix. This is where design-time architecture meets run-time reality.",
+      ex:"Choose Fix (DA) drilled into candidate-fix generation, selection criteria, and a rollback trigger." },
+    lvl4: { name:"4 · Value Chain", body:"The graph crosses a company boundary. A supplier's, distributor's, or channel partner's own domain graph is opaque by default — what's visible is the interface: what was decided, what's expected in return, and how much warning you get before it changes.",
+      ex:"Supplier Co.'s Spec Change Notice Policy — an interface-view decision into a company you don't otherwise see inside." },
+    lvl5: { name:"5 · Ecosystem", body:"3rd parties decide under authority and incentive structures the organization doesn't control: individuals (consent, purchase), automated agents (delegated execution), institutions (regulation), outside companies (competitive response). These decisions constrain or trigger the whole value chain from outside it.",
+      ex:"Institutions' Rulemaking Cadence — a regulator's own decision frame, modeled even though the organization can only observe it, not decide inside it." }
+  };
+
+  function renderOvArch(key){
+    var d = OV_ARCH[key];
+    document.querySelectorAll('#ov-architecture [data-key]').forEach(function(g){ g.classList.toggle('active', g.getAttribute('data-key')===key); });
+    document.getElementById('ov-archRail').innerHTML =
+      '<span class="ov-tag">'+d.tag+'</span><h3>'+d.title+'</h3>'+
+      '<p class="ov-muted" style="font-size:11.5px;margin-bottom:10px;">'+d.tier+'</p>'+
+      '<p>'+d.body+'</p>'+
+      '<div class="ov-ex"><b>Concrete:</b> '+d.ex+'</div>';
+  }
+  document.querySelectorAll('#ov-architecture [data-key]').forEach(function(g){
+    var key = g.getAttribute('data-key');
+    g.addEventListener('click', function(){ renderOvArch(key); });
+    g.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); renderOvArch(key); } });
+  });
+  renderOvArch('dbs');
+
+  function renderOvLevel(key){
+    var d = OV_LEVELS[key];
+    document.querySelectorAll('#ov-levels [data-key]').forEach(function(g){ g.classList.toggle('active', g.getAttribute('data-key')===key); });
+    document.querySelectorAll('.ov-level-item').forEach(function(li){ li.classList.toggle('active', li.getAttribute('data-key')===key); });
+    document.getElementById('ov-levelRail').innerHTML =
+      '<span class="ov-tag">'+d.name+'</span><h3>'+d.name.split(' · ')[1]+'</h3>'+
+      '<p>'+d.body+'</p>'+
+      '<div class="ov-ex"><b>Concrete:</b> '+d.ex+'</div>';
+  }
+  document.querySelectorAll('#ov-levels [data-key]').forEach(function(g){
+    var key = g.getAttribute('data-key');
+    g.addEventListener('click', function(){ renderOvLevel(key); });
+    g.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); renderOvLevel(key); } });
+  });
+
+  var ovListEl = document.getElementById('ov-levelList');
+  ['lvl1','lvl2','lvl3','lvl4','lvl5'].forEach(function(key,i){
+    var item = document.createElement('div');
+    item.className = 'ov-level-item';
+    item.setAttribute('data-key', key);
+    item.innerHTML = '<span class="num mono">'+(i+1)+'</span><span class="name">'+OV_LEVELS[key].name.split(' · ')[1]+'</span>';
+    item.addEventListener('click', function(){ renderOvLevel(key); });
+    ovListEl.appendChild(item);
+  });
+
+  renderOvLevel('lvl1');
+
+  function setMode(mode){
+    document.getElementById('overviewApp').style.display = mode==='overview' ? 'block' : 'none';
+    document.getElementById('modelApp').style.display = mode==='tool' ? 'flex' : 'none';
+    document.getElementById('modeOverviewBtn').classList.toggle('active', mode==='overview');
+    document.getElementById('modeToolBtn').classList.toggle('active', mode==='tool');
+    window.scrollTo(0,0);
+  }
+  document.getElementById('modeOverviewBtn').addEventListener('click', function(){ setMode('overview'); });
+  document.getElementById('modeToolBtn').addEventListener('click', function(){ setMode('tool'); });
+  document.querySelectorAll('[data-open-tool]').forEach(function(b){ b.addEventListener('click', function(){ setMode('tool'); }); });
+  window.__ovSetMode = setMode;
+  setMode('overview');
 })();
 </script>
 </body>
