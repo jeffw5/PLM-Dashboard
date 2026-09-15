@@ -148,6 +148,26 @@
   .alt-summary-badges .badge{margin:0;font-size:9.5px;padding:2px 7px;white-space:nowrap;}
   .mag{font-size:9px;opacity:.85;margin-left:3px;}
   .chosen-tag{font-size:9px;font-weight:800;color:var(--green);margin-left:5px;letter-spacing:.02em;}
+  .cb-flag{font-size:8.5px;font-weight:800;color:var(--accent2);background:rgba(139,107,255,.16);border:1px solid rgba(139,107,255,.4);border-radius:5px;padding:1px 5px;margin-left:5px;letter-spacing:.01em;white-space:nowrap;}
+  .cb-card{border-color:rgba(139,107,255,.35)!important;}
+  .cb-card h3{color:var(--accent2);}
+  .cb-not-applicable{font-size:11.5px;color:var(--muted);line-height:1.5;}
+  .cb-section-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--accent2);margin-bottom:6px;}
+  .cb-tuple-grid{display:grid;grid-template-columns:1fr;gap:6px;}
+  .cb-tuple-item{border:1px solid var(--border);border-radius:7px;padding:6px 8px;background:#101823;}
+  .cb-tuple-key{font-size:10.5px;font-weight:800;color:var(--accent2);margin-bottom:3px;}
+  .cb-tuple-key-label{font-size:9.5px;font-weight:600;color:var(--muted);margin-left:6px;text-transform:none;letter-spacing:0;}
+  .cb-tuple-val{font-size:11px;color:var(--text);line-height:1.45;}
+  .cb-kv{display:flex;justify-content:space-between;gap:8px;font-size:11px;padding:3px 0;border-bottom:1px dashed var(--border);}
+  .cb-kv span:first-child{color:var(--muted);}
+  .cb-kv span:last-child{color:var(--text);text-align:right;font-weight:600;}
+  .cb-kv-block{font-size:11px;color:var(--text);line-height:1.5;margin-bottom:4px;}
+  .cb-kv-block b{color:var(--muted);font-weight:700;}
+  .cb-safe-state{display:flex;gap:8px;align-items:flex-start;font-size:11px;color:var(--text);line-height:1.45;margin-bottom:5px;}
+  .cb-safe-lvl{flex:none;font-size:9px;font-weight:800;border-radius:5px;padding:2px 6px;letter-spacing:.03em;}
+  .cb-safe-lvl.l1{background:rgba(245,166,35,.18);color:var(--amber);}
+  .cb-safe-lvl.l2{background:rgba(245,166,35,.28);color:var(--amber);}
+  .cb-safe-lvl.l3{background:rgba(230,80,80,.2);color:var(--red);}
   footer{flex:none;border-top:1px solid var(--border);padding:8px 20px;color:var(--muted);font-size:10.5px;display:flex;justify-content:space-between;background:#0e1520;gap:16px;}
   footer span{min-width:0;}
   .concept-svg{width:100%;height:auto;display:block;margin-top:4px;}
@@ -975,6 +995,38 @@ var PATTERNS = {
             {cat:"process", target:"Fulfillment throughput", dir:"up", mag:"High", note:"Every case is processed automatically; the human step reviews rather than performs the work."},
             {cat:"asset", assetType:"digital", target:"Workflow engine complexity", dir:"up", mag:"High", note:"Needs confidence scoring, routing logic, and an audit trail for what the human reviewed and why — the same grounding discipline the platform's AI Circuit Breaker pattern applies to AI-proposed claims elsewhere."}
           ]
+        },
+        cbGovernance:{
+          "Manual + checklist":{
+            applicable:false,
+            rationale:"No autonomous system is in the decision loop — a person performs and reviews every case end to end, so there is no AI intent to vet against a ground-truth signal. The Circuit Breaker has nothing to instrument here."
+          },
+          "Semi-automated with exception queue":{
+            applicable:true, tier:"Partial — deterministic rule engine, not a learned model",
+            tuple:{
+              H:"Authorized to auto-clear only cases that match the documented rule set; anything outside those rules routes to the exception queue automatically — no discretionary judgment is delegated.",
+              O:"Eligibility rules encoded as explicit if/then criteria, version-controlled. The 'ontology' here is the rulebook itself — deterministic, not probabilistic.",
+              V:"Current case data plus rule-match state. No behavioral baseline is needed because the logic doesn't drift on its own — only the rules change, and only when a human edits them.",
+              A:"The rule engine is the acting agent for auto-cleared cases; a human reviewer is the accountable agent for every exception-queue item."
+            },
+            tripLogic:{ deltaTolerance:"N/A — rules either match or they don't. “Drift” shows up as a rising exception-queue rate, not a confidence gap.", trustMinimum:"—", anomalyCeiling:"—", criMinimum:"—" },
+            safeStates:{ L1:"Exception-queue depth trending up → review whether rule thresholds still fit current case mix.", L2:"Not applicable at this tier.", L3:"Disable auto-clear; route 100% of cases to manual review until rules are revalidated." },
+            mtbhTarget:"Not applicable — no probabilistic assertions to fail.",
+            vdcMonitor:"Exception-queue rate vs. its historical baseline, as a proxy for rule drift."
+          },
+          "Fully automated, human-in-the-loop review":{
+            applicable:true, tier:"Full AI Circuit Breaker — probabilistic classifier + deterministic veto",
+            tuple:{
+              H:"The classifier may process and route any case, but may not commit a decision above the defined risk/value threshold without the human reviewer's sign-off. That threshold is this decision's authority boundary.",
+              O:"Case-eligibility and risk-classification rules (what counts as “straightforward” vs. “needs review”) encoded explicitly and versioned, so the Circuit Breaker has a fixed standard to check every AI assertion against — not just a vibe of what looks right.",
+              V:"Live case context plus this workflow's historical decision distribution — the behavioral baseline the drift monitor measures against. Refreshed continuously once live, not just authored once at design time.",
+              A:"The automated classifier is the domain agent. Its output schema and confidence score must be typed against O so the Circuit Breaker can parse and score every assertion it makes."
+            },
+            tripLogic:{ deltaTolerance:"Confidence-vs-actual-outcome delta beyond the calibrated threshold for this workflow.", trustMinimum:"0.65 — below this, autonomous commit is withheld and the case routes to mandatory human review.", anomalyCeiling:"0.40 — above this, the assertion is flagged as anomalous and held rather than acted on.", criMinimum:"0.60 — the floor for how well-grounded the assertion is in current case context." },
+            safeStates:{ L1:"Soft alert — low-confidence case flagged with a mandatory reviewer indicator; case proceeds only after sign-off.", L2:"AI hold — the case is withheld from auto-commit; the reviewer sees the raw case, not the AI's recommendation.", L3:"Emergency halt — autonomous processing suspends workflow-wide until a human re-authorizes it." },
+            mtbhTarget:"Track and trend upward over time. A declining Mean-Time-Between-Hallucinations signals model drift and forces re-validation before further autonomous commits are allowed.",
+            vdcMonitor:"Confidence and acceptance-rate drift vs. the validated baseline; sustained drift triggers a recalibration cycle before the workflow resumes full autonomy."
+          }
         }},
       {id:"p1.3.1.1", parent:"p1.3.1", label:"Tools", cls:"Single", q:"What set of tools will we use to enable this part of our process?", status:"overlooked",
         priority:2, analysisTask:"Not yet on the trade study backlog and no owner assigned — tool choice is currently defaulting by inertia. Classic 'decision overlooked' pattern; add immediately.",
@@ -1943,19 +1995,11 @@ function renderDetail(){
     html += '<span class="badge" style="background:#26364a;color:var(--accent);">Phase: '+plan.targetPhase+'</span>';
     html += '</div>';
     html += '<div class="qtext" style="margin:0 0 8px;">'+plan.analysisTask+'</div>';
-    html += '<div style="font-size:11px;color:var(--muted);margin-bottom:4px;">'+(isClosed?"Committed alternative":"Candidate alternatives"+(hasImpact?" — click to compare impact below":" (not yet selected)"))+'</div>';
-    html += '<div class="chip-row">';
-    plan.alternatives.forEach(function(a){
-      var isThisChosen = isClosed && a===chosenAltName;
-      var cls = "chip";
-      if(isThisChosen) cls += " chosen";
-      var pickable = hasImpact && !isClosed;
-      if(pickable) cls += " alt-pick"+(a===focusedAltName?" focus":"");
-      html += '<span class="'+cls+'"'+(pickable?' data-alt-pick="'+a.replace(/"/g,"&quot;")+'"':'')+'>'+a+'</span>';
-    });
-    html += '</div>';
-    if(hasImpact && !isClosed){
-      html += '<button class="btn small primary" id="commitAltBtn" style="margin-top:8px;">Mark "'+focusedAltName+'" as chosen →</button>';
+    var planChips = buildAltChipsHtml(plan.alternatives, isClosed, chosenAltName, focusedAltName, node.cbGovernance);
+    html += '<div style="font-size:11px;color:var(--muted);margin-bottom:4px;">'+(isClosed?"Committed alternative":(planChips?"Candidate alternatives — click to select"+(hasImpact?" and compare impact below":""):"Candidate alternatives (not yet selected)"))+'</div>';
+    html += planChips || ('<div class="chip-row"><span class="chip">'+plan.alternatives[0]+'</span></div>');
+    if(planChips && !isClosed){
+      html += '<button class="btn small primary" id="commitAltBtn" data-focused-alt="'+focusedAltName.replace(/"/g,"&quot;")+'" style="margin-top:8px;">Mark "'+focusedAltName+'" as chosen →</button>';
     }
     html += '</div>';
   }
@@ -1976,14 +2020,20 @@ function renderDetail(){
 
   if(node.cls){
     var isClosedC = node.status==="closed";
+    var chosenAltNameC = resolvedChosenAltName(node, node.alternatives||[]);
+    var focusedAltNameC = state.altFocus[node.id] || chosenAltNameC || (node.alternatives && node.alternatives[0]);
+    var chainChips = buildAltChipsHtml(node.alternatives, isClosedC, chosenAltNameC, focusedAltNameC, node.cbGovernance);
     html += '<div class="card" style="padding:8px;"><h3>Decision-to-everything trace (R-D-R)</h3><div class="chain">';
     html += '<div class="link">Requirement / Criterion</div><div class="arrow">↓ constrains</div>';
     html += '<div class="link me">'+node.label+'</div><div class="arrow">↓ '+(isClosedC?"chooses":"will choose")+'</div>';
-    html += '<div class="link">'+(isClosedC?"Alternative (selected)":"Alternative (candidate — not yet selected)")+'</div><div class="arrow">↓ inherent consequence</div>';
+    html += chainChips || ('<div class="link">'+(isClosedC?"Alternative (selected)":"Alternative (candidate — not yet selected)")+'</div>');
+    html += '<div class="arrow">↓ inherent consequence</div>';
     html += '<div class="link">Derived Requirement'+(isClosedC?"":" (pending)")+'</div><div class="arrow">↓ may introduce</div>';
     html += '<div class="link">Risk → Mitigation</div>';
     html += '</div></div>';
   }
+
+  html += buildCBGovernanceHtml(node, focusedAltNameC);
 
   html += buildImpactMapHtml(node);
 
@@ -2020,7 +2070,7 @@ function renderDetail(){
   var commitBtn = document.getElementById("commitAltBtn");
   if(commitBtn){
     commitBtn.addEventListener("click", function(){
-      var alt = state.altFocus[node.id] || Object.keys(node.impactByAlt)[0];
+      var alt = state.altFocus[node.id] || commitBtn.getAttribute("data-focused-alt");
       node.chosenAlt = alt+" (chosen)";
       node.status = "closed";
       refreshActiveCanvas();
@@ -2069,6 +2119,31 @@ function resolvedChosenAltName(node, altNames){
   return hit.length ? hit[0] : null;
 }
 
+/* Shared alternative-chip renderer — used by both the Design-Time Decision
+   Plan card and the R-D-R trace chain, so picking an alternative works the
+   same way (and stays in sync) wherever it's shown. Returns null when there
+   are no real alternatives to pick from (root/overlooked placeholder), so
+   callers can fall back to their own static text. */
+function buildAltChipsHtml(alternatives, isClosed, chosenAltName, focusedAltName, cbMap){
+  if(!alternatives || !alternatives.length || alternatives[0]==="(none evaluated yet)") return null;
+  var h = '<div class="chip-row">';
+  alternatives.forEach(function(a){
+    var isThisChosen = isClosed && a===chosenAltName;
+    var cls = "chip";
+    if(isThisChosen) cls += " chosen";
+    var cbEntry = cbMap && cbMap[a];
+    var cbFlag = (cbEntry && cbEntry.applicable) ? '<span class="cb-flag" title="AI Circuit Breaker applies to this alternative">⚡ CB</span>' : '';
+    if(!isClosed){
+      cls += " alt-pick"+(a===focusedAltName?" focus":"");
+      h += '<span class="'+cls+'" data-alt-pick="'+a.replace(/"/g,"&quot;")+'">'+a+cbFlag+'</span>';
+    } else {
+      h += '<span class="'+cls+'">'+a+cbFlag+'</span>';
+    }
+  });
+  h += '</div>';
+  return h;
+}
+
 var IMPACT_CATS = [
   {key:"strategy", label:"Strategy"},
   {key:"service", label:"Service"},
@@ -2103,6 +2178,53 @@ function buildInputsHtml(node, frame){
   return h;
 }
 
+/* Explicit AI Circuit Breaker integration for the currently focused
+   alternative. Only renders when the node has authored cbGovernance data —
+   most decisions never touch autonomous AI behavior and should stay quiet.
+   When the node HAS cbGovernance data but the focused alternative isn't
+   applicable (e.g. a manual option), it still renders — explicitly stating
+   why the Circuit Breaker doesn't apply — so applicability is always a
+   visible, deliberate call rather than a silent omission. */
+function buildCBGovernanceHtml(node, focusedAltName){
+  if(!node.cbGovernance) return "";
+  var entry = focusedAltName ? node.cbGovernance[focusedAltName] : null;
+  var h = '<div class="card cb-card" style="padding:8px;"><h3>⚡ AI Circuit Breaker Integration</h3>';
+  if(!entry){
+    h += '<div class="empty-hint">Select an alternative above to see whether — and how — the AI Circuit Breaker governs it.</div></div>';
+    return h;
+  }
+  if(!entry.applicable){
+    h += '<div class="cb-not-applicable"><span class="badge" style="background:#26364a;color:var(--muted);">Not applicable</span> '+(entry.rationale||"No autonomous AI behavior is introduced by this alternative.")+'</div></div>';
+    return h;
+  }
+  h += '<div style="margin-bottom:8px;"><span class="badge" style="background:rgba(139,107,255,.16);color:var(--accent2);border:1px solid rgba(139,107,255,.4);">'+entry.tier+'</span></div>';
+
+  h += '<div class="cb-section-label">Governance Quad-Tuple (H · O · V · A)</div>';
+  h += '<div class="cb-tuple-grid">';
+  [["H","Holonic Boundary",entry.tuple.H],["O","Domain Ontology",entry.tuple.O],["V","Vector Context",entry.tuple.V],["A","Domain Agent",entry.tuple.A]].forEach(function(t){
+    h += '<div class="cb-tuple-item"><div class="cb-tuple-key">'+t[0]+'<span class="cb-tuple-key-label">'+t[1]+'</span></div><div class="cb-tuple-val">'+t[2]+'</div></div>';
+  });
+  h += '</div>';
+
+  h += '<div class="cb-section-label" style="margin-top:10px;">Trip Logic — Delta &amp; Trust Thresholds</div>';
+  h += '<div class="cb-kv"><span>Delta tolerance</span><span>'+entry.tripLogic.deltaTolerance+'</span></div>';
+  h += '<div class="cb-kv"><span>Trust metric minimum</span><span>'+entry.tripLogic.trustMinimum+'</span></div>';
+  h += '<div class="cb-kv"><span>Semantic anomaly ceiling</span><span>'+entry.tripLogic.anomalyCeiling+'</span></div>';
+  h += '<div class="cb-kv"><span>Contextual relevancy minimum</span><span>'+entry.tripLogic.criMinimum+'</span></div>';
+
+  h += '<div class="cb-section-label" style="margin-top:10px;">Three-Level Safe State</div>';
+  h += '<div class="cb-safe-state"><span class="cb-safe-lvl l1">L1</span><span>'+entry.safeStates.L1+'</span></div>';
+  h += '<div class="cb-safe-state"><span class="cb-safe-lvl l2">L2</span><span>'+entry.safeStates.L2+'</span></div>';
+  h += '<div class="cb-safe-state"><span class="cb-safe-lvl l3">L3</span><span>'+entry.safeStates.L3+'</span></div>';
+
+  h += '<div class="cb-section-label" style="margin-top:10px;">Ongoing Trust Metrology</div>';
+  h += '<div class="cb-kv-block"><b>MTBH target — </b>'+entry.mtbhTarget+'</div>';
+  h += '<div class="cb-kv-block"><b>VDC monitor — </b>'+entry.vdcMonitor+'</div>';
+
+  h += '</div>';
+  return h;
+}
+
 function buildImpactMapHtml(node){
   var h = '<div class="card" style="padding:8px;"><h3>Causal Impact Map</h3>';
   if(!node.impactByAlt){
@@ -2122,8 +2244,10 @@ function buildImpactMapHtml(node){
     var isFocus = altName===focusAlt;
     var isChosen = altName===chosenAltName;
     var safeAlt = altName.replace(/"/g,"&quot;");
+    var cbEntryS = node.cbGovernance && node.cbGovernance[altName];
+    var cbFlagS = (cbEntryS && cbEntryS.applicable) ? '<span class="cb-flag" title="AI Circuit Breaker applies to this alternative">⚡ CB</span>' : '';
     h += '<div class="alt-summary'+(isFocus?" focus":"")+'" data-alt-pick="'+safeAlt+'">';
-    h += '<div class="alt-summary-head">'+altName+(isChosen?'<span class="chosen-tag">✓ CHOSEN</span>':'')+'</div>';
+    h += '<div class="alt-summary-head">'+altName+cbFlagS+(isChosen?'<span class="chosen-tag">✓ CHOSEN</span>':'')+'</div>';
     h += '<div class="alt-summary-badges">';
     IMPACT_CATS.forEach(function(c){
       var en = byCat[c.key];
