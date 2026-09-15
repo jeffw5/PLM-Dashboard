@@ -1002,7 +1002,7 @@ var PATTERNS = {
             rationale:"No autonomous system is in the decision loop — a person performs and reviews every case end to end, so there is no AI intent to vet against a ground-truth signal. The Circuit Breaker has nothing to instrument here."
           },
           "Semi-automated with exception queue":{
-            applicable:true, tier:"Partial — deterministic rule engine, not a learned model",
+            applicable:true, tier:"Partial — deterministic rule engine, not a learned model", demoSeq:3,
             tuple:{
               H:"Authorized to auto-clear only cases that match the documented rule set; anything outside those rules routes to the exception queue automatically — no discretionary judgment is delegated.",
               O:"Eligibility rules encoded as explicit if/then criteria, version-controlled. The 'ontology' here is the rulebook itself — deterministic, not probabilistic.",
@@ -1015,7 +1015,7 @@ var PATTERNS = {
             vdcMonitor:"Exception-queue rate vs. its historical baseline, as a proxy for rule drift."
           },
           "Fully automated, human-in-the-loop review":{
-            applicable:true, tier:"Full AI Circuit Breaker — probabilistic classifier + deterministic veto",
+            applicable:true, tier:"Full AI Circuit Breaker — probabilistic classifier + deterministic veto", demoSeq:2,
             tuple:{
               H:"The classifier may process and route any case, but may not commit a decision above the defined risk/value threshold without the human reviewer's sign-off. That threshold is this decision's authority boundary.",
               O:"Case-eligibility and risk-classification rules (what counts as “straightforward” vs. “needs review”) encoded explicitly and versioned, so the Circuit Breaker has a fixed standard to check every AI assertion against — not just a vibe of what looks right.",
@@ -2220,6 +2220,15 @@ function buildCBGovernanceHtml(node, focusedAltName){
   h += '<div class="cb-section-label" style="margin-top:10px;">Ongoing Trust Metrology</div>';
   h += '<div class="cb-kv-block"><b>MTBH target — </b>'+entry.mtbhTarget+'</div>';
   h += '<div class="cb-kv-block"><b>VDC monitor — </b>'+entry.vdcMonitor+'</div>';
+
+  if(entry.demoSeq!==undefined){
+    var fromLabel = node.label+' — '+focusedAltName;
+    var consoleUrl = 'governance_console.html?from='+encodeURIComponent(fromLabel)+'&seq='+entry.demoSeq;
+    h += '<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">';
+    h += '<a class="btn small primary" style="text-decoration:none;display:inline-block;" href="'+consoleUrl+'" target="_blank" rel="noopener">Open in AI Circuit Breaker Governance Console →</a>';
+    h += '<div style="font-size:10.5px;color:var(--muted);margin-top:6px;line-height:1.5;">Opens the companion console in a new tab, already tracing an illustrative decision of this shape through L1–L5. The console runs its own example holon — wire your own agent’s CircuitBreaker output into it to trace this exact decision live.</div>';
+    h += '</div>';
+  }
 
   h += '</div>';
   return h;
