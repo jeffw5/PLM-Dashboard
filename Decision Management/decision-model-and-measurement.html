@@ -134,6 +134,20 @@
   .chip-row{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0;}
   .chip{font-size:10.5px;background:#101823;border:1px solid var(--border);color:var(--muted);padding:3px 8px;border-radius:20px;}
   .chip.chosen{background:rgba(46,204,113,.12);border-color:var(--green);color:var(--green);font-weight:700;}
+  .chip.alt-pick{cursor:pointer;transition:.15s;}
+  .chip.alt-pick:hover{border-color:var(--accent);color:var(--text);}
+  .chip.alt-pick.focus{background:rgba(73,176,255,.14);border-color:var(--accent);color:var(--accent);font-weight:700;}
+  .chip.input-link{cursor:pointer;}
+  .chip.input-link:hover{border-color:var(--accent2);color:var(--text);}
+  .alt-summary{border:1px solid var(--border);border-radius:8px;padding:8px 9px;margin-bottom:6px;cursor:pointer;transition:.15s;background:#101823;}
+  .alt-summary:hover{border-color:var(--accent2);}
+  .alt-summary.focus{border-color:var(--accent);background:rgba(73,176,255,.07);}
+  .alt-summary-head{font-size:11px;font-weight:700;color:var(--text);margin-bottom:6px;}
+  .alt-summary.focus .alt-summary-head{color:var(--accent);}
+  .alt-summary-badges{display:flex;flex-wrap:wrap;gap:4px;}
+  .alt-summary-badges .badge{margin:0;font-size:9.5px;padding:2px 7px;white-space:nowrap;}
+  .mag{font-size:9px;opacity:.85;margin-left:3px;}
+  .chosen-tag{font-size:9px;font-weight:800;color:var(--green);margin-left:5px;letter-spacing:.02em;}
   footer{flex:none;border-top:1px solid var(--border);padding:8px 20px;color:var(--muted);font-size:10.5px;display:flex;justify-content:space-between;background:#0e1520;gap:16px;}
   footer span{min-width:0;}
   .concept-svg{width:100%;height:auto;display:block;margin-top:4px;}
@@ -941,7 +955,27 @@ var PATTERNS = {
         }},
       {id:"p1.3.1", parent:"p1.3", label:"Process Design", cls:"Single", q:"How will this part of our process operate?", status:"open",
         analysisTask:"Detail step-level design once the parent Process Architecture (1.3) alternative is selected.",
-        alternatives:["Manual + checklist","Semi-automated with exception queue","Fully automated, human-in-the-loop review"]},
+        alternatives:["Manual + checklist","Semi-automated with exception queue","Fully automated, human-in-the-loop review"],
+        impactByAlt:{
+          "Manual + checklist":[
+            {cat:"strategy", target:"Time-to-market objective", dir:"up", mag:"Low", note:"Fastest to stand up — a documented checklist, no tooling build."},
+            {cat:"service", target:"Customer Onboarding Service", dir:"down", mag:"Med", note:"Turnaround tracks reviewer availability and backlog depth."},
+            {cat:"process", target:"Fulfillment throughput", dir:"down", mag:"Med", note:"Throughput is capped by reviewer headcount; no automation to absorb volume spikes."},
+            {cat:"asset", assetType:"biological", target:"Reviewer team workload", dir:"up", mag:"High", note:"Every case is touched start to finish by a person — headcount scales linearly with volume."}
+          ],
+          "Semi-automated with exception queue":[
+            {cat:"strategy", target:"Time-to-market objective", dir:"mixed", mag:"Med", note:"Building the automation rules adds lead time upfront but pays back once live."},
+            {cat:"service", target:"Customer Onboarding Service", dir:"up", mag:"Med", note:"Most customers get a near-instant decision; only edge cases wait on a person."},
+            {cat:"process", target:"Fulfillment throughput", dir:"up", mag:"Med", note:"Straightforward cases clear automatically; only exceptions queue for review."},
+            {cat:"asset", assetType:"digital", target:"Exception queue backlog", dir:"mixed", mag:"Med", note:"A new failure mode to monitor — a growing queue is a leading indicator of a rule that needs tuning."}
+          ],
+          "Fully automated, human-in-the-loop review":[
+            {cat:"strategy", target:"Time-to-market objective", dir:"down", mag:"High", note:"Highest upfront build cost — full automation plus a review checkpoint before commit."},
+            {cat:"service", target:"Customer Onboarding Service", dir:"up", mag:"High", note:"Fastest, most consistent turnaround — the review checkpoint catches outliers without slowing the common case."},
+            {cat:"process", target:"Fulfillment throughput", dir:"up", mag:"High", note:"Every case is processed automatically; the human step reviews rather than performs the work."},
+            {cat:"asset", assetType:"digital", target:"Workflow engine complexity", dir:"up", mag:"High", note:"Needs confidence scoring, routing logic, and an audit trail for what the human reviewed and why — the same grounding discipline the platform's AI Circuit Breaker pattern applies to AI-proposed claims elsewhere."}
+          ]
+        }},
       {id:"p1.3.1.1", parent:"p1.3.1", label:"Tools", cls:"Single", q:"What set of tools will we use to enable this part of our process?", status:"overlooked",
         priority:2, analysisTask:"Not yet on the trade study backlog and no owner assigned — tool choice is currently defaulting by inertia. Classic 'decision overlooked' pattern; add immediately.",
         alternatives:["(none evaluated yet)"],
@@ -1476,7 +1510,7 @@ var STEP5 = {
 /* ---------------------------------------------------------------
    STATE
 ----------------------------------------------------------------*/
-var state = { step:1, pattern:"process", scope:"isolated", frontier:"all", selected:null, view:{}, drill:{1:[],2:[],3:[],4:[],5:[]} };
+var state = { step:1, pattern:"process", scope:"isolated", frontier:"all", selected:null, view:{}, drill:{1:[],2:[],3:[],4:[],5:[]}, altFocus:{} };
 var svgNS = "http://www.w3.org/2000/svg";
 
 function el(tag, attrs, parent){
@@ -1885,6 +1919,8 @@ function renderDetail(){
   html += '<h3 style="margin:8px 0 2px;font-size:14px;">'+node.label+'</h3>';
   html += '<div class="qtext">'+(node.q||"")+'</div>';
 
+  html += buildInputsHtml(node, frame);
+
   if(node.criteria){
     html += '<div class="card" style="padding:8px;"><h3>Criteria pattern (example)</h3><ul class="crit-list">';
     node.criteria.forEach(function(c){ html += '<li>'+c+'</li>'; });
@@ -1898,16 +1934,30 @@ function renderDetail(){
   var plan = (node.cls && frame.isTree) ? planFor(frame.nodes, node) : null;
   if(plan){
     var isClosed = node.status==="closed";
+    var hasImpact = !!node.impactByAlt;
+    var chosenAltName = resolvedChosenAltName(node, plan.alternatives);
+    var focusedAltName = state.altFocus[node.id] || chosenAltName || plan.alternatives[0];
     html += '<div class="card" style="padding:8px;"><h3>Design-Time Decision Plan</h3>';
     html += '<div style="display:flex;gap:8px;margin-bottom:6px;">';
     html += '<span class="badge" style="background:#26364a;color:'+(plan.priority?'var(--amber)':'var(--muted)')+';">Priority: '+(plan.priority?("#"+plan.priority):"unranked")+'</span>';
     html += '<span class="badge" style="background:#26364a;color:var(--accent);">Phase: '+plan.targetPhase+'</span>';
     html += '</div>';
     html += '<div class="qtext" style="margin:0 0 8px;">'+plan.analysisTask+'</div>';
-    html += '<div style="font-size:11px;color:var(--muted);margin-bottom:4px;">'+(isClosed?"Committed alternative":"Candidate alternatives (not yet selected)")+'</div>';
+    html += '<div style="font-size:11px;color:var(--muted);margin-bottom:4px;">'+(isClosed?"Committed alternative":"Candidate alternatives"+(hasImpact?" — click to compare impact below":" (not yet selected)"))+'</div>';
     html += '<div class="chip-row">';
-    plan.alternatives.forEach(function(a){ html += '<span class="chip'+(isClosed?' chosen':'')+'">'+a+'</span>'; });
-    html += '</div></div>';
+    plan.alternatives.forEach(function(a){
+      var isThisChosen = isClosed && a===chosenAltName;
+      var cls = "chip";
+      if(isThisChosen) cls += " chosen";
+      var pickable = hasImpact && !isClosed;
+      if(pickable) cls += " alt-pick"+(a===focusedAltName?" focus":"");
+      html += '<span class="'+cls+'"'+(pickable?' data-alt-pick="'+a.replace(/"/g,"&quot;")+'"':'')+'>'+a+'</span>';
+    });
+    html += '</div>';
+    if(hasImpact && !isClosed){
+      html += '<button class="btn small primary" id="commitAltBtn" style="margin-top:8px;">Mark "'+focusedAltName+'" as chosen →</button>';
+    }
+    html += '</div>';
   }
 
   if(node.risks && node.risks.length){
@@ -1954,13 +2004,32 @@ function renderDetail(){
       pill.textContent = st;
       pill.addEventListener("click", (function(s){ return function(){
         node.status = s;
-        panel.querySelectorAll(".status-pill").forEach(function(p2){p2.classList.remove("active"); p2.style.background="#101823";});
-        pill.classList.add("active"); pill.style.background = STATUS_COLOR[s];
         refreshActiveCanvas();
+        renderDetail();
       };})(st));
       row.appendChild(pill);
     });
   }
+
+  panel.querySelectorAll("[data-alt-pick]").forEach(function(chip){
+    chip.addEventListener("click", function(){
+      state.altFocus[node.id] = chip.getAttribute("data-alt-pick");
+      renderDetail();
+    });
+  });
+  var commitBtn = document.getElementById("commitAltBtn");
+  if(commitBtn){
+    commitBtn.addEventListener("click", function(){
+      var alt = state.altFocus[node.id] || Object.keys(node.impactByAlt)[0];
+      node.chosenAlt = alt+" (chosen)";
+      node.status = "closed";
+      refreshActiveCanvas();
+      renderDetail();
+    });
+  }
+  panel.querySelectorAll(".input-link").forEach(function(chip){
+    chip.addEventListener("click", function(){ selectNode(state.selected.step, chip.getAttribute("data-input-id")); });
+  });
 
   document.getElementById("drillBtn").addEventListener("click", function(){
     var step = state.selected.step, id = state.selected.id;
@@ -1990,27 +2059,94 @@ function impactCategoryLabel(entry){
 }
 function impactDirArrow(dir){ return dir==="up" ? "↑" : dir==="down" ? "↓" : "↔"; }
 
+/* Alternative text is stored plainly in node.alternatives, but a closed
+   node's node.chosenAlt is that same text with " (chosen)" appended —
+   resolve back to the plain alternative string so exactly one chip/row
+   is marked chosen instead of the whole set once a decision closes. */
+function resolvedChosenAltName(node, altNames){
+  if(!node.chosenAlt) return null;
+  var hit = altNames.filter(function(a){ return node.chosenAlt.indexOf(a)===0; });
+  return hit.length ? hit[0] : null;
+}
+
+var IMPACT_CATS = [
+  {key:"strategy", label:"Strategy"},
+  {key:"service", label:"Service"},
+  {key:"process", label:"Process"},
+  {key:"asset", label:"Asset"}
+];
+
+/* Inputs to a decision: what frames it (its parent question) and what
+   upstream decisions feed it (influence edges pointing at this node).
+   Only meaningful inside a tree-shaped frame (Step 1 patterns and any
+   drilled sub-pattern) where node.cls decisions actually exist. */
+function buildInputsHtml(node, frame){
+  if(!node.cls || !frame.isTree) return "";
+  var parent = node.parent ? frame.nodes.filter(function(n){ return n.id===node.parent; })[0] : null;
+  var upstream = (frame.influences||[]).filter(function(inf){ return inf.to===node.id; });
+  if(!parent && !upstream.length) return "";
+  var h = '<div class="card" style="padding:8px;"><h3>Inputs to this decision</h3>';
+  if(parent){
+    h += '<div class="empty-hint" style="padding:0 0 4px;">Frames within</div>';
+    h += '<div class="chip-row"><span class="chip input-link" data-input-id="'+parent.id+'">'+parent.label+'</span></div>';
+  }
+  if(upstream.length){
+    h += '<div class="empty-hint" style="padding:'+(parent?'6px':'0')+' 0 4px;">Informed by</div><div class="chip-row">';
+    upstream.forEach(function(inf){
+      var src = frame.nodes.filter(function(n){ return n.id===inf.from; })[0];
+      var lbl = src ? src.label : inf.from;
+      h += '<span class="chip input-link" data-input-id="'+inf.from+'">'+lbl+' <span style="opacity:.65;">('+(inf.label||"influences")+')</span></span>';
+    });
+    h += '</div>';
+  }
+  h += '</div>';
+  return h;
+}
+
 function buildImpactMapHtml(node){
   var h = '<div class="card" style="padding:8px;"><h3>Causal Impact Map</h3>';
   if(!node.impactByAlt){
     h += '<div class="empty-hint">No causal impact data authored for this decision yet. Impact mapping links a chosen alternative to Strategy, Services, Processes and Assets (biological, digital, physical) — enough to evaluate options and optimize this decision once authored.</div></div>';
     return h;
   }
-  h += '<div class="empty-hint" style="padding-bottom:6px;">How each alternative ripples into strategy, services, processes and assets — compare before committing. Arrows are neutral (increase/decrease), not good/bad; read them against the note.</div>';
-  Object.keys(node.impactByAlt).forEach(function(altName){
-    var entries = node.impactByAlt[altName];
-    h += '<div style="margin-top:8px;border-top:1px solid var(--border);padding-top:8px;">';
-    h += '<div style="font-size:11.5px;font-weight:700;color:var(--text);margin-bottom:6px;">'+altName+'</div>';
-    entries.forEach(function(en){
-      h += '<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;">';
-      h += '<span class="badge '+impactCategoryClass(en)+'" style="flex:none;white-space:nowrap;">'+impactCategoryLabel(en)+'</span>';
-      h += '<div style="flex:1;min-width:0;">';
-      h += '<div style="font-size:11.5px;color:var(--text);"><span class="dir-ind" title="'+en.dir+'">'+impactDirArrow(en.dir)+'</span>'+en.target+' <span style="color:var(--muted);font-size:10px;">('+en.mag+' magnitude)</span></div>';
-      if(en.note) h += '<div style="font-size:11px;color:var(--muted);margin-top:2px;">'+en.note+'</div>';
-      h += '</div></div>';
+  var altNames = Object.keys(node.impactByAlt);
+  var chosenAltName = resolvedChosenAltName(node, altNames);
+  var focusAlt = state.altFocus[node.id] || chosenAltName || altNames[0];
+  if(altNames.indexOf(focusAlt)===-1) focusAlt = altNames[0];
+
+  h += '<div class="empty-hint" style="padding-bottom:4px;">How each alternative ripples into strategy, services, processes and assets. Arrows are neutral (increase/decrease), not good or bad — read the badges against the note below, compare across alternatives, and pick the trade-offs you can live with.</div>';
+
+  altNames.forEach(function(altName){
+    var byCat = {};
+    node.impactByAlt[altName].forEach(function(en){ byCat[en.cat] = en; });
+    var isFocus = altName===focusAlt;
+    var isChosen = altName===chosenAltName;
+    var safeAlt = altName.replace(/"/g,"&quot;");
+    h += '<div class="alt-summary'+(isFocus?" focus":"")+'" data-alt-pick="'+safeAlt+'">';
+    h += '<div class="alt-summary-head">'+altName+(isChosen?'<span class="chosen-tag">✓ CHOSEN</span>':'')+'</div>';
+    h += '<div class="alt-summary-badges">';
+    IMPACT_CATS.forEach(function(c){
+      var en = byCat[c.key];
+      if(!en) return;
+      h += '<span class="badge '+impactCategoryClass(en)+'"><span class="dir-ind" title="'+en.dir+'">'+impactDirArrow(en.dir)+'</span>'+c.label+' <span class="mag">'+en.mag+'</span></span>';
     });
     h += '</div>';
+    h += '</div>';
   });
+
+  var focusEntries = node.impactByAlt[focusAlt] || [];
+  h += '<div style="margin-top:10px;border-top:1px solid var(--border);padding-top:8px;">';
+  h += '<div style="font-size:11.5px;font-weight:700;color:var(--text);margin-bottom:6px;">Full breakdown — '+focusAlt+(focusAlt===chosenAltName?'<span class="chosen-tag">✓ CHOSEN</span>':'')+'</div>';
+  focusEntries.forEach(function(en){
+    h += '<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;">';
+    h += '<span class="badge '+impactCategoryClass(en)+'" style="flex:none;white-space:nowrap;">'+impactCategoryLabel(en)+'</span>';
+    h += '<div style="flex:1;min-width:0;">';
+    h += '<div style="font-size:11.5px;color:var(--text);"><span class="dir-ind" title="'+en.dir+'">'+impactDirArrow(en.dir)+'</span>'+en.target+' <span style="color:var(--muted);font-size:10px;">('+en.mag+' magnitude)</span></div>';
+    if(en.note) h += '<div style="font-size:11px;color:var(--muted);margin-top:2px;">'+en.note+'</div>';
+    h += '</div></div>';
+  });
+  h += '</div>';
+
   h += '</div>';
   return h;
 }
