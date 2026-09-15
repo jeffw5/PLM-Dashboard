@@ -289,6 +289,24 @@
   #overviewApp .ov-links-out .k{ font-family:var(--mono); font-size:10px; color:var(--muted); display:block; margin-top:4px; }
   #overviewApp .ov-cite{ font-size:11.5px; color:var(--muted); line-height:1.7; max-width:90ch; }
 
+  #overviewApp .ov-cb-table-wrap{ overflow-x:auto; border:1px solid var(--border); border-radius:10px; margin-top:8px; }
+  #overviewApp table.ov-cb-table{ width:100%; border-collapse:collapse; font-size:12.5px; min-width:760px; }
+  #overviewApp table.ov-cb-table th, #overviewApp table.ov-cb-table td{ text-align:left; padding:9px 12px; border-bottom:1px solid var(--border); vertical-align:top; }
+  #overviewApp table.ov-cb-table thead th{ font-family:var(--mono); font-size:10px; letter-spacing:.05em; text-transform:uppercase; color:var(--muted); background:var(--panel2); position:sticky; top:0; }
+  #overviewApp table.ov-cb-table tbody tr:last-child td{ border-bottom:none; }
+  #overviewApp table.ov-cb-table tbody tr:hover{ background:rgba(73,176,255,.06); }
+  #overviewApp table.ov-cb-table .scen{ font-weight:700; white-space:nowrap; }
+  #overviewApp table.ov-cb-table .node-id{ font-family:var(--mono); font-size:10.5px; color:var(--muted); display:block; margin-top:2px; }
+  #overviewApp table.ov-cb-table .tier-tag{ font-family:var(--mono); font-size:10px; color:var(--muted); }
+  #overviewApp .ov-trig{ display:inline-flex; align-items:center; gap:6px; font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.03em; padding:3px 8px; border-radius:20px; white-space:nowrap; }
+  #overviewApp .ov-trig .dot{ width:7px; height:7px; border-radius:50%; flex:none; }
+  #overviewApp .ov-trig.transmit{ color:#3ddc84; background:rgba(30,142,62,.16); } #overviewApp .ov-trig.transmit .dot{ background:#1e8e3e; }
+  #overviewApp .ov-trig.hold{ color:#ffab5e; background:rgba(232,115,10,.16); } #overviewApp .ov-trig.hold .dot{ background:#e8730a; }
+  #overviewApp .ov-trig.halt{ color:#ff8f80; background:rgba(217,48,37,.16); } #overviewApp .ov-trig.halt .dot{ background:#d93025; }
+  #overviewApp .ov-trig.lockout{ color:#fff; background:#8b0000; } #overviewApp .ov-trig.lockout .dot{ background:#fff; }
+  #overviewApp .ov-cb-not-applicable{ font-size:12.5px; color:var(--muted); margin-top:12px; padding-top:12px; border-top:1px dashed var(--border); line-height:1.7; }
+  #overviewApp .ov-cb-not-applicable b{ color:var(--muted); }
+
   @media (max-width:640px){
     #overviewApp .ov-stat-row{ flex-direction:column; }
     #overviewApp .ov-stat{ border-right:none; border-top:1px solid var(--border); padding:12px 0; }
@@ -609,7 +627,7 @@
   </section>
 
   <!-- SHEET 05 — CAUSAL LOOP -->
-  <section class="ov-sheet" id="ov-loop" style="border-bottom:none;">
+  <section class="ov-sheet" id="ov-loop">
     <div class="ov-sheet-head"><span class="ov-sheet-no">SHEET 05</span><h2>Causal Analysis → Measurement → Better Decisions</h2></div>
     <div class="ov-prose-grid">
       <div>
@@ -660,6 +678,51 @@
         </figure>
       </div>
     </div>
+  </section>
+
+  <!-- SHEET 06 — AI CIRCUIT BREAKER -->
+  <section class="ov-sheet" id="ov-circuitbreaker" style="border-bottom:none;">
+    <div class="ov-sheet-head"><span class="ov-sheet-no">SHEET 06</span><h2>Tie-In: The AI Circuit Breaker</h2></div>
+    <p class="ov-sheet-lede">The Holonic Governance node in Sheet 01 isn't a diagram-only concept — every decision node below that introduces an autonomous AI agent into its execution carries its own explicit AI Circuit Breaker (AI CB) governance record, and can hand off live into a companion Governance Console.</p>
+    <div class="ov-prose-grid">
+      <div>
+        <p>An alternative doesn't get an AI CB record just because it uses software — it gets one only when it hands a live, revisable decision to something that <i>predicts</i> rather than merely executes: a routing agent guessing at the right partner, a model scoring a customer, an entity-resolution pass guessing two records are the same person. Wherever that line is crossed, the same four-part discipline applies:</p>
+        <p><b>Governance Quad-Tuple (H·O·V·A)</b> — a Holonic boundary defining what the agent may and may not do, a Domain Ontology it's checked against, a Vector Context store of the live signal it's reasoning over, and the Domain Agent itself, all version-locked together rather than left to drift independently.</p>
+        <p><b>Delta vs. Tolerance</b> — the gap between what the agent intends and what a ground-truth signal actually supports. Below tolerance, the action proceeds. Beyond it, a three-level safe state engages: <b>L1 soft alert</b> (logged, nothing withheld), <b>L2 AI hold</b> (the action is withheld for review), <b>L3 emergency halt</b> (the action is blocked and, after a third trip in a window, the whole behavior is locked out — SOP-02).</p>
+        <p>The table maps every AI CB-governed alternative authored so far, across all six decision scenarios, to an illustrative decision already sitting in the companion console's own audit trail — so clicking through from any row shows a concrete example of that alternative's failure mode actually tripping the breaker, not just a description of it.</p>
+      </div>
+      <div class="ov-rail">
+        <div class="ov-tag">Where it lives</div>
+        <h3>Two files, one thread</h3>
+        <p>The Decision Model authors <i>which</i> alternatives are AI CB-governed and how; the Governance Console runs the live L1–L5 trace and the Morphism boundary certification for an actual agent. Open any CB-flagged alternative in the Interactive Model and its card links straight into the matching trace.</p>
+        <div class="ov-ex">Not every alternative qualifies — see the four marked "not applicable" below the table. A deterministic rule table or a human-only review step has no AI intent to check against a ground truth, so there's nothing for the breaker to instrument.</div>
+      </div>
+    </div>
+
+    <div class="ov-cb-table-wrap">
+      <table class="ov-cb-table">
+        <thead>
+          <tr><th>Scenario</th><th>Decision node</th><th>AI CB-governed alternative</th><th>Tier</th><th>Illustrative trigger</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="scen">Process</td><td>Process Design<span class="node-id">p1.3.1</span></td><td>Semi-automated with exception queue</td><td class="tier-tag">Partial — deterministic rules</td><td><span class="ov-trig hold"><span class="dot"></span>HOLD · #3</span></td></tr>
+          <tr><td class="scen">Process</td><td>Process Design<span class="node-id">p1.3.1</span></td><td>Fully automated, human-in-the-loop review</td><td class="tier-tag">Full AI Circuit Breaker</td><td><span class="ov-trig halt"><span class="dot"></span>HALT · #2</span></td></tr>
+          <tr><td class="scen">Process</td><td>Capability Interfaces<span class="node-id">p1.4</span></td><td>Shared integration bus</td><td class="tier-tag">Partial — deterministic rules</td><td><span class="ov-trig hold"><span class="dot"></span>HOLD · #3</span></td></tr>
+          <tr><td class="scen">Process</td><td>Capability Interfaces<span class="node-id">p1.4</span></td><td>Hybrid (bus + point-to-point for legacy)</td><td class="tier-tag">Full — adaptive routing agent</td><td><span class="ov-trig halt"><span class="dot"></span>HALT · #4</span></td></tr>
+          <tr><td class="scen">Data</td><td>Data Model / Schema<span class="node-id">d1.2</span></td><td>Federated schema, per-source mapping layer</td><td class="tier-tag">Partial — deterministic crosswalk</td><td><span class="ov-trig hold"><span class="dot"></span>HOLD · #3</span></td></tr>
+          <tr><td class="scen">Data</td><td>Data Model / Schema<span class="node-id">d1.2</span></td><td>Hybrid: canonical core + source-specific extensions</td><td class="tier-tag">Full — ML entity resolution</td><td><span class="ov-trig halt"><span class="dot"></span>HALT · #2</span></td></tr>
+          <tr><td class="scen">Product</td><td>Behaviors to Exploit/Control<span class="node-id">pr1.3.1</span></td><td>Exploit-first, add guardrails later</td><td class="tier-tag">Full — guardrails retrofitted</td><td><span class="ov-trig lockout"><span class="dot"></span>LOCKOUT · #8</span></td></tr>
+          <tr><td class="scen">Product</td><td>Behaviors to Exploit/Control<span class="node-id">pr1.3.1</span></td><td>Control-first, relax once validated</td><td class="tier-tag">Full — bounded from day one</td><td><span class="ov-trig hold"><span class="dot"></span>HOLD · #3</span></td></tr>
+          <tr><td class="scen">Product</td><td>Behaviors to Exploit/Control<span class="node-id">pr1.3.1</span></td><td>Split by subsystem criticality</td><td class="tier-tag">Tiered — full + monitor-only</td><td><span class="ov-trig transmit"><span class="dot"></span>TRANSMIT · #1</span></td></tr>
+          <tr><td class="scen">Analytics</td><td>Model / Method Selection<span class="node-id">a1.2</span></td><td>Gradient-boosted trees (opaque ensemble)</td><td class="tier-tag">Full — no built-in explanation</td><td><span class="ov-trig halt"><span class="dot"></span>HALT · #2</span></td></tr>
+          <tr><td class="scen">Analytics</td><td>Model / Method Selection<span class="node-id">a1.2</span></td><td>Logistic regression (interpretable)</td><td class="tier-tag">Lightweight — loose thresholds</td><td><span class="ov-trig transmit"><span class="dot"></span>TRANSMIT · #1</span></td></tr>
+          <tr><td class="scen">Analytics</td><td>Model / Method Selection<span class="node-id">a1.2</span></td><td>GBT + SHAP explainability layer</td><td class="tier-tag">Full + attribution trace</td><td><span class="ov-trig transmit"><span class="dot"></span>TRANSMIT · #0</span></td></tr>
+          <tr><td class="scen">Engineering</td><td>AI-Assisted Claim Grounding<span class="node-id">eng1.6.1</span></td><td>Flat Circuit Breaker (single-hop)</td><td class="tier-tag">Partial — no composition</td><td><span class="ov-trig hold"><span class="dot"></span>HOLD · #3</span></td></tr>
+          <tr><td class="scen">Engineering</td><td>AI-Assisted Claim Grounding<span class="node-id">eng1.6.1</span></td><td>Recursive Circuit Breaker (holonic)</td><td class="tier-tag">Full — mirrors console architecture</td><td><span class="ov-trig halt"><span class="dot"></span>HALT · #2</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="ov-cb-not-applicable"><b>Not applicable (no AI in the loop, by design):</b> Process — "Manual + checklist" (p1.3.1); Process — "Point-to-point APIs per partner" (p1.4); Data — "Canonical schema, sources conform" (d1.2); Engineering — "No automated check, manual review only" (eng1.6.1).</div>
   </section>
 
   <footer class="ov-footer">
@@ -1038,7 +1101,55 @@ var PATTERNS = {
       {id:"p1.4", parent:"p1", label:"Capability Interfaces", cls:"Multiple", q:"With what processes or other capabilities will this capability interact?", status:"atrisk",
         priority:4, analysisTask:"Two interface partners have diverging expectations — needs a cross-domain alignment meeting before this can close.",
         alternatives:["Point-to-point APIs per partner","Shared integration bus","Hybrid (bus + point-to-point for legacy)"],
-        risks:[{risk:"Interface partners build to diverging assumptions", impact:"Integration fails at UAT, costing a full sprint to reconcile.", likelihood:"Med", severity:"High"}]},
+        risks:[{risk:"Interface partners build to diverging assumptions", impact:"Integration fails at UAT, costing a full sprint to reconcile.", likelihood:"Med", severity:"High"}],
+        cbGovernance:{
+          "Point-to-point APIs per partner":{
+            applicable:false,
+            rationale:"Each integration is a fixed, individually-coded contract — there is no adaptive routing decision in the loop, so there is no AI intent to check against a ground-truth outcome."
+          },
+          "Shared integration bus":{
+            applicable:true, tier:"Partial — deterministic routing/queueing rules, not a learned model", demoSeq:3,
+            tuple:{
+              H:"The bus may queue, prioritize and route any message matching a configured contract, but may not silently drop, reorder past its SLA window, or route a message to a partner it wasn't addressed to.",
+              O:"Partner contracts, message schemas and routing/priority rules already governed by Capability Interfaces (1.4) and Interface Concept (1.4.1).",
+              V:"Live queue depth and per-partner SLA history feeding the routing rules.",
+              A:"The bus's routing/prioritization engine — deterministic rule evaluation, not a trained model."
+            },
+            tripLogic:{
+              deltaTolerance:"N/A — rules either match a configured contract or they don't; there is no confidence score to threshold.",
+              trustMinimum:"—", anomalyCeiling:"—", criMinimum:"—"
+            },
+            safeStates:{
+              L1:"Queue depth or SLA-miss rate trending up on a partner lane — flagged for the integration owner, no action taken automatically.",
+              L2:"Not applicable at this tier — there is no probabilistic assertion to hold.",
+              L3:"Disable auto-routing for the affected partner lane; fail over to the point-to-point contract until the rule set is corrected."
+            },
+            mtbhTarget:"Not applicable — no probabilistic assertions to fail.",
+            vdcMonitor:"Per-partner SLA-miss rate vs. its historical baseline, as a proxy for routing-rule drift."
+          },
+          "Hybrid (bus + point-to-point for legacy)":{
+            applicable:true, tier:"Full AI Circuit Breaker — adaptive load-balancing/routing agent, deterministic veto on legacy lanes", demoSeq:4,
+            tuple:{
+              H:"The routing agent may dynamically rebalance traffic across bus-connected partners under live load, but may never reroute a legacy point-to-point partner's traffic onto the bus without an explicit, versioned migration record.",
+              O:"The same partner-contract and schema ontology as the bus tier, extended with an explicit legacy/bus boundary tag per partner.",
+              V:"Live traffic volumes and per-partner capacity ceilings, plus the historical distribution of safe reroute magnitudes.",
+              A:"The adaptive routing/load-balancing agent — a learned model over traffic patterns, not a fixed rule table."
+            },
+            tripLogic:{
+              deltaTolerance:"Proposed reroute volume vs. the receiving partner's validated capacity ceiling, beyond a calibrated margin.",
+              trustMinimum:"0.65 — below this, an autonomous reroute is withheld and queued for a human routing decision.",
+              anomalyCeiling:"0.40 — above this, the proposed reroute is flagged as anomalous relative to this lane's historical pattern.",
+              criMinimum:"0.60 — the floor for how well-grounded the reroute is in the current live capacity signal, not a stale one."
+            },
+            safeStates:{
+              L1:"Soft alert — reroute proposed within tolerance but trending toward the ceiling; logged for the integration owner.",
+              L2:"AI hold — reroute volume or destination confidence outside tolerance; held for automatic re-evaluation on the next cycle.",
+              L3:"Emergency halt — reroute would exceed a legacy partner's contracted capacity or cross the bus/legacy boundary; routing reverts to the last known-good static table and pages the on-call integration owner."
+            },
+            mtbhTarget:"Track and trend upward over time as the agent's routing history accumulates without a capacity-ceiling breach.",
+            vdcMonitor:"Reroute-magnitude and destination-confidence drift vs. the validated baseline distribution for each partner lane."
+          }
+        }},
       {id:"p1.4.1", parent:"p1.4", label:"Interface Concept", cls:"Single", q:"How will these capabilities interact with each other? How will the interface be implemented?", status:"open",
         analysisTask:"Depends on Capability Interfaces (1.4) resolving first.",
         alternatives:["REST/JSON","Event-driven (pub/sub)","File-based batch"]},
@@ -1136,6 +1247,74 @@ var PATTERNS = {
             {cat:"process", target:"Program Phase Integration (see 1.7)", dir:"mixed", mag:"Med", note:"Two verification tracks running in parallel adds coordination overhead."},
             {cat:"asset", assetType:"digital", target:"Traceability graph (see 1.6)", dir:"up", mag:"Med", note:"Needs a criticality tag per subsystem to route review correctly."}
           ]
+        },
+        cbGovernance:{
+          "Exploit-first, add guardrails later":{
+            applicable:true, tier:"Full AI Circuit Breaker — retrofitted onto an already-deployed autonomous behavior", demoSeq:8,
+            tuple:{
+              H:"The field unit may exploit any behavior demonstrated safe in bench testing, but guardrails bounding it in the field are added after deployment, not before.",
+              O:"The bench-validated behavior envelope, extended in place as guardrails are retrofitted — an ontology that is still catching up to what's already shipped.",
+              V:"Live field telemetry from units already exploiting the behavior, with no pre-deployment safe-envelope baseline to compare against.",
+              A:"The onboard behavior-exploitation controller — acting first, being bounded second."
+            },
+            tripLogic:{
+              deltaTolerance:"Observed field behavior vs. the bench-validated envelope, evaluated retroactively as each guardrail lands.",
+              trustMinimum:"0.65, rising in practice as guardrails are added — expect more trips early than the other two alternatives.",
+              anomalyCeiling:"0.40 — same nominal ceiling, but reached more often before guardrails catch up.",
+              criMinimum:"0.60 — harder to hold pre-guardrail, since the 'ground truth' envelope is itself incomplete."
+            },
+            safeStates:{
+              L1:"Soft alert — field behavior outside the (incomplete) envelope; logged, guardrail backlog re-prioritized.",
+              L2:"AI hold — behavior outside tolerance and a guardrail for this case doesn't exist yet; the unit reverts to its last certified-safe mode.",
+              L3:"Emergency halt — three holds in a rolling window trip a lockout for that behavior fleet-wide until a guardrail ships and is validated (SOP-02 triple-trip)."
+            },
+            mtbhTarget:"Expected to start low and climb only as the guardrail backlog is worked down — this alternative accepts a lower early MTBH in exchange for speed.",
+            vdcMonitor:"Rate of newly-discovered out-of-envelope behaviors per fielded unit, trending down as guardrails land."
+          },
+          "Control-first, relax once validated":{
+            applicable:true, tier:"Full AI Circuit Breaker — bounded from first deployment, envelope widened only after validation", demoSeq:3,
+            tuple:{
+              H:"The field unit may only exploit behavior inside the pre-validated envelope; widening the envelope requires a new validation pass, not a live override.",
+              O:"The bench-validated behavior envelope, versioned — each widening is a new, reviewed ontology version.",
+              V:"Live field telemetry compared against the currently-active, already-validated envelope version.",
+              A:"The onboard behavior-exploitation controller, bounded to the active envelope version."
+            },
+            tripLogic:{
+              deltaTolerance:"Observed field behavior vs. the currently-active validated envelope — tighter than the exploit-first alternative by construction.",
+              trustMinimum:"0.70 — a higher floor, since the envelope itself is pre-validated rather than caught up after the fact.",
+              anomalyCeiling:"0.35",
+              criMinimum:"0.65"
+            },
+            safeStates:{
+              L1:"Soft alert — behavior trending toward the edge of the active envelope; logged for the next validation cycle's prioritization.",
+              L2:"AI hold — behavior at the envelope boundary; unit holds current state rather than proceeding, pending a scheduled validation check.",
+              L3:"Emergency halt — behavior outside the active envelope entirely; unit reverts to certified-safe mode and the event is queued for the next envelope-widening review."
+            },
+            mtbhTarget:"Expected to start higher than the exploit-first alternative and climb more slowly, since widenings are deliberate and infrequent.",
+            vdcMonitor:"Envelope-boundary approach rate vs. its historical baseline, as a leading indicator for when the next widening review is due."
+          },
+          "Split by subsystem criticality":{
+            applicable:true, tier:"Tiered — full Circuit Breaker on high-criticality subsystems, lightweight monitor-only on low-criticality ones", demoSeq:1,
+            tuple:{
+              H:"A high-criticality subsystem may only exploit behavior inside its validated envelope (as in Control-first); a low-criticality subsystem may exploit more freely under monitoring alone.",
+              O:"A criticality tag per subsystem (see Traceability graph, 1.6) routes each one to the matching governance tier.",
+              V:"Live telemetry scoped per subsystem, compared against that subsystem's own tier-appropriate baseline.",
+              A:"Two controllers: a bounded exploitation controller for high-criticality subsystems, a monitoring-only observer for low-criticality ones."
+            },
+            tripLogic:{
+              deltaTolerance:"High-criticality: same as Control-first. Low-criticality: monitored but not gated — deltas are logged, not tripped on.",
+              trustMinimum:"0.70 for high-criticality subsystems; not enforced as a gate for low-criticality ones.",
+              anomalyCeiling:"0.35 for high-criticality; logged only for low-criticality.",
+              criMinimum:"0.65 for high-criticality; logged only for low-criticality."
+            },
+            safeStates:{
+              L1:"Soft alert on either tier — for high-criticality it's a leading indicator; for low-criticality it's the only signal generated.",
+              L2:"AI hold applies to high-criticality subsystems only; low-criticality subsystems are never held, only flagged.",
+              L3:"Emergency halt applies to high-criticality subsystems only — a low-criticality subsystem's worst case is a flagged anomaly, not a halt, by design."
+            },
+            mtbhTarget:"Tracked and targeted per tier — high-criticality subsystems held to the same target as Control-first; low-criticality subsystems tracked for visibility, not gated.",
+            vdcMonitor:"Per-subsystem drift vs. its own tier-appropriate baseline, so a low-criticality subsystem's noisier behavior never masks a high-criticality subsystem's drift."
+          }
         }},
       {id:"pr1.4", parent:"pr1", label:"Solution Architecture", cls:"Multi-part", q:"What is the logical & physical architecture of the solution?", status:"open"},
       {id:"pr1.4.1", parent:"pr1.4", label:"Function X Technology", cls:"Single", q:"What technology realizes function X?", status:"open"},
@@ -1182,6 +1361,54 @@ var PATTERNS = {
             {cat:"asset", assetType:"digital", target:"Data pipeline complexity", dir:"mixed", mag:"Med", note:"Two conformance paths instead of one, but each is narrower in scope."},
             {cat:"service", target:"Governance & Stewardship (see 1.4)", dir:"up", mag:"Med", note:"Clear boundary between what's governed centrally vs. per-source."}
           ]
+        },
+        cbGovernance:{
+          "Canonical schema, sources conform":{
+            applicable:false,
+            rationale:"Conformance is negotiated and enforced upstream, by agreement between source-system teams — there is no autonomous mapping decision at the schema boundary for the Circuit Breaker to instrument."
+          },
+          "Federated schema, per-source mapping layer":{
+            applicable:true, tier:"Partial — deterministic per-source crosswalk, not a learned model", demoSeq:3,
+            tuple:{
+              H:"The mapping layer may translate any source's fields into the federated view per its configured crosswalk, but may not invent a mapping for a field it has no crosswalk entry for.",
+              O:"The per-source crosswalk tables and the entity/field definitions they map into, governed by Governance & Stewardship (1.4).",
+              V:"Live source-record samples plus the crosswalk's own change history.",
+              A:"The crosswalk translation engine — deterministic lookup, not a trained model."
+            },
+            tripLogic:{
+              deltaTolerance:"N/A — a field either has a crosswalk entry or it doesn't; there is no confidence score to threshold.",
+              trustMinimum:"—", anomalyCeiling:"—", criMinimum:"—"
+            },
+            safeStates:{
+              L1:"Unmapped-field rate for a source trending up — flagged for the data steward, no action taken automatically.",
+              L2:"Not applicable at this tier.",
+              L3:"Quarantine the source's un-crosswalked records from the federated view until a steward adds the missing mapping."
+            },
+            mtbhTarget:"Not applicable — no probabilistic assertions to fail.",
+            vdcMonitor:"Unmapped-field rate vs. its historical baseline, as a proxy for source-schema drift."
+          },
+          "Hybrid: canonical core + source-specific extensions":{
+            applicable:true, tier:"Full AI Circuit Breaker — ML-based entity resolution on extension fields, deterministic veto on the canonical core", demoSeq:2,
+            tuple:{
+              H:"The entity-resolution model may propose merges or links between extension-field records, but may never alter or merge a canonical-core field — those stay under the deterministic crosswalk.",
+              O:"The canonical core schema plus each source's extension-field ontology, boundary explicitly tagged.",
+              V:"Live candidate-record pairs plus the historical distribution of validated merge decisions.",
+              A:"The entity-resolution / record-linkage model — a learned similarity model, not a fixed rule table."
+            },
+            tripLogic:{
+              deltaTolerance:"Proposed merge confidence vs. the calibrated similarity threshold for this record type.",
+              trustMinimum:"0.65 — below this, an autonomous merge is withheld and queued for a steward's review.",
+              anomalyCeiling:"0.40 — above this, the proposed merge is flagged as anomalous relative to this entity type's historical pattern.",
+              criMinimum:"0.60 — the floor for how well-grounded the merge is in the actual record content, not a spurious correlation."
+            },
+            safeStates:{
+              L1:"Soft alert — merge confidence within tolerance but trending down; logged for the data steward.",
+              L2:"AI hold — merge confidence outside tolerance; the candidate pair is held, unmerged, for steward review.",
+              L3:"Emergency halt — a proposed merge would touch a canonical-core-linked identity; auto-merge is disabled for the entity type and every pending merge in the queue is routed to manual review."
+            },
+            mtbhTarget:"Track and trend upward over time as the model's merge history accumulates without a false-merge correction.",
+            vdcMonitor:"Merge-confidence and steward-override-rate drift vs. the validated baseline, per entity type."
+          }
         }},
       {id:"d1.3", parent:"d1", label:"Quality Rules", cls:"Multiple", q:"What quality/validation rules apply?", status:"open"},
       {id:"d1.4", parent:"d1", label:"Governance & Stewardship", cls:"Multi-part", q:"Who classifies, owns and grants access to this data?", status:"overlooked",
@@ -1205,7 +1432,74 @@ var PATTERNS = {
       {id:"a1.2", parent:"a1", label:"Model / Method Selection", cls:"Multi-part", q:"What modeling technique(s) will be used?", status:"atrisk",
         priority:1, analysisTask:"Interpretability requirement (from Compliance) conflicts with the accuracy gains of the leading candidate model — needs a criteria trade-off decision first.",
         alternatives:["Gradient-boosted trees (higher accuracy, lower interpretability)","Logistic regression (lower accuracy, high interpretability)","GBT + SHAP explainability layer"],
-        risks:[{risk:"Interpretability vs. accuracy trade-off undecided", impact:"A high-accuracy model gets shelved post-hoc because compliance can't explain its decisions.", likelihood:"Med", severity:"Med"}]},
+        risks:[{risk:"Interpretability vs. accuracy trade-off undecided", impact:"A high-accuracy model gets shelved post-hoc because compliance can't explain its decisions.", likelihood:"Med", severity:"Med"}],
+        cbGovernance:{
+          "Logistic regression (lower accuracy, high interpretability)":{
+            applicable:true, tier:"Lightweight — coefficients are auditable by inspection; Circuit Breaker present but thresholds are loose", demoSeq:1,
+            tuple:{
+              H:"The model may score any customer in the training population's feature space, but may not score on a feature combination outside the range it was fit on without a flag.",
+              O:"The churn-scoring feature schema and its documented coefficient signs/magnitudes, reviewable by Compliance directly.",
+              V:"Live customer feature vectors plus the fitted coefficient table.",
+              A:"The logistic regression scorer — a fully transparent linear model."
+            },
+            tripLogic:{
+              deltaTolerance:"Predicted-vs-actual churn delta beyond a wide, low-stakes threshold — loose because the model's own coefficients are already auditable.",
+              trustMinimum:"0.55 — a lower floor than the opaque alternatives, since interpretability substitutes for some of what trust metrology would otherwise carry.",
+              anomalyCeiling:"0.45",
+              criMinimum:"0.55"
+            },
+            safeStates:{
+              L1:"Soft alert — a scored customer's features fall outside the fitted range; logged for the model owner.",
+              L2:"AI hold — coefficient-implied score conflicts with a hard business rule (e.g. a customer already in an active save campaign); scoring held for that record.",
+              L3:"Emergency halt — coefficient drift detected against the validated fit (a retrain artifact mismatch); scoring paused pending re-validation."
+            },
+            mtbhTarget:"High and stable — the model's transparency makes most disagreements explainable rather than 'hallucinated,' so this is the easiest alternative to keep trip-free.",
+            vdcMonitor:"Coefficient stability release-over-release, since any live drift can only come from a retrain, not from the model 'changing its mind.'"
+          },
+          "Gradient-boosted trees (higher accuracy, lower interpretability)":{
+            applicable:true, tier:"Full AI Circuit Breaker — opaque ensemble, no built-in explanation", demoSeq:2,
+            tuple:{
+              H:"The model may score any customer in-distribution, but a score may not drive an automated outreach action above the defined risk/value threshold without review — the same boundary the ensemble's own opacity makes necessary.",
+              O:"The churn feature schema plus the outreach-action eligibility rules the score feeds into.",
+              V:"Live customer feature vectors plus the historical score-vs-outcome distribution used to calibrate trust.",
+              A:"The gradient-boosted ensemble — a high-capacity learned model with no native explanation."
+            },
+            tripLogic:{
+              deltaTolerance:"Predicted-vs-actual churn delta beyond the calibrated threshold, tighter than the logistic-regression alternative because there's no coefficient inspection to fall back on.",
+              trustMinimum:"0.65 — below this, autonomous outreach action is withheld.",
+              anomalyCeiling:"0.40 — above this, the score is flagged as anomalous relative to this segment's historical pattern.",
+              criMinimum:"0.60 — the floor for how well-grounded the score is in current features, not a stale training artifact."
+            },
+            safeStates:{
+              L1:"Soft alert — score in an unusual region of feature space; logged, no action withheld yet.",
+              L2:"AI hold — score outside tolerance; the recommended outreach action is withheld pending review.",
+              L3:"Emergency halt — a scored action would materially conflict with known account facts (e.g. recommending a retention offer to an account already cancelled); scoring for that segment is paused."
+            },
+            mtbhTarget:"Track and trend upward over time — this is the alternative most likely to need the target raised, since opacity is exactly what makes an ungrounded score hard to catch by inspection.",
+            vdcMonitor:"Score-distribution and outreach-acceptance-rate drift vs. the validated baseline, watched more closely than for the interpretable alternative."
+          },
+          "GBT + SHAP explainability layer":{
+            applicable:true, tier:"Full AI Circuit Breaker + per-prediction explanation trace — highest CRI/attribution grounding", demoSeq:0,
+            tuple:{
+              H:"Same action boundary as the plain GBT alternative, but no score may drive an automated action without its SHAP attribution trace attached for review.",
+              O:"The churn feature schema, outreach-eligibility rules, and now an explicit per-feature attribution schema alongside the score.",
+              V:"Live feature vectors, the score, and the SHAP attribution vector for that specific prediction.",
+              A:"The gradient-boosted ensemble plus its SHAP explainer — the model and its own accountability layer, deployed together."
+            },
+            tripLogic:{
+              deltaTolerance:"Same calibrated threshold as plain GBT, but now cross-checked against whether the attribution trace itself makes sense (e.g. a top feature with no plausible causal link to churn).",
+              trustMinimum:"0.65", anomalyCeiling:"0.40",
+              criMinimum:"0.70 — higher than plain GBT, since the attribution trace gives an independent signal for how well-grounded the score actually is."
+            },
+            safeStates:{
+              L1:"Soft alert — attribution trace cites a low-plausibility feature as dominant; logged for the model owner even if the score itself is in range.",
+              L2:"AI hold — score outside tolerance or attribution trace fails a plausibility check; outreach action withheld.",
+              L3:"Emergency halt — attribution trace is missing, malformed, or contradicts the score outright; scoring paused pending a pipeline check."
+            },
+            mtbhTarget:"Highest target of the three alternatives — the attribution trace is designed to catch the same class of ungrounded confident score the plain GBT alternative would otherwise miss.",
+            vdcMonitor:"Attribution-pattern drift per segment, in addition to score and acceptance-rate drift — a second, independent channel for catching value drift early."
+          }
+        }},
       {id:"a1.3", parent:"a1", label:"Data Requirements", cls:"Multiple", q:"What data assets and features are required?", status:"open"},
       {id:"a1.4", parent:"a1", label:"Analytics Platform", cls:"Multi-part", q:"What platform trains, serves and monitors the model?", status:"open"},
       {id:"a1.5", parent:"a1", label:"Output & Visualization", cls:"Multiple", q:"How are outputs presented and consumed?", status:"overlooked",
@@ -1258,7 +1552,54 @@ var PATTERNS = {
       {id:"eng1.6.1", parent:"eng1.6", label:"AI-Assisted Claim Grounding", cls:"Single", q:"When an AI agent proposes or summarizes a decision, how is its claim checked against the graph before anyone acts on it?", status:"open",
         priority:6, analysisTask:"The Circuit Breaker pattern (flat, single-hop check, tracked via MTBH — Mean Time Between Hallucinations) is designed but not yet wired into the agents drafting trade-study memos.",
         alternatives:["Flat Circuit Breaker (single-hop check)","Recursive Circuit Breaker (holonic, cross-domain check — see 1.8)","No automated check (manual review only)"],
-        risks:[{risk:"AI-drafted trade-study claims ship without a grounding check", impact:"An ungrounded claim about surrogate accuracy gets treated as fact in a go/no-go review.", likelihood:"Med", severity:"High"}]},
+        risks:[{risk:"AI-drafted trade-study claims ship without a grounding check", impact:"An ungrounded claim about surrogate accuracy gets treated as fact in a go/no-go review.", likelihood:"Med", severity:"High"}],
+        cbGovernance:{
+          "No automated check (manual review only)":{
+            applicable:false,
+            rationale:"This alternative is the absence of a Circuit Breaker by definition — every AI-drafted claim goes straight to a human reviewer with nothing automated in between. There's no autonomous assertion for the framework to instrument; the manual review step is itself the entire safeguard, for better or worse."
+          },
+          "Flat Circuit Breaker (single-hop check)":{
+            applicable:true, tier:"Partial — single-boundary check, no cross-domain composition", demoSeq:3,
+            tuple:{
+              H:"An agent's claim may be checked against the one knowledge-graph boundary it most directly touches, but the check stops there — it does not follow the claim across a second, dependent boundary.",
+              O:"The five-node-type traceability schema (1.6), queried at a single hop from the claim's stated source.",
+              V:"The graph's current state at that one boundary, plus the claim's stated provenance.",
+              A:"The single-hop grounding checker — a flat, non-recursive circuit breaker."
+            },
+            tripLogic:{
+              deltaTolerance:"Claim-vs-graph delta at the one checked boundary, beyond a calibrated threshold.",
+              trustMinimum:"0.65", anomalyCeiling:"0.40", criMinimum:"0.60"
+            },
+            safeStates:{
+              L1:"Soft alert — claim grounds at the checked boundary but cites a stale graph version; logged for the memo author.",
+              L2:"AI hold — claim doesn't ground at the checked boundary; memo section held pending manual grounding.",
+              L3:"Emergency halt — repeated ungrounded claims from the same agent trip a review of everything it's drafted this sprint."
+            },
+            mtbhTarget:"Track and trend upward, with the caveat this metric can look better than it should: a claim that's wrong two boundaries away from the one checked still passes here — the same composed-vs-naive-average gap this console's own Morphism Certification tracks (see the Composition Theorem in the Explorer tab).",
+            vdcMonitor:"Single-hop grounding-failure rate vs. its historical baseline — blind to drift that only shows up once claims are traced further."
+          },
+          "Recursive Circuit Breaker (holonic, cross-domain check — see 1.8)":{
+            applicable:true, tier:"Full AI Circuit Breaker — recursive/holonic, mirrors this console's own five-layer + boundary-composition architecture", demoSeq:2,
+            tuple:{
+              H:"An agent's claim is followed recursively across every boundary it depends on, not just the first one — it may not be treated as grounded until every hop in its dependency chain checks out.",
+              O:"The full five-node-type traceability schema plus the domain-holon boundaries from 1.8.1, so a cross-domain claim is checked in each domain it touches.",
+              V:"The graph's current state across every boundary in the claim's dependency chain, plus each boundary's own certification history.",
+              A:"The recursive grounding checker — composes per-boundary checks the way this console composes B1→B2→B3 into a fidelity score, catching hidden loss no single hop would."
+            },
+            tripLogic:{
+              deltaTolerance:"Composed claim-vs-graph delta across the full dependency chain, tighter in practice than any single hop's threshold because composition amplifies small per-hop losses.",
+              trustMinimum:"0.65", anomalyCeiling:"0.40",
+              criMinimum:"0.60, evaluated at every hop — a claim is only as grounded as its weakest boundary."
+            },
+            safeStates:{
+              L1:"Soft alert — one boundary in the chain is near its tolerance even though the composed result still passes; logged as an early-warning on that boundary.",
+              L2:"AI hold — the composed chain fails even though every individual hop looked acceptable in isolation; memo section held for a full trace review.",
+              L3:"Emergency halt — a chain fails badly enough to suggest a compromised or drifted boundary; that boundary's certification is suspended pending re-validation (mirrors this console's own boundary decertification path)."
+            },
+            mtbhTarget:"The most meaningful of the three alternatives to track, since it's the only one checking the same composed path a real cross-domain claim actually travels.",
+            vdcMonitor:"Composed-fidelity drift chain-wide, plus per-boundary drift — the two-level view this console's own Morphism tab uses."
+          }
+        }},
       {id:"eng1.7", parent:"eng1", label:"Program Phase Integration", cls:"Multi-part", q:"How does this architecture operate across Concept, Preliminary Design, Detailed Design, Verification and Operate & Sustain?", status:"open",
         analysisTask:"The first four phases have an owning gate review; Operate & Sustain — the run-time phase — does not yet have one defined.",
         alternatives:["Extend the existing gate-review cadence into Operate & Sustain","Define a new continuous-monitoring gate for Operate & Sustain","No formal gate at run-time (rely on alerting only)"]},
@@ -2524,8 +2865,8 @@ updateGogDomainLabel();
       body:"Before an alternative is eligible for selection, it passes three gates in fixed order: Planet, People, Profit. Profit is optimized only across alternatives that already cleared the first two — it never buys back an earlier failure. See Sheet 04.",
       ex:"Lexicographic, not weighted — a cheaper alternative that degrades a planetary boundary does not advance." },
     holonic: { tag:"Governance", title:"Holonic Governance & Circuit Breaker", tier:"Row 1 — governs everything below it",
-      body:"Once multiple automated agents read and write to the same decision graph concurrently, one shared model becomes a single point of failure. Each domain is bounded into its own local ontology; a Circuit Breaker checks any AI-proposed claim against the bounded graph closest to it before anyone acts on it.",
-      ex:"Tracked via Mean Time Between Hallucinations (MTBH) — a real reliability metric for agent-proposed claims." },
+      body:"Once multiple automated agents read and write to the same decision graph concurrently, one shared model becomes a single point of failure. Each domain is bounded into its own local ontology; a Circuit Breaker checks any AI-proposed claim against the bounded graph closest to it before anyone acts on it. This isn't abstract here — 14 specific alternatives across all five decision scenarios are already tagged with a full AI CB governance record (H·O·V·A tuple, delta/tolerance, L1–L3 safe states) and link into a live companion console.",
+      ex:"Tracked via Mean Time Between Hallucinations (MTBH) — a real reliability metric for agent-proposed claims. See Sheet 06 for the full scenario × node table." },
     dbs: { tag:"Core engine", title:"Decision Breakdown Structure (DBS)", tier:"Row 2 — the decomposition engine",
       body:"Every decision — from a top-level concept down to a single tool choice — is a node with a class (Single / Multiple / Multi-part), a governance status (overlooked, open, at-risk, closed), and a framing question. Any node opens into its own DBS, recursively, to whatever depth the decision warrants.",
       ex:"e.g. “Choose Fix” opens into candidate-fix generation, selection criteria, and a rollback trigger." },
