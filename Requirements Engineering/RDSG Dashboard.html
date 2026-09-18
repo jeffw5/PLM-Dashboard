@@ -3,162 +3,324 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>RE Gateway · End-to-End Flow, Deliverables & Social Systems Engineering</title>
+<title>RE Gateway</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&display=swap');
 :root{
   --navy:#1B3A6B;--blue:#1F6FBF;--teal:#0A6E6E;--purple:#534AB7;
   --amber:#C55A11;--green:#375623;--red:#C00000;
-  --bg:#0F1B2D;--bg2:#162033;--bg3:#1D2B42;--border:#2A3F5F;
+  --bg:#0F1B2D;--bg2:#162033;--bg3:#1D2B42;--border:#2A3F5F;--border-soft:rgba(42,63,95,.5);
   --f-rdsg:#1F6FBF;--f-stamp:#C55A11;--f-zone6:#E07020;--f-incose:#0A9A9A;--f-iso:#7A6FE0;--f-sse:#2E9E6B;
   --rv-planet:#1F8A6E;--rv-people:#B03A5B;--rv-profit:#B8862E;
+
+  --body-text:#E2ECF8;
+  --text-1:#FFFFFF;--text-2:#C3D8EF;--text-3:#6E90B2;--text-4:#3D5C80;--text-node:#D0E4F8;
+  --badge-navy-bg:rgba(27,58,107,.7);--badge-navy-text:#8BAFD4;--badge-navy-border:#2A4A7A;
+  --amber-text:#D4874A;--amber-strong:#F5A165;--amber-bg:rgba(197,90,17,.1);--amber-border:rgba(197,90,17,.25);
+  --sse-text:#9BC9AE;--sse-tag-text:#6FE0AB;--sse-tag-bg:rgba(46,158,107,.22);
+  --rv-gold:#C9A96A;--rv-gold-strong:#E0BE7E;--rvtag-bg:rgba(184,134,46,.22);--rvtag-text:#E0BE7E;
+
+  --fc-rdsg-t:#7BB8E8;--fc-rdsg-bg:rgba(31,111,191,.18);--fc-rdsg-b:#2A5A9A;--fc-rdsg-p:rgba(31,111,191,.25);
+  --fc-stamp-t:#F5A165;--fc-stamp-bg:rgba(197,90,17,.18);--fc-stamp-b:#8B4020;--fc-stamp-p:rgba(197,90,17,.25);
+  --fc-zone6-t:#FFAA60;--fc-zone6-bg:rgba(224,112,32,.2);--fc-zone6-b:#9A4010;--fc-zone6-p:rgba(224,112,32,.25);
+  --fc-incose-t:#5ADADA;--fc-incose-bg:rgba(10,154,154,.2);--fc-incose-b:#0A6A6A;--fc-incose-p:rgba(10,154,154,.25);
+  --fc-iso-t:#C0BBFF;--fc-iso-bg:rgba(122,111,224,.2);--fc-iso-b:#5A50B0;--fc-iso-p:rgba(122,111,224,.25);
+  --fc-sse-t:#6FE0AB;--fc-sse-bg:rgba(46,158,107,.2);--fc-sse-b:#1F7A50;--fc-sse-p:rgba(46,158,107,.25);
+
+  --appbar-h:52px;
+  --card-shadow:0 10px 30px rgba(0,0,0,.25);
 }
+:root[data-mode="light"]{
+  --bg:#F4F7FB;--bg2:#FFFFFF;--bg3:#EBF1F8;--border:#D7E1EC;--border-soft:rgba(120,145,175,.35);
+
+  --body-text:#1B2A3F;
+  --text-1:#0F1B2D;--text-2:#233A52;--text-3:#54708A;--text-4:#93A7BC;--text-node:#16283D;
+  --badge-navy-bg:rgba(31,111,191,.1);--badge-navy-text:#1B3A6B;--badge-navy-border:#9CC0E8;
+  --amber-text:#8B4A14;--amber-strong:#B85A16;--amber-bg:rgba(197,90,17,.08);--amber-border:rgba(197,90,17,.32);
+  --sse-text:#1F6B4A;--sse-tag-text:#146B44;--sse-tag-bg:rgba(46,158,107,.14);
+  --rv-gold:#8A6A2A;--rv-gold-strong:#6B4F1A;--rvtag-bg:rgba(184,134,46,.14);--rvtag-text:#6B4F1A;
+
+  --fc-rdsg-t:#14528F;--fc-rdsg-bg:rgba(31,111,191,.1);--fc-rdsg-b:#6FA8DE;--fc-rdsg-p:rgba(31,111,191,.16);
+  --fc-stamp-t:#9A4A12;--fc-stamp-bg:rgba(197,90,17,.1);--fc-stamp-b:#D99A66;--fc-stamp-p:rgba(197,90,17,.16);
+  --fc-zone6-t:#A34E0E;--fc-zone6-bg:rgba(224,112,32,.1);--fc-zone6-b:#E0A570;--fc-zone6-p:rgba(224,112,32,.16);
+  --fc-incose-t:#0A6A6A;--fc-incose-bg:rgba(10,154,154,.1);--fc-incose-b:#5EC2C2;--fc-incose-p:rgba(10,154,154,.16);
+  --fc-iso-t:#4A3FA0;--fc-iso-bg:rgba(122,111,224,.1);--fc-iso-b:#9C92E0;--fc-iso-p:rgba(122,111,224,.16);
+  --fc-sse-t:#146B44;--fc-sse-bg:rgba(46,158,107,.1);--fc-sse-b:#6FCB9E;--fc-sse-p:rgba(46,158,107,.16);
+
+  --card-shadow:0 10px 30px rgba(27,58,107,.08);
+}
+
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:#E2ECF8;min-height:100vh;overflow-x:hidden;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--body-text);min-height:100vh;overflow-x:hidden;transition:background .2s,color .2s;}
+h1,h2,h3{font-family:'DM Serif Display',serif;color:var(--text-1);text-wrap:balance;font-weight:400;}
+a{color:inherit;}
+.view[hidden]{display:none !important;}
 
+/* APP BAR */
+.appbar{position:sticky;top:0;z-index:50;background:#0B1628;border-bottom:1px solid rgba(255,255,255,.08);height:52px;display:flex;align-items:center;gap:16px;padding:0 18px;}
+.appbar-brand{font-family:'DM Serif Display',serif;font-size:15px;color:#fff;white-space:nowrap;display:flex;align-items:center;gap:7px;flex-shrink:0;}
+.appbar-brand .dot{width:7px;height:7px;border-radius:50%;background:#1F6FBF;flex-shrink:0;}
+.tabs{display:flex;gap:4px;flex:1;overflow-x:auto;}
+.tab-btn{background:transparent;border:1px solid transparent;color:#7C9BC0;font-family:'DM Sans',sans-serif;font-size:11.5px;font-weight:600;padding:7px 14px;border-radius:16px;cursor:pointer;white-space:nowrap;transition:background .15s,color .15s;flex-shrink:0;}
+.tab-btn:hover{color:#D7E9FF;background:rgba(255,255,255,.07);}
+.tab-btn.active{background:rgba(31,111,191,.3);color:#BFE0FF;border-color:rgba(31,111,191,.55);}
+
+.icon-btn{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);color:#BFE0FF;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,transform .15s;flex-shrink:0;}
+.icon-btn:hover{background:rgba(255,255,255,.15);}
+.icon-btn:active{transform:scale(.92);}
+.icon-btn svg{width:16px;height:16px;}
+
+/* ===== SHARED ESSAY-PAGE COMPONENTS (Overview + Architecture) ===== */
+.eyebrow {font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.6px;color:var(--amber);}
 /* HEADER */
-.hdr{background:linear-gradient(135deg,#0B1628 0%,#1B3A6B 60%,#0A4E8A 100%);border-bottom:1px solid var(--border);padding:20px 32px 16px;position:relative;overflow:hidden;}
-.hdr::before{content:'';position:absolute;top:-60px;right:-60px;width:280px;height:280px;background:radial-gradient(circle,rgba(31,111,191,.18) 0%,transparent 70%);pointer-events:none;}
-.hdr-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
-.hdr-title h1{font-family:'DM Serif Display',serif;font-size:24px;color:#fff;line-height:1.2;letter-spacing:-.3px;}
-.hdr-title p{font-size:11px;color:#8BAFD4;margin-top:3px;font-weight:300;}
-.stats{display:flex;gap:24px;flex-wrap:wrap;}
-.stat{display:flex;flex-direction:column;gap:2px;}
-.stat-v{font-family:'DM Serif Display',serif;font-size:22px;color:#fff;line-height:1;}
-.stat-l{font-size:9px;color:#6B8BAE;text-transform:uppercase;letter-spacing:.8px;}
+.ehdr {background:linear-gradient(135deg,#0B1628 0%,#1B3A6B 60%,#0A4E8A 100%);border-bottom:1px solid var(--border);padding:26px 32px 22px;position:relative;overflow:hidden;}
+.ehdr::before {content:'';position:absolute;top:-70px;right:-70px;width:320px;height:320px;background:radial-gradient(circle,rgba(31,111,191,.2) 0%,transparent 70%);pointer-events:none;}
+.ehdr-inner {max-width:880px;margin:0 auto;position:relative;}
+.ehdr-eyebrow {font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.8px;color:#7BB8E8;margin-bottom:8px;}
+.ehdr h1 {font-size:32px;color:#fff;line-height:1.15;letter-spacing:-.4px;max-width:640px;}
+.ehdr-sub {font-size:13px;color:#9BBAD8;margin-top:10px;max-width:560px;line-height:1.6;font-weight:300;}
+.ehdr-byline {font-size:11px;color:#5C82A8;margin-top:16px;}
+/* IN-PAGE NAV */
+.subnav {position:sticky;top:var(--appbar-h,52px);z-index:20;background:var(--bg2);border-bottom:1px solid var(--border);}
+.subnav-inner {max-width:880px;margin:0 auto;display:flex;gap:4px;overflow-x:auto;padding:0 32px;}
+.subnav a {flex-shrink:0;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--text-3);text-decoration:none;padding:12px 10px;border-bottom:2px solid transparent;white-space:nowrap;transition:color .15s,border-color .15s;}
+.subnav a:hover {color:var(--text-1);}
+/* PAGE */
+.page {max-width:880px;margin:0 auto;padding:0 32px;}
+section {padding:48px 0;border-bottom:1px solid var(--border);}
+section:last-of-type {border-bottom:none;}
+section h2 {font-size:24px;margin-bottom:4px;}
+.sec-num {font-family:'DM Serif Display',serif;font-size:13px;color:var(--text-4);margin-bottom:6px;}
+.lead {font-size:15px;line-height:1.75;color:var(--text-2);max-width:66ch;}
+.lead + .lead {margin-top:14px;}
+p.body-text {font-size:13.5px;line-height:1.75;color:var(--text-2);max-width:66ch;}
+p.body-text + p.body-text {margin-top:12px;}
+.analogy {margin-top:22px;background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--blue);border-radius:8px;padding:16px 20px;max-width:66ch;box-shadow:var(--card-shadow);}
+.analogy .tag {font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--blue);margin-bottom:6px;}
+.analogy p {font-size:13px;line-height:1.65;color:var(--text-2);font-style:italic;}
+/* FLOW */
+.flow {display:flex;flex-direction:column;margin-top:28px;}
+.fstep {display:flex;gap:16px;position:relative;}
+.fstep-rail {display:flex;flex-direction:column;align-items:center;flex-shrink:0;}
+.fstep-icon {width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;border:1px solid var(--sc);}
+.fstep-line {width:1px;flex:1;background:var(--border);margin:4px 0;}
+.fstep-body {padding-bottom:26px;flex:1;min-width:0;}
+.fstep:last-child .fstep-body {padding-bottom:0;}
+.fstep-top {display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;}
+.fstep-n {font-size:10px;font-weight:700;color:var(--text-4);}
+.fstep-name {font-size:14.5px;font-weight:700;color:var(--text-1);}
+.fstep-tech {font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:2px 7px;border-radius:8px;background:var(--bg3);color:var(--text-3);border:1px solid var(--border);}
+.fstep-desc {font-size:12.5px;color:var(--text-3);line-height:1.6;margin-top:5px;max-width:58ch;}
+/* RIGHT VALUE */
+.rvstack {display:flex;flex-direction:column;gap:10px;margin-top:26px;max-width:640px;}
+.rvrow {display:flex;align-items:center;gap:14px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:13px 16px;box-shadow:var(--card-shadow);}
+.rvrow .rvn {font-family:'DM Serif Display',serif;font-size:20px;color:var(--rc);flex-shrink:0;width:26px;}
+.rvrow .rvname {font-size:13.5px;font-weight:700;color:var(--text-1);}
+.rvrow .rvdesc {font-size:12px;color:var(--text-3);margin-top:2px;line-height:1.55;}
+.rvrow .rvdot {width:9px;height:9px;border-radius:50%;background:var(--rc);flex-shrink:0;}
+.rvarrow {text-align:center;color:var(--text-4);font-size:12px;margin:-2px 0;}
+.rvnote {margin-top:16px;font-size:12px;color:var(--text-3);font-style:italic;max-width:60ch;line-height:1.6;}
+/* TWO COL */
+.twocol {display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:24px;}
+@media (max-width:640px){.twocol{grid-template-columns:1fr;}}
+.pcard {background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px 20px;box-shadow:var(--card-shadow);}
+.pcard .ptag {font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--pc);margin-bottom:8px;}
+.pcard h3 {font-size:15px;color:var(--text-1);margin-bottom:6px;font-family:'DM Sans',sans-serif;font-weight:700;}
+.pcard p {font-size:12.5px;color:var(--text-3);line-height:1.65;}
+/* TRACE CHAIN */
+.chain {display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:24px;}
+.chain-node {font-size:11px;font-weight:600;padding:7px 13px;border-radius:16px;background:var(--bg2);border:1px solid var(--border);color:var(--text-2);}
+.chain-arrow {color:var(--text-4);font-size:13px;}
+/* GOV RISK */
+.riskgrid {display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px;}
+@media (max-width:640px){.riskgrid{grid-template-columns:1fr;}}
+.rcard {background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:14px 16px;box-shadow:var(--card-shadow);}
+.rcard .rlvl {font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;padding:2px 8px;border-radius:9px;display:inline-block;margin-bottom:8px;}
+.rcard p {font-size:11.5px;color:var(--text-3);line-height:1.6;}
+/* CTA */
+.cta {background:linear-gradient(135deg,#0B1628 0%,#1B3A6B 60%,#0A4E8A 100%);border-radius:14px;padding:32px 34px;margin-top:8px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;}
+.cta h3 {font-size:19px;color:#fff;font-family:'DM Serif Display',serif;font-weight:400;}
+.cta p {font-size:12.5px;color:#9BBAD8;margin-top:6px;max-width:46ch;line-height:1.6;}
+.cta-btn {background:#fff;color:#12233F;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;text-decoration:none;padding:11px 22px;border-radius:22px;border:none;cursor:pointer;flex-shrink:0;transition:transform .15s;display:inline-block;}
+.cta-btn:hover {transform:translateY(-1px);}
+footer {padding:26px 32px 40px;text-align:center;}
+footer p {font-size:10.5px;color:var(--text-4);}
 
+/* ARCHITECTURE: ZONE MAP */
+.zonemap{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px;}
+@media (max-width:700px){.zonemap{grid-template-columns:1fr 1fr;}}
+@media (max-width:460px){.zonemap{grid-template-columns:1fr;}}
+.zonecard{background:var(--bg2);border:1px solid var(--border);border-top:3px solid var(--zc);border-radius:9px;padding:14px 16px;box-shadow:var(--card-shadow);}
+.zonecard .zn{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--zc);margin-bottom:6px;}
+.zonecard h3{font-size:14px;color:var(--text-1);font-family:'DM Sans',sans-serif;font-weight:700;margin-bottom:5px;}
+.zonecard p{font-size:11.5px;color:var(--text-3);line-height:1.6;}
+
+/* ARCHITECTURE: STAMP LOOP */
+.loop{display:flex;flex-direction:column;gap:0;margin-top:26px;max-width:640px;}
+.loopnode{display:flex;gap:14px;align-items:flex-start;background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:13px 16px;box-shadow:var(--card-shadow);}
+.loopnode .ln-badge{flex-shrink:0;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:3px 9px;border-radius:8px;background:var(--lc-bg);color:var(--lc);white-space:nowrap;margin-top:1px;}
+.loopnode .ln-body strong{font-size:13px;color:var(--text-1);display:block;margin-bottom:3px;}
+.loopnode .ln-body span{font-size:11.5px;color:var(--text-3);line-height:1.6;}
+.loopedge{padding:7px 0 7px 20px;color:var(--text-4);font-size:11px;font-style:italic;}
+
+/* ARCHITECTURE: HOLONIC STACK */
+.stack{display:flex;flex-direction:column;gap:0;margin-top:24px;max-width:640px;}
+.stacklayer{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:13px 18px;box-shadow:var(--card-shadow);position:relative;}
+.stacklayer .sl-t{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--slc);margin-bottom:4px;}
+.stacklayer .sl-n{font-size:13.5px;font-weight:700;color:var(--text-1);}
+.stacklayer .sl-d{font-size:11.5px;color:var(--text-3);margin-top:3px;line-height:1.6;}
+.stackconnect{text-align:center;color:var(--text-4);font-size:11px;padding:5px 0;}
+
+/* ARCHITECTURE: STANDARDS TABLE */
+.spectable{width:100%;border-collapse:collapse;margin-top:22px;font-size:12px;min-width:480px;}
+.spectable th{text-align:left;font-size:9.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--text-3);padding:8px 10px;border-bottom:1px solid var(--border);background:var(--bg3);}
+.spectable td{padding:9px 10px;border-bottom:1px solid var(--border-soft);color:var(--text-2);vertical-align:top;line-height:1.55;}
+.spectable td.std{font-weight:700;color:var(--text-1);white-space:nowrap;}
+
+/* ===== SCROLLBAR (global) ===== */
+::-webkit-scrollbar-track {background:transparent;}
+::-webkit-scrollbar-thumb {background:var(--border);border-radius:3px;}
+
+/* ===== CONSOLE VIEW (scoped) ===== */
+/* HEADER */
+#view-console .hdr {background:linear-gradient(135deg,#0B1628 0%,#1B3A6B 60%,#0A4E8A 100%);border-bottom:1px solid var(--border);padding:20px 32px 16px;position:relative;overflow:hidden;}
+#view-console .hdr::before {content:'';position:absolute;top:-60px;right:-60px;width:280px;height:280px;background:radial-gradient(circle,rgba(31,111,191,.18) 0%,transparent 70%);pointer-events:none;}
+#view-console .hdr-top {display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+#view-console .hdr-title h1 {font-family:'DM Serif Display',serif;font-size:24px;color:#fff;line-height:1.2;letter-spacing:-.3px;}
+#view-console .hdr-title p {font-size:11px;color:#8BAFD4;margin-top:3px;font-weight:300;}
+#view-console .stats {display:flex;gap:24px;flex-wrap:wrap;}
+#view-console .stat {display:flex;flex-direction:column;gap:2px;}
+#view-console .stat-v {font-family:'DM Serif Display',serif;font-size:22px;color:#fff;line-height:1;}
+#view-console .stat-l {font-size:9px;color:#6B8BAE;text-transform:uppercase;letter-spacing:.8px;}
 /* FILTER ROW */
-.frow{display:flex;gap:7px;margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.07);flex-wrap:wrap;align-items:center;}
-.flabel{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#3A5A7A;margin-right:4px;}
-.fbtn{font-size:10px;font-weight:600;padding:5px 12px;border-radius:20px;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;border:1px solid transparent;transition:all .18s;user-select:none;display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.04);color:#4A6B8A;border-color:rgba(255,255,255,.08);}
-.fbtn:hover{background:rgba(255,255,255,.09);color:#7AABCA;}
-.fbtn .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
-.fbtn.on-rdsg  {background:rgba(31,111,191,.22);color:#7BB8E8;border-color:#2A5A9A;}
-.fbtn.on-stamp {background:rgba(197,90,17,.22); color:#F5A165;border-color:#8B4020;}
-.fbtn.on-zone6 {background:rgba(224,112,32,.2);  color:#FFAA60;border-color:#9A4010;}
-.fbtn.on-incose{background:rgba(10,154,154,.2);  color:#5ADADA;border-color:#0A6A6A;}
-.fbtn.on-iso   {background:rgba(122,111,224,.2); color:#C0BBFF;border-color:#5A50B0;}
-.fbtn.on-sse   {background:rgba(46,158,107,.2);  color:#6FE0AB;border-color:#1F7A50;}
-.fclr{font-size:10px;color:#3A5A7A;cursor:pointer;padding:4px 8px;border-radius:4px;transition:color .15s;display:none;}
-.fclr:hover{color:#7AABCA;}
-
+#view-console .frow {display:flex;gap:7px;margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.07);flex-wrap:wrap;align-items:center;}
+#view-console .flabel {font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#3A5A7A;margin-right:4px;}
+#view-console .fbtn {font-size:10px;font-weight:600;padding:5px 12px;border-radius:20px;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;border:1px solid transparent;transition:all .18s;user-select:none;display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.04);color:#4A6B8A;border-color:rgba(255,255,255,.08);}
+#view-console .fbtn:hover {background:rgba(255,255,255,.09);color:#7AABCA;}
+#view-console .fbtn .dot {width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+#view-console .fbtn.on-rdsg {background:rgba(31,111,191,.22);color:#7BB8E8;border-color:#2A5A9A;}
+#view-console .fbtn.on-stamp {background:rgba(197,90,17,.22); color:#F5A165;border-color:#8B4020;}
+#view-console .fbtn.on-zone6 {background:rgba(224,112,32,.2);  color:#FFAA60;border-color:#9A4010;}
+#view-console .fbtn.on-incose {background:rgba(10,154,154,.2);  color:#5ADADA;border-color:#0A6A6A;}
+#view-console .fbtn.on-iso {background:rgba(122,111,224,.2); color:#C0BBFF;border-color:#5A50B0;}
+#view-console .fbtn.on-sse {background:rgba(46,158,107,.2);  color:#6FE0AB;border-color:#1F7A50;}
+#view-console .fclr {font-size:10px;color:#3A5A7A;cursor:pointer;padding:4px 8px;border-radius:4px;transition:color .15s;display:none;}
+#view-console .fclr:hover {color:#7AABCA;}
 /* FILTER BAR */
-.fbar{height:0;overflow:hidden;transition:height .2s;background:rgba(197,90,17,.08);border-bottom:1px solid rgba(197,90,17,.2);display:flex;align-items:center;gap:10px;padding:0 32px;font-size:11px;color:#D4874A;}
-.fbar.on{height:32px;}
-.fbar strong{color:#F5A165;}
-.ftag{display:inline-flex;align-items:center;gap:3px;font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:2px 7px;border-radius:8px;}
-
+#view-console .fbar {height:0;overflow:hidden;transition:height .2s,background .2s,color .2s;background:var(--amber-bg);border-bottom:1px solid var(--amber-border);display:flex;align-items:center;gap:10px;padding:0 32px;font-size:11px;color:var(--amber-text);}
+#view-console .fbar.on {height:32px;}
+#view-console .fbar strong {color:var(--amber-strong);}
+#view-console .ftag {display:inline-flex;align-items:center;gap:3px;font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:2px 7px;border-radius:8px;}
 /* LAYOUT */
-.main{display:grid;grid-template-columns:320px 1fr;height:calc(100vh - 192px);min-height:540px;}
-
+#view-console .main {display:grid;grid-template-columns:320px 1fr;height:calc(100vh - 192px - var(--appbar-h));min-height:540px;}
 /* FLOW PANEL */
-.fpanel{background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;padding:18px 14px;display:flex;flex-direction:column;gap:3px;}
-.fp-title{font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:#4A6B8A;margin-bottom:10px;padding-left:4px;}
-.fnode{position:relative;border-radius:8px;padding:9px 11px;cursor:pointer;transition:all .18s;border:1px solid transparent;display:flex;align-items:center;gap:9px;}
-.fnode:hover{transform:translateX(3px);}
-.fnode.is-active{box-shadow:0 0 0 1px var(--nc);}
-.fnode.is-hit{box-shadow:0 0 0 1.5px rgba(197,90,17,.6) !important;}
-.fnode.is-dim{opacity:.3;}
-.fnode-icon{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
-.fnode-txt{flex:1;min-width:0;}
-.fnode-lbl{font-size:11px;font-weight:600;color:#D0E4F8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.fnode-sub{font-size:9px;color:#5A7B9A;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.fnode-ct{font-size:9px;font-weight:700;padding:2px 6px;border-radius:9px;flex-shrink:0;}
-.fnode-match{font-size:8.5px;font-weight:700;padding:1px 5px;border-radius:7px;background:rgba(197,90,17,.25);color:#F5A165;border:1px solid rgba(197,90,17,.4);flex-shrink:0;}
-.connector{display:flex;align-items:center;justify-content:center;height:14px;color:#2A4A6A;font-size:12px;margin-left:24px;}
-.split-wrap{display:flex;gap:4px;margin-top:4px;}
-.split-wrap .fnode{flex:1;}
-.split-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.7px;color:#3A5A7A;text-align:center;margin-bottom:3px;margin-left:24px;}
-
+#view-console .fpanel {background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;padding:18px 14px;display:flex;flex-direction:column;gap:3px;}
+#view-console .fp-title {font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-3);margin-bottom:10px;padding-left:4px;}
+#view-console .fnode {position:relative;border-radius:8px;padding:9px 11px;cursor:pointer;transition:all .18s;border:1px solid transparent;display:flex;align-items:center;gap:9px;}
+#view-console .fnode:hover {transform:translateX(3px);}
+#view-console .fnode.is-active {box-shadow:0 0 0 1px var(--nc);}
+#view-console .fnode.is-hit {box-shadow:0 0 0 1.5px rgba(197,90,17,.6) !important;}
+#view-console .fnode.is-dim {opacity:.3;}
+#view-console .fnode-icon {width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+#view-console .fnode-txt {flex:1;min-width:0;}
+#view-console .fnode-lbl {font-size:11px;font-weight:600;color:var(--text-node);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#view-console .fnode-sub {font-size:9px;color:var(--text-3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#view-console .fnode-ct {font-size:9px;font-weight:700;padding:2px 6px;border-radius:9px;flex-shrink:0;}
+#view-console .fnode-match {font-size:8.5px;font-weight:700;padding:1px 5px;border-radius:7px;background:rgba(197,90,17,.25);color:#F5A165;border:1px solid rgba(197,90,17,.4);flex-shrink:0;}
+#view-console .connector {display:flex;align-items:center;justify-content:center;height:14px;color:var(--text-4);font-size:12px;margin-left:24px;}
+#view-console .split-wrap {display:flex;gap:4px;margin-top:4px;}
+#view-console .split-wrap .fnode {flex:1;}
+#view-console .split-lbl {font-size:9px;text-transform:uppercase;letter-spacing:.7px;color:var(--text-3);text-align:center;margin-bottom:3px;margin-left:24px;}
 /* DETAIL PANEL */
-.dpanel{overflow-y:auto;background:var(--bg);display:flex;flex-direction:column;}
-.dplaceholder{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;color:#2A4A6A;padding:40px;text-align:center;}
-.dplaceholder h3{font-family:'DM Serif Display',serif;font-size:20px;color:#3A6A8A;}
-.dplaceholder p{font-size:12px;max-width:300px;line-height:1.6;}
-
+#view-console .dpanel {overflow-y:auto;background:var(--bg);display:flex;flex-direction:column;}
+#view-console .dplaceholder {display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;color:var(--text-4);padding:40px;text-align:center;}
+#view-console .dplaceholder h3 {font-family:'DM Serif Display',serif;font-size:20px;color:var(--text-3);}
+#view-console .dplaceholder p {font-size:12px;max-width:300px;line-height:1.6;}
 /* DETAIL HEADER */
-.dhdr{padding:22px 26px 16px;border-bottom:1px solid var(--border);background:var(--bg2);position:sticky;top:0;z-index:10;}
-.dhdr-top{display:flex;align-items:flex-start;gap:13px;}
-.d-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
-.d-title h2{font-family:'DM Serif Display',serif;font-size:19px;color:#fff;line-height:1.2;}
-.d-title p{font-size:11px;color:#6B8BAE;margin-top:2px;}
-.dbadges{display:flex;gap:5px;margin-top:10px;flex-wrap:wrap;}
-.badge{font-size:9px;font-weight:600;padding:2px 8px;border-radius:16px;letter-spacing:.4px;text-transform:uppercase;}
-.b-navy{background:rgba(27,58,107,.7);color:#8BAFD4;border:1px solid #2A4A7A;}
-.b-zone{color:#fff;}
-.fstatus{display:none;margin-top:8px;padding:6px 11px;border-radius:6px;background:rgba(197,90,17,.1);border:1px solid rgba(197,90,17,.25);font-size:10.5px;color:#D4874A;align-items:center;gap:7px;flex-wrap:wrap;}
-.fstatus.on{display:flex;}
-.fstatus strong{color:#F5A165;}
-
+#view-console .dhdr {padding:22px 26px 16px;border-bottom:1px solid var(--border);background:var(--bg2);position:sticky;top:0;z-index:10;}
+#view-console .dhdr-top {display:flex;align-items:flex-start;gap:13px;}
+#view-console .d-icon {width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+#view-console .d-title h2 {font-family:'DM Serif Display',serif;font-size:19px;color:var(--text-1);line-height:1.2;}
+#view-console .d-title p {font-size:11px;color:var(--text-3);margin-top:2px;}
+#view-console .dbadges {display:flex;gap:5px;margin-top:10px;flex-wrap:wrap;}
+#view-console .badge {font-size:9px;font-weight:600;padding:2px 8px;border-radius:16px;letter-spacing:.4px;text-transform:uppercase;}
+#view-console .b-navy {background:var(--badge-navy-bg);color:var(--badge-navy-text);border:1px solid var(--badge-navy-border);}
+#view-console .b-zone {color:#fff;}
+#view-console .fstatus {display:none;margin-top:8px;padding:6px 11px;border-radius:6px;background:var(--amber-bg);border:1px solid var(--amber-border);font-size:10.5px;color:var(--amber-text);align-items:center;gap:7px;flex-wrap:wrap;}
+#view-console .fstatus.on {display:flex;}
+#view-console .fstatus strong {color:var(--amber-strong);}
 /* DETAIL BODY */
-.dbody{padding:18px 26px;display:flex;flex-direction:column;gap:18px;}
-.sec-hdr{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:#4A6B8A;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
-.sec-hdr::after{content:'';flex:1;height:1px;background:var(--border);}
-
+#view-console .dbody {padding:18px 26px;display:flex;flex-direction:column;gap:18px;}
+#view-console .sec-hdr {font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:var(--text-3);margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+#view-console .sec-hdr::after {content:'';flex:1;height:1px;background:var(--border);}
 /* DELIVERABLE CARDS */
-.dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:9px;}
-.dcard{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:11px 13px;position:relative;transition:all .2s;}
-.dcard:hover{border-color:var(--ca,#2A4A6A);}
-.dcard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:9px 0 0 9px;background:var(--ca,#2A4A6A);}
-.dcard.is-hit{border-color:var(--ca) !important;box-shadow:0 0 0 1px color-mix(in srgb,var(--ca) 40%,transparent);}
-.dcard.is-dim{opacity:.18;pointer-events:none;}
-.dcard.is-dim::before{background:#2A3F5F !important;}
-.d-type{font-size:9px;color:#4A6B8A;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
-.d-name{font-size:11px;font-weight:600;color:#C8DCEF;margin-bottom:5px;}
-.d-desc{font-size:10px;color:#7A98B8;line-height:1.55;}
-.d-owner{display:inline-flex;align-items:center;gap:4px;font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:2px 6px;border-radius:9px;margin-top:7px;}
-.d-fpills{display:flex;gap:3px;flex-wrap:wrap;margin-top:6px;}
-.d-fpill{font-size:7.5px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;padding:1px 5px;border-radius:7px;opacity:.7;transition:opacity .15s;}
-.d-fpill.pill-active{opacity:1;box-shadow:0 0 0 1px currentColor;}
-
+#view-console .dgrid {display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:9px;}
+#view-console .dcard {background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:11px 13px;position:relative;transition:all .2s;}
+#view-console .dcard:hover {border-color:var(--ca,#2A4A6A);}
+#view-console .dcard::before {content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:9px 0 0 9px;background:var(--ca,#2A4A6A);}
+#view-console .dcard.is-hit {border-color:var(--ca) !important;box-shadow:0 0 0 1px color-mix(in srgb,var(--ca) 40%,transparent);}
+#view-console .dcard.is-dim {opacity:.18;pointer-events:none;}
+#view-console .dcard.is-dim::before {background:#2A3F5F !important;}
+#view-console .d-type {font-size:9px;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+#view-console .d-name {font-size:11px;font-weight:600;color:var(--text-2);margin-bottom:5px;}
+#view-console .d-desc {font-size:10px;color:var(--text-3);line-height:1.55;}
+#view-console .d-owner {display:inline-flex;align-items:center;gap:4px;font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:2px 6px;border-radius:9px;margin-top:7px;}
+#view-console .d-fpills {display:flex;gap:3px;flex-wrap:wrap;margin-top:6px;}
+#view-console .d-fpill {font-size:7.5px;font-weight:700;text-transform:uppercase;letter-spacing:.3px;padding:1px 5px;border-radius:7px;opacity:.7;transition:opacity .15s;}
+#view-console .d-fpill.pill-active {opacity:1;box-shadow:0 0 0 1px currentColor;}
 /* RESP TABLE */
-.rtable{width:100%;border-collapse:collapse;font-size:11px;}
-.rtable th{background:var(--bg3);color:#5A7B9A;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;padding:6px 10px;text-align:left;border-bottom:1px solid var(--border);}
-.rtable td{padding:7px 10px;border-bottom:1px solid rgba(42,63,95,.5);color:#9BBAD8;vertical-align:top;}
-.rtable tr:last-child td{border-bottom:none;}
-.rpill{display:inline-block;font-size:8.5px;font-weight:700;padding:2px 6px;border-radius:9px;letter-spacing:.3px;text-transform:uppercase;}
-
+#view-console .rtable {width:100%;border-collapse:collapse;font-size:11px;}
+#view-console .rtable th {background:var(--bg3);color:var(--text-3);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;padding:6px 10px;text-align:left;border-bottom:1px solid var(--border);}
+#view-console .rtable td {padding:7px 10px;border-bottom:1px solid var(--border-soft);color:var(--text-2);vertical-align:top;}
+#view-console .rtable tr:last-child td {border-bottom:none;}
+#view-console .rpill {display:inline-block;font-size:8.5px;font-weight:700;padding:2px 6px;border-radius:9px;letter-spacing:.3px;text-transform:uppercase;}
 /* INSIGHTS */
-.igrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.icard{background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:10px 12px;}
-.ic-t{font-size:9.5px;font-weight:600;color:#A8C4E0;margin-bottom:4px;}
-.ic-b{font-size:10px;color:#6B8BAE;line-height:1.5;}
-
+#view-console .igrid {display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+#view-console .icard {background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:10px 12px;}
+#view-console .ic-t {font-size:9.5px;font-weight:600;color:var(--text-2);margin-bottom:4px;}
+#view-console .ic-b {font-size:10px;color:var(--text-3);line-height:1.5;}
 /* SSE / RIGHT VALUE */
-.rvband{margin-top:12px;padding-top:11px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-.rvband-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#3A5A7A;}
-.rvchip{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;color:#B9D6C4;background:rgba(46,158,107,.12);border:1px solid rgba(46,158,107,.3);border-radius:14px;padding:3px 10px 3px 6px;}
-.rvchip b{color:#6FE0AB;font-weight:700;}
-.rvchip .rvdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
-.rvmission{font-size:10.5px;color:#7A98B8;font-style:italic;line-height:1.5;max-width:560px;}
-.ssebox{background:rgba(46,158,107,.07);border:1px solid rgba(46,158,107,.25);border-left:3px solid #2E9E6B;border-radius:6px;padding:10px 13px;display:flex;flex-direction:column;gap:8px;}
-.ssebox-row{display:flex;gap:8px;align-items:flex-start;}
-.ssebox-tag{flex-shrink:0;font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:2px 7px;border-radius:8px;background:rgba(46,158,107,.22);color:#6FE0AB;border:1px solid rgba(46,158,107,.4);margin-top:1px;}
-.ssebox p{font-size:11px;color:#9BC9AE;line-height:1.6;}
-.ssebox .rv-line{font-size:10.5px;color:#C9A96A;line-height:1.55;}
-.ssebox .rv-line b{color:#E0BE7E;}
-
+#view-console .rvband {margin-top:12px;padding-top:11px;border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+#view-console .rvband-lbl {font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#3A5A7A;}
+#view-console .rvchip {display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:600;color:#B9D6C4;background:rgba(46,158,107,.12);border:1px solid rgba(46,158,107,.3);border-radius:14px;padding:3px 10px 3px 6px;}
+#view-console .rvchip b {color:#6FE0AB;font-weight:700;}
+#view-console .rvchip .rvdot {width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+#view-console .rvmission {font-size:10.5px;color:#7A98B8;font-style:italic;line-height:1.5;max-width:560px;}
+#view-console .ssebox {background:rgba(46,158,107,.07);border:1px solid rgba(46,158,107,.25);border-left:3px solid #2E9E6B;border-radius:6px;padding:10px 13px;display:flex;flex-direction:column;gap:8px;}
+#view-console .ssebox-row {display:flex;gap:8px;align-items:flex-start;}
+#view-console .ssebox-tag {flex-shrink:0;font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:2px 7px;border-radius:8px;background:var(--sse-tag-bg);color:var(--sse-tag-text);border:1px solid rgba(46,158,107,.4);margin-top:1px;}
+#view-console .ssebox p {font-size:11px;color:var(--sse-text);line-height:1.6;}
+#view-console .ssebox .rv-line {font-size:10.5px;color:var(--rv-gold);line-height:1.55;}
+#view-console .ssebox .rv-line b {color:var(--rv-gold-strong);}
 /* EMPTY */
-.fempty{padding:28px;text-align:center;color:#3A5A7A;font-size:12px;font-style:italic;}
-
+#view-console .fempty {padding:28px;text-align:center;color:var(--text-4);font-size:12px;font-style:italic;}
 /* SCROLLBAR */
-::-webkit-scrollbar{width:4px;height:4px;}
-::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:#2A4A6A;border-radius:3px;}
-
+#view-console ::-webkit-scrollbar {width:4px;height:4px;}
 /* ANIMATIONS */
-@keyframes fsi{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
-.dbody>*{animation:fsi .2s ease both;}
-.dbody>*:nth-child(2){animation-delay:.04s;}
-.dbody>*:nth-child(3){animation-delay:.08s;}
-.dbody>*:nth-child(4){animation-delay:.12s;}
-.dbody>*:nth-child(5){animation-delay:.16s;}
+@keyframes fsi {from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+#view-console .dbody>* {animation:fsi .2s ease both;}
+#view-console .dbody>*:nth-child(2) {animation-delay:.04s;}
+#view-console .dbody>*:nth-child(3) {animation-delay:.08s;}
+#view-console .dbody>*:nth-child(4) {animation-delay:.12s;}
+#view-console .dbody>*:nth-child(5) {animation-delay:.16s;}
 @keyframes cardpop{from{transform:scale(.97);opacity:.6;}to{transform:scale(1);opacity:1;}}
-.dcard.is-hit{animation:cardpop .18s ease;}
+#view-console .dcard.is-hit {animation:cardpop .18s ease;}
+
 </style>
 </head>
 <body>
+<script>(function(){try{var m=localStorage.getItem('rdsg-theme');document.documentElement.setAttribute('data-mode',m==='light'?'light':'dark');}catch(e){document.documentElement.setAttribute('data-mode','dark');}})();</script>
+<div class="appbar">
+  <div class="appbar-brand"><span class="dot"></span>RE Gateway</div>
+  <div class="tabs">
+    <button class="tab-btn" data-view="overview" onclick="showView('overview')">Overview</button>
+    <button class="tab-btn" data-view="architecture" onclick="showView('architecture')">Architecture</button>
+    <button class="tab-btn" data-view="console" onclick="showView('console')">Console</button>
+  </div>
+  <button class="icon-btn" id="themeToggle" type="button" aria-label="Toggle light and dark theme" aria-pressed="false" title="Toggle light / dark theme"></button>
+</div>
 
+<div id="view-console" class="view">
 <div class="hdr">
   <div class="hdr-top">
     <div class="hdr-title">
@@ -200,22 +362,393 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:#E2ECF8;min-hei
   </div>
   <div class="dpanel" id="dpanel">
     <div class="dplaceholder">
-      <svg width="52" height="52" viewBox="0 0 64 64" fill="none"><rect x="8" y="8" width="48" height="48" rx="8" stroke="#2A4A6A" stroke-width="2" stroke-dasharray="4 3"/><circle cx="32" cy="28" r="8" stroke="#2A4A6A" stroke-width="2"/><path d="M20 46c0-6.627 5.373-12 12-12s12 5.373 12 12" stroke="#2A4A6A" stroke-width="2" stroke-linecap="round"/></svg>
+      <svg width="52" height="52" viewBox="0 0 64 64" fill="none"><rect x="8" y="8" width="48" height="48" rx="8" style="stroke:var(--text-4);" stroke-width="2" stroke-dasharray="4 3"/><circle cx="32" cy="28" r="8" style="stroke:var(--text-4);" stroke-width="2"/><path d="M20 46c0-6.627 5.373-12 12-12s12 5.373 12 12" style="stroke:var(--text-4);" stroke-width="2" stroke-linecap="round"/></svg>
       <h3>Select a stage</h3>
       <p>Click any stage to explore its deliverables, or use the filter lenses above to highlight specific artifact types across the whole pipeline.</p>
     </div>
   </div>
 </div>
+</div>
+
+<div id="view-overview" class="view" hidden>
+<div class="ehdr">
+  <div class="ehdr-inner">
+    <div class="ehdr-eyebrow">Business Overview · Non-Technical Briefing</div>
+    <h1>The RE Gateway, plainly explained</h1>
+    <p class="ehdr-sub">What it is, why it exists, and how it turns "we said we'd do the right thing" into something an AI system can actually be held to — for SMEs, business analysts, and anyone who has to explain this pipeline to a stakeholder who doesn't read SHACL.</p>
+    <div class="ehdr-byline">The Value Enablement Group, LLC &nbsp;·&nbsp; Companion to the RE Gateway Console &nbsp;·&nbsp; RDSG STPA/STAMP Edition v2.0</div>
+  </div>
+</div>
+
+<nav class="subnav"><div class="subnav-inner">
+  <a href="#what">What It Is</a>
+  <a href="#flow">How It Works</a>
+  <a href="#rv">Planet · People · Profit</a>
+  <a href="#hsga">HSGA 4.0</a>
+  <a href="#change4">Change4</a>
+  <a href="#trace">Traceability</a>
+  <a href="#gov">Governance &amp; Risk</a>
+</div></nav>
+
+<main class="page">
+
+  <section id="what">
+    <div class="sec-num">01</div>
+    <h2>What the RE Gateway is</h2>
+    <p class="lead" style="margin-top:14px;">The Requirements Engineering (RE) Gateway is the checkpoint every AI-assisted interaction passes through before it's allowed to act, and again before its answer is allowed to reach anyone. It sits between "someone asked the AI to do something" and "the AI did it" — and its only job is to make sure that whatever happens next is grounded in an actual, current, traceable business requirement, not just in what a model felt like generating.</p>
+    <p class="lead">In practice that means the Gateway resolves every request against a living rulebook — the organization's actual compliance, safety, ethical, and outcome requirements, stored as data rather than buried in a policy PDF — checks the AI's proposed response against that rulebook, and blocks or holds anything that fails, is unclear, or can't be undone without a person signing off on it first.</p>
+    <div class="analogy">
+      <div class="tag">Think of it like&hellip;</div>
+      <p>An air-traffic control tower for AI-assisted work: nothing takes off without a filed flight plan, nothing lands without clearance, and anything irreversible gets a human controller's explicit go-ahead — while every decision along the way is logged, so if something goes wrong later, you can replay exactly why the tower cleared it.</p>
+    </div>
+  </section>
+
+  <section id="flow">
+    <div class="sec-num">02</div>
+    <h2>How it works, end to end</h2>
+    <p class="lead" style="margin-top:14px;">Seven checkpoints, in order. Each one is enforced automatically, every time — no request skips the line, and nothing downstream can quietly bypass a step upstream missed.</p>
+    <div class="flow">
+
+      <div class="fstep">
+        <div class="fstep-rail"><div class="fstep-icon" style="--sc:#64748B;background:rgba(100,116,139,.15);">📨</div><div class="fstep-line"></div></div>
+        <div class="fstep-body">
+          <div class="fstep-top"><span class="fstep-n">1</span><span class="fstep-name">The request is captured, structured</span><span class="fstep-tech">SPO</span></div>
+          <p class="fstep-desc">Who's asking, what outcome they actually need, which part of the business it touches, and the situation around it — captured as structured data, not a loose sentence the system has to guess the intent of.</p>
+        </div>
+      </div>
+
+      <div class="fstep">
+        <div class="fstep-rail"><div class="fstep-icon" style="--sc:#534AB7;background:rgba(83,74,183,.15);">🔍</div><div class="fstep-line"></div></div>
+        <div class="fstep-body">
+          <div class="fstep-top"><span class="fstep-n">2</span><span class="fstep-name">Every relevant rule is pulled, live</span><span class="fstep-tech">RCB</span></div>
+          <p class="fstep-desc">Before anything else happens, the Gateway assembles the complete, current set of requirements that govern this exact request — compliance rules, safety limits, scope boundaries, the outcomes that actually matter to this stakeholder.</p>
+        </div>
+      </div>
+
+      <div class="fstep">
+        <div class="fstep-rail"><div class="fstep-icon" style="--sc:#1F6FBF;background:rgba(31,111,191,.12);">🛡️</div><div class="fstep-line"></div></div>
+        <div class="fstep-body">
+          <div class="fstep-top"><span class="fstep-n">3</span><span class="fstep-name">Meaning and rules are checked</span><span class="fstep-tech">SHACL · SWRL</span></div>
+          <p class="fstep-desc">Terms are resolved against the organization's own definitions (so "customer," "incident," or "material change" mean one consistent thing), and the request is tested against every constraint that applies — silently, automatically, before a response is even drafted.</p>
+        </div>
+      </div>
+
+      <div class="fstep">
+        <div class="fstep-rail"><div class="fstep-icon" style="--sc:#1F6FBF;background:rgba(31,111,191,.12);">🔐</div><div class="fstep-line"></div></div>
+        <div class="fstep-body">
+          <div class="fstep-top"><span class="fstep-n">4</span><span class="fstep-name">Anything irreversible gets flagged early</span><span class="fstep-tech">Reversibility PEP</span></div>
+          <p class="fstep-desc">If what's being proposed can't be undone — sending money, deleting a record, notifying a regulator — that's decided <em>before</em> the AI ever attempts it, not discovered after the fact.</p>
+        </div>
+      </div>
+
+      <div class="fstep">
+        <div class="fstep-rail"><div class="fstep-icon" style="--sc:#534AB7;background:rgba(83,74,183,.15);">📋</div><div class="fstep-line"></div></div>
+        <div class="fstep-body">
+          <div class="fstep-top"><span class="fstep-n">5</span><span class="fstep-name">One governed instruction set is compiled</span><span class="fstep-tech">CAD</span></div>
+          <p class="fstep-desc">Every check, flag, and rule from the steps above is compiled into a single directive the AI must operate under — what it's allowed to do, what it must watch for, and what it can't touch without approval.</p>
+        </div>
+      </div>
+
+      <div class="fstep">
+        <div class="fstep-rail"><div class="fstep-icon" style="--sc:#0A6E6E;background:rgba(10,110,110,.12);">✅</div><div class="fstep-line"></div></div>
+        <div class="fstep-body">
+          <div class="fstep-top"><span class="fstep-n">6</span><span class="fstep-name">The output is graded before it's shown to anyone</span><span class="fstep-tech">Service Facade</span></div>
+          <p class="fstep-desc">A ten-point scorecard — did it address the actual outcome, cite what it should, stay in scope, respect the persona's access — has to pass. If it doesn't, the AI is sent back with specific, structured corrections. Repeated failures trigger a formal review automatically.</p>
+        </div>
+      </div>
+
+      <div class="fstep">
+        <div class="fstep-rail"><div class="fstep-icon" style="--sc:#C55A11;background:rgba(197,90,17,.12);">🔒</div><div class="fstep-line"></div></div>
+        <div class="fstep-body">
+          <div class="fstep-top"><span class="fstep-n">7</span><span class="fstep-name">Irreversible action waits for a named human</span><span class="fstep-tech">Simplex Gateway</span></div>
+          <p class="fstep-desc">For anything flagged in step 4, the system pauses. A specific, authorized person sees exactly what will happen and what can't be undone, and must approve it — with an identity, a timestamp, and an immutable record — before it executes.</p>
+        </div>
+      </div>
+
+      <div class="fstep">
+        <div class="fstep-rail"><div class="fstep-icon" style="--sc:#64748B;background:rgba(100,116,139,.12);">👤</div></div>
+        <div class="fstep-body">
+          <div class="fstep-top"><span class="fstep-n">8</span><span class="fstep-name">A governed answer arrives, with its receipts</span><span class="fstep-tech">Delivery</span></div>
+          <p class="fstep-desc">The stakeholder gets the substantive answer <em>and</em> a plain view of what shaped it: which requirements applied, what passed validation, and — surfaced openly, not buried — anything that's still a gap.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="rv">
+    <div class="sec-num">03</div>
+    <h2>Stakeholder needs, in a fixed order: Planet, People, Profit</h2>
+    <p class="lead" style="margin-top:14px;">The Gateway doesn't treat "the business case," "the people affected," and "the planet this all happens on" as three inputs to be balanced case by case. They're ranked, in this order, without exception — and every governance decision the pipeline makes is a live expression of that ranking, not just a value statement on a wall somewhere.</p>
+    <div class="rvstack">
+      <div class="rvrow"><div class="rvn" style="--rc:var(--rv-planet);">1</div><span class="rvdot" style="--rc:var(--rv-planet);"></span><div><div class="rvname" style="color:var(--rv-planet);">Planet</div><div class="rvdesc">The shared, physical world everything else depends on. Enforced hardest at the points where an action can't be undone — nothing with irreversible planetary- or societal-scale consequences proceeds without a named, accountable human sign-off.</div></div></div>
+      <div class="rvarrow">▾ outranks</div>
+      <div class="rvrow"><div class="rvn" style="--rc:var(--rv-people);">2</div><span class="rvdot" style="--rc:var(--rv-people);"></span><div><div class="rvname" style="color:var(--rv-people);">People</div><div class="rvdesc">The humans actually affected — the practitioner asking, the customer downstream, the public. Enforced through terminology checks that catch exclusionary or harmful language, and timing rules that stop an AI from going silent, acting too early, or overstaying its scope.</div></div></div>
+      <div class="rvarrow">▾ outranks</div>
+      <div class="rvrow"><div class="rvn" style="--rc:var(--rv-profit);">3</div><span class="rvdot" style="--rc:var(--rv-profit);"></span><div><div class="rvname" style="color:var(--rv-profit);">Profit</div><div class="rvdesc">Only after the first two are honored does the system optimize for efficiency and return — shown up in the pipeline as resilience (constraints that make sure the system lasts) and reinvestment (failures that turn into structural fixes, not repeated losses).</div></div></div>
+    </div>
+    <p class="rvnote">In other words: Profit is real and tracked, but it never buys its way around a Planet or People constraint. That ordering is architecture here, not a slogan — it's built into which checks run first and which flags halt the pipeline outright.</p>
+  </section>
+
+  <section id="hsga">
+    <div class="sec-num">04</div>
+    <h2>How it plugs into HSGA 4.0</h2>
+    <p class="lead" style="margin-top:14px;">The Holonic Semantic Governance Architecture (HSGA) is the organization's master rulebook — written once, at the enterprise level, defining what "safe," "compliant," "on-brand," and "in line with our values" actually mean, in terms specific enough that a machine can check against them. "Holonic" means it's built the same way at every scale: a single interaction, a team, a business unit, and the whole enterprise each have their own self-contained version of the same governance pattern, nested inside one another.</p>
+    <p class="body-text" style="margin-top:14px;">The RE Gateway is where HSGA 4.0 stops being a document and starts being enforced. It's the runtime layer: it takes the definitions and constraints written at the HSGA level and turns them into live, per-interaction checks — so a policy someone approved at the top of the organization doesn't just sit in a binder, it actually gates the next AI-assisted action taken in the business's name, the same way, every time, regardless of which team or system is asking.</p>
+    <div class="twocol">
+      <div class="pcard" style="--pc:#7A6FE0;">
+        <div class="ptag">HSGA 4.0 — defines</div>
+        <h3>The enterprise rulebook</h3>
+        <p>Standards, ontologies, and policy written once at the top: what "good" means, organization-wide, expressed precisely enough to be machine-checkable rather than left to interpretation.</p>
+      </div>
+      <div class="pcard" style="--pc:#1F6FBF;">
+        <div class="ptag">RE Gateway — enforces</div>
+        <h3>The runtime checkpoint</h3>
+        <p>Takes HSGA's definitions and applies them live, interaction by interaction — the point where enterprise policy either actually governs behavior, or doesn't.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="change4">
+    <div class="sec-num">05</div>
+    <h2>The front end of the Change4 investment pipeline</h2>
+    <p class="lead" style="margin-top:14px;">Change4 is where the organization decides what to fund: which change initiatives get prioritized, in what order, with what urgency. The question that decides all of that is simple to ask and usually hard to answer well — <em>where is the organization actually falling short of what its people need, right now, and how do we know?</em></p>
+    <p class="body-text" style="margin-top:14px;">The RE Gateway is the front end of that supply chain because it's where the answer first becomes visible. Every interaction the Gateway governs produces structured evidence — not opinions: a requirement with no control in place yet, a specific kind of failure recurring often enough to trip an automatic review, a gap between what a stakeholder actually needed and what a system currently delivers. That evidence flows upstream into Change4 as a prioritized, sourced backlog of real operational need, so investment decisions are made against what's actually breaking and for whom — not against whoever argued loudest in the last planning meeting.</p>
+    <div class="chain">
+      <span class="chain-node">Live interaction</span><span class="chain-arrow">→</span>
+      <span class="chain-node">Governance gap / finding</span><span class="chain-arrow">→</span>
+      <span class="chain-node">Evidenced change need</span><span class="chain-arrow">→</span>
+      <span class="chain-node">Change4 investment decision</span>
+    </div>
+  </section>
+
+  <section id="trace">
+    <div class="sec-num">06</div>
+    <h2>End-to-end traceability &amp; explainability for causality</h2>
+    <p class="lead" style="margin-top:14px;">Every output the Gateway governs carries a chain back to the specific requirement or stakeholder need that shaped it. Not "the AI said X" — but "the AI said X because Requirement R, which exists to serve Stakeholder Need N, required it, and it passed Check C to get here." That chain is preserved for every response, every gap, and every irreversible action, from the moment a request arrives to the moment it's delivered.</p>
+    <p class="body-text" style="margin-top:14px;">That's what makes the pipeline explainable rather than just logged. A log tells you what happened. A causal chain tells you <em>why</em> — which specific rule fired, which requirement it traced to, and which check it either passed or failed — so when something needs to be defended to a regulator, debugged after an incident, or simply understood by someone who wasn't in the room, the organization can point to the exact link in the chain instead of reconstructing a guess.</p>
+  </section>
+
+  <section id="gov">
+    <div class="sec-num">07</div>
+    <h2>Governance and risk, integrated dynamically</h2>
+    <p class="lead" style="margin-top:14px;">The rules the Gateway enforces aren't a static policy binder reviewed once a year. They're live and queryable — evaluated fresh, for the specific request in front of it, at the moment it happens — including a real-time read on how risky and how reversible the proposed action actually is. That's what lets the pipeline guide a decision in the moment, rather than only judge it afterward.</p>
+    <div class="riskgrid">
+      <div class="rcard"><span class="rlvl" style="background:rgba(46,158,107,.16);color:var(--rv-planet);">Reversible</span><p>Can be undone cleanly. Proceeds under standard checks — no hold required.</p></div>
+      <div class="rcard"><span class="rlvl" style="background:rgba(197,90,17,.16);color:var(--amber);">Conditionally reversible</span><p>Proceeds, but within a defined undo window — the accountable person is notified and can still reverse it.</p></div>
+      <div class="rcard"><span class="rlvl" style="background:rgba(192,0,0,.14);color:var(--red);">Irreversible</span><p>Cannot proceed without a named human's verified, logged authorization first. No exceptions, no override.</p></div>
+    </div>
+    <p class="body-text" style="margin-top:20px;">And because every check is evaluated in real time against current evidence, the same mechanism that governs a single interaction also watches for patterns across many of them — so when the same kind of failure keeps recurring, that's not left to be noticed eventually. It automatically triggers a formal review, which is also what feeds the evidenced case for change described above.</p>
+  </section>
+
+  <section style="border-bottom:none;padding-bottom:20px;">
+    <div class="cta">
+      <div>
+        <h3>Want the full technical pipeline?</h3>
+        <p>The RE Gateway Console breaks down all 11 stages, 59 deliverables, and every STAMP/STPA, INCOSE, ISO, and SSE mapping behind this overview.</p>
+      </div>
+      <button class="cta-btn" type="button" onclick="showView('console')">Open the Console →</button>
+    </div>
+  </section>
+
+</main>
+
+<footer><p>The Value Enablement Group, LLC &nbsp;·&nbsp; RE Gateway Overview &nbsp;·&nbsp; A companion briefing to the RE Gateway Console</p></footer>
+</div>
+
+<div id="view-architecture" class="view" hidden>
+<div class="ehdr">
+  <div class="ehdr-inner">
+    <div class="ehdr-eyebrow" style="color:#B8AEFF;">Architecture Overview · Technical Briefing</div>
+    <h1>RE Gateway Architecture</h1>
+    <p class="ehdr-sub">The system design behind the console: the six-zone control structure, the STAMP safety loop it implements, the ontology substrate it queries, and where RDSG v2.0, HSGA 4.0, INCOSE RM, ISO, and SSE each attach.</p>
+    <div class="ehdr-byline">The Value Enablement Group, LLC &nbsp;·&nbsp; Companion to the RE Gateway Console &nbsp;·&nbsp; RDSG STPA/STAMP Edition v2.0</div>
+  </div>
+</div>
+
+<nav class="subnav"><div class="subnav-inner">
+  <a href="#zonemap">Zone Map</a>
+  <a href="#loop">Control Loop</a>
+  <a href="#substrate">Knowledge Substrate</a>
+  <a href="#standards">Standards</a>
+  <a href="#holon">Holonic Layering</a>
+  <a href="#reversibility">Reversibility</a>
+  <a href="#archtrace">Traceability</a>
+</div></nav>
+
+<main class="page">
+
+  <section id="zonemap">
+    <div class="sec-num">01</div>
+    <h2>Six zones, one control structure</h2>
+    <p class="lead" style="margin-top:14px;">The console groups its eleven pipeline stages into six architectural zones. Each zone is a distinct trust boundary: requests only move forward, never around, and every zone hands off a specific, typed artifact to the next.</p>
+    <div class="zonemap">
+      <div class="zonecard" style="--zc:#64748B;"><div class="zn">Zone 1</div><h3>Elicitation Interface</h3><p>Prompt-engineering layer. Personas issue a Structured Prompt Object (SPO) — identity, intent, domain, and scenario as typed fields, not free text.</p></div>
+      <div class="zonecard" style="--zc:#534AB7;"><div class="zn">Zone 2</div><h3>Semantic Gateway</h3><p>Requirement Context Bundle assembly, PEP authorization, and Compiled AI Directive compilation. The Gateway's own control logic lives here.</p></div>
+      <div class="zonecard" style="--zc:#1F6FBF;"><div class="zn">Zone 3</div><h3>Ontology &amp; Rules Store</h3><p>Entity resolution, SHACL constraint evaluation, and SWRL rule execution — the constraint-enforcement engine the Gateway queries against.</p></div>
+      <div class="zonecard" style="--zc:#0A6E6E;"><div class="zn">Zone 4</div><h3>Service Facade</h3><p>The ten-criterion AcceptanceCriteria pipeline. Validates agent output before delivery and closes the STAMP feedback loop.</p></div>
+      <div class="zonecard" style="--zc:#2E9E6B;"><div class="zn">Zone 5</div><h3>AI Agents + Vector&nbsp;DBs</h3><p>The controlled process. Executes under CAD directive; retrieval is governed by the RDQE; behavior is watched by the UCA monitoring profile.</p></div>
+      <div class="zonecard" style="--zc:#C55A11;"><div class="zn">Zone 6</div><h3>Simplex Action Gateway</h3><p>The actuator boundary to the physical/external world. No Irreversible action executes without a verified human handshake.</p></div>
+    </div>
+  </section>
+
+  <section id="loop">
+    <div class="sec-num">02</div>
+    <h2>The STAMP control loop</h2>
+    <p class="lead" style="margin-top:14px;">The Gateway is modeled directly on Leveson's STAMP (Systems-Theoretic Accident Model and Processes) control structure — a controller acting on a process model, issuing control actions to a controlled process, and correcting itself from feedback. Every node below maps to a named artifact the console tracks.</p>
+    <div class="loop">
+      <div class="loopnode"><span class="ln-badge" style="--lc:#7BB8E8;--lc-bg:rgba(31,111,191,.18);">Controller</span><div class="ln-body"><strong>RE Gateway (Zones 2–3)</strong><span>Owns the control logic — what's allowed, what's flagged, what's compiled — for every interaction.</span></div></div>
+      <div class="loopedge">↓ synchronizes its view via</div>
+      <div class="loopnode"><span class="ln-badge" style="--lc:#C0BBFF;--lc-bg:rgba(122,111,224,.18);">Process Model</span><div class="ln-body"><strong>Requirement Context Bundle (RCB)</strong><span>The complete set of active requirements, UCA profiles, and safe-state indexes governing this exact interaction.</span></div></div>
+      <div class="loopedge">↓ compiled into</div>
+      <div class="loopnode"><span class="ln-badge" style="--lc:#F5A165;--lc-bg:rgba(197,90,17,.18);">Control Action</span><div class="ln-body"><strong>Compiled AI Directive (CAD)</strong><span>A single, requirement-anchored governance object dispatched to the controlled process.</span></div></div>
+      <div class="loopedge">↓ executed by</div>
+      <div class="loopnode"><span class="ln-badge" style="--lc:#6FE0AB;--lc-bg:rgba(46,158,107,.18);">Controlled Process</span><div class="ln-body"><strong>AI Agents + Vector DBs (Zone 5)</strong><span>Governed execution — retrieval biased by the RDQE, behavior watched independently by the UCA monitors.</span></div></div>
+      <div class="loopedge">↓ observed and scored by</div>
+      <div class="loopnode"><span class="ln-badge" style="--lc:#5ADADA;--lc-bg:rgba(10,154,154,.18);">Feedback</span><div class="ln-body"><strong>Service Facade Validation (Zone 4)</strong><span>Ten-criterion AcceptanceCriteria pass/fail. Failures recycle to the controlled process with structured corrections.</span></div></div>
+      <div class="loopedge">↓ gates real-world effect at</div>
+      <div class="loopnode"><span class="ln-badge" style="--lc:#FFAA60;--lc-bg:rgba(224,112,32,.2);">Actuator</span><div class="ln-body"><strong>Simplex Action Gateway (Zone 6)</strong><span>The boundary where control actions become irreversible physical or external-system effects.</span></div></div>
+      <div class="loopedge">↻ findings and gap flags feed back into the Controller's next process-model refresh</div>
+    </div>
+
+    <div class="twocol" style="margin-top:30px;">
+      <div class="pcard" style="--pc:#F5A165;">
+        <div class="ptag">UCA framework</div>
+        <h3>Four unsafe control action types</h3>
+        <p><strong>Missing</strong> — no control action when one was required. <strong>Hazardous</strong> — a control action issued that creates a hazard. <strong>MisTimed</strong> — issued too early, too late, or out of sequence. <strong>WrongDuration</strong> — held too briefly or too long, i.e. scope exceeded. Each has a defined safe-state response, injected into the CAD as TMP (temporal monitor) and UCA rule activations at Step 3.</p>
+      </div>
+      <div class="pcard" style="--pc:#F5A165;">
+        <div class="ptag">Defense in depth</div>
+        <h3>The same hazard class, checked twice</h3>
+        <p>UCA/TMP rules fire at compile time (Step 3–4) as the first layer. Zone 5's runtime monitors and Zone 4's AcceptanceCriteria form a second, independent layer at execution and delivery — so one missed check doesn't silently become a delivered failure.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="substrate">
+    <div class="sec-num">03</div>
+    <h2>The knowledge &amp; constraint substrate</h2>
+    <p class="lead" style="margin-top:14px;">Every check the Gateway runs is a live query against a triplestore, not a lookup in a document. That's what makes "the rulebook" something a pipeline can actually enforce rather than merely reference.</p>
+    <div class="twocol">
+      <div class="pcard" style="--pc:#1F6FBF;">
+        <div class="ptag">Requirement individuals</div>
+        <h3>Requirements as queryable objects</h3>
+        <p>PersonaRequirements, JobRequirements, ComplianceRequirements, ControlRequirements, and ScenarioRequirements are first-class individuals in the triplestore — resolved fresh into the RCB for every interaction, not compiled once and left stale.</p>
+      </div>
+      <div class="pcard" style="--pc:#1F6FBF;">
+        <div class="ptag">SHACL shapes</div>
+        <h3>Structural constraint validation</h3>
+        <p>A dynamically-assembled shape set, scoped to this persona/job/domain, evaluated against the annotated entity map. Must-priority failures halt compilation; Should-priority failures produce governance warnings.</p>
+      </div>
+      <div class="pcard" style="--pc:#7A6FE0;">
+        <div class="ptag">SWRL rule families</div>
+        <h3>REQ · TMP · UCA</h3>
+        <p>REQ rules (8) translate requirement class membership into behavior. TMP rules (6, RDSG v2.0) govern time-based failure modes. UCA rules (5, RDSG v2.0) encode STPA unsafe-control-action constraints directly as runtime enforcement logic.</p>
+      </div>
+      <div class="pcard" style="--pc:#C55A11;">
+        <div class="ptag">Hazard &amp; safe-state individuals</div>
+        <h3>UCARecord · SafeStateDefinition</h3>
+        <p>Every FunctionalJob carries a full UCA profile — four hazard records with timeouts and safe-state actions — pre-fetched into the RCB's Safe-State Index so a mid-pipeline failure resolves instantly, without another triplestore round-trip.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="standards">
+    <div class="sec-num">04</div>
+    <h2>Standards alignment</h2>
+    <p class="lead" style="margin-top:14px;">The architecture doesn't reference these standards loosely — each one is mapped to a specific mechanism in the pipeline.</p>
+    <div style="overflow-x:auto;">
+    <table class="spectable">
+      <thead><tr><th style="width:170px;">Standard</th><th>How it's implemented here</th></tr></thead>
+      <tbody>
+        <tr><td class="std">STPA / STAMP<br><span style="font-weight:400;color:var(--text-3);font-size:10.5px;">Leveson</span></td><td>The Gateway's entire control structure — controller, process model, control actions, feedback, actuator — plus the UCA hazard-analysis framework enforced as runtime rules.</td></tr>
+        <tr><td class="std">INCOSE RM</td><td>L1–L4 traceability: L1 stakeholder need resolution (RCB) → L3 verification criterion execution (SHACL) → L4 validation measure execution (AcceptanceCriteria) → delivery closes the loop back to the original need.</td></tr>
+        <tr><td class="std">ISO 8000 · ISO/IEC 25010 · ISO/IEC/IEEE 24765</td><td>Data-quality, product-quality, and systems-engineering-vocabulary requirements, each mapped directly into SHACL shapes so a conformance claim is a testable, not asserted, statement.</td></tr>
+        <tr><td class="std">Wymore System Model</td><td>Provides the formal systems-theoretic grounding for what counts as a well-defined system, interface, and boundary — the theoretical basis the zone model and CAD schema are built on.</td></tr>
+        <tr><td class="std">Social Systems Engineering</td><td>The cross-scale coupling and homeostatic-feedback model connecting fast-cycle AI execution (milliseconds) to slow-cycle social and governance norms (months–years) — see Holonic Layering, next.</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <section id="holon">
+    <div class="sec-num">05</div>
+    <h2>Holonic layering &amp; HSGA 4.0</h2>
+    <p class="lead" style="margin-top:14px;">HSGA (Holonic Semantic Governance Architecture) defines governance the same way at every organizational scale: each layer is a <em>holon</em> — simultaneously a complete, self-governing whole and a part of the layer above it. The RE Gateway is the runtime holon: the layer where enterprise-level definitions stop being documents and start being enforced.</p>
+    <div class="stack">
+      <div class="stacklayer" style="--slc:#C0BBFF;"><div class="sl-t">Enterprise</div><div class="sl-n">HSGA 4.0 — governance definitions</div><div class="sl-d">The master rulebook: standards, ontologies, and policy defined once, precisely enough to be machine-checkable.</div></div>
+      <div class="stackconnect">↓ instantiated within</div>
+      <div class="stacklayer" style="--slc:#7BB8E8;"><div class="sl-t">Domain</div><div class="sl-n">Business-unit governance holon</div><div class="sl-d">Domain Gov-authored SHACL invariants, SWRL declarations, and requirement individuals — HSGA's definitions specialized to this domain.</div></div>
+      <div class="stackconnect">↓ enforced by</div>
+      <div class="stacklayer" style="--slc:#5ADADA;"><div class="sl-t">Interaction</div><div class="sl-n">RE Gateway — runtime enforcement holon</div><div class="sl-d">Where domain-scoped definitions become a live, per-interaction gate. This is the console's own six-zone pipeline.</div></div>
+      <div class="stackconnect">↓ composed of</div>
+      <div class="stacklayer" style="--slc:#6E90B2;"><div class="sl-t">Atomic</div><div class="sl-n">Individual requirement / control</div><div class="sl-d">A single Requirement, SHACL shape, or SWRL rule — the smallest holon, still a complete, evaluable unit on its own.</div></div>
+    </div>
+    <p class="body-text" style="margin-top:18px;">Because every layer shares the same pattern, a governance change made once at the HSGA level propagates through domain and interaction layers without a separate integration project — the Gateway just resolves a different set of individuals on its next query.</p>
+  </section>
+
+  <section id="reversibility">
+    <div class="sec-num">06</div>
+    <h2>Reversibility architecture</h2>
+    <p class="lead" style="margin-top:14px;">Zone 6 implements the Simplex Architecture principle directly: once an irreversible action executes, post-action feedback is useless, so verification has to happen before dispatch, not after.</p>
+    <div class="chain" style="margin-top:22px;">
+      <span class="chain-node">Classify</span><span class="chain-arrow">→</span>
+      <span class="chain-node">Flag (HANDSHAKE_REQUIRED)</span><span class="chain-arrow">→</span>
+      <span class="chain-node">Authorize (Approval Token)</span><span class="chain-arrow">→</span>
+      <span class="chain-node">Validate token</span><span class="chain-arrow">→</span>
+      <span class="chain-node">Execute + immutable audit</span>
+    </div>
+    <div class="riskgrid" style="margin-top:20px;">
+      <div class="rcard"><span class="rlvl" style="background:rgba(46,158,107,.16);color:var(--rv-planet);">Reversible</span><p>No handshake required. Standard SHACL/SWRL checks apply.</p></div>
+      <div class="rcard"><span class="rlvl" style="background:rgba(197,90,17,.16);color:var(--amber);">Conditionally reversible</span><p>ALLOW_WITH_CONDITIONS: proceeds inside a defined undo-window TTL, with the owner notified.</p></div>
+      <div class="rcard"><span class="rlvl" style="background:rgba(192,0,0,.14);color:var(--red);">Irreversible</span><p>HANDSHAKE_REQUIRED. Compilation halts until a valid, scoped, fresh Approval Token is presented.</p></div>
+    </div>
+    <p class="body-text" style="margin-top:18px;">Two independent layers enforce this: the Step 4 Reversibility PEP catches it at <em>compile time</em>, before the CAD is even assembled. UCA-005 is the runtime backstop — if an Irreversible Zone 6 call somehow arrives without a HANDSHAKE_REQUIRED flag, it fires unconditionally and raises a control-structure-failure alert. An unowned Irreversible ControlRequirement (no valid approver role) halts CAD compilation outright — an unowned irreversible action cannot be governed, so it isn't allowed to exist.</p>
+  </section>
+
+  <section id="archtrace" style="border-bottom:none;">
+    <div class="sec-num">07</div>
+    <h2>The technical traceability chain</h2>
+    <p class="lead" style="margin-top:14px;">Every delivered response — and every artifact along the way — resolves back through this exact chain. This is what a "governance context block" or an audit request is actually reading off of.</p>
+    <div class="chain" style="margin-top:22px;">
+      <span class="chain-node">Requirement individual</span><span class="chain-arrow">→</span>
+      <span class="chain-node">SHACL / SWRL enforcement</span><span class="chain-arrow">→</span>
+      <span class="chain-node">Compiled AI Directive</span><span class="chain-arrow">→</span>
+      <span class="chain-node">Zone 5 execution + RDQE provenance</span><span class="chain-arrow">→</span>
+      <span class="chain-node">Service Facade Validation Record</span><span class="chain-arrow">→</span>
+      <span class="chain-node">Zone 6 audit (if irreversible)</span><span class="chain-arrow">→</span>
+      <span class="chain-node">Delivered governance context</span>
+    </div>
+  </section>
+
+  <section style="border-bottom:none;padding-bottom:20px;">
+    <div class="cta">
+      <div>
+        <h3>See it running, or read the plain-language version</h3>
+        <p>The Console lets you click through all 11 stages and 59 deliverables live. The Overview explains all of this without the acronyms.</p>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="cta-btn" type="button" onclick="showView('console')">Open the Console →</button>
+        <button class="cta-btn" type="button" style="background:transparent;color:#fff;border:1px solid rgba(255,255,255,.35);" onclick="showView('overview')">Read the Overview →</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer><p>The Value Enablement Group, LLC &nbsp;·&nbsp; RE Gateway Architecture &nbsp;·&nbsp; A technical companion to the RE Gateway Console</p></footer>
+</div>
 
 <script>
+
 // ── FILTER CONFIG ─────────────────────────────────────────────────────────────
 const F={
-  rdsg:  {label:'RDSG v2.0',    color:'#7BB8E8',bg:'rgba(31,111,191,.18)',  border:'#2A5A9A', pill:'rgba(31,111,191,.25)'},
-  stamp: {label:'STAMP/STPA',   color:'#F5A165',bg:'rgba(197,90,17,.18)',   border:'#8B4020', pill:'rgba(197,90,17,.25)'},
-  zone6: {label:'Zone 6',       color:'#FFAA60',bg:'rgba(224,112,32,.18)',  border:'#9A4010', pill:'rgba(224,112,32,.25)'},
-  incose:{label:'INCOSE RM',    color:'#5ADADA',bg:'rgba(10,154,154,.18)',  border:'#0A6A6A', pill:'rgba(10,154,154,.25)'},
-  iso:   {label:'ISO Standards',color:'#C0BBFF',bg:'rgba(122,111,224,.18)', border:'#5A50B0', pill:'rgba(122,111,224,.25)'},
-  sse:   {label:'SSE · Right Value',color:'#6FE0AB',bg:'rgba(46,158,107,.18)', border:'#1F7A50', pill:'rgba(46,158,107,.25)'},
+  rdsg:  {label:'RDSG v2.0',    color:'var(--fc-rdsg-t)',  bg:'var(--fc-rdsg-bg)',   border:'var(--fc-rdsg-b)',  pill:'var(--fc-rdsg-p)'},
+  stamp: {label:'STAMP/STPA',   color:'var(--fc-stamp-t)', bg:'var(--fc-stamp-bg)',  border:'var(--fc-stamp-b)', pill:'var(--fc-stamp-p)'},
+  zone6: {label:'Zone 6',       color:'var(--fc-zone6-t)', bg:'var(--fc-zone6-bg)',  border:'var(--fc-zone6-b)', pill:'var(--fc-zone6-p)'},
+  incose:{label:'INCOSE RM',    color:'var(--fc-incose-t)',bg:'var(--fc-incose-bg)', border:'var(--fc-incose-b)',pill:'var(--fc-incose-p)'},
+  iso:   {label:'ISO Standards',color:'var(--fc-iso-t)',   bg:'var(--fc-iso-bg)',    border:'var(--fc-iso-b)',   pill:'var(--fc-iso-p)'},
+  sse:   {label:'SSE · Right Value',color:'var(--fc-sse-t)',bg:'var(--fc-sse-bg)',   border:'var(--fc-sse-b)',   pill:'var(--fc-sse-p)'},
 };
 
 let active=new Set(), stageId=null;
@@ -462,7 +995,7 @@ function renderFlow(){
     h+=`<div class="${cls}" style="--nc:${s.color};${bgS}" onclick="select('${s.id}')">
       <div class="fnode-icon" style="background:${s.bg};border:1px solid ${s.color}44;">${s.icon}</div>
       <div class="fnode-txt">
-        <div class="fnode-lbl" style="color:${isActive?s.color:'#D0E4F8'};">${s.label}</div>
+        <div class="fnode-lbl" style="color:${isActive?s.color:'var(--text-node)'};">${s.label}</div>
         <div class="fnode-sub">${s.sub}</div>
       </div>
       <div class="fnode-ct" style="background:${s.bg};color:${s.color};border:1px solid ${s.color}44;">${s.dels.length}</div>
@@ -558,7 +1091,7 @@ function renderDetail(id){
             <p>${s.sse}</p>
           </div>
           <div class="ssebox-row">
-            <span class="ssebox-tag" style="background:rgba(184,134,46,.22);color:#E0BE7E;border-color:rgba(184,134,46,.4);">Right Value</span>
+            <span class="ssebox-tag" style="background:var(--rvtag-bg);color:var(--rvtag-text);border-color:rgba(184,134,46,.4);">Right Value</span>
             <p class="rv-line">${s.rv}</p>
           </div>
         </div>
@@ -588,6 +1121,41 @@ function renderDetail(id){
 // ── INIT ──────────────────────────────────────────────────────────────────────
 renderFlow();
 select('stage0');
+
+
+// ── THEME TOGGLE (global) ────────────────────────────────────────────────────
+const SUN_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>';
+const MOON_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+function applyTheme(mode){
+  document.documentElement.setAttribute('data-mode',mode);
+  try{localStorage.setItem('rdsg-theme',mode);}catch(e){}
+  const btn=document.getElementById('themeToggle');
+  if(btn){
+    btn.innerHTML=mode==='light'?MOON_SVG:SUN_SVG;
+    btn.setAttribute('aria-pressed',mode==='light'?'true':'false');
+    btn.title=mode==='light'?'Switch to dark theme':'Switch to light theme';
+  }
+}
+function toggleTheme(){
+  const cur=document.documentElement.getAttribute('data-mode')==='light'?'light':'dark';
+  applyTheme(cur==='light'?'dark':'light');
+}
+document.getElementById('themeToggle').addEventListener('click',toggleTheme);
+applyTheme(document.documentElement.getAttribute('data-mode')==='light'?'light':'dark');
+
+// ── VIEW / TAB SWITCHING (global) ────────────────────────────────────────────
+function showView(name){
+  ['console','overview','architecture'].forEach(v=>{
+    const el=document.getElementById('view-'+v);
+    if(el) el.hidden = (v!==name);
+  });
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===name));
+  window.scrollTo(0,0);
+}
+(function(){
+  showView('overview');
+})();
+
 </script>
 </body>
 </html>
