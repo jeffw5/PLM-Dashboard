@@ -1,0 +1,430 @@
+@prefix isaca:    <http://example.org/isaca/ddd#> .
+@prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:     <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:      <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct:      <http://purl.org/dc/terms/> .
+
+# =================================================================
+# ONTOLOGY & CLASS DEFINITIONS
+# =================================================================
+
+isaca:EnterpriseBusinessModel a owl:Ontology ;
+    rdfs:label "ISACA Semantic Governance & Knowledge Engineering Business Model Ontology" ;
+    rdfs:comment "A DDD ontology mapping ISACA's cognitive governance platform, certifications, dynamic assessment, and continuous auditing services." ;
+    owl:versionInfo "1.0" ;
+    dct:description "Aligns ISACA's intellectual property (COBIT, CMMI, CISA, CRISC, CDPSE) into an actionable multi-tiered operational model using BFO relations, bounded contexts, personas, systems, and risk traces." .
+
+# --- DDD Core Classes ---
+isaca:Domain a owl:Class ; rdfs:label "Business Domain" .
+isaca:SubDomain a owl:Class ; rdfs:subClassOf isaca:Domain ; rdfs:label "Sub-Domain / Bounded Context" .
+isaca:DomainService a owl:Class ; rdfs:label "Domain Service" .
+isaca:BusinessProcess a owl:Class ; rdfs:label "Underlying Business Process" .
+isaca:OperationalArea a owl:Class ; rdfs:label "Functional Operational Area" .
+isaca:OntologyConcept a owl:Class ; rdfs:label "Domain-Specific Ontology Concept" .
+
+# --- Extended Enterprise Classes ---
+isaca:Capability a owl:Class ; rdfs:label "Business Capability" .
+isaca:Event a owl:Class ; rdfs:label "Business Event" .
+isaca:Asset a owl:Class ; rdfs:label "Business Asset" .
+isaca:DigitalAsset a owl:Class ; rdfs:subClassOf isaca:Asset ; rdfs:label "Digital Asset" .
+isaca:ValueStream a owl:Class ; rdfs:label "Value Stream" .
+isaca:Persona a owl:Class ; rdfs:label "Persona" .
+isaca:Role a owl:Class ; rdfs:label "Role" .
+isaca:Rules a owl:Class ; rdfs:label "Business Rule" .
+isaca:Compliance a owl:Class ; rdfs:label "Compliance & Governance Standard" .
+isaca:System a owl:Class ; rdfs:label "System / Platform" .
+isaca:Risk a owl:Class ; rdfs:label "Risk" .
+isaca:Issue a owl:Class ; rdfs:label "Issue" .
+isaca:Observation a owl:Class ; rdfs:label "Observation" .
+
+# --- Core & Extended Object Properties ---
+isaca:hasSubDomain a owl:ObjectProperty ; rdfs:domain isaca:Domain ; rdfs:range isaca:SubDomain .
+isaca:subDomainOf a owl:ObjectProperty ; owl:inverseOf isaca:hasSubDomain .
+isaca:providesService a owl:ObjectProperty ; rdfs:domain isaca:SubDomain ; rdfs:range isaca:DomainService .
+isaca:providedBySubDomain a owl:ObjectProperty ; owl:inverseOf isaca:providesService .
+isaca:executedByProcess a owl:ObjectProperty ; rdfs:domain isaca:DomainService ; rdfs:range isaca:BusinessProcess .
+isaca:processOfService a owl:ObjectProperty ; owl:inverseOf isaca:executedByProcess .
+isaca:supportedByOperation a owl:ObjectProperty ; rdfs:domain isaca:BusinessProcess ; rdfs:range isaca:OperationalArea .
+isaca:operationSupportsProcess a owl:ObjectProperty ; owl:inverseOf isaca:supportedByOperation .
+isaca:mapsToOntologyConcept a owl:ObjectProperty ; rdfs:domain isaca:DomainService ; rdfs:range isaca:OntologyConcept .
+
+isaca:enablesCapability a owl:ObjectProperty ; rdfs:domain isaca:DomainService ; rdfs:range isaca:Capability .
+isaca:enablesValueStream a owl:ObjectProperty ; rdfs:domain isaca:DomainService ; rdfs:range isaca:ValueStream .
+isaca:enabledByService a owl:ObjectProperty ; owl:inverseOf isaca:enablesValueStream .
+isaca:assignedToPersona a owl:ObjectProperty ; rdfs:domain isaca:DomainService ; rdfs:range isaca:Persona .
+isaca:assignedToRole a owl:ObjectProperty ; rdfs:domain isaca:Persona ; rdfs:range isaca:Role .
+isaca:performedByRole a owl:ObjectProperty ; rdfs:domain isaca:BusinessProcess ; rdfs:range isaca:Role .
+isaca:createsAsset a owl:ObjectProperty ; rdfs:domain isaca:BusinessProcess ; rdfs:range isaca:Asset .
+isaca:modifiesAsset a owl:ObjectProperty ; rdfs:domain isaca:BusinessProcess ; rdfs:range isaca:Asset .
+isaca:consumesAsset a owl:ObjectProperty ; rdfs:domain isaca:BusinessProcess ; rdfs:range isaca:Asset .
+isaca:initiatesEvent a owl:ObjectProperty ; rdfs:domain isaca:BusinessProcess ; rdfs:range isaca:Event .
+isaca:triggersProcess a owl:ObjectProperty ; owl:inverseOf isaca:initiatesEvent .
+isaca:precedesProcess a owl:ObjectProperty ; rdfs:domain isaca:BusinessProcess ; rdfs:range isaca:BusinessProcess .
+isaca:guidesProcess a owl:ObjectProperty ; rdfs:domain isaca:Rules ; rdfs:range isaca:BusinessProcess .
+isaca:controlsProcess a owl:ObjectProperty ; rdfs:domain isaca:Compliance ; rdfs:range isaca:BusinessProcess .
+isaca:implementedBySystem a owl:ObjectProperty ; rdfs:domain isaca:BusinessProcess ; rdfs:range isaca:System .
+isaca:occursInProcess a owl:ObjectProperty ; rdfs:domain isaca:Issue ; rdfs:range isaca:BusinessProcess .
+isaca:issueGeneratesObservation a owl:ObjectProperty ; rdfs:domain isaca:Issue ; rdfs:range isaca:Observation .
+isaca:impactsProcess a owl:ObjectProperty ; rdfs:domain isaca:Risk ; rdfs:range isaca:BusinessProcess .
+isaca:impactsSystem a owl:ObjectProperty ; rdfs:domain isaca:Risk ; rdfs:range isaca:System .
+isaca:impactsService a owl:ObjectProperty ; rdfs:domain isaca:Risk ; rdfs:range isaca:DomainService .
+isaca:riskSeverity a owl:DatatypeProperty ; rdfs:domain isaca:Risk ; rdfs:range xsd:string .
+isaca:riskLikelihood a owl:DatatypeProperty ; rdfs:domain isaca:Risk ; rdfs:range xsd:string .
+
+# =================================================================
+# 1. CORE BUSINESS DOMAINS & BOUNDED CONTEXTS
+# =================================================================
+
+# --- 1. Dynamic Credentialing & Learning Domain ---
+isaca:IndividualCredentialingDomain a isaca:Domain ;
+    rdfs:label "Dynamic Professional Credentialing & Talent Domain" ;
+    isaca:hasSubDomain isaca:AdaptiveLearningSubDomain ,
+                       isaca:DynamicCertificationSubDomain .
+
+isaca:AdaptiveLearningSubDomain a isaca:SubDomain ;
+    rdfs:label "Adaptive Learning & Continuous CPE Bounded Context" ;
+    rdfs:comment "Personalized micro-learning paths and dynamic CPE skill validation" ;
+    isaca:providesService isaca:AdaptiveSkillPathwayService ,
+                          isaca:ContinuousCPESimulationService .
+
+isaca:DynamicCertificationSubDomain a isaca:SubDomain ;
+    rdfs:label "Graph-Based Certification & Examination Bounded Context" ;
+    rdfs:comment "Procedurally generated examinations and verifiable dynamic credentials" ;
+    isaca:providesService isaca:GenerativeExamTestingService ,
+                          isaca:VerifiableCredentialService .
+
+# --- 2. Enterprise Dynamic Assessment & Assurance Domain ---
+isaca:EnterpriseAssuranceDomain a isaca:Domain ;
+    rdfs:label "Enterprise Dynamic Assessment & Continuous Assurance Domain" ;
+    isaca:hasSubDomain isaca:ContinuousAuditSubDomain ,
+                       isaca:EnterpriseMaturitySubDomain .
+
+isaca:ContinuousAuditSubDomain a isaca:SubDomain ;
+    rdfs:label "Automated Semantic Auditing Bounded Context" ;
+    rdfs:comment "Continuous control monitoring and Auditor-in-the-Loop telemetry verification" ;
+    isaca:providesService isaca:ContinuousTelemetryAuditService ,
+                          isaca:AuditorCopilotGuidanceService .
+
+isaca:EnterpriseMaturitySubDomain a isaca:SubDomain ;
+    rdfs:label "CMMI & Enterprise Governance Benchmarking Bounded Context" ;
+    rdfs:comment "Real-time enterprise maturity modeling and cross-framework readiness scoring" ;
+    isaca:providesService isaca:DynamicMaturityScoringService ,
+                          isaca:WorkforceGRCBenchmarkingService .
+
+# --- 3. Semantic Platform & Data Monetization Domain ---
+isaca:KnowledgeEngineeringDomain a isaca:Domain ;
+    rdfs:label "Semantic Knowledge Platform & Monetization Domain" ;
+    isaca:hasSubDomain isaca:OntologyDistributionSubDomain ,
+                       isaca:PolicyAsCodeSubDomain .
+
+isaca:OntologyDistributionSubDomain a isaca:SubDomain ;
+    rdfs:label "Governance-as-a-Platform (GaaP) API Bounded Context" ;
+    rdfs:comment "B2B semantic knowledge graph subscription licensing for GRC/CSPM vendors" ;
+    isaca:providesService isaca:GRCOntologyLicensingAPIService ,
+                          isaca:CrossStandardMappingFeedService .
+
+isaca:PolicyAsCodeSubDomain a isaca:SubDomain ;
+    rdfs:label "Compliance-as-Code & AI Governance Bounded Context" ;
+    rdfs:comment "Machine-readable compliance guardrails, Rego packs, and LLM ethical audit tools" ;
+    isaca:providesService isaca:AIEthicsAuditFrameworkService ,
+                          isaca:MachineReadablePolicyRulepackService .
+
+# =================================================================
+# 2. FUNCTIONAL & OPERATIONAL AREAS
+# =================================================================
+
+isaca:OpOntologyEngineering a isaca:OperationalArea ;
+    rdfs:label "Knowledge Engineering & Ontology Operations" ;
+    rdfs:comment "Maintains upper-level governance ontologies, taxonomy mappings, and graph edges." .
+
+isaca:OpCertificationExamOps a isaca:OperationalArea ;
+    rdfs:label "Certification & Psychometric Operations" ;
+    rdfs:comment "Psychometrics, generative scenario validation, proctoring security." .
+
+isaca:OpEnterpriseAdvisory a isaca:OperationalArea ;
+    rdfs:label "Enterprise Assurance & Advisory Services" ;
+    rdfs:comment "Corporate maturity appraisals, continuous monitoring setups, benchmark advisory." .
+
+isaca:OpPlatformEngineering a isaca:OperationalArea ;
+    rdfs:label "Cloud Platform & Semantic API Operations" ;
+    rdfs:comment "Graph databases, high-throughput Graph-RAG endpoints, identity/telemetry connectors." .
+
+isaca:OpCommercialPartnerships a isaca:OperationalArea ;
+    rdfs:label "Commercial Partnerships & Channel Licensing" ;
+    rdfs:comment "B2B API licensing, GRC vendor syndication, enterprise corporate subscriptions." .
+
+# =================================================================
+# 3. SERVICES, PROCESSES & OPERATIONAL MAPPINGS
+# =================================================================
+
+# -----------------------------------------------------------------
+# 3.1 Adaptive Learning & Certification Services
+# -----------------------------------------------------------------
+
+isaca:GenerativeExamTestingService a isaca:DomainService ;
+    rdfs:label "Dynamic Generative Exam Engine Service" ;
+    rdfs:comment "Generates contextualized, unique exam scenarios from the ISACA control ontology." ;
+    isaca:executedByProcess isaca:ProcDynamicScenarioSynthesis ,
+                            isaca:ProcPsychometricGraphValidation ;
+    isaca:mapsToOntologyConcept isaca:ConceptCompetencyOntology ,
+                                isaca:ConceptExamIntegrityMetric ;
+    isaca:enablesCapability isaca:CapCertifyProfessionals ;
+    isaca:enablesValueStream isaca:VSCredentialAttainmentToPractice ;
+    isaca:assignedToPersona isaca:PersonaIndividualLearner .
+
+isaca:ProcDynamicScenarioSynthesis a isaca:BusinessProcess ;
+    rdfs:label "Graph-Conditioned Exam Scenario Synthesis Process" ;
+    isaca:supportedByOperation isaca:OpCertificationExamOps ,
+                               isaca:OpOntologyEngineering ;
+    isaca:performedByRole isaca:RolePsychometrician ;
+    isaca:createsAsset isaca:AssetProceduralExamVoucher ;
+    isaca:initiatesEvent isaca:EventExamGenerated ;
+    isaca:implementedBySystem isaca:SysGenerativeExamPlatform ;
+    isaca:precedesProcess isaca:ProcPsychometricGraphValidation .
+
+isaca:ProcPsychometricGraphValidation a isaca:BusinessProcess ;
+    rdfs:label "Automated Psychometric Difficulty Calibration Process" ;
+    isaca:supportedByOperation isaca:OpCertificationExamOps ;
+    isaca:performedByRole isaca:RolePsychometrician ;
+    isaca:consumesAsset isaca:AssetProceduralExamVoucher ;
+    isaca:createsAsset isaca:AssetScoredEvaluationRecord ;
+    isaca:implementedBySystem isaca:SysGenerativeExamPlatform .
+
+# -----------------------------------------------------------------
+# 3.2 Continuous Telemetry & Enterprise Auditing Services
+# -----------------------------------------------------------------
+
+isaca:ContinuousTelemetryAuditService a isaca:DomainService ;
+    rdfs:label "Real-Time Enterprise Telemetry Audit Service" ;
+    rdfs:comment "Continuously ingests multi-cloud/identity telemetry and evaluates it against semantic controls." ;
+    isaca:executedByProcess isaca:ProcTelemetryIngestionEvaluation ,
+                            isaca:ProcControlDriftRemediation ;
+    isaca:mapsToOntologyConcept isaca:ConceptCOBITControlMapping ,
+                                isaca:ConceptControlDriftObservation ;
+    isaca:enablesCapability isaca:CapContinuousAssurance ,
+                            isaca:CapAuditRiskManagement ;
+    isaca:enablesValueStream isaca:VSEnterpriseContinuousCompliance ;
+    isaca:assignedToPersona isaca:PersonaEnterpriseCISO .
+
+isaca:ProcTelemetryIngestionEvaluation a isaca:BusinessProcess ;
+    rdfs:label "Stream Telemetry Evidence Validation Process" ;
+    isaca:supportedByOperation isaca:OpEnterpriseAdvisory ,
+                               isaca:OpPlatformEngineering ;
+    isaca:performedByRole isaca:RoleContinuousAuditor ;
+    isaca:createsAsset isaca:AssetLiveComplianceAuditReport ;
+    isaca:initiatesEvent isaca:EventControlDriftDetected ;
+    isaca:implementedBySystem isaca:SysContinuousAuditEngine ;
+    isaca:precedesProcess isaca:ProcControlDriftRemediation .
+
+isaca:ProcControlDriftRemediation a isaca:BusinessProcess ;
+    rdfs:label "Semantic Control Remediation Prescriptive Process" ;
+    isaca:supportedByOperation isaca:OpEnterpriseAdvisory ;
+    isaca:performedByRole isaca:RoleGRCArchitect ;
+    isaca:consumesAsset isaca:AssetLiveComplianceAuditReport ;
+    isaca:modifiesAsset isaca:AssetEnterpriseMaturityScorecard ;
+    isaca:implementedBySystem isaca:SysDynamicMaturityDashboard .
+
+# -----------------------------------------------------------------
+# 3.3 Semantic API & Policy-as-Code Services
+# -----------------------------------------------------------------
+
+isaca:GRCOntologyLicensingAPIService a isaca:DomainService ;
+    rdfs:label "Commercial Governance Knowledge Graph API Service" ;
+    rdfs:comment "Syndicates computable COBIT/CMMI/NIST semantic graphs to enterprise GRC platforms." ;
+    isaca:executedByProcess isaca:ProcSemanticAPIKeyProvisioning ,
+                            isaca:ProcOntologyVersionStreaming ;
+    isaca:mapsToOntologyConcept isaca:ConceptGovernanceOntologyGraph ;
+    isaca:enablesCapability isaca:CapKnowledgeMonetization ;
+    isaca:enablesValueStream isaca:VSKnowledgeSyndicationToRevenue ;
+    isaca:assignedToPersona isaca:PersonaB2BPartnerProductLead .
+
+isaca:ProcSemanticAPIKeyProvisioning a isaca:BusinessProcess ;
+    rdfs:label "B2B Commercial Subscription Provisioning Process" ;
+    isaca:supportedByOperation isaca:OpCommercialPartnerships ,
+                               isaca:OpPlatformEngineering ;
+    isaca:performedByRole isaca:RolePartnerSolutionsEngineer ;
+    isaca:createsAsset isaca:AssetMachineReadablePolicyBundle ;
+    isaca:initiatesEvent isaca:EventAPIStreamProvisioned ;
+    isaca:implementedBySystem isaca:SysGovernanceKnowledgePlatform ;
+    isaca:precedesProcess isaca:ProcOntologyVersionStreaming .
+
+isaca:ProcOntologyVersionStreaming a isaca:BusinessProcess ;
+    rdfs:label "Delta-Synchronized Ontology Feed Streaming Process" ;
+    isaca:supportedByOperation isaca:OpPlatformEngineering ,
+                               isaca:OpOntologyEngineering ;
+    isaca:performedByRole isaca:RoleOntologyEngineer ;
+    isaca:modifiesAsset isaca:AssetMachineReadablePolicyBundle ;
+    isaca:implementedBySystem isaca:SysGovernanceKnowledgePlatform .
+
+# =================================================================
+# 4. SHARED DOMAIN ONTOLOGY CONCEPTS
+# =================================================================
+
+isaca:ConceptGovernanceOntologyGraph a isaca:OntologyConcept ;
+    rdfs:label "Computable Governance Knowledge Graph" .
+
+isaca:ConceptCOBITControlMapping a isaca:OntologyConcept ;
+    rdfs:label "COBIT-to-Regulation Cross-Walk Triples" .
+
+isaca:ConceptCompetencyOntology a isaca:OntologyConcept ;
+    rdfs:label "Individual Skill & Cognitive Domain Ontology" .
+
+isaca:ConceptControlDriftObservation a isaca:OntologyConcept ;
+    rdfs:label "Telemetry-Derived Control Drift Record" .
+
+isaca:ConceptExamIntegrityMetric a isaca:OntologyConcept ;
+    rdfs:label "Psychometric Validity & Anti-Leakage Profile" .
+
+# =================================================================
+# 5. CAPABILITIES
+# =================================================================
+
+isaca:CapCertifyProfessionals a isaca:Capability ;
+    rdfs:label "Dynamic Professional Competency Certification" .
+
+isaca:CapContinuousAssurance a isaca:Capability ;
+    rdfs:label "Continuous Telemetry-Driven Audit Assurance" .
+
+isaca:CapAuditRiskManagement a isaca:Capability ;
+    rdfs:label "Automated Semantic Risk Assessment & Quantification" .
+
+isaca:CapKnowledgeMonetization a isaca:Capability ;
+    rdfs:label "Semantic Graph API Licensing & Monetization" .
+
+# =================================================================
+# 6. VALUE STREAMS
+# =================================================================
+
+isaca:VSCredentialAttainmentToPractice a isaca:ValueStream ;
+    rdfs:label "Learner Competency-to-Verified Practitioner Stream" ;
+    isaca:enabledByService isaca:AdaptiveSkillPathwayService ,
+                           isaca:GenerativeExamTestingService ,
+                           isaca:VerifiableCredentialService .
+
+isaca:VSEnterpriseContinuousCompliance a isaca:ValueStream ;
+    rdfs:label "Enterprise Assessment-to-Continuous Attestation Stream" ;
+    isaca:enabledByService isaca:ContinuousTelemetryAuditService ,
+                           isaca:DynamicMaturityScoringService .
+
+isaca:VSKnowledgeSyndicationToRevenue a isaca:ValueStream ;
+    rdfs:label "Knowledge Engineering-to-B2B Platform Monetization Stream" ;
+    isaca:enabledByService isaca:GRCOntologyLicensingAPIService ,
+                           isaca:MachineReadablePolicyRulepackService .
+
+# =================================================================
+# 7. PERSONAS & ROLES
+# =================================================================
+
+isaca:RolePsychometrician a isaca:Role ; rdfs:label "Psychometrician & Assessment Engineer Role" .
+isaca:RoleContinuousAuditor a isaca:Role ; rdfs:label "Continuous Automated Auditor Role" .
+isaca:RoleGRCArchitect a isaca:Role ; rdfs:label "GRC & Governance Enterprise Architect Role" .
+isaca:RoleOntologyEngineer a isaca:Role ; rdfs:label "Ontology & Knowledge Graph Engineer Role" .
+isaca:RolePartnerSolutionsEngineer a isaca:Role ; rdfs:label "Partner Integration Solutions Engineer Role" .
+
+isaca:PersonaIndividualLearner a isaca:Persona ;
+    rdfs:label "Professional Candidate / Credential Holder Persona" ;
+    isaca:assignedToRole isaca:RoleContinuousAuditor .
+
+isaca:PersonaEnterpriseCISO a isaca:Persona ;
+    rdfs:label "Enterprise CISO / Audit Director Persona" ;
+    isaca:assignedToRole isaca:RoleGRCArchitect .
+
+isaca:PersonaB2BPartnerProductLead a isaca:Persona ;
+    rdfs:label "GRC Software Vendor Product Executive Persona" ;
+    isaca:assignedToRole isaca:RolePartnerSolutionsEngineer .
+
+# =================================================================
+# 8. EVENTS
+# =================================================================
+
+isaca:EventExamGenerated a isaca:Event ; rdfs:label "Procedural Exam Generated Event" .
+isaca:EventControlDriftDetected a isaca:Event ; rdfs:label "Real-Time Control Drift Detected Event" .
+isaca:EventAPIStreamProvisioned a isaca:Event ; rdfs:label "Enterprise Semantic API Subscription Bound Event" .
+isaca:EventSkillGapFlagged a isaca:Event ; rdfs:label "Individual Skill Invalidation/Gap Event" .
+
+# =================================================================
+# 9. ASSETS
+# =================================================================
+
+isaca:AssetProceduralExamVoucher a isaca:DigitalAsset ; rdfs:label "Dynamic Exam Case File" .
+isaca:AssetScoredEvaluationRecord a isaca:DigitalAsset ; rdfs:label "Dynamic Evaluation & Competency Record" .
+isaca:AssetLiveComplianceAuditReport a isaca:DigitalAsset ; rdfs:label "Real-Time Audit Assertion Ledger" .
+isaca:AssetEnterpriseMaturityScorecard a isaca:DigitalAsset ; rdfs:label "CMMI-COBIT Live Maturity Matrix" .
+isaca:AssetMachineReadablePolicyBundle a isaca:DigitalAsset ; rdfs:label "Rego / OPA Semantic Compliance Bundle" .
+
+# =================================================================
+# 10. RULES & COMPLIANCE
+# =================================================================
+
+isaca:RuleISO17024Accreditation a isaca:Rules ;
+    rdfs:label "ISO/IEC 17024 Personnel Credentialing Standards" ;
+    isaca:guidesProcess isaca:ProcDynamicScenarioSynthesis ,
+                        isaca:ProcPsychometricGraphValidation .
+
+isaca:RuleDynamicEvidenceSufficiency a isaca:Rules ;
+    rdfs:label "ISACA Information Systems Audit Standards (Sufficiency of Evidence)" ;
+    isaca:constrainsProcess isaca:ProcTelemetryIngestionEvaluation .
+
+isaca:ComplianceEUAIActGovernance a isaca:Compliance ;
+    rdfs:label "EU AI Act & Algorithmic Transparency Directive" ;
+    isaca:controlsProcess isaca:ProcDynamicScenarioSynthesis .
+
+# =================================================================
+# 11. SYSTEMS
+# =================================================================
+
+isaca:SysGenerativeExamPlatform a isaca:System ;
+    rdfs:label "Generative Graph-RAG Assessment Engine" ;
+    rdfs:comment "Microservice generating validated exam scenarios anchored in deterministic graph structures." .
+
+isaca:SysContinuousAuditEngine a isaca:System ;
+    rdfs:label "Real-Time Telemetry Compliance Engine" ;
+    rdfs:comment "High-speed Kafka/streaming broker evaluating cloud environment state against semantic controls." .
+
+isaca:SysGovernanceKnowledgePlatform a isaca:System ;
+    rdfs:label "Core Enterprise Semantic Graph & API Gateway" ;
+    rdfs:comment "Graph database platform (Neo4j/Stardog RDF) serving external GaaP queries." .
+
+isaca:SysDynamicMaturityDashboard a isaca:System ;
+    rdfs:label "Dynamic CMMI/COBIT Enterprise Dashboard" .
+
+# =================================================================
+# 12. RISK / ISSUE / OBSERVATION (Impact Analysis Pattern)
+# =================================================================
+
+# --- Shared-System Single-Point-of-Failure Risk ---
+isaca:RiskGraphDriftBlastRadius a isaca:Risk ;
+    rdfs:label "Ontology Schema Semantic Divergence Risk" ;
+    rdfs:comment "A breaking schema mutation in SysGovernanceKnowledgePlatform cascades into exam synthesis, live audit feeds, and third-party vendor APIs." ;
+    isaca:riskSeverity "High" ;
+    isaca:riskLikelihood "Low" ;
+    isaca:impactsSystem isaca:SysGovernanceKnowledgePlatform ;
+    isaca:impactsService isaca:GRCOntologyLicensingAPIService ,
+                         isaca:ContinuousTelemetryAuditService .
+
+# --- Cross-Process Asset Schema Break Risk ---
+isaca:RiskPolicyBundleInvalidation a isaca:Risk ;
+    rdfs:label "Policy Bundle Schema Incompatibility Risk" ;
+    rdfs:comment "AssetMachineReadablePolicyBundle consumed by downstream client CI/CD pipelines without backward compatibility." ;
+    isaca:riskSeverity "High" ;
+    isaca:riskLikelihood "Medium" ;
+    isaca:impactsSystem isaca:SysGovernanceKnowledgePlatform ;
+    isaca:impactsProcess isaca:ProcOntologyVersionStreaming .
+
+# --- Regulatory / Governance Issue to Observation Chain ---
+isaca:IssueScenarioHallucination a isaca:Issue ;
+    rdfs:label "Algorithmic Hallucination in Certification Item" ;
+    isaca:occursInProcess isaca:ProcDynamicScenarioSynthesis ;
+    isaca:issueGeneratesObservation isaca:ObsPsychometricBiasBreach .
+
+isaca:ObsPsychometricBiasBreach a isaca:Observation ;
+    rdfs:label "Exam Bias / Semantic Inconsistency Observation" .
+
+isaca:RiskCertificationAccreditationLoss a isaca:Risk ;
+    rdfs:label "ISO 17024 Credentialing Invalidation Risk" ;
+    rdfs:comment "Triggered by ObsPsychometricBiasBreach; governed by RuleISO17024Accreditation to ensure procedural prompts never violate psychometric validity." ;
+    isaca:riskSeverity "High" ;
+    isaca:riskLikelihood "Low" ;
+    isaca:impactsProcess isaca:ProcDynamicScenarioSynthesis ;
+    isaca:impactsService isaca:GenerativeExamTestingService .

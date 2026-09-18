@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ISACA Business Concept Graph</title>
+<style>
+  :root[data-theme="light"]{
+    --page-plane:#f9f9f7; --surface-1:#fcfcfb; --surface-2:#ffffff;
+    --text-primary:#0b0b0b; --text-secondary:#52514e; --muted:#898781;
+    --gridline:#e1e0d9; --border: rgba(11,11,11,0.10);
+    --chip-bg:#ffffff; --chip-bg-off:#f1f0ec; color-scheme: light;
+  }
+  :root[data-theme="dark"]{
+    --page-plane:#0d0d0d; --surface-1:#1a1a19; --surface-2:#232322;
+    --text-primary:#ffffff; --text-secondary:#c3c2b7; --muted:#898781;
+    --gridline:#2c2c2a; --border: rgba(255,255,255,0.10);
+    --chip-bg:#232322; --chip-bg-off:#181817; color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body{ font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background: var(--page-plane);
+    color: var(--text-primary); display:flex; flex-direction:column; height:100vh; overflow:hidden; }
+  header{ padding: 12px 20px 8px; border-bottom: 1px solid var(--gridline); background: var(--surface-1);
+    display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  header h1{ font-size: 16px; margin:0; font-weight:600; color: var(--text-primary); }
+  header p{ margin:2px 0 0; font-size:12px; color: var(--text-secondary); max-width: 760px; }
+  .header-controls{ display:flex; align-items:center; gap:8px; }
+  .icon-btn{ border:1px solid var(--border); background: var(--chip-bg); color: var(--text-primary);
+    border-radius:8px; padding:7px 12px; font-size:12.5px; cursor:pointer; display:flex; align-items:center;
+    gap:6px; font-family:inherit; white-space:nowrap; }
+  .icon-btn:hover{ filter:brightness(0.96); }
+  [data-theme="dark"] .icon-btn:hover{ filter:brightness(1.15); }
+  .icon-btn.active{ background:#2a78d6; color:#fff; border-color:#2a78d6; }
+
+  .toolbar{ background: var(--surface-1); border-bottom: 1px solid var(--gridline); padding: 8px 20px;
+    display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+  .toolbar-row{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; width:100%; }
+  .toolbar-label{ font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); flex:none; margin-right:2px; }
+  #searchBox{ flex: 0 0 220px; padding:7px 10px; border-radius:8px; border:1px solid var(--border);
+    background: var(--surface-2); color: var(--text-primary); font-size:13px; font-family:inherit; }
+  .divider{ width:1px; height:22px; background:var(--gridline); margin:0 4px; flex:none; }
+  .chip-group{ display:flex; flex-wrap:wrap; gap:6px; }
+  .chip{ display:flex; align-items:center; gap:6px; padding:5px 10px 5px 8px; border-radius:999px;
+    border:1px solid var(--border); background: var(--chip-bg); font-size:12px; cursor:pointer;
+    user-select:none; color: var(--text-primary); line-height:1.3; white-space:nowrap; }
+  .chip.off{ background:var(--chip-bg-off); color:var(--muted); }
+  .chip .dot{ width:9px; height:9px; border-radius:50%; flex:none; display:inline-block; }
+  .chip input{ display:none; }
+  .toolbar-actions{ display:flex; gap:6px; margin-left:auto; }
+
+  .main{ flex:1; display:flex; min-height:0; }
+  #graphWrap{ flex:1; background: var(--surface-1); position:relative; overflow:hidden; }
+  svg#graph{ width:100%; height:100%; display:block; cursor:grab; }
+  svg#graph.panning{ cursor:grabbing; }
+
+  .node{ cursor:pointer; }
+  .node .shape{ stroke-width:2px; transition: opacity .15s; }
+  .node text{ pointer-events:none; user-select:none; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .node.selected .shape{ stroke-width:3.5px; }
+  .edge-line{ fill:none; }
+  .edge-hit{ fill:none; stroke:transparent; stroke-width:14px; cursor:pointer; }
+  .edge-label-bg{ opacity:0.92; }
+  .edge-label{ font-family: system-ui, -apple-system, "Segoe UI", sans-serif; pointer-events:none; }
+
+  .zoom-controls{ position:absolute; right:16px; bottom:16px; display:flex; flex-direction:column; gap:6px; z-index:5; }
+  .zoom-controls button{ width:34px; height:34px; border-radius:8px; border:1px solid var(--border);
+    background:var(--surface-2); color:var(--text-primary); font-size:16px; cursor:pointer; }
+  .stats-badge{ position:absolute; left:16px; bottom:16px; background: var(--surface-2); border:1px solid var(--border);
+    border-radius:8px; padding:6px 10px; font-size:11px; color:var(--text-secondary); z-index:5; line-height:1.5; }
+  #tooltip{ position:fixed; pointer-events:none; z-index:60; max-width:280px; background: var(--surface-2);
+    color: var(--text-primary); border:1px solid var(--border); border-radius:8px; padding:8px 10px;
+    font-size:12px; line-height:1.45; box-shadow: 0 4px 18px rgba(0,0,0,0.18); display:none; }
+  #tooltip b{ display:block; margin-bottom:2px; font-size:12.5px; }
+  #tooltip .tt-mod{ font-size:10.5px; color:var(--muted); margin-bottom:4px; }
+
+  aside{ width: 320px; flex: none; border-left: 1px solid var(--gridline); background: var(--surface-1);
+    overflow-y: auto; padding: 16px; font-size: 13px; }
+  aside h2{ font-size:13px; margin: 0 0 10px; color: var(--text-primary); text-transform: uppercase; letter-spacing: .04em; }
+  aside h3.section{ font-size:11px; margin: 16px 0 6px; color: var(--muted); text-transform: uppercase;
+    letter-spacing: .05em; border-top:1px solid var(--gridline); padding-top:12px; }
+  .legend-row{ display:flex; align-items:flex-start; gap:8px; padding:6px 0; border-bottom:1px solid var(--gridline); }
+  .legend-row:last-child{ border-bottom:none; }
+  .legend-swatch{ width:20px; height:20px; border-radius:5px; flex:none; display:flex; align-items:center;
+    justify-content:center; font-size:12px; margin-top:1px; }
+  .legend-text b{ display:block; font-size:12.5px; color:var(--text-primary); }
+  .legend-text span{ display:block; font-size:11.5px; color:var(--text-secondary); margin-top:1px; }
+  .legend-count{ font-size:10.5px; color:var(--muted); }
+  .legend-edge-row{ display:flex; align-items:center; gap:8px; padding:5px 0; font-size:12px; color:var(--text-secondary); }
+  .legend-edge-line{ width:26px; height:0; border-top:2px solid; flex:none; }
+
+  #infoPanel .node-title{ display:flex; align-items:center; gap:8px; font-size:15px; font-weight:600; margin-bottom:4px; }
+  #infoPanel .node-cat{ font-size:11.5px; color:var(--text-secondary); margin-bottom:10px; }
+  #infoPanel .node-desc{ font-size:12.5px; color:var(--text-primary); line-height:1.5; margin-bottom:10px; }
+  #infoPanel .node-extra{ font-size:11.5px; color:var(--text-secondary); line-height:1.5; margin-bottom:10px;
+    background:var(--surface-2); border:1px solid var(--border); border-radius:6px; padding:8px 10px; }
+  #infoPanel .node-extra b{ color:var(--text-primary); }
+  #infoPanel .rel-heading{ font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin:10px 0 6px; }
+  .rel-item{ display:flex; justify-content:space-between; gap:6px; padding:6px 8px; border-radius:6px;
+    background: var(--surface-2); border:1px solid var(--border); font-size:12px; margin-bottom:5px; cursor:pointer; }
+  .rel-item:hover{ border-color: var(--text-secondary); }
+  .rel-item .rel-label{ color:var(--muted); font-style:italic; }
+  #backToLegend{ margin-bottom:12px; font-size:11.5px; background:none; border:none; color:var(--text-secondary);
+    cursor:pointer; padding:0; text-decoration:underline; }
+
+  .table-wrap{ position:fixed; inset:0; background: rgba(0,0,0,0.45); display:none; align-items:center;
+    justify-content:center; z-index:50; }
+  .table-wrap.open{ display:flex; }
+  .table-modal{ background:var(--surface-1); color:var(--text-primary); width:min(1040px, 94vw); max-height:86vh;
+    border-radius:12px; padding:20px 22px; overflow:auto; border:1px solid var(--border); }
+  .table-modal h2{ margin-top:0; font-size:15px; }
+  .table-modal h3{ font-size:12.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-secondary); margin:18px 0 8px; }
+  .table-modal .hint{ font-size:11.5px; color:var(--muted); margin: -4px 0 10px; }
+  table{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  th, td{ text-align:left; padding:6px 8px; border-bottom:1px solid var(--gridline); vertical-align:top; }
+  th{ color:var(--text-secondary); font-weight:600; position:sticky; top:0; background:var(--surface-1); }
+  .closeModal{ float:right; border:none; background:none; color:var(--text-secondary); font-size:18px; cursor:pointer; line-height:1; }
+  .catpill{ display:inline-flex; align-items:center; gap:5px; font-size:11.5px; white-space:nowrap; }
+  .catpill .dot{ width:8px; height:8px; border-radius:50%; flex:none; }
+
+  ::-webkit-scrollbar{ width:9px; height:9px; }
+  ::-webkit-scrollbar-thumb{ background: var(--gridline); border-radius:6px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>ISACA Business Concept Graph</h1>
+    <p>ISACA's enterprise business model: three business domains (credentialing, assurance, knowledge platform) broken into bounded-context sub-domains, the services, processes, capabilities, value streams, roles, systems, assets, rules and risks that realize them.</p>
+  </div>
+  <div class="header-controls">
+    <button class="icon-btn" id="tableBtn">&#9638; Table view</button>
+    <button class="icon-btn" id="themeBtn">&#127769; Dark mode</button>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="toolbar-row">
+    <input id="searchBox" type="text" placeholder="Search concepts...">
+    <div class="divider"></div>
+    <span class="toolbar-label">Concepts:</span>
+    <div class="chip-group" id="categoryChips"></div>
+  </div>
+  <div class="toolbar-row">
+    <span class="toolbar-label">Relations:</span>
+    <div class="chip-group" id="edgeChips"></div>
+    <div class="toolbar-actions">
+      <button class="icon-btn" id="resetBtn">&#8635; Reset</button>
+      <button class="icon-btn" id="physicsBtn">&#9208; Freeze layout</button>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div id="graphWrap">
+    <svg id="graph" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid meet">
+      <defs id="markerDefs"></defs>
+      <g id="viewport">
+        <g id="edgesLayer"></g>
+        <g id="nodesLayer"></g>
+      </g>
+    </svg>
+    <div class="zoom-controls">
+      <button id="zoomIn" title="Zoom in">+</button>
+      <button id="zoomOut" title="Zoom out">&#8722;</button>
+      <button id="fitBtn" title="Fit to screen">&#10530;</button>
+    </div>
+    <div class="stats-badge" id="statsBadge"></div>
+  </div>
+  <aside id="infoPanel"></aside>
+</div>
+
+<div id="tooltip"></div>
+
+<div class="table-wrap" id="tableWrap">
+  <div class="table-modal">
+    <button class="closeModal" id="closeModal">&#10005;</button>
+    <h2>ISACA business model &mdash; accessible table view</h2>
+    <p class="hint">Every concept and relationship in the model. Use your browser's find (Ctrl/Cmd+F) to search within this table.</p>
+    <h3>Concepts</h3>
+    <table id="nodesTable"><thead><tr><th>Concept</th><th>Category</th><th>Description</th></tr></thead><tbody></tbody></table>
+    <h3>Relationships</h3>
+    <table id="edgesTable"><thead><tr><th>From</th><th>Relation</th><th>To</th><th>Type</th></tr></thead><tbody></tbody></table>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+const DATA = {"nodes":[{"id":"IndividualCredentialingDomain","label":"Dynamic Professional Credentialing & Talent Domain","comment":"","category":"domain","attrs":[],"inferred":false},{"id":"AdaptiveLearningSubDomain","label":"Adaptive Learning & Continuous CPE Bounded Context","comment":"Personalized micro-learning paths and dynamic CPE skill validation","category":"domain","attrs":[],"inferred":false},{"id":"DynamicCertificationSubDomain","label":"Graph-Based Certification & Examination Bounded Context","comment":"Procedurally generated examinations and verifiable dynamic credentials","category":"domain","attrs":[],"inferred":false},{"id":"EnterpriseAssuranceDomain","label":"Enterprise Dynamic Assessment & Continuous Assurance Domain","comment":"","category":"domain","attrs":[],"inferred":false},{"id":"ContinuousAuditSubDomain","label":"Automated Semantic Auditing Bounded Context","comment":"Continuous control monitoring and Auditor-in-the-Loop telemetry verification","category":"domain","attrs":[],"inferred":false},{"id":"EnterpriseMaturitySubDomain","label":"CMMI & Enterprise Governance Benchmarking Bounded Context","comment":"Real-time enterprise maturity modeling and cross-framework readiness scoring","category":"domain","attrs":[],"inferred":false},{"id":"KnowledgeEngineeringDomain","label":"Semantic Knowledge Platform & Monetization Domain","comment":"","category":"domain","attrs":[],"inferred":false},{"id":"OntologyDistributionSubDomain","label":"Governance-as-a-Platform (GaaP) API Bounded Context","comment":"B2B semantic knowledge graph subscription licensing for GRC/CSPM vendors","category":"domain","attrs":[],"inferred":false},{"id":"PolicyAsCodeSubDomain","label":"Compliance-as-Code & AI Governance Bounded Context","comment":"Machine-readable compliance guardrails, Rego packs, and LLM ethical audit tools","category":"domain","attrs":[],"inferred":false},{"id":"OpOntologyEngineering","label":"Knowledge Engineering & Ontology Operations","comment":"Maintains upper-level governance ontologies, taxonomy mappings, and graph edges.","category":"opArea","attrs":[],"inferred":false},{"id":"OpCertificationExamOps","label":"Certification & Psychometric Operations","comment":"Psychometrics, generative scenario validation, proctoring security.","category":"opArea","attrs":[],"inferred":false},{"id":"OpEnterpriseAdvisory","label":"Enterprise Assurance & Advisory Services","comment":"Corporate maturity appraisals, continuous monitoring setups, benchmark advisory.","category":"opArea","attrs":[],"inferred":false},{"id":"OpPlatformEngineering","label":"Cloud Platform & Semantic API Operations","comment":"Graph databases, high-throughput Graph-RAG endpoints, identity/telemetry connectors.","category":"opArea","attrs":[],"inferred":false},{"id":"OpCommercialPartnerships","label":"Commercial Partnerships & Channel Licensing","comment":"B2B API licensing, GRC vendor syndication, enterprise corporate subscriptions.","category":"opArea","attrs":[],"inferred":false},{"id":"GenerativeExamTestingService","label":"Dynamic Generative Exam Engine Service","comment":"Generates contextualized, unique exam scenarios from the ISACA control ontology.","category":"service","attrs":[],"inferred":false},{"id":"ProcDynamicScenarioSynthesis","label":"Graph-Conditioned Exam Scenario Synthesis Process","comment":"","category":"process","attrs":[],"inferred":false},{"id":"ProcPsychometricGraphValidation","label":"Automated Psychometric Difficulty Calibration Process","comment":"","category":"process","attrs":[],"inferred":false},{"id":"ContinuousTelemetryAuditService","label":"Real-Time Enterprise Telemetry Audit Service","comment":"Continuously ingests multi-cloud/identity telemetry and evaluates it against semantic controls.","category":"service","attrs":[],"inferred":false},{"id":"ProcTelemetryIngestionEvaluation","label":"Stream Telemetry Evidence Validation Process","comment":"","category":"process","attrs":[],"inferred":false},{"id":"ProcControlDriftRemediation","label":"Semantic Control Remediation Prescriptive Process","comment":"","category":"process","attrs":[],"inferred":false},{"id":"GRCOntologyLicensingAPIService","label":"Commercial Governance Knowledge Graph API Service","comment":"Syndicates computable COBIT/CMMI/NIST semantic graphs to enterprise GRC platforms.","category":"service","attrs":[],"inferred":false},{"id":"ProcSemanticAPIKeyProvisioning","label":"B2B Commercial Subscription Provisioning Process","comment":"","category":"process","attrs":[],"inferred":false},{"id":"ProcOntologyVersionStreaming","label":"Delta-Synchronized Ontology Feed Streaming Process","comment":"","category":"process","attrs":[],"inferred":false},{"id":"ConceptGovernanceOntologyGraph","label":"Computable Governance Knowledge Graph","comment":"","category":"concept","attrs":[],"inferred":false},{"id":"ConceptCOBITControlMapping","label":"COBIT-to-Regulation Cross-Walk Triples","comment":"","category":"concept","attrs":[],"inferred":false},{"id":"ConceptCompetencyOntology","label":"Individual Skill & Cognitive Domain Ontology","comment":"","category":"concept","attrs":[],"inferred":false},{"id":"ConceptControlDriftObservation","label":"Telemetry-Derived Control Drift Record","comment":"","category":"concept","attrs":[],"inferred":false},{"id":"ConceptExamIntegrityMetric","label":"Psychometric Validity & Anti-Leakage Profile","comment":"","category":"concept","attrs":[],"inferred":false},{"id":"CapCertifyProfessionals","label":"Dynamic Professional Competency Certification","comment":"","category":"capability","attrs":[],"inferred":false},{"id":"CapContinuousAssurance","label":"Continuous Telemetry-Driven Audit Assurance","comment":"","category":"capability","attrs":[],"inferred":false},{"id":"CapAuditRiskManagement","label":"Automated Semantic Risk Assessment & Quantification","comment":"","category":"capability","attrs":[],"inferred":false},{"id":"CapKnowledgeMonetization","label":"Semantic Graph API Licensing & Monetization","comment":"","category":"capability","attrs":[],"inferred":false},{"id":"VSCredentialAttainmentToPractice","label":"Learner Competency-to-Verified Practitioner Stream","comment":"","category":"valueStream","attrs":[],"inferred":false},{"id":"VSEnterpriseContinuousCompliance","label":"Enterprise Assessment-to-Continuous Attestation Stream","comment":"","category":"valueStream","attrs":[],"inferred":false},{"id":"VSKnowledgeSyndicationToRevenue","label":"Knowledge Engineering-to-B2B Platform Monetization Stream","comment":"","category":"valueStream","attrs":[],"inferred":false},{"id":"RolePsychometrician","label":"Psychometrician & Assessment Engineer Role","comment":"","category":"actor","attrs":[],"inferred":false},{"id":"RoleContinuousAuditor","label":"Continuous Automated Auditor Role","comment":"","category":"actor","attrs":[],"inferred":false},{"id":"RoleGRCArchitect","label":"GRC & Governance Enterprise Architect Role","comment":"","category":"actor","attrs":[],"inferred":false},{"id":"RoleOntologyEngineer","label":"Ontology & Knowledge Graph Engineer Role","comment":"","category":"actor","attrs":[],"inferred":false},{"id":"RolePartnerSolutionsEngineer","label":"Partner Integration Solutions Engineer Role","comment":"","category":"actor","attrs":[],"inferred":false},{"id":"PersonaIndividualLearner","label":"Professional Candidate / Credential Holder Persona","comment":"","category":"actor","attrs":[],"inferred":false},{"id":"PersonaEnterpriseCISO","label":"Enterprise CISO / Audit Director Persona","comment":"","category":"actor","attrs":[],"inferred":false},{"id":"PersonaB2BPartnerProductLead","label":"GRC Software Vendor Product Executive Persona","comment":"","category":"actor","attrs":[],"inferred":false},{"id":"EventExamGenerated","label":"Procedural Exam Generated Event","comment":"","category":"event","attrs":[],"inferred":false},{"id":"EventControlDriftDetected","label":"Real-Time Control Drift Detected Event","comment":"","category":"event","attrs":[],"inferred":false},{"id":"EventAPIStreamProvisioned","label":"Enterprise Semantic API Subscription Bound Event","comment":"","category":"event","attrs":[],"inferred":false},{"id":"EventSkillGapFlagged","label":"Individual Skill Invalidation/Gap Event","comment":"","category":"event","attrs":[],"inferred":false},{"id":"AssetProceduralExamVoucher","label":"Dynamic Exam Case File","comment":"","category":"asset","attrs":[],"inferred":false},{"id":"AssetScoredEvaluationRecord","label":"Dynamic Evaluation & Competency Record","comment":"","category":"asset","attrs":[],"inferred":false},{"id":"AssetLiveComplianceAuditReport","label":"Real-Time Audit Assertion Ledger","comment":"","category":"asset","attrs":[],"inferred":false},{"id":"AssetEnterpriseMaturityScorecard","label":"CMMI-COBIT Live Maturity Matrix","comment":"","category":"asset","attrs":[],"inferred":false},{"id":"AssetMachineReadablePolicyBundle","label":"Rego / OPA Semantic Compliance Bundle","comment":"","category":"asset","attrs":[],"inferred":false},{"id":"RuleISO17024Accreditation","label":"ISO/IEC 17024 Personnel Credentialing Standards","comment":"","category":"rule","attrs":[],"inferred":false},{"id":"RuleDynamicEvidenceSufficiency","label":"ISACA Information Systems Audit Standards (Sufficiency of Evidence)","comment":"","category":"rule","attrs":[],"inferred":false},{"id":"ComplianceEUAIActGovernance","label":"EU AI Act & Algorithmic Transparency Directive","comment":"","category":"rule","attrs":[],"inferred":false},{"id":"SysGenerativeExamPlatform","label":"Generative Graph-RAG Assessment Engine","comment":"Microservice generating validated exam scenarios anchored in deterministic graph structures.","category":"system","attrs":[],"inferred":false},{"id":"SysContinuousAuditEngine","label":"Real-Time Telemetry Compliance Engine","comment":"High-speed Kafka/streaming broker evaluating cloud environment state against semantic controls.","category":"system","attrs":[],"inferred":false},{"id":"SysGovernanceKnowledgePlatform","label":"Core Enterprise Semantic Graph & API Gateway","comment":"Graph database platform (Neo4j/Stardog RDF) serving external GaaP queries.","category":"system","attrs":[],"inferred":false},{"id":"SysDynamicMaturityDashboard","label":"Dynamic CMMI/COBIT Enterprise Dashboard","comment":"","category":"system","attrs":[],"inferred":false},{"id":"RiskGraphDriftBlastRadius","label":"Ontology Schema Semantic Divergence Risk","comment":"A breaking schema mutation in SysGovernanceKnowledgePlatform cascades into exam synthesis, live audit feeds, and third-party vendor APIs.","category":"risk","attrs":["Severity: High","Likelihood: Low"],"inferred":false},{"id":"RiskPolicyBundleInvalidation","label":"Policy Bundle Schema Incompatibility Risk","comment":"AssetMachineReadablePolicyBundle consumed by downstream client CI/CD pipelines without backward compatibility.","category":"risk","attrs":["Severity: High","Likelihood: Medium"],"inferred":false},{"id":"IssueScenarioHallucination","label":"Algorithmic Hallucination in Certification Item","comment":"","category":"risk","attrs":[],"inferred":false},{"id":"ObsPsychometricBiasBreach","label":"Exam Bias / Semantic Inconsistency Observation","comment":"","category":"risk","attrs":[],"inferred":false},{"id":"RiskCertificationAccreditationLoss","label":"ISO 17024 Credentialing Invalidation Risk","comment":"Triggered by ObsPsychometricBiasBreach; governed by RuleISO17024Accreditation to ensure procedural prompts never violate psychometric validity.","category":"risk","attrs":["Severity: High","Likelihood: Low"],"inferred":false},{"id":"AdaptiveSkillPathwayService","label":"Adaptive Skill Pathway Service","comment":"Referenced in the source model as a service provided by a sub-domain / enabling a value stream, but not given its own detailed process/system wiring in the source file.","category":"service","attrs":[],"inferred":true},{"id":"AuditorCopilotGuidanceService","label":"Auditor Copilot Guidance Service","comment":"Referenced in the source model as a service provided by a sub-domain / enabling a value stream, but not given its own detailed process/system wiring in the source file.","category":"service","attrs":[],"inferred":true},{"id":"AIEthicsAuditFrameworkService","label":"A I Ethics Audit Framework Service","comment":"Referenced in the source model as a service provided by a sub-domain / enabling a value stream, but not given its own detailed process/system wiring in the source file.","category":"service","attrs":[],"inferred":true},{"id":"ContinuousCPESimulationService","label":"Continuous C P E Simulation Service","comment":"Referenced in the source model as a service provided by a sub-domain / enabling a value stream, but not given its own detailed process/system wiring in the source file.","category":"service","attrs":[],"inferred":true},{"id":"VerifiableCredentialService","label":"Verifiable Credential Service","comment":"Referenced in the source model as a service provided by a sub-domain / enabling a value stream, but not given its own detailed process/system wiring in the source file.","category":"service","attrs":[],"inferred":true},{"id":"DynamicMaturityScoringService","label":"Dynamic Maturity Scoring Service","comment":"Referenced in the source model as a service provided by a sub-domain / enabling a value stream, but not given its own detailed process/system wiring in the source file.","category":"service","attrs":[],"inferred":true},{"id":"WorkforceGRCBenchmarkingService","label":"Workforce G R C Benchmarking Service","comment":"Referenced in the source model as a service provided by a sub-domain / enabling a value stream, but not given its own detailed process/system wiring in the source file.","category":"service","attrs":[],"inferred":true},{"id":"MachineReadablePolicyRulepackService","label":"Machine Readable Policy Rulepack Service","comment":"Referenced in the source model as a service provided by a sub-domain / enabling a value stream, but not given its own detailed process/system wiring in the source file.","category":"service","attrs":[],"inferred":true},{"id":"CrossStandardMappingFeedService","label":"Cross Standard Mapping Feed Service","comment":"Referenced in the source model as a service provided by a sub-domain / enabling a value stream, but not given its own detailed process/system wiring in the source file.","category":"service","attrs":[],"inferred":true}],"edges":[{"from":"IndividualCredentialingDomain","to":"AdaptiveLearningSubDomain","type":"structure","label":"has sub-domain"},{"from":"IndividualCredentialingDomain","to":"DynamicCertificationSubDomain","type":"structure","label":"has sub-domain"},{"from":"AdaptiveLearningSubDomain","to":"AdaptiveSkillPathwayService","type":"structure","label":"provides"},{"from":"AdaptiveLearningSubDomain","to":"ContinuousCPESimulationService","type":"structure","label":"provides"},{"from":"DynamicCertificationSubDomain","to":"GenerativeExamTestingService","type":"structure","label":"provides"},{"from":"DynamicCertificationSubDomain","to":"VerifiableCredentialService","type":"structure","label":"provides"},{"from":"EnterpriseAssuranceDomain","to":"ContinuousAuditSubDomain","type":"structure","label":"has sub-domain"},{"from":"EnterpriseAssuranceDomain","to":"EnterpriseMaturitySubDomain","type":"structure","label":"has sub-domain"},{"from":"ContinuousAuditSubDomain","to":"ContinuousTelemetryAuditService","type":"structure","label":"provides"},{"from":"ContinuousAuditSubDomain","to":"AuditorCopilotGuidanceService","type":"structure","label":"provides"},{"from":"EnterpriseMaturitySubDomain","to":"DynamicMaturityScoringService","type":"structure","label":"provides"},{"from":"EnterpriseMaturitySubDomain","to":"WorkforceGRCBenchmarkingService","type":"structure","label":"provides"},{"from":"KnowledgeEngineeringDomain","to":"OntologyDistributionSubDomain","type":"structure","label":"has sub-domain"},{"from":"KnowledgeEngineeringDomain","to":"PolicyAsCodeSubDomain","type":"structure","label":"has sub-domain"},{"from":"OntologyDistributionSubDomain","to":"GRCOntologyLicensingAPIService","type":"structure","label":"provides"},{"from":"OntologyDistributionSubDomain","to":"CrossStandardMappingFeedService","type":"structure","label":"provides"},{"from":"PolicyAsCodeSubDomain","to":"AIEthicsAuditFrameworkService","type":"structure","label":"provides"},{"from":"PolicyAsCodeSubDomain","to":"MachineReadablePolicyRulepackService","type":"structure","label":"provides"},{"from":"GenerativeExamTestingService","to":"ProcDynamicScenarioSynthesis","type":"flow","label":"executed by"},{"from":"GenerativeExamTestingService","to":"ProcPsychometricGraphValidation","type":"flow","label":"executed by"},{"from":"GenerativeExamTestingService","to":"ConceptCompetencyOntology","type":"knowledge","label":"maps to"},{"from":"GenerativeExamTestingService","to":"ConceptExamIntegrityMetric","type":"knowledge","label":"maps to"},{"from":"GenerativeExamTestingService","to":"CapCertifyProfessionals","type":"enable","label":"enables"},{"from":"GenerativeExamTestingService","to":"VSCredentialAttainmentToPractice","type":"enable","label":"enables"},{"from":"GenerativeExamTestingService","to":"PersonaIndividualLearner","type":"actor","label":"assigned to"},{"from":"ProcDynamicScenarioSynthesis","to":"ProcPsychometricGraphValidation","type":"flow","label":"precedes"},{"from":"ProcDynamicScenarioSynthesis","to":"RolePsychometrician","type":"actor","label":"performed by"},{"from":"ProcDynamicScenarioSynthesis","to":"AssetProceduralExamVoucher","type":"asset","label":"creates"},{"from":"ProcDynamicScenarioSynthesis","to":"EventExamGenerated","type":"event","label":"initiates"},{"from":"ProcDynamicScenarioSynthesis","to":"SysGenerativeExamPlatform","type":"system","label":"implemented by"},{"from":"ProcDynamicScenarioSynthesis","to":"OpCertificationExamOps","type":"support","label":"supported by"},{"from":"ProcDynamicScenarioSynthesis","to":"OpOntologyEngineering","type":"support","label":"supported by"},{"from":"ProcPsychometricGraphValidation","to":"RolePsychometrician","type":"actor","label":"performed by"},{"from":"ProcPsychometricGraphValidation","to":"AssetScoredEvaluationRecord","type":"asset","label":"creates"},{"from":"ProcPsychometricGraphValidation","to":"AssetProceduralExamVoucher","type":"asset","label":"consumes"},{"from":"ProcPsychometricGraphValidation","to":"SysGenerativeExamPlatform","type":"system","label":"implemented by"},{"from":"ProcPsychometricGraphValidation","to":"OpCertificationExamOps","type":"support","label":"supported by"},{"from":"ContinuousTelemetryAuditService","to":"ProcTelemetryIngestionEvaluation","type":"flow","label":"executed by"},{"from":"ContinuousTelemetryAuditService","to":"ProcControlDriftRemediation","type":"flow","label":"executed by"},{"from":"ContinuousTelemetryAuditService","to":"ConceptCOBITControlMapping","type":"knowledge","label":"maps to"},{"from":"ContinuousTelemetryAuditService","to":"ConceptControlDriftObservation","type":"knowledge","label":"maps to"},{"from":"ContinuousTelemetryAuditService","to":"CapContinuousAssurance","type":"enable","label":"enables"},{"from":"ContinuousTelemetryAuditService","to":"CapAuditRiskManagement","type":"enable","label":"enables"},{"from":"ContinuousTelemetryAuditService","to":"VSEnterpriseContinuousCompliance","type":"enable","label":"enables"},{"from":"ContinuousTelemetryAuditService","to":"PersonaEnterpriseCISO","type":"actor","label":"assigned to"},{"from":"ProcTelemetryIngestionEvaluation","to":"ProcControlDriftRemediation","type":"flow","label":"precedes"},{"from":"ProcTelemetryIngestionEvaluation","to":"RoleContinuousAuditor","type":"actor","label":"performed by"},{"from":"ProcTelemetryIngestionEvaluation","to":"AssetLiveComplianceAuditReport","type":"asset","label":"creates"},{"from":"ProcTelemetryIngestionEvaluation","to":"EventControlDriftDetected","type":"event","label":"initiates"},{"from":"ProcTelemetryIngestionEvaluation","to":"SysContinuousAuditEngine","type":"system","label":"implemented by"},{"from":"ProcTelemetryIngestionEvaluation","to":"OpEnterpriseAdvisory","type":"support","label":"supported by"},{"from":"ProcTelemetryIngestionEvaluation","to":"OpPlatformEngineering","type":"support","label":"supported by"},{"from":"ProcControlDriftRemediation","to":"RoleGRCArchitect","type":"actor","label":"performed by"},{"from":"ProcControlDriftRemediation","to":"AssetEnterpriseMaturityScorecard","type":"asset","label":"modifies"},{"from":"ProcControlDriftRemediation","to":"AssetLiveComplianceAuditReport","type":"asset","label":"consumes"},{"from":"ProcControlDriftRemediation","to":"SysDynamicMaturityDashboard","type":"system","label":"implemented by"},{"from":"ProcControlDriftRemediation","to":"OpEnterpriseAdvisory","type":"support","label":"supported by"},{"from":"GRCOntologyLicensingAPIService","to":"ProcSemanticAPIKeyProvisioning","type":"flow","label":"executed by"},{"from":"GRCOntologyLicensingAPIService","to":"ProcOntologyVersionStreaming","type":"flow","label":"executed by"},{"from":"GRCOntologyLicensingAPIService","to":"ConceptGovernanceOntologyGraph","type":"knowledge","label":"maps to"},{"from":"GRCOntologyLicensingAPIService","to":"CapKnowledgeMonetization","type":"enable","label":"enables"},{"from":"GRCOntologyLicensingAPIService","to":"VSKnowledgeSyndicationToRevenue","type":"enable","label":"enables"},{"from":"GRCOntologyLicensingAPIService","to":"PersonaB2BPartnerProductLead","type":"actor","label":"assigned to"},{"from":"ProcSemanticAPIKeyProvisioning","to":"ProcOntologyVersionStreaming","type":"flow","label":"precedes"},{"from":"ProcSemanticAPIKeyProvisioning","to":"RolePartnerSolutionsEngineer","type":"actor","label":"performed by"},{"from":"ProcSemanticAPIKeyProvisioning","to":"AssetMachineReadablePolicyBundle","type":"asset","label":"creates"},{"from":"ProcSemanticAPIKeyProvisioning","to":"EventAPIStreamProvisioned","type":"event","label":"initiates"},{"from":"ProcSemanticAPIKeyProvisioning","to":"SysGovernanceKnowledgePlatform","type":"system","label":"implemented by"},{"from":"ProcSemanticAPIKeyProvisioning","to":"OpCommercialPartnerships","type":"support","label":"supported by"},{"from":"ProcSemanticAPIKeyProvisioning","to":"OpPlatformEngineering","type":"support","label":"supported by"},{"from":"ProcOntologyVersionStreaming","to":"RoleOntologyEngineer","type":"actor","label":"performed by"},{"from":"ProcOntologyVersionStreaming","to":"AssetMachineReadablePolicyBundle","type":"asset","label":"modifies"},{"from":"ProcOntologyVersionStreaming","to":"SysGovernanceKnowledgePlatform","type":"system","label":"implemented by"},{"from":"ProcOntologyVersionStreaming","to":"OpPlatformEngineering","type":"support","label":"supported by"},{"from":"ProcOntologyVersionStreaming","to":"OpOntologyEngineering","type":"support","label":"supported by"},{"from":"AdaptiveSkillPathwayService","to":"VSCredentialAttainmentToPractice","type":"enable","label":"enables"},{"from":"VerifiableCredentialService","to":"VSCredentialAttainmentToPractice","type":"enable","label":"enables"},{"from":"DynamicMaturityScoringService","to":"VSEnterpriseContinuousCompliance","type":"enable","label":"enables"},{"from":"MachineReadablePolicyRulepackService","to":"VSKnowledgeSyndicationToRevenue","type":"enable","label":"enables"},{"from":"PersonaIndividualLearner","to":"RoleContinuousAuditor","type":"actor","label":"assigned to"},{"from":"PersonaEnterpriseCISO","to":"RoleGRCArchitect","type":"actor","label":"assigned to"},{"from":"PersonaB2BPartnerProductLead","to":"RolePartnerSolutionsEngineer","type":"actor","label":"assigned to"},{"from":"RuleISO17024Accreditation","to":"ProcDynamicScenarioSynthesis","type":"governance","label":"guides"},{"from":"RuleISO17024Accreditation","to":"ProcPsychometricGraphValidation","type":"governance","label":"guides"},{"from":"RuleDynamicEvidenceSufficiency","to":"ProcTelemetryIngestionEvaluation","type":"governance","label":"constrains"},{"from":"ComplianceEUAIActGovernance","to":"ProcDynamicScenarioSynthesis","type":"governance","label":"controls"},{"from":"RiskGraphDriftBlastRadius","to":"SysGovernanceKnowledgePlatform","type":"risk","label":"impacts"},{"from":"RiskGraphDriftBlastRadius","to":"GRCOntologyLicensingAPIService","type":"risk","label":"impacts"},{"from":"RiskGraphDriftBlastRadius","to":"ContinuousTelemetryAuditService","type":"risk","label":"impacts"},{"from":"RiskPolicyBundleInvalidation","to":"ProcOntologyVersionStreaming","type":"risk","label":"impacts"},{"from":"RiskPolicyBundleInvalidation","to":"SysGovernanceKnowledgePlatform","type":"risk","label":"impacts"},{"from":"IssueScenarioHallucination","to":"ProcDynamicScenarioSynthesis","type":"issue","label":"occurs in"},{"from":"IssueScenarioHallucination","to":"ObsPsychometricBiasBreach","type":"issue","label":"generates"},{"from":"RiskCertificationAccreditationLoss","to":"ProcDynamicScenarioSynthesis","type":"risk","label":"impacts"},{"from":"RiskCertificationAccreditationLoss","to":"GenerativeExamTestingService","type":"risk","label":"impacts"}]};
+
+// ================= Category / edge-type definitions =================
+const CATEGORIES = {
+  domain:      { label:'Business Domains',      icon:'🗺️', shape:'hex',     light:'#2a6fb0', dark:'#4a8fd6', desc:'Enterprise domains and their bounded-context sub-domains.' },
+  opArea:      { label:'Operational Areas',     icon:'⚙️', shape:'rect',    light:'#5b6472', dark:'#8890a0', desc:'Functional operating groups that support business processes.' },
+  service:     { label:'Domain Services',       icon:'🔧', shape:'ellipse', light:'#0e7c86', dark:'#14a3b0', desc:'Services each sub-domain provides.' },
+  process:     { label:'Business Processes',    icon:'🔄', shape:'rect',    light:'#3f5fa8', dark:'#5b7fd1', desc:'The underlying processes that execute services.' },
+  concept:     { label:'Ontology Concepts',     icon:'🧠', shape:'triangle',light:'#7d5ba6', dark:'#9c7bc9', desc:'Domain-specific knowledge concepts services map to.' },
+  capability:  { label:'Capabilities',          icon:'🧩', shape:'diamond', light:'#b06a1a', dark:'#d9862c', desc:'Business capabilities that services enable.' },
+  valueStream: { label:'Value Streams',         icon:'🌊', shape:'hex',     light:'#1a7a8a', dark:'#26a3b8', desc:'End-to-end value delivered to a stakeholder.' },
+  actor:       { label:'Personas & Roles',      icon:'👤', shape:'ellipse', light:'#1baf7a', dark:'#2fd694', desc:'People and their modeled representations who perform the work.' },
+  event:       { label:'Events',                icon:'⚡', shape:'triangle',light:'#b6437a', dark:'#d15f99', desc:'Things that happen as processes run.' },
+  asset:       { label:'Assets',                icon:'📦', shape:'rect',    light:'#9c5b1e', dark:'#c17a2e', desc:'Digital assets created, modified or consumed by processes.' },
+  rule:        { label:'Rules & Compliance',    icon:'⚖️', shape:'diamond', light:'#4a3aa7', dark:'#9085e9', desc:'Standards and regulations that guide or control processes.' },
+  system:      { label:'Systems',               icon:'🖥️', shape:'ellipse', light:'#3d6a99', dark:'#5a8bc4', desc:'Platforms and systems that implement processes.' },
+  risk:        { label:'Risk, Issues & Observations', icon:'⚠️', shape:'star', light:'#b5312f', dark:'#e05a52', desc:'Risks, issues and the observations they generate.' }
+};
+
+const EDGE_TYPES = {
+  structure:  { label:'Structural (has / provides)', light:'#6b7280', dark:'#a3a8b0', dashes:false, len:150 },
+  flow:       { label:'Process flow',                light:'#2a78d6', dark:'#3987e5', dashes:false, len:170 },
+  knowledge:  { label:'Maps to concept',              light:'#7d5ba6', dark:'#9c7bc9', dashes:false, len:170 },
+  enable:     { label:'Enables',                      light:'#c98500', dark:'#e0a530', dashes:false, len:180 },
+  actor:      { label:'Assigned / performed by',      light:'#1baf7a', dark:'#2fd694', dashes:false, len:160 },
+  asset:      { label:'Creates / modifies / consumes',light:'#9c5b1e', dark:'#c17a2e', dashes:false, len:160 },
+  event:      { label:'Initiates',                    light:'#b6437a', dark:'#d15f99', dashes:false, len:160 },
+  governance: { label:'Guides / controls / constrains',light:'#4a3aa7', dark:'#9085e9', dashes:false, len:170 },
+  system:     { label:'Implemented by',               light:'#3d6a99', dark:'#5a8bc4', dashes:false, len:160 },
+  support:    { label:'Supported by',                 light:'#8a8f98', dark:'#b5bac2', dashes:true,  len:150 },
+  issue:      { label:'Occurs in / generates',        light:'#e34948', dark:'#e66767', dashes:false, len:160 },
+  risk:       { label:'Impacts',                      light:'#9c2b2b', dark:'#c65050', dashes:true,  len:180 }
+};
+
+// ================= Nodes / edges =================
+const RAW_NODES = DATA.nodes.map(n=>({
+  id: n.id, name: n.label, group: n.category,
+  desc: (n.comment && n.comment.length) ? n.comment : n.label,
+  attrs: n.attrs || [], inferred: !!n.inferred
+}));
+const RAW_EDGES = DATA.edges.map((e,i)=>({ from:e.from, to:e.to, label:e.label, type:e.type, id:'e'+i }));
+
+// ================= Layout constants =================
+const W = 1200, H = 800, CX = 600, CY = 400;
+const SVGNS = 'http://www.w3.org/2000/svg';
+
+const moduleNodeCount = {};
+RAW_NODES.forEach(n=>{ moduleNodeCount[n.group] = (moduleNodeCount[n.group]||0) + 1; });
+
+const CAT_ANCHOR = {};
+const catKeys = Object.keys(CATEGORIES);
+catKeys.forEach((key, i)=>{
+  const angle = (-90 + i*(360/catKeys.length)) * Math.PI/180;
+  const count = moduleNodeCount[key] || 4;
+  const radius = 220 + Math.sqrt(count) * 26;
+  CAT_ANCHOR[key] = { x: CX + Math.cos(angle)*radius, y: CY + Math.sin(angle)*radius, spread: 34 + Math.sqrt(count)*11 };
+});
+
+function nodeExtent(shape){
+  switch(shape){
+    case 'rect': return { hw:70, hh:26, r:46 };
+    case 'diamond': return { hw:70, hh:36, r:48 };
+    case 'ellipse': return { hw:66, hh:28, r:44 };
+    case 'hex': return { hw:66, hh:30, r:44 };
+    case 'triangle': return { hw:28, hh:26, r:32 };
+    case 'star': return { hw:28, hh:26, r:32 };
+    default: return { hw:64, hh:28, r:42 };
+  }
+}
+
+// ================= Simulation state =================
+const nodes = RAW_NODES.map((n)=>{
+  const anchor = CAT_ANCHOR[n.group];
+  const jitterAngle = Math.random()*Math.PI*2;
+  const baseSpread = anchor.spread || 60;
+  const jitterR = baseSpread*0.4 + Math.random()*baseSpread;
+  return {
+    ...n,
+    x: anchor.x + Math.cos(jitterAngle)*jitterR,
+    y: anchor.y + Math.sin(jitterAngle)*jitterR,
+    vx: 0, vy: 0, fx: null, fy: null,
+    ext: nodeExtent(CATEGORIES[n.group].shape)
+  };
+});
+const nodeById = Object.fromEntries(nodes.map(n=>[n.id, n]));
+const edges = RAW_EDGES.map(e=>({ ...e }));
+
+let theme = 'light';
+const activeCategories = new Set(Object.keys(CATEGORIES));
+const activeEdgeTypes = new Set(Object.keys(EDGE_TYPES));
+let searchTerm = '';
+
+// ================= SVG setup =================
+const svg = document.getElementById('graph');
+const viewport = document.getElementById('viewport');
+const edgesLayer = document.getElementById('edgesLayer');
+const nodesLayer = document.getElementById('nodesLayer');
+const markerDefs = document.getElementById('markerDefs');
+const tooltip = document.getElementById('tooltip');
+
+function el(tag, attrs){
+  const e = document.createElementNS(SVGNS, tag);
+  if(attrs) for(const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+
+function edgeColor(e){
+  const t = EDGE_TYPES[e.type];
+  return theme==='dark' ? t.dark : t.light;
+}
+
+const markerEls = {};
+function makeMarker(id, dashy){
+  const marker = el('marker', { id:'arrow-'+id, viewBox:'0 0 10 10', refX:'9', refY:'5',
+    markerWidth: dashy? 6:7, markerHeight: dashy? 6:7, orient:'auto-start-reverse' });
+  const path = el('path', { d:'M0,0 L10,5 L0,10 z', fill:'#888' });
+  marker.appendChild(path);
+  markerDefs.appendChild(marker);
+  markerEls[id] = path;
+  return path;
+}
+Object.entries(EDGE_TYPES).forEach(([key, t])=>{ makeMarker(key, t.dashes); });
+
+function shapeEl(node){
+  const cat = CATEGORIES[node.group];
+  const ext = node.ext;
+  let s;
+  if(cat.shape === 'rect'){
+    s = el('rect', { class:'shape', x:-ext.hw, y:-ext.hh, width:ext.hw*2, height:ext.hh*2, rx:9, ry:9 });
+  } else if(cat.shape === 'diamond'){
+    const p = [[0,-ext.hh],[ext.hw,0],[0,ext.hh],[-ext.hw,0]].map(pt=>pt.join(',')).join(' ');
+    s = el('polygon', { class:'shape', points:p });
+  } else if(cat.shape === 'ellipse'){
+    s = el('ellipse', { class:'shape', cx:0, cy:0, rx:ext.hw, ry:ext.hh });
+  } else if(cat.shape === 'hex'){
+    const hw=ext.hw, hh=ext.hh;
+    const p = [[-hw*0.5,-hh],[hw*0.5,-hh],[hw,0],[hw*0.5,hh],[-hw*0.5,hh],[-hw,0]].map(pt=>pt.join(',')).join(' ');
+    s = el('polygon', { class:'shape', points:p });
+  } else if(cat.shape === 'triangle'){
+    const r=ext.r;
+    const p = [[0,-r],[r*0.95,r*0.8],[-r*0.95,r*0.8]].map(pt=>pt.join(',')).join(' ');
+    s = el('polygon', { class:'shape', points:p });
+  } else if(cat.shape === 'star'){
+    const spikes=5, outerR=ext.r, innerR=ext.r*0.46;
+    let pts=[];
+    for(let i=0;i<spikes*2;i++){
+      const r = i%2===0 ? outerR : innerR;
+      const a = (-90 + i*(360/(spikes*2))) * Math.PI/180;
+      pts.push([Math.cos(a)*r, Math.sin(a)*r].join(','));
+    }
+    s = el('polygon', { class:'shape', points:pts.join(' ') });
+  }
+  return s;
+}
+
+function colorFor(catKeyOrType, table){
+  const t = table[catKeyOrType];
+  return theme === 'dark' ? t.dark : t.light;
+}
+
+const nodeGroups = {};
+nodes.forEach(node=>{
+  const cat = CATEGORIES[node.group];
+  const g = el('g', { class: node.inferred ? 'node enumNode' : 'node', 'data-id': node.id });
+  const shape = shapeEl(node);
+  const c = colorFor(node.group, CATEGORIES);
+  shape.setAttribute('fill', c);
+  shape.setAttribute('stroke', theme==='dark' ? '#0d0d0d' : '#ffffff');
+  if(node.inferred) shape.setAttribute('stroke-dasharray', '3,2');
+  g.appendChild(shape);
+
+  const labelInside = ['rect','diamond','ellipse','hex'].includes(cat.shape);
+  if(labelInside){
+    const icon = el('text', { x:0, y:-4, 'text-anchor':'middle', 'font-size':13, fill:'#ffffff' });
+    icon.textContent = cat.icon;
+    const name = el('text', { x:0, y:13, 'text-anchor':'middle', 'font-size':11, 'font-weight':600, fill:'#ffffff' });
+    name.textContent = node.name;
+    g.appendChild(icon); g.appendChild(name);
+  } else {
+    const icon = el('text', { x:0, y:5, 'text-anchor':'middle', 'font-size':15, fill:'#ffffff' });
+    icon.textContent = cat.icon;
+    g.appendChild(icon);
+    const nameOutside = el('text', { x:0, y: node.ext.r + 16, 'text-anchor':'middle', 'font-size':11, 'font-weight':600 });
+    nameOutside.setAttribute('fill', theme==='dark' ? '#ffffff' : '#0b0b0b');
+    nameOutside.textContent = node.name;
+    g.appendChild(nameOutside);
+  }
+  nodesLayer.appendChild(g);
+  nodeGroups[node.id] = { g, shape };
+
+  g.addEventListener('mouseenter', (ev)=>{ showTooltip(node, ev); });
+  g.addEventListener('mousemove', (ev)=>{ moveTooltip(ev); });
+  g.addEventListener('mouseleave', ()=>{ hideTooltip(); });
+  g.addEventListener('pointerdown', (ev)=> startDrag(node, ev));
+  g.addEventListener('click', (ev)=>{ ev.stopPropagation(); if(!wasDragged) selectNode(node.id); });
+});
+
+const edgeGroups = {};
+edges.forEach(e=>{
+  const t = EDGE_TYPES[e.type];
+  const g = el('g', { class:'edge', 'data-id': e.id });
+  const line = el('path', { class:'edge-line', stroke: edgeColor(e), 'stroke-width': t.dashes?1.5:2,
+    'marker-end':'url(#arrow-'+e.type+')' });
+  if(t.dashes) line.setAttribute('stroke-dasharray','5,4');
+  const hit = el('path', { class:'edge-hit' });
+  const labelBg = el('rect', { class:'edge-label-bg', rx:4, ry:4 });
+  const label = el('text', { class:'edge-label', 'text-anchor':'middle', 'font-size':9.5 });
+  label.textContent = e.label;
+  g.appendChild(line); g.appendChild(hit); g.appendChild(labelBg); g.appendChild(label);
+  edgesLayer.appendChild(g);
+  edgeGroups[e.id] = { g, line, hit, labelBg, label };
+});
+
+function trimPoint(from, to, ext){
+  const dx = to.x-from.x, dy = to.y-from.y;
+  const dist = Math.max(1, Math.hypot(dx,dy));
+  const ux = dx/dist, uy = dy/dist;
+  const rad = Math.max(ext.hh, Math.min(ext.hw, ext.hw*Math.abs(ux) + ext.hh*Math.abs(uy) + 6));
+  return { x: from.x + ux*rad, y: from.y + uy*rad };
+}
+
+function render(){
+  nodes.forEach(n=>{
+    if(n.hidden) return;
+    nodeGroups[n.id].g.setAttribute('transform', `translate(${n.x},${n.y})`);
+  });
+  edges.forEach(e=>{
+    if(e.hidden) return;
+    const a = nodeById[e.from], b = nodeById[e.to];
+    const p1 = trimPoint(a, b, a.ext);
+    const p2 = trimPoint(b, a, b.ext);
+    const eg = edgeGroups[e.id];
+    eg.line.setAttribute('d', `M${p1.x},${p1.y} L${p2.x},${p2.y}`);
+    eg.hit.setAttribute('d', `M${p1.x},${p1.y} L${p2.x},${p2.y}`);
+    const mx = (p1.x+p2.x)/2, my = (p1.y+p2.y)/2;
+    eg.label.setAttribute('x', mx);
+    eg.label.setAttribute('y', my-3);
+    requestBBoxUpdate(eg, mx, my);
+  });
+}
+
+let bboxQueue = [];
+function requestBBoxUpdate(eg, mx, my){
+  bboxQueue.push(()=>{
+    try{
+      const bb = eg.label.getBBox();
+      eg.labelBg.setAttribute('x', bb.x-3);
+      eg.labelBg.setAttribute('y', bb.y-1);
+      eg.labelBg.setAttribute('width', bb.width+6);
+      eg.labelBg.setAttribute('height', bb.height+2);
+    }catch(err){}
+  });
+}
+function flushBBoxQueue(){ bboxQueue.forEach(fn=>fn()); bboxQueue=[]; }
+
+let running = false;
+let physicsPaused = false;
+let sleepCounter = 0;
+const REPEL_K = 30000;
+const SPRING_K = 0.02;
+const CENTER_K = 0.010;
+const DAMPING = 0.80;
+
+function step(){
+  const visibleNodes = nodes.filter(n=>!n.hidden);
+  for(let i=0;i<visibleNodes.length;i++){
+    for(let j=i+1;j<visibleNodes.length;j++){
+      const a = visibleNodes[i], b = visibleNodes[j];
+      let dx = a.x-b.x, dy = a.y-b.y;
+      let distSq = dx*dx+dy*dy;
+      if(distSq < 1) { dx = (Math.random()-0.5); dy=(Math.random()-0.5); distSq=1; }
+      const dist = Math.sqrt(distSq);
+      const minDist = 56;
+      const d = Math.max(dist, minDist);
+      const force = REPEL_K / (d*d);
+      const fx = (dx/dist)*force, fy = (dy/dist)*force;
+      if(a.fx===null){ a.vx += fx; a.vy += fy; }
+      if(b.fx===null){ b.vx -= fx; b.vy -= fy; }
+    }
+  }
+  edges.forEach(e=>{
+    if(e.hidden) return;
+    const a = nodeById[e.from], b = nodeById[e.to];
+    if(a.hidden || b.hidden) return;
+    const t = EDGE_TYPES[e.type];
+    const dx = b.x-a.x, dy = b.y-a.y;
+    const dist = Math.max(1, Math.hypot(dx,dy));
+    const diff = (dist - t.len) * SPRING_K;
+    const fx = (dx/dist)*diff, fy = (dy/dist)*diff;
+    if(a.fx===null){ a.vx += fx; a.vy += fy; }
+    if(b.fx===null){ b.vx -= fx; b.vy -= fy; }
+  });
+  let totalSpeed = 0;
+  visibleNodes.forEach(n=>{
+    const anchor = CAT_ANCHOR[n.group];
+    if(n.fx!==null){ n.x=n.fx; n.y=n.fy; n.vx=0; n.vy=0; return; }
+    n.vx += (anchor.x-n.x)*CENTER_K*0.06;
+    n.vy += (anchor.y-n.y)*CENTER_K*0.06;
+    n.vx *= DAMPING; n.vy *= DAMPING;
+    n.x += n.vx; n.y += n.vy;
+    totalSpeed += Math.abs(n.vx)+Math.abs(n.vy);
+  });
+  render();
+  flushBBoxQueue();
+
+  if(totalSpeed < visibleNodes.length*0.02){ sleepCounter++; } else { sleepCounter = 0; }
+  if(sleepCounter > 30){ running = false; return; }
+  requestAnimationFrame(step);
+}
+
+function wake(){
+  if(physicsPaused) return;
+  sleepCounter = 0;
+  if(!running){ running = true; requestAnimationFrame(step); }
+}
+
+let vpx=0, vpy=0, vps=1;
+function updateTransform(){ viewport.setAttribute('transform', `translate(${vpx},${vpy}) scale(${vps})`); }
+function screenToRoot(clientX, clientY){
+  const pt = svg.createSVGPoint();
+  pt.x = clientX; pt.y = clientY;
+  const ctm = svg.getScreenCTM();
+  return pt.matrixTransform(ctm.inverse());
+}
+
+let isPanning = false, panStart=null, panOrigin=null;
+svg.addEventListener('pointerdown', (ev)=>{
+  if(ev.target === svg || ev.target.id==='viewport'){
+    isPanning = true;
+    panStart = screenToRoot(ev.clientX, ev.clientY);
+    panOrigin = { x: vpx, y: vpy };
+    svg.classList.add('panning');
+    svg.setPointerCapture(ev.pointerId);
+  }
+});
+svg.addEventListener('pointermove', (ev)=>{
+  if(isPanning){
+    const p = screenToRoot(ev.clientX, ev.clientY);
+    vpx = panOrigin.x + (p.x - panStart.x);
+    vpy = panOrigin.y + (p.y - panStart.y);
+    updateTransform();
+  }
+});
+function endPan(ev){ if(isPanning){ isPanning=false; svg.classList.remove('panning'); } }
+svg.addEventListener('pointerup', endPan);
+svg.addEventListener('pointerleave', endPan);
+
+svg.addEventListener('wheel', (ev)=>{
+  ev.preventDefault();
+  const p = screenToRoot(ev.clientX, ev.clientY);
+  const logicalX = (p.x - vpx)/vps, logicalY = (p.y - vpy)/vps;
+  const factor = ev.deltaY < 0 ? 1.12 : 1/1.12;
+  vps = Math.min(4, Math.max(0.05, vps*factor));
+  vpx = p.x - logicalX*vps;
+  vpy = p.y - logicalY*vps;
+  updateTransform();
+}, { passive:false });
+
+document.getElementById('zoomIn').addEventListener('click', ()=> zoomButton(1.25));
+document.getElementById('zoomOut').addEventListener('click', ()=> zoomButton(0.8));
+function zoomButton(factor){
+  const logicalX = (600 - vpx)/vps, logicalY = (400 - vpy)/vps;
+  vps = Math.min(4, Math.max(0.05, vps*factor));
+  vpx = 600 - logicalX*vps;
+  vpy = 400 - logicalY*vps;
+  updateTransform();
+}
+
+document.getElementById('fitBtn').addEventListener('click', ()=> fitView());
+function fitView(){
+  const vis = nodes.filter(n=>!n.hidden);
+  if(!vis.length) return;
+  let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+  vis.forEach(n=>{
+    minX = Math.min(minX, n.x-n.ext.hw-20); maxX = Math.max(maxX, n.x+n.ext.hw+20);
+    minY = Math.min(minY, n.y-n.ext.hh-20); maxY = Math.max(maxY, n.y+n.ext.hh+20);
+  });
+  const bw = Math.max(60, maxX-minX), bh = Math.max(60, maxY-minY);
+  const scale = Math.min(4, Math.max(0.05, Math.min(W/bw, H/bh)));
+  vps = scale;
+  vpx = W/2 - ((minX+maxX)/2)*scale;
+  vpy = H/2 - ((minY+maxY)/2)*scale;
+  updateTransform();
+}
+
+let dragTarget = null, wasDragged = false;
+function startDrag(node, ev){
+  ev.stopPropagation();
+  dragTarget = node;
+  wasDragged = false;
+  const p = screenToRoot(ev.clientX, ev.clientY);
+  const logical = { x:(p.x-vpx)/vps, y:(p.y-vpy)/vps };
+  dragTarget._grabDX = node.x - logical.x;
+  dragTarget._grabDY = node.y - logical.y;
+  window.addEventListener('pointermove', onDragMove);
+  window.addEventListener('pointerup', onDragEnd);
+}
+function onDragMove(ev){
+  if(!dragTarget) return;
+  wasDragged = true;
+  const p = screenToRoot(ev.clientX, ev.clientY);
+  const logical = { x:(p.x-vpx)/vps, y:(p.y-vpy)/vps };
+  dragTarget.fx = logical.x + dragTarget._grabDX;
+  dragTarget.fy = logical.y + dragTarget._grabDY;
+  dragTarget.x = dragTarget.fx; dragTarget.y = dragTarget.fy;
+  render(); flushBBoxQueue();
+  wake();
+}
+function onDragEnd(){
+  if(dragTarget){ dragTarget.fx = null; dragTarget.fy = null; }
+  dragTarget = null;
+  window.removeEventListener('pointermove', onDragMove);
+  window.removeEventListener('pointerup', onDragEnd);
+  wake();
+}
+
+function showTooltip(node, ev){
+  const cat = CATEGORIES[node.group];
+  tooltip.innerHTML = `<div class="tt-mod">${cat.icon} ${cat.label}${node.inferred ? ' · referenced only' : ''}</div><b>${node.name}</b>${node.desc}`;
+  tooltip.style.display = 'block';
+  moveTooltip(ev);
+}
+function moveTooltip(ev){
+  tooltip.style.left = (ev.clientX+16)+'px';
+  tooltip.style.top = (ev.clientY+16)+'px';
+}
+function hideTooltip(){ tooltip.style.display='none'; }
+
+function applyVisualState(){
+  nodes.forEach(n=>{
+    const catOn = activeCategories.has(n.group);
+    n.hidden = !catOn;
+    const g = nodeGroups[n.id].g;
+    g.style.display = catOn ? '' : 'none';
+    if(!catOn) return;
+    const matches = !searchTerm || n.name.toLowerCase().includes(searchTerm) || n.desc.toLowerCase().includes(searchTerm);
+    const dim = searchTerm.length>0 && !matches;
+    const c = colorFor(n.group, CATEGORIES);
+    const shape = nodeGroups[n.id].shape;
+    shape.setAttribute('fill', dim ? hexToRgba(c,0.28) : c);
+    g.style.opacity = dim ? 0.55 : 1;
+  });
+  edges.forEach(e=>{
+    const typeOn = activeEdgeTypes.has(e.type);
+    const a = nodeById[e.from], b = nodeById[e.to];
+    const endpointsOn = activeCategories.has(a.group) && activeCategories.has(b.group);
+    e.hidden = !(typeOn && endpointsOn);
+    const eg = edgeGroups[e.id];
+    eg.g.style.display = e.hidden ? 'none' : '';
+    if(e.hidden) return;
+    const c = edgeColor(e);
+    eg.line.setAttribute('stroke', c);
+    eg.label.setAttribute('fill', theme==='dark' ? '#c3c2b7' : '#52514e');
+    eg.labelBg.setAttribute('fill', theme==='dark' ? '#1a1a19' : '#fcfcfb');
+  });
+  Object.entries(EDGE_TYPES).forEach(([key,t])=>{
+    if(markerEls[key]) markerEls[key].setAttribute('fill', colorFor(key, EDGE_TYPES));
+  });
+  updateStatsBadge();
+  render();
+  flushBBoxQueue();
+  wake();
+}
+function hexToRgba(hex, alpha){
+  const h = hex.replace('#','');
+  const r = parseInt(h.substring(0,2),16), g = parseInt(h.substring(2,4),16), b = parseInt(h.substring(4,6),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+function updateStatsBadge(){
+  const visN = nodes.filter(n=>!n.hidden).length;
+  const visE = edges.filter(e=>!e.hidden).length;
+  document.getElementById('statsBadge').textContent = `${visN} of ${nodes.length} concepts · ${visE} of ${edges.length} relations shown`;
+}
+
+function buildCategoryChips(container){
+  Object.keys(CATEGORIES).forEach(key=>{
+    const cat = CATEGORIES[key];
+    const chip = document.createElement('label');
+    chip.className = 'chip';
+    chip.innerHTML = `<span class="dot" style="background:${cat.light}"></span>${cat.icon} ${cat.label}<input type="checkbox" checked data-cat="${key}">`;
+    chip.querySelector('input').addEventListener('change', (ev)=>{
+      if(ev.target.checked){ activeCategories.add(key); chip.classList.remove('off'); }
+      else { activeCategories.delete(key); chip.classList.add('off'); }
+      applyVisualState();
+    });
+    container.appendChild(chip);
+  });
+}
+buildCategoryChips(document.getElementById('categoryChips'));
+
+function buildEdgeChips(container){
+  Object.keys(EDGE_TYPES).forEach(key=>{
+    const t = EDGE_TYPES[key];
+    const chip = document.createElement('label');
+    chip.className = 'chip';
+    const marker = t.dashes ? `<span class="dot" style="background:${t.light};opacity:0.6"></span>` : `<span class="dot" style="background:${t.light}"></span>`;
+    chip.innerHTML = `${marker}${t.label}<input type="checkbox" checked data-edge="${key}">`;
+    chip.querySelector('input').addEventListener('change', (ev)=>{
+      if(ev.target.checked){ activeEdgeTypes.add(key); chip.classList.remove('off'); }
+      else { activeEdgeTypes.delete(key); chip.classList.add('off'); }
+      applyVisualState();
+    });
+    container.appendChild(chip);
+  });
+}
+buildEdgeChips(document.getElementById('edgeChips'));
+
+document.getElementById('searchBox').addEventListener('input', (ev)=>{
+  searchTerm = ev.target.value.trim().toLowerCase();
+  applyVisualState();
+  if(searchTerm){
+    const matchIds = nodes.filter(n=>!n.hidden && (n.name.toLowerCase().includes(searchTerm)||n.desc.toLowerCase().includes(searchTerm))).map(n=>n.id);
+    if(matchIds.length) fitViewTo(matchIds);
+  }
+});
+function fitViewTo(ids){
+  nodes.forEach(n=>{ n._tmpHidden = n.hidden; n.hidden = !ids.includes(n.id); });
+  fitView();
+  nodes.forEach(n=>{ n.hidden = n._tmpHidden; });
+}
+
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  document.getElementById('searchBox').value = '';
+  searchTerm = '';
+  activeCategories.clear(); Object.keys(CATEGORIES).forEach(k=>activeCategories.add(k));
+  activeEdgeTypes.clear(); Object.keys(EDGE_TYPES).forEach(k=>activeEdgeTypes.add(k));
+  document.querySelectorAll('#categoryChips input').forEach(inp=>{ inp.checked = true; inp.closest('.chip').classList.remove('off'); });
+  document.querySelectorAll('#edgeChips input').forEach(inp=>{ inp.checked = true; inp.closest('.chip').classList.remove('off'); });
+  applyVisualState();
+  clearSelection();
+  fitView();
+  showLegend();
+});
+
+const physicsBtn = document.getElementById('physicsBtn');
+physicsBtn.addEventListener('click', ()=>{
+  physicsPaused = !physicsPaused;
+  physicsBtn.textContent = physicsPaused ? '▶ Resume layout' : '⏸ Freeze layout';
+  physicsBtn.classList.toggle('active', physicsPaused);
+  if(!physicsPaused) wake();
+});
+
+const themeBtn = document.getElementById('themeBtn');
+themeBtn.addEventListener('click', ()=>{
+  theme = theme === 'light' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', theme);
+  themeBtn.textContent = theme === 'light' ? '🌙 Dark mode' : '☀️ Light mode';
+  nodes.forEach(n=>{ nodeGroups[n.id].shape.setAttribute('stroke', theme==='dark' ? '#0d0d0d' : '#ffffff'); });
+  applyVisualState();
+  const wasNode = infoPanel.dataset.mode === 'node';
+  const priorId = infoPanel.dataset.nodeId;
+  if(wasNode && priorId){ showNodeInfo(priorId); } else { renderLegend(); }
+});
+
+const infoPanel = document.getElementById('infoPanel');
+let selectedId = null;
+function clearSelection(){
+  if(selectedId) nodeGroups[selectedId].g.classList.remove('selected');
+  selectedId = null;
+}
+function selectNode(id){
+  clearSelection();
+  selectedId = id;
+  nodeGroups[id].g.classList.add('selected');
+  showNodeInfo(id);
+}
+function renderLegend(){
+  let html = '<h2>Legend — Concepts</h2>';
+  Object.entries(CATEGORIES).forEach(([key,cat])=>{
+    const c = theme==='dark' ? cat.dark : cat.light;
+    const count = moduleNodeCount[key]||0;
+    html += `<div class="legend-row">
+      <div class="legend-swatch" style="background:${c}">${cat.icon}</div>
+      <div class="legend-text"><b>${cat.label}</b><span>${cat.desc}</span><span class="legend-count">${count} concepts</span></div>
+    </div>`;
+  });
+  html += '<h3 class="section">Relations</h3>';
+  Object.entries(EDGE_TYPES).forEach(([key,t])=>{
+    const c = theme==='dark' ? t.dark : t.light;
+    const style = t.dashes ? ' dashed' : '';
+    html += `<div class="legend-edge-row"><span class="legend-edge-line${style}" style="border-color:${c}"></span>${t.label}</div>`;
+  });
+  html += `<p style="margin-top:16px;font-size:11.5px;color:var(--text-secondary);line-height:1.5;">
+    Click any node for its full description, attributes and relations. Dashed outlines mark services
+    referenced by the source model without their own detailed process/system wiring. Drag nodes to
+    reposition, drag the background to pan, scroll to zoom, and open the table view for a plain-text list.
+  </p>`;
+  infoPanel.innerHTML = html;
+  infoPanel.dataset.mode = 'legend';
+}
+function showLegend(){ clearSelection(); renderLegend(); }
+
+function showNodeInfo(nodeId){
+  const n = nodeById[nodeId];
+  if(!n) return;
+  const cat = CATEGORIES[n.group];
+  const c = theme==='dark' ? cat.dark : cat.light;
+  const outgoing = edges.filter(e=>e.from===nodeId);
+  const incoming = edges.filter(e=>e.to===nodeId);
+  let html = `<button id="backToLegend">← Back to legend</button>
+    <div class="node-title"><span style="color:${c}">${cat.icon}</span> ${n.name}${n.inferred ? ' <span class="legend-count">(referenced only)</span>' : ''}</div>
+    <div class="node-cat" style="color:${c}">${cat.label}</div>
+    <div class="node-desc">${n.desc}</div>`;
+  if(n.attrs && n.attrs.length){
+    html += `<div class="node-extra"><b>Attributes</b><br>${n.attrs.join('<br>')}</div>`;
+  }
+  if(outgoing.length){
+    html += '<div class="rel-heading">Outgoing relations</div>';
+    outgoing.forEach(e=>{
+      const t = nodeById[e.to];
+      html += `<div class="rel-item" data-jump="${e.to}"><span>${n.name} → ${t.name}</span><span class="rel-label">${e.label}</span></div>`;
+    });
+  }
+  if(incoming.length){
+    html += '<div class="rel-heading">Incoming relations</div>';
+    incoming.forEach(e=>{
+      const f = nodeById[e.from];
+      html += `<div class="rel-item" data-jump="${e.from}"><span>${f.name} → ${n.name}</span><span class="rel-label">${e.label}</span></div>`;
+    });
+  }
+  infoPanel.innerHTML = html;
+  infoPanel.dataset.mode = 'node';
+  infoPanel.dataset.nodeId = nodeId;
+  document.getElementById('backToLegend').addEventListener('click', showLegend);
+  infoPanel.querySelectorAll('.rel-item').forEach(item=>{
+    item.addEventListener('click', ()=>{
+      const id = item.dataset.jump;
+      selectNode(id);
+      fitViewTo([id, nodeId]);
+    });
+  });
+}
+svg.addEventListener('click', (ev)=>{
+  if(ev.target === svg || ev.target.id === 'viewport' || ev.target.id==='edgesLayer' || ev.target.id==='nodesLayer'){
+    showLegend();
+  }
+});
+renderLegend();
+
+const nodesTableBody = document.querySelector('#nodesTable tbody');
+RAW_NODES.slice().sort((a,b)=> CATEGORIES[a.group].label.localeCompare(CATEGORIES[b.group].label) || a.name.localeCompare(b.name)).forEach(n=>{
+  const cat = CATEGORIES[n.group];
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${cat.icon} ${n.name}</td>
+    <td><span class="catpill"><span class="dot" style="background:${cat.light}"></span>${cat.label}</span></td>
+    <td>${n.desc}</td>`;
+  nodesTableBody.appendChild(tr);
+});
+const edgesTableBody = document.querySelector('#edgesTable tbody');
+RAW_EDGES.forEach(e=>{
+  const t = EDGE_TYPES[e.type];
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${nodeById[e.from].name}</td><td><em>${e.label}</em></td><td>${nodeById[e.to].name}</td>
+    <td><span class="catpill"><span class="dot" style="background:${t.light}"></span>${t.label}</span></td>`;
+  edgesTableBody.appendChild(tr);
+});
+const tableWrap = document.getElementById('tableWrap');
+document.getElementById('tableBtn').addEventListener('click', ()=> tableWrap.classList.add('open'));
+document.getElementById('closeModal').addEventListener('click', ()=> tableWrap.classList.remove('open'));
+tableWrap.addEventListener('click', (ev)=>{ if(ev.target===tableWrap) tableWrap.classList.remove('open'); });
+
+applyVisualState();
+render();
+flushBBoxQueue();
+wake();
+setTimeout(()=>{ fitView(); }, 500);
+
+})();
+</script>
+</body>
+</html>

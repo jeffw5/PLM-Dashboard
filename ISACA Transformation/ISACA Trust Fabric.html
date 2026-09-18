@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="dark light">
+<script>(function(){try{var t=localStorage.getItem('isaca-tf-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);}catch(e){}})();</script>
+<title>ISACA Trust Fabric</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Space+Grotesk:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0A0E1A;--ink-2:#0D1220;--panel:#121828;--panel-2:#171F33;--panel-3:#1D2740;
+    --brand:#4C7CF0;--brand-tint:#7CA0FF;--seal:#D4A54A;--verify:#2BB8A8;--violet:#9A87F5;--risk:#E2536B;
+    --text:#F4F6FB;--muted:#B8C2D9;--faint:#8391AE;
+    --line:rgba(180,196,224,.16);--line-2:rgba(180,196,224,.30);--glow:rgba(76,124,240,.35);
+    --hdr-1:rgba(10,14,26,.92);--hdr-2:rgba(10,14,26,.68);--nav-1:rgba(13,18,32,.96);--nav-2:rgba(13,18,32,.85);
+    --bg-wash-1:rgba(43,184,168,.07);--bg-wash-2:rgba(76,124,240,.09);
+    --shadow:rgba(0,0,0,.35);
+    --display:'Fraunces',serif;--mech:'Space Grotesk',sans-serif;--body:'Public Sans',sans-serif;--mono:'IBM Plex Mono',monospace;--r:14px;
+  }
+  @media (prefers-color-scheme: light){
+    :root:not([data-theme="dark"]){
+      --ink:#F6F4EE;--ink-2:#EFEBE1;--panel:#FFFFFF;--panel-2:#F7F4EC;--panel-3:#EFE9DB;
+      --brand:#2249B8;--brand-tint:#2249B8;--seal:#8A5E11;--verify:#0B7A6B;--violet:#5B45C9;--risk:#B01B41;
+      --text:#191408;--muted:#4A4230;--faint:#6B6248;
+      --line:rgba(40,32,10,.14);--line-2:rgba(40,32,10,.26);--glow:rgba(34,73,184,.20);
+      --hdr-1:rgba(246,244,238,.92);--hdr-2:rgba(246,244,238,.7);--nav-1:rgba(255,255,255,.94);--nav-2:rgba(255,255,255,.82);
+      --bg-wash-1:rgba(11,122,107,.06);--bg-wash-2:rgba(34,73,184,.06);
+      --shadow:rgba(40,32,10,.12);
+    }
+  }
+  :root[data-theme="light"]{
+    --ink:#F6F4EE;--ink-2:#EFEBE1;--panel:#FFFFFF;--panel-2:#F7F4EC;--panel-3:#EFE9DB;
+    --brand:#2249B8;--brand-tint:#2249B8;--seal:#8A5E11;--verify:#0B7A6B;--violet:#5B45C9;--risk:#B01B41;
+    --text:#191408;--muted:#4A4230;--faint:#6B6248;
+    --line:rgba(40,32,10,.14);--line-2:rgba(40,32,10,.26);--glow:rgba(34,73,184,.20);
+    --hdr-1:rgba(246,244,238,.92);--hdr-2:rgba(246,244,238,.7);--nav-1:rgba(255,255,255,.94);--nav-2:rgba(255,255,255,.82);
+    --bg-wash-1:rgba(11,122,107,.06);--bg-wash-2:rgba(34,73,184,.06);
+    --shadow:rgba(40,32,10,.12);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:
+      radial-gradient(1200px 600px at 82% -10%, var(--bg-wash-1), transparent 60%),
+      radial-gradient(1000px 700px at -10% 8%, var(--bg-wash-2), transparent 55%),var(--ink);
+    color:var(--text);font-family:var(--body);-webkit-font-smoothing:antialiased;line-height:1.55;
+    transition:background-color .25s ease,color .25s ease;}
+  ::selection{background:rgba(76,124,240,.4);color:#fff}
+  a{color:inherit}
+  h1,h2,h3,h4{text-wrap:balance}
+
+  header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;backdrop-filter:blur(14px);
+    background:linear-gradient(180deg, var(--hdr-1), var(--hdr-2));border-bottom:1px solid var(--line);transition:background .25s ease,border-color .25s ease;}
+  .top-in{max-width:1280px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+  .mark{display:flex;align-items:center;gap:13px;min-width:0}
+  .mark svg{flex:none}
+  .mark .name{font-family:var(--mono);font-weight:600;letter-spacing:.16em;font-size:14px}
+  .mark .by{font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.1em;text-transform:uppercase}
+  .top-title{flex:1;min-width:220px}
+  .top-title h1{margin:0;font-family:var(--display);font-weight:600;font-size:17px;letter-spacing:-.01em}
+  .top-title p{margin:2px 0 0;font-size:11.5px;color:var(--muted)}
+  .gauge{display:flex;align-items:center;gap:12px}
+  .gauge .lab{text-align:right}
+  .gauge .lab .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+  .gauge .lab .v{font-family:var(--mech);font-size:19px;font-weight:700;line-height:1;color:var(--verify)}
+  .theme-toggle{width:38px;height:38px;border-radius:50%;border:1px solid var(--line-2);background:var(--panel);color:var(--text);display:grid;place-items:center;cursor:pointer;flex:none;transition:.2s;padding:0}
+  .theme-toggle:hover{border-color:var(--verify);color:var(--verify)}
+  .theme-toggle svg{width:17px;height:17px}
+
+  nav.tabs{position:sticky;top:calc(env(safe-area-inset-top,0px) + 62px);z-index:39;border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,var(--nav-1),var(--nav-2));backdrop-filter:blur(10px);transition:background .25s ease,border-color .25s ease}
+  .tabs-in{max-width:1280px;margin:0 auto;padding:0 14px;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+  .tabs-in::-webkit-scrollbar{display:none}
+  .tab{flex:none;background:none;border:0;color:var(--muted);cursor:pointer;font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;padding:14px 18px 12px;position:relative;white-space:nowrap;transition:color .2s}
+  .tab .num{color:var(--faint);margin-right:8px}
+  .tab:hover{color:var(--text)}
+  .tab[aria-selected="true"]{color:var(--text)}
+  .tab[aria-selected="true"]::after{content:"";position:absolute;left:14px;right:14px;bottom:-1px;height:2px;background:linear-gradient(90deg,var(--brand),var(--verify));border-radius:2px}
+
+  main{max-width:1280px;margin:0 auto;padding:34px 24px 80px}
+  section.view{display:none;animation:fade .4s ease}
+  section.view.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--verify);display:flex;align-items:center;gap:9px;margin:0 0 14px}
+  .eyebrow::before{content:"";width:22px;height:1px;background:var(--verify);opacity:.7}
+  h2.vh{font-family:var(--display);font-weight:600;font-size:clamp(26px,4vw,40px);line-height:1.1;letter-spacing:-.01em;margin:0 0 14px}
+  h2.vh em{font-style:italic;background:linear-gradient(90deg,var(--verify),var(--brand));-webkit-background-clip:text;background-clip:text;color:transparent}
+  h3.sub{font-family:var(--display);font-weight:600;font-size:21px;letter-spacing:-.005em;margin:42px 0 6px;display:flex;align-items:center;gap:10px}
+  h3.sub .tagn{font-family:var(--mono);font-size:11px;color:var(--faint);letter-spacing:.08em;font-weight:400}
+  .subhint{color:var(--muted);font-size:13.5px;margin:0 0 18px;max-width:820px}
+  .lead{font-size:16px;color:var(--muted);max-width:760px;margin:0 0 26px}
+
+  .panel{background:linear-gradient(180deg,var(--panel),var(--ink-2));border:1px solid var(--line);border-radius:var(--r);position:relative;overflow:hidden}
+  .panel.pad{padding:22px}
+  .panel-h{font-family:var(--mono);font-weight:600;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 14px;display:flex;align-items:center;gap:9px}
+  .dot{width:7px;height:7px;border-radius:50%;flex:none;box-shadow:0 0 10px currentColor}
+
+  .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:26px;align-items:center;margin-bottom:24px}
+  .hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 14px}
+  .stat .n{font-family:var(--mech);font-weight:700;font-size:22px;line-height:1;background:linear-gradient(90deg,var(--text),var(--verify));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat .l{font-size:11.5px;color:var(--muted);margin-top:7px;line-height:1.35}
+  .hero-art{aspect-ratio:1/.92;width:100%;max-width:100%}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .chip{font-family:var(--mono);font-size:11px;letter-spacing:.02em;color:var(--muted);border:1px solid var(--line-2);border-radius:999px;padding:5px 11px;background:rgba(76,124,240,.06)}
+  .chip b{color:var(--verify);font-weight:600}
+
+  .spine{display:flex;align-items:stretch;gap:0;overflow-x:auto;padding:4px 0 6px;scrollbar-width:none}
+  .spine::-webkit-scrollbar{display:none}
+  .sstep{flex:none;border:1px solid var(--line);border-radius:10px;padding:11px 14px;background:var(--panel);min-width:134px;font:inherit;color:inherit;text-align:left;cursor:pointer;transition:.18s}
+  .sstep:hover{border-color:var(--line-2);transform:translateY(-2px)}
+  .sstep[aria-pressed="true"]{border-color:transparent;box-shadow:inset 0 0 0 1px var(--verify),0 8px 20px -14px var(--verify);background:var(--panel-2)}
+  .sstep .sk{font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--verify)}
+  .sstep .st{font-family:var(--mech);font-weight:600;font-size:13px;margin-top:4px}
+  .sstep .sd{font-size:11px;color:var(--faint);margin-top:3px;font-family:var(--mono)}
+  .sarrow{flex:none;width:26px;display:grid;place-items:center;color:var(--line-2)}
+  .sarrow svg{width:16px;height:16px}
+  .spine-cap{font-family:var(--mono);font-size:11px;color:var(--violet);letter-spacing:.04em;margin-top:10px}
+
+  .prov-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .pcard{border:1px solid var(--line);border-radius:13px;padding:16px;background:var(--panel);border-top:2px solid var(--pc,var(--brand));position:relative}
+  .pcard .pk{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--pc,var(--verify))}
+  .pcard .pt{font-family:var(--mech);font-weight:600;font-size:15px;margin:6px 0 8px}
+  .pcard .pd{font-size:12.5px;color:var(--muted)}
+  .pcard .ptags{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
+  .pcard .ptags span{font-family:var(--mono);font-size:10px;color:var(--faint);border:1px solid var(--line);border-radius:6px;padding:3px 7px}
+
+  .whynow{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:8px}
+  .why{border:1px solid var(--line);border-left:2px solid var(--brand);border-radius:0 10px 10px 0;padding:16px;background:linear-gradient(90deg,rgba(76,124,240,.07),transparent)}
+  .why .t{font-family:var(--mech);font-weight:600;font-size:13px;letter-spacing:.02em;margin-bottom:6px}
+  .why .d{font-size:13px;color:var(--muted)}
+  .why .tag{font-family:var(--mono);font-size:10px;color:var(--verify);letter-spacing:.08em;text-transform:uppercase;margin-bottom:9px}
+
+  .xbox{cursor:pointer;transition:.2s}
+  .xbox:hover{border-color:var(--line-2);transform:translateY(-2px)}
+  .xbox .xhint{font-family:var(--mono);font-size:9.5px;color:var(--faint);letter-spacing:.06em;text-transform:uppercase;margin-top:10px;display:flex;align-items:center;gap:5px}
+  .xbox .xhint::before{content:"›";color:var(--verify);font-size:13px;line-height:1;transition:.2s;display:inline-block}
+  .xbox[aria-expanded="true"] .xhint::before{transform:rotate(90deg)}
+  .xdrawer{margin-top:12px;border-top:1px dashed var(--line-2);padding-top:12px;display:none;animation:fade .3s ease}
+  .xdrawer.open{display:block}
+  .xdrawer .xd-desc{font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.6}
+  .xmetrics{display:flex;gap:9px;flex-wrap:wrap}
+  .xm{border:1px solid var(--line);border-radius:9px;padding:9px 11px;background:var(--panel-2);flex:1;min-width:90px}
+  .xm .xmv{font-family:var(--mech);font-weight:700;font-size:14.5px;color:var(--verify);line-height:1.15}
+  .xm .xml{font-family:var(--mono);font-size:9px;color:var(--faint);text-transform:uppercase;letter-spacing:.02em;margin-top:4px;line-height:1.3}
+
+  .dtable{width:100%;border-collapse:collapse;font-size:12.5px}
+  .dtable th{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);text-align:left;padding:9px 11px;border-bottom:1px solid var(--line-2);white-space:nowrap}
+  .dtable td{padding:10px 11px;border-bottom:1px solid var(--line);color:var(--muted);vertical-align:top}
+  .dtable td b{color:var(--text);font-weight:600}
+  .dtable tr:last-child td{border-bottom:0}
+  .dtable tr.rowclick{cursor:pointer;transition:background .15s}
+  .dtable tr.rowclick:hover{background:var(--panel-2)}
+  .dtable tr.rowclick[aria-expanded="true"]{background:var(--panel-2)}
+  .rc-chev{display:inline-block;width:9px;color:var(--verify);font-family:var(--mono);font-size:10px;margin-right:7px;transition:transform .2s;transform-origin:45% 50%}
+  .rowclick[aria-expanded="true"] .rc-chev{transform:rotate(90deg)}
+  tr.detail-row{display:none}
+  tr.detail-row.open{display:table-row;animation:fade .25s ease}
+  tr.detail-row td{background:var(--panel-2);padding:16px 18px;border-bottom:1px solid var(--line)}
+  .dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+  .dfield b{display:block;font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--violet);margin-bottom:4px}
+  .dfield span{font-size:12.5px;color:var(--text)}
+  .badge{font-family:var(--mono);font-size:9.5px;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:999px;display:inline-block}
+  .b-h{background:rgba(226,83,107,.16);color:var(--risk)}
+  .b-m{background:rgba(212,165,74,.18);color:var(--seal)}
+  .b-l{background:rgba(43,184,168,.16);color:var(--verify)}
+  .b-integrate{background:rgba(76,124,240,.16);color:var(--brand-tint)}
+  .b-consolidate{background:rgba(154,135,245,.16);color:var(--violet)}
+  .b-retire{background:rgba(226,83,107,.14);color:var(--risk)}
+  .wave{font-family:var(--mono);font-size:10px;color:var(--faint)}
+
+  .road-rail{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+  .h-btn{flex:1;min-width:150px;text-align:left;cursor:pointer;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:13px 14px;transition:.2s;position:relative;color:inherit}
+  .h-btn:hover{border-color:var(--line-2);transform:translateY(-2px)}
+  .h-btn[aria-pressed="true"]{border-color:transparent;background:linear-gradient(180deg,var(--panel-2),var(--panel))}
+  .h-btn[aria-pressed="true"]::before{content:"";position:absolute;inset:0;border-radius:12px;padding:1px;background:linear-gradient(135deg,var(--brand),var(--verify));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+  .h-btn .hz{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--verify);text-transform:uppercase}
+  .h-btn .ht{font-family:var(--mech);font-weight:600;font-size:14px;margin:5px 0 4px}
+  .h-btn .hf{font-size:11px;color:var(--faint);font-family:var(--mono)}
+  .timeline{height:4px;border-radius:4px;background:var(--panel-2);position:relative;margin:4px 0 22px;overflow:hidden}
+  .timeline .fill{position:absolute;inset:0;width:0;background:linear-gradient(90deg,var(--brand),var(--verify));transition:width .5s ease;box-shadow:0 0 14px var(--glow)}
+  .road-detail{display:grid;grid-template-columns:1.25fr 1fr;gap:16px}
+  .moves{list-style:none;margin:0;padding:0}
+  .moves li{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .moves li:last-child{border-bottom:0}
+  .moves .ix{font-family:var(--mono);font-size:11px;color:var(--verify);padding-top:2px;min-width:26px}
+  .moves .mt{font-weight:600;font-size:13.5px;font-family:var(--display)}
+  .moves .md{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .exit{border-radius:12px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(43,184,168,.07),transparent);padding:16px;margin-bottom:14px}
+  .exit .lab{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--verify);margin-bottom:10px;display:flex;justify-content:space-between;gap:10px}
+  .exit .lab .inv{color:var(--faint)}
+  .exit .out{font-size:13.5px;color:var(--text)}
+  .kpi-row{display:flex;gap:18px;margin-top:14px;flex-wrap:wrap}
+  .kpi{flex:1;min-width:110px}
+  .kpi .v{font-family:var(--mech);font-weight:700;font-size:19px;color:var(--verify)}
+  .kpi .l{font-size:10.5px;color:var(--muted);font-family:var(--mono);margin-top:3px}
+  .ws-wrap{margin-top:16px}
+  .blk{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--violet);margin:16px 0 9px}
+  .gatebox{border:1px solid var(--line-2);border-radius:10px;padding:13px 14px;background:rgba(76,124,240,.07);font-size:12.5px;margin-top:14px}
+  .gatebox b{color:var(--brand-tint)}
+
+  .arch-wrap{display:grid;grid-template-columns:1fr 1.05fr;gap:18px;align-items:start}
+  .stack{display:flex;flex-direction:column-reverse;gap:8px}
+  .layer{position:relative;display:flex;align-items:center;gap:14px;cursor:pointer;border:1px solid var(--line);border-radius:11px;padding:14px 16px;background:var(--panel);transition:.18s}
+  .layer:hover{transform:translateX(4px);border-color:var(--line-2)}
+  .layer[aria-pressed="true"]{background:linear-gradient(90deg,var(--panel-2),var(--panel));border-color:transparent;box-shadow:inset 0 0 0 1px var(--accent,var(--brand)),0 8px 24px -16px var(--accent,var(--brand))}
+  .layer .ln{font-family:var(--mono);font-size:11px;color:var(--faint)}
+  .layer .lt{font-family:var(--mech);font-weight:600;font-size:13.5px;flex:1}
+  .layer .lbar{width:5px;align-self:stretch;border-radius:4px;background:var(--accent,var(--brand));box-shadow:0 0 12px var(--accent,var(--brand))}
+  .layer.gov{border-style:dashed;background:repeating-linear-gradient(135deg,rgba(154,135,245,.06),rgba(154,135,245,.06) 8px,transparent 8px,transparent 16px),var(--panel)}
+  .arch-detail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 156px);max-height:none}
+  .arch-detail .athead{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px}
+  .arch-detail .at{font-family:var(--display);font-weight:600;font-size:19px}
+  .arch-detail .aphase{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--verify);border:1px solid var(--line-2);border-radius:999px;padding:3px 9px;white-space:nowrap}
+  .arch-detail .ad{color:var(--muted);font-size:13.5px;margin-bottom:16px}
+  .inv{display:grid;gap:7px}
+  .invrow{display:grid;grid-template-columns:1.1fr .7fr 1.5fr;gap:10px;font-size:12px;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:7px}
+  .invrow:last-child{border-bottom:0}
+  .invrow .invn{font-weight:600;color:var(--text);font-family:var(--display)}
+  .invrow .invc{font-family:var(--mono);font-size:10px;color:var(--accent,var(--verify));text-transform:uppercase;letter-spacing:.02em}
+  .invrow .invr{color:var(--muted)}
+  .decs{margin:0;padding-left:16px;font-size:12.5px;color:var(--muted)}
+  .decs li{margin:5px 0}
+  .consider{font-size:12.5px;color:var(--text);border-left:2px solid var(--accent,var(--verify));padding-left:12px;margin-top:8px}
+
+  .principles{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:18px}
+  .principle{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--panel)}
+  .principle .pn{font-family:var(--mech);font-weight:600;font-size:13px;margin-bottom:6px;color:var(--verify)}
+  .principle .pd{font-size:12.5px;color:var(--muted)}
+
+  footer{max-width:1280px;margin:0 auto;padding:24px;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);color:var(--faint);font-size:11.5px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono)}
+  footer b{color:var(--muted);font-weight:500}
+  .scroll-x{overflow-x:auto}
+
+  @media(max-width:980px){
+    .hero{grid-template-columns:1fr}.hero-art{max-width:380px;margin:0 auto}
+    .arch-wrap{grid-template-columns:1fr}.arch-detail{position:static}
+    .road-detail{grid-template-columns:1fr}.prov-grid{grid-template-columns:repeat(2,1fr)}
+    .whynow{grid-template-columns:1fr}.principles{grid-template-columns:repeat(2,1fr)}
+  }
+  @media(max-width:620px){
+    .top-title{order:3;flex-basis:100%}.hero-stats{grid-template-columns:1fr}
+    .prov-grid,.principles{grid-template-columns:1fr}
+    .invrow{grid-template-columns:1fr}main{padding:26px 16px 60px}
+  }
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="mark">
+      <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+        <rect x="1" y="1" width="32" height="32" rx="8" stroke="url(#g1)" stroke-width="1.5"/>
+        <path d="M17 7 L26 11.5 V19.5 C26 24 22 27.3 17 29 C12 27.3 8 24 8 19.5 V11.5 Z" fill="none" stroke="#2BB8A8" stroke-width="1.3" opacity=".8"/>
+        <path d="M12.5 17.5 L15.5 20.5 L21.5 14" fill="none" stroke="#D4A54A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <defs><linearGradient id="g1" x1="0" y1="0" x2="34" y2="34"><stop stop-color="#4C7CF0"/><stop offset="1" stop-color="#2BB8A8"/></linearGradient></defs>
+      </svg>
+      <div><div class="name">ISACA</div><div class="by">Digital Transformation Program</div></div>
+    </div>
+    <div class="top-title">
+      <h1>Trust Fabric · Overview, Architecture &amp; Roadmap</h1>
+      <p>From fragmented member systems to one governed assurance platform — every credential, CPE record and framework interaction traceable and verifiable</p>
+    </div>
+    <div class="gauge">
+      <div class="lab"><div class="k">Program Maturity</div><div class="v"><span id="matVal">0</span>%</div></div>
+      <svg width="50" height="50" viewBox="0 0 52 52">
+        <circle cx="26" cy="26" r="22" fill="none" stroke="rgba(131,145,174,.18)" stroke-width="5"/>
+        <circle id="matArc" cx="26" cy="26" r="22" fill="none" stroke="url(#g2)" stroke-width="5" stroke-linecap="round" stroke-dasharray="138.2" stroke-dashoffset="138.2" transform="rotate(-90 26 26)"/>
+        <defs><linearGradient id="g2" x1="0" y1="0" x2="52" y2="52"><stop stop-color="#4C7CF0"/><stop offset="1" stop-color="#2BB8A8"/></linearGradient></defs>
+      </svg>
+    </div>
+    <button class="theme-toggle" id="themeToggle" type="button" aria-pressed="false" title="Switch theme"></button>
+  </div>
+</header>
+
+<nav class="tabs"><div class="tabs-in" id="tabbar"></div></nav>
+
+<main>
+
+  <!-- OVERVIEW -->
+  <section class="view active" id="v-overview">
+    <p class="eyebrow">Transformation thesis</p>
+    <div class="hero">
+      <div>
+        <h2 class="vh">From Fragmented Systems to a <em>Governed Trust Fabric</em></h2>
+        <p class="lead">Evolve ISACA's membership, certification, learning and community operations onto one governed digital platform — applying the same discipline the Association teaches (COBIT, CMMI, NIST AI RMF) to its own transformation, so every credential, CPE record and framework interaction is traceable, verifiable and instantly trusted by members, employers and regulators alike.</p>
+        <div class="chips">
+          <span class="chip">Founded <b>1969</b> · <b>170,000+</b> members · <b>180+</b> countries</span>
+          <span class="chip">Unifies <b>CISA · CISM · CRISC · CGEIT · CDPSE</b></span>
+          <span class="chip">Governed by ISACA's own <b>COBIT &amp; CMMI</b> frameworks</span>
+          <span class="chip">Spans <b>Membership → Certification → Learning → Community → Advisory</b></span>
+        </div>
+        <div class="hero-stats" id="heroStats"></div>
+      </div>
+      <div class="hero-art" id="heroArt"></div>
+    </div>
+
+    <div class="panel pad" style="margin-bottom:18px">
+      <p class="panel-h"><span class="dot" style="color:var(--violet)"></span>The trust thread — one member, one verifiable record, one lineage</p>
+      <div class="spine" id="spine"></div>
+      <div class="spine-cap">From first discovery to enterprise advisory · every stage feeds a single governed record · tap a stage below for detail</div>
+      <div class="spine-detail" id="spineDetail"></div>
+    </div>
+
+    <div class="panel pad" style="margin-bottom:18px">
+      <p class="panel-h"><span class="dot" style="color:var(--verify)"></span>Architecture pattern grounding — ISACA's own frameworks, applied to itself</p>
+      <div class="prov-grid" id="provGrid"></div>
+    </div>
+
+    <div class="panel pad">
+      <p class="panel-h"><span class="dot" style="color:var(--verify)"></span>Why now — the strategic window</p>
+      <div class="whynow" id="whynow"></div>
+    </div>
+  </section>
+
+  <!-- ARCHITECTURE -->
+  <section class="view" id="v-arch">
+    <p class="eyebrow">Reference architecture</p>
+    <h2 class="vh">A six-layer stack, one governance plane</h2>
+    <p class="lead">Six functional layers plus a cross-cutting governance plane, each with a defined interface contract with its neighbors. The design is member- and credential-first: every certification, competency, CPE record and framework interaction has a formal definition in a shared model before analytics, personalization or AI ever touch it. Select a layer for its component inventory, technologies, considerations and key decisions.</p>
+
+    <div class="arch-wrap">
+      <div class="stack" id="archStack"></div>
+      <div class="panel pad arch-detail" id="archDetail"></div>
+    </div>
+
+    <h3 class="sub"><span class="dot" style="color:var(--verify)"></span>Stack at a glance</h3>
+    <div class="panel pad scroll-x"><table class="dtable" id="archTable"></table></div>
+
+    <h3 class="sub"><span class="dot" style="color:var(--seal)"></span>Design principles</h3>
+    <div class="principles" id="principles"></div>
+  </section>
+
+  <!-- ROADMAP -->
+  <section class="view" id="v-roadmap">
+    <p class="eyebrow">Phased transformation</p>
+    <h2 class="vh">Five phases, one continuous trust thread</h2>
+    <p class="lead">Each phase adds capability without re-platforming the last, and concludes with a formal Governance Gate Review — a go / no-go decision, judged the way ISACA judges any enterprise IT investment, requiring evidence of delivery, adoption and governance readiness before the next phase is funded. Select a phase for its workstreams, gate and investment.</p>
+    <div class="road-rail" id="roadRail"></div>
+    <div class="timeline"><div class="fill" id="roadFill"></div></div>
+
+    <div class="road-detail">
+      <div class="panel pad">
+        <p class="panel-h"><span class="dot" style="color:var(--brand)"></span><span id="rdTitle">Phase</span></p>
+        <ul class="moves" id="roadMoves"></ul>
+        <div class="ws-wrap">
+          <p class="blk">Workstreams · deliverables · owner</p>
+          <div class="scroll-x"><table class="dtable" id="roadWs"></table></div>
+        </div>
+      </div>
+      <div>
+        <div class="exit">
+          <div class="lab"><span id="roadGateLab">Governance Gate Review</span><span class="inv" id="roadInv"></span></div>
+          <div class="out" id="roadExit"></div>
+          <div class="kpi-row" id="roadKpi"></div>
+        </div>
+        <div class="gatebox" id="roadGate"></div>
+      </div>
+    </div>
+
+    <h3 class="sub"><span class="dot" style="color:var(--verify)"></span>Program KPI scorecard <span class="tagn">tracked baseline → phase</span></h3>
+    <p class="subhint">A single scorecard the gate reviews are judged against. Index figures are normalized to a baseline of 100 (lower is better); the rest are absolute targets carried across every phase.</p>
+    <div class="panel pad scroll-x"><table class="dtable" id="kpiBoard"></table></div>
+
+    <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:18px;margin-top:18px">
+      <div>
+        <h3 class="sub" style="margin-top:0"><span class="dot" style="color:var(--risk)"></span>Risk register</h3>
+        <div class="panel pad scroll-x"><table class="dtable" id="riskTable"></table></div>
+      </div>
+      <div>
+        <h3 class="sub" style="margin-top:0"><span class="dot" style="color:var(--violet)"></span>Portfolio rationalization</h3>
+        <div class="panel pad scroll-x"><table class="dtable" id="portTable"></table></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div><b>Illustrative strategic concept</b> · prepared for the ISACA Digital Transformation Program Office · grounded in ISACA's public certification, framework and membership profile</div>
+  <div>Not an ISACA-endorsed public document · figures are planning estimates</div>
+</footer>
+
+<script>
+const ARROW='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+
+/* ---------------- generic expandable-table helper ---------------- */
+/* rows: array of data; cellsFn(row,i)->array of <td> inner-html strings (first cell gets the chevron);
+   detailFn(row,i)->html for the full-width detail panel; colspan = number of visible columns */
+function renderExpandableTable(tbodyId, headHtml, rows, cellsFn, detailFn, colspan){
+  const tbody=document.getElementById(tbodyId);
+  tbody.innerHTML=`<thead>${headHtml}</thead><tbody>`+rows.map((r,i)=>{
+    const cells=cellsFn(r,i);
+    const tds=cells.map((c,ci)=>ci===0?`<td><span class="rc-chev">›</span>${c}</td>`:`<td>${c}</td>`).join('');
+    return `<tr class="rowclick" data-i="${i}" aria-expanded="false">${tds}</tr>`+
+      `<tr class="detail-row" id="${tbodyId}-d${i}"><td colspan="${colspan}">${detailFn(r,i)}</td></tr>`;
+  }).join('')+`</tbody>`;
+  tbody.querySelectorAll('tr.rowclick').forEach(tr=>{
+    tr.onclick=()=>{
+      const i=tr.dataset.i,open=tr.getAttribute('aria-expanded')==='true';
+      tbody.querySelectorAll('tr.rowclick').forEach(t=>t.setAttribute('aria-expanded','false'));
+      tbody.querySelectorAll('tr.detail-row').forEach(t=>t.classList.remove('open'));
+      if(!open){tr.setAttribute('aria-expanded','true');document.getElementById(tbodyId+'-d'+i).classList.add('open');}
+    };
+  });
+}
+function dfield(label,val){return `<div class="dfield"><b>${label}</b><span>${val}</span></div>`;}
+
+/* ---------------- theme toggle (light / dark / system) ---------------- */
+(function(){
+  const ICON_SUN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>';
+  const ICON_MOON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>';
+  const root=document.documentElement,btn=document.getElementById('themeToggle'),KEY='isaca-tf-theme';
+  function systemDark(){try{return window.matchMedia('(prefers-color-scheme: dark)').matches;}catch(e){return true;}}
+  function apply(theme){
+    if(theme){root.setAttribute('data-theme',theme);}else{root.removeAttribute('data-theme');}
+    const isLight = theme ? theme==='light' : !systemDark();
+    btn.innerHTML=isLight?ICON_MOON:ICON_SUN;
+    btn.setAttribute('aria-pressed',isLight?'true':'false');
+    btn.title=isLight?'Switch to dark theme':'Switch to light theme';
+  }
+  let saved=null;try{saved=localStorage.getItem(KEY);}catch(e){}
+  apply(saved);
+  btn.addEventListener('click',()=>{
+    const next = (root.getAttribute('data-theme')|| (systemDark()?'dark':'light'))==='light' ? 'dark' : 'light';
+    try{localStorage.setItem(KEY,next);}catch(e){}
+    apply(next);
+  });
+})();
+
+/* nav */
+const TABS=[["01","Overview","v-overview"],["02","Architecture","v-arch"],["03","Roadmap","v-roadmap"]];
+const tabbar=document.getElementById('tabbar');
+TABS.forEach(([n,label,id],i)=>{const b=document.createElement('button');b.className='tab';b.setAttribute('role','tab');b.setAttribute('aria-selected',i===0);
+  b.innerHTML=`<span class="num">${n}</span>${label}`;
+  b.onclick=()=>{document.querySelectorAll('.tab').forEach(t=>t.setAttribute('aria-selected','false'));b.setAttribute('aria-selected','true');
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));document.getElementById(id).classList.add('active');
+    window.scrollTo({top:0,behavior:'smooth'});};
+  tabbar.appendChild(b);});
+
+/* maturity gauge */
+(function(){const target=14,arc=document.getElementById('matArc'),val=document.getElementById('matVal');const C=138.2;let t0=null;
+  function step(ts){if(!t0)t0=ts;const p=Math.min((ts-t0)/1200,1);const e=1-Math.pow(1-p,3);
+    val.textContent=Math.round(e*target);arc.style.strokeDashoffset=C-(C*e*target/100);if(p<1)requestAnimationFrame(step);}requestAnimationFrame(step);})();
+
+/* hero art — concentric trust rings (member → chapter → association → ecosystem) */
+(function(){const rings=[{r:148,c:'rgba(76,124,240,.30)',lab:'ECOSYSTEM'},{r:112,c:'rgba(43,184,168,.36)',lab:'ASSOCIATION'},{r:76,c:'rgba(154,135,245,.42)',lab:'CHAPTER'},{r:42,c:'rgba(212,165,74,.55)',lab:'MEMBER'}];
+  let svg=`<svg viewBox="0 0 360 332" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto"><defs>
+     <radialGradient id="core" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#2BB8A8"/><stop offset="1" stop-color="#4C7CF0"/></radialGradient>
+     <linearGradient id="spineg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9A87F5"/><stop offset="1" stop-color="#2BB8A8"/></linearGradient></defs>`;
+  const cx=180,cy=166;svg+=`<line x1="${cx}" y1="14" x2="${cx}" y2="318" stroke="url(#spineg)" stroke-width="1.5" opacity=".5" stroke-dasharray="2 6"/>`;
+  rings.forEach((g,i)=>{svg+=`<circle cx="${cx}" cy="${cy}" r="${g.r}" fill="none" stroke="${g.c}" stroke-width="1.4"/>`;
+    svg+=`<text x="${cx}" y="${cy-g.r+15}" fill="${g.c.replace(/[\d.]+\)$/,'.95)')}" font-family="IBM Plex Mono,monospace" font-size="8.5" letter-spacing="2" text-anchor="middle">${g.lab}</text>`;
+    const ang=(-40+i*22)*Math.PI/180;svg+=`<circle cx="${cx+Math.cos(ang)*g.r}" cy="${cy+Math.sin(ang)*g.r}" r="3.4" fill="${g.c.replace(/[\d.]+\)$/,'1)')}"/>`;});
+  svg+=`<circle cx="${cx}" cy="${cy}" r="15" fill="url(#core)"/><circle cx="${cx}" cy="${cy}" r="15" fill="none" stroke="#fff" stroke-opacity=".28"/><path d="M${cx-5} ${cy} l3.5 3.5 l7-7" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+  [{r:112,c:'#2BB8A8',d:'7s'},{r:76,c:'#9A87F5',d:'5.5s'},{r:42,c:'#D4A54A',d:'4s'}].forEach(t=>{svg+=`<circle r="3" fill="${t.c}"><animateMotion dur="${t.d}" repeatCount="indefinite" path="M ${cx} ${cy-t.r} A ${t.r} ${t.r} 0 1 1 ${cx-0.01} ${cy-t.r} Z"/></circle>`;});
+  svg+=`</svg>`;document.getElementById('heroArt').innerHTML=svg;})();
+
+/* ---------------- OVERVIEW — hero stats (clickable) ---------------- */
+const STATS=[
+  {n:'5 → 1',l:'Five certifications, one credential & competency graph',
+   detail:'CISA, CISM, CRISC, CGEIT and CDPSE stop living on five loosely-connected exam, badge and renewal records. Every credential, its prerequisites, its CPE obligations and the frameworks it draws on share one governed competency ontology — so a member’s full professional record reads as one story, not five.',
+   impact:[['1','Canonical credential model'],['0','Re-keyed renewal data'],['Faster','Cross-credential pathway guidance']]},
+  {n:'170K+ / 180+',l:'Members and countries served from one member-360 view',
+   detail:'Membership, certification status, CPE history and chapter engagement today sit across separately-administered systems built up over decades. A single governed member record replaces record reconciliation with a real-time, privacy-respecting view usable by staff, chapters and members alike.',
+   impact:[['1','Member record of truth'],['180+','Jurisdictions data-governed'],['Real-time','Status across every channel']]},
+  {n:'1 Verifiable Record',l:'Every credential instantly verifiable, end to end',
+   detail:'A CISA or CISM credential becomes an instantly verifiable digital record — from exam registration through issuance and every CPE reporting cycle — rather than a PDF an employer has to take on faith. This is the same standard of evidence ISACA asks certified professionals to hold their own organizations to.',
+   impact:[['Minutes','Credential issuance vs. weeks'],['Employer-verifiable','Every active certification'],['Audit-ready','Full CPE lineage']]}
+];
+document.getElementById('heroStats').innerHTML=STATS.map((s,i)=>`<div class="stat xbox" data-i="${i}" aria-expanded="false"><div class="n">${s.n}</div><div class="l">${s.l}</div><div class="xhint">Impact &amp; detail</div><div class="xdrawer" id="statDrawer-${i}"></div></div>`).join('');
+document.querySelectorAll('#heroStats .stat').forEach(el=>el.onclick=()=>toggleX(el,STATS[+el.dataset.i],'statDrawer-'+el.dataset.i));
+function toggleX(el,d,drawerId){const drawer=document.getElementById(drawerId);const open=drawer.classList.contains('open');
+  if(open){drawer.classList.remove('open');el.setAttribute('aria-expanded','false');return;}
+  drawer.innerHTML=`<div class="xd-desc">${d.detail}</div><div class="xmetrics">${d.impact.map(m=>`<div class="xm"><div class="xmv">${m[0]}</div><div class="xml">${m[1]}</div></div>`).join('')}</div>`;
+  drawer.classList.add('open');el.setAttribute('aria-expanded','true');}
+
+/* ---------------- OVERVIEW — trust thread spine ---------------- */
+const SPINE=[
+  {k:'Discovery',t:'Engaged',s:'awareness · chapter events · resources',detail:'A prospective member first meets ISACA through a chapter event, a research download or a colleague’s recommendation. That first touch is captured once, not re-entered when the same person later registers for an exam.',impact:[['Day 0','Engagement tracked'],['1','Shared prospect-to-member record'],['0','Duplicate intake forms']]},
+  {k:'Credentialed',t:'Certified',s:'exam registration · proctoring · badge issuance',detail:'Exam registration, scheduling, proctoring and results feed directly into credential issuance — a verifiable digital badge generated the moment a candidate passes, not weeks later.',impact:[['Minutes','Badge issuance after passing'],['Verifiable','Employer-checkable instantly'],['Linked','Exam record to competency model']]},
+  {k:'Practicing',t:'Maintained',s:'CPE tracking · renewal · research access',detail:'Continuing Professional Education hours, renewal status and research/journal access are tracked automatically as members complete qualifying activity, replacing manual CPE logs and spreadsheet reporting.',impact:[['Automated','CPE hour capture'],['Real-time','Renewal compliance status'],['0','Manual audit reconciliation']]},
+  {k:'Connected',t:'Engaged locally',s:'chapters · mentorship · community',detail:'Chapter membership, event attendance, mentorship pairings and community contributions join the same record, giving over 200 chapters worldwide a shared, governed view of their members without each running a separate system.',impact:[['1','Shared chapter-member graph'],['Global','Consistent chapter tooling'],['Visible','Contribution history']]},
+  {k:'Governed',t:'Applied',s:'COBIT · CMMI · enterprise adoption',detail:'How members and enterprises actually apply COBIT and CMMI in practice — assessments run, maturity levels reached, guidance consulted — feeds back into the same model, closing the loop between framework and field.',impact:[['Closed-loop','Framework usage feedback'],['Evidence-based','Standards development'],['Reflexive','ISACA governs itself the same way']]},
+  {k:'Trusted',t:'Verified',s:'traceable credential & competency record',detail:'Every credential, CPE record and framework interaction resolves back to this thread, so any member, employer or regulator can verify a professional’s standing at any point in time.',impact:[['100%','Credentials carry lineage'],['Instant','Employer verification'],['Trusted','By members and regulators alike']]}
+];
+document.getElementById('spine').innerHTML=SPINE.map((s,i)=>`<button class="sstep" data-i="${i}" aria-pressed="false"><div class="sk">${s.k}</div><div class="st">${s.t}</div><div class="sd">${s.s}</div></button>`+(i<SPINE.length-1?`<div class="sarrow">${ARROW}</div>`:'')).join('');
+document.querySelectorAll('#spine .sstep').forEach(el=>el.onclick=()=>selectSpine(+el.dataset.i));
+function selectSpine(i){const s=SPINE[i];document.querySelectorAll('#spine .sstep').forEach((b,j)=>b.setAttribute('aria-pressed',j===i));
+  const d=document.getElementById('spineDetail');
+  d.innerHTML=`<div class="panel pad"><p class="blk" style="margin-top:0">${s.k} · ${s.t}</p><div class="xd-desc" style="font-size:12.5px">${s.detail}</div><div class="xmetrics">${s.impact.map(m=>`<div class="xm"><div class="xmv">${m[0]}</div><div class="xml">${m[1]}</div></div>`).join('')}</div></div>`;
+  d.classList.add('open');}
+selectSpine(0);
+
+/* ---------------- OVERVIEW — architecture pattern grounding (clickable) ---------------- */
+const PROV=[
+  {c:'var(--brand)',k:'COBIT 2019',t:'Enterprise Governance of I&T',d:'ISACA’s own governance-of-enterprise-IT framework structures the transformation’s goals cascade, domains and decision rights — the program is governed exactly as ISACA teaches its members to govern.',tags:['Goals cascade','EDM/APO/BAI/DSS/MEA','Reflexive governance'],
+   detail:'Applying COBIT to ISACA’s own digital transformation is a deliberate choice, not a formality: it means the program’s governance can be assessed by the same maturity model ISACA sells to its enterprise members, and any gap between principle and practice is visible immediately rather than discovered by a member later.',impact:[['Self-assessed','Against ISACA’s own maturity model'],['5','COBIT domains mapped to workstreams'],['Credible','No governance double standard']]},
+  {c:'var(--verify)',k:'ISO/IEC 27001 · NIST CSF',t:'Information Security Governance',d:'Member PII, exam content and credential records span 180+ jurisdictions — the security governance layer follows the same standards ISACA-certified professionals are trained to apply.',tags:['ISMS','Exam integrity','Data residency'],
+   detail:'A membership and certification body holds some of the most sensitive data in the profession it serves: exam content, personally identifiable member data and credential history across every jurisdiction it operates in. Treating that data under the same ISMS discipline ISACA certifies others on is table stakes for credibility.',impact:[['Zero-trust','Access to exam & member data'],['Segmented','By jurisdiction & data class'],['Continuous','Security monitoring, not periodic audit']]},
+  {c:'var(--seal)',k:'CMMI',t:'Process Maturity, Applied to the Program Itself',d:'ISACA has owned CMMI since 2016 — the transformation program matures its own delivery processes, phase by phase, against the same model it licenses to manufacturers and technology firms.',tags:['5 maturity levels','Process discipline','Owned by ISACA'],
+   detail:'Rather than run the transformation ad hoc and sell process maturity to others, the program office assesses its own delivery maturity at each gate using CMMI’s own levels — a visible, low-cost demonstration that the model works because ISACA runs on it too.',impact:[['5','CMMI levels tracked for the program'],['Gate-anchored','Maturity assessed at each phase'],['Proof point','For CMMI adoption by members']]},
+  {c:'var(--violet)',k:'NIST AI RMF',t:'AI Risk & Governance',d:'Personalization, adaptive learning, AI-assisted content and proctoring integrity monitoring are risk-tiered and human-reviewed — the same posture ISACA’s AI Audit and AI governance guidance asks enterprises to adopt.',tags:['Model registry','Human-in-the-loop','Editorial guardrails'],
+   detail:'Every AI capability — from a learning-path recommendation to AI-assisted drafting of research content — is classified by risk tier before release, with human review required for anything touching credential integrity or published guidance. An association that certifies AI governance cannot deploy AI ungoverned.',impact:[['100%','AI capabilities risk-tiered pre-release'],['Human-reviewed','All published & credential-facing AI output'],['Consistent','With ISACA’s own AI governance guidance']]}
+];
+document.getElementById('provGrid').innerHTML=PROV.map((p,i)=>`<div class="pcard xbox" style="--pc:${p.c}" data-i="${i}" aria-expanded="false"><div class="pk">${p.k}</div><div class="pt">${p.t}</div><div class="pd">${p.d}</div><div class="ptags">${p.tags.map(t=>`<span>${t}</span>`).join('')}</div><div class="xhint">Why it matters</div><div class="xdrawer" id="provDrawer-${i}"></div></div>`).join('');
+document.querySelectorAll('#provGrid .pcard').forEach(el=>el.onclick=()=>toggleX(el,PROV[+el.dataset.i],'provDrawer-'+el.dataset.i));
+
+/* ---------------- OVERVIEW — why now (clickable) ---------------- */
+const WHYNOW=[
+  {tag:'AI disrupts the profession',t:'The professionals ISACA certifies are being automated first',d:'AI is reshaping audit, security and risk work faster than almost any other knowledge domain — ISACA must demonstrate the same AI governance discipline in its own systems that it certifies its members on, or the credential loses standing.',
+   detail:'If ISACA’s own member-facing AI (recommendations, proctoring, content generation) is ungoverned while the Association teaches AI risk management, the contradiction becomes a credibility liability the moment a member or journalist notices it. Building governed AI now, visibly, turns the Association’s own platform into proof of the discipline it sells.',impact:[['First-mover','Credibility on AI governance'],['Reflexive','Same standard applied internally'],['Avoided','A public contradiction risk']]},
+  {tag:'Competitive pressure',t:'Digital-first credential providers are moving faster',d:'Cloud vendor certifications, other assurance bodies and microcredential platforms already offer instant digital badges, adaptive learning and slick self-service — member expectations are set by the best experience they’ve had anywhere, not just in this profession.',
+   detail:'Every year legacy AMS, exam and LMS systems stay disconnected, more workaround integrations get built against them — and each becomes migration debt once the unified platform arrives. Members and employers increasingly judge credential rigor partly by how modern the verification and renewal experience feels.',impact:[['Rising','Competing credential options'],['Expected','Instant digital verification'],['Compounding','Cost of deferring the foundation']]},
+  {tag:'Regulatory fragmentation',t:'180+ countries means 180+ data regimes',d:'GDPR, evolving data-protection laws across Asia-Pacific, Latin America and the Middle East, and jurisdiction-specific exam and privacy rules make member data governance itself a live risk — and a natural showcase for ISACA’s own frameworks.',
+   detail:'An ungoverned data platform spanning 180+ countries isn’t just inefficient to operate — for an organization whose brand is built on governance and compliance expertise, a data-protection lapse in its own systems is materially more damaging than the same lapse at an ordinary vendor. Governing this now, before the platform scales further, is far cheaper than remediating under regulatory pressure later.',impact:[['180+','Jurisdictions in scope'],['0','Tolerance for a governance double standard'],['Built-in','Compliance from Phase 1 onward']]}
+];
+document.getElementById('whynow').innerHTML=WHYNOW.map((w,i)=>`<div class="why xbox" data-i="${i}" aria-expanded="false"><div class="tag">${w.tag}</div><div class="t">${w.t}</div><div class="d">${w.d}</div><div class="xhint">Cost of waiting</div><div class="xdrawer" id="whyDrawer-${i}"></div></div>`).join('');
+document.querySelectorAll('#whynow .why').forEach(el=>el.onclick=()=>toggleX(el,WHYNOW[+el.dataset.i],'whyDrawer-'+el.dataset.i));
+
+/* ---------------- ARCHITECTURE ---------------- */
+const LAYERS=[
+  {n:'L1',t:'Engagement Channels',acc:'var(--seal)',phase:'Ph.1–2',
+   d:'Every surface a member, candidate or chapter volunteer touches — the public website, member portal, mobile app, virtual/hybrid event platform and chapter microsites.',
+   inv:[['Member portal & app','Self-service','Profile, CPE log, credential wallet, renewals'],['Public website','Discovery','Resources, chapter finder, exam scheduling entry'],['Virtual/hybrid events','Engagement','Conferences, webinars, chapter meetings'],['Chapter microsites','Local presence','200+ chapters, currently independently run'],['Exam scheduling & proctoring UI','Certification','Candidate-facing registration and test-day flow']],
+   tech:['Responsive web app','iOS/Android app shell','SSO / identity provider','Event & webinar platform','Proctoring vendor integration'],
+   consider:'Chapters currently run largely independent tools — the channel layer has to feel locally owned while drawing from one shared record, or adoption stalls at the volunteer level.',
+   decs:['Single sign-on across every member-facing surface','Chapter microsites templated, not rebuilt from scratch per chapter','Mobile-first for renewal and CPE logging, the two highest-frequency actions']},
+  {n:'L2',t:'Integration & API Layer',acc:'var(--verify)',phase:'Ph.1',
+   d:'The event mesh, API gateway and identity layer that connect every system of record without forcing a single-vendor replacement of them all at once.',
+   inv:[['Event mesh','Streaming','Membership, exam and CPE events propagated in near real time'],['API gateway','Access','Centralized auth, rate limiting, partner/employer verification API'],['Identity & SSO','Access control','One identity per member across every system'],['Integration adapters','Bridging','AMS, LMS, exam platform and CMS normalized into common events'],['Event schema registry','Governance','Versioned, backward-compatible event contracts']],
+   tech:['Event streaming platform','REST / OpenAPI','OAuth2 / OIDC SSO','Webhook & adapter framework','Schema registry'],
+   consider:'Integrate first, replace only where necessary — the existing AMS, exam platform and LMS are expensive, working systems; the architecture connects them before it considers displacing any of them.',
+   decs:['Event-driven integration, not point-to-point batch feeds','Employer/enterprise verification exposed as a governed public API','Legacy systems connect via adapters rather than being replaced in Phase 1']},
+  {n:'L3',t:'Systems of Record',acc:'var(--brand)',phase:'Ph.1–2',
+   d:'The systems of truth for membership, certification and content — association management, exam administration, learning management, and the publications library.',
+   inv:[['Association Management System','Membership','Dues, chapters, member profile — engine of record'],['Certification & Exam System','Assessment','Registration, psychometrics, proctoring, results'],['Learning Management System','CPE & education','Continuing education, course completion, CPE ledger'],['Content & Publications repository','Knowledge','COBIT, journal, research library, guidance documents'],['Community platform','Engagement','Chapter activity, forums, mentorship records']],
+   tech:['AMS/CRM platform','Exam & psychometrics platform','LMS','Content/DAM repository','Community platform'],
+   consider:'These are the systems of truth precisely because replacing them carries the highest risk — the architecture treats them as sources feeding the unified layer above, not targets for wholesale migration in early phases.',
+   decs:['AMS remains system of record for membership through Phase 2','Exam platform integrated, not replaced, given psychometric and proctoring investment already made','Publications repository connected so guidance usage becomes measurable']},
+  {n:'L4',t:'Unified Data & Knowledge Layer',acc:'var(--violet)',phase:'Ph.1–2',
+   d:'One governed member-360 data platform and a competency/credential ontology linking certifications, CPE, chapters and framework usage into a single formal model.',
+   inv:[['Member 360 data platform','Data','Unified, deduplicated member record across all sources'],['Credential & competency ontology','Semantics','Formal model linking certs, prerequisites, CPE and frameworks'],['Analytics warehouse','Insight','Retention, renewal and engagement analytics'],['Data governance catalog','Governance','Lineage, quality rules, jurisdictional data classification']],
+   tech:['Cloud data warehouse/lakehouse','Master data management','Knowledge graph / ontology store','Data catalog & lineage tooling'],
+   consider:'This is the layer that makes the "5 → 1" credential promise real — without a shared ontology, personalization and AI above it would just be five separate models wearing one interface.',
+   decs:['One canonical member and credential model, sourced from L3 but owned here','Data residency and access rules enforced at this layer, not left to each application','Ontology versioned and governed centrally, not forked per team']},
+  {n:'L5',t:'Intelligence & AI Layer',acc:'var(--seal)',phase:'Ph.3–4',
+   d:'Personalization, predictive retention, AI-assisted content support and integrity monitoring — every model risk-tiered under an AI Governance Board before release.',
+   inv:[['Personalization engine','Recommendation','Learning paths, content and event suggestions'],['Retention & renewal models','Prediction','Early-warning signals for at-risk memberships'],['AI-assisted content support','Authoring aid','Draft support for research and guidance, human-approved'],['Exam integrity monitoring','Assurance','AI-augmented proctoring anomaly detection'],['Model registry & risk tiering','Governance','Every model classified and monitored before and after release']],
+   tech:['ML feature store & model registry','Recommendation engine','LLM-assisted drafting tools (human-in-the-loop)','Proctoring anomaly detection','Model monitoring / drift detection'],
+   consider:'Nothing AI-generated reaches a member, an exam decision or a published standard without a defined human checkpoint — the layer is designed for assistance and detection, not unsupervised judgment.',
+   decs:['No AI-only credential or exam-integrity decision — human review required','Every model risk-tiered before deployment, consistent with NIST AI RMF','Personalization transparent to members — they can see and adjust what drives a recommendation']},
+  {n:'L6',t:'Experience & Delivery',acc:'var(--brand-tint)',phase:'Ph.2–4',
+   d:'What members, employers and regulators actually receive — verifiable digital credentials, automated CPE compliance, and an employer verification service.',
+   inv:[['Digital credential issuance','Trust','Open Badge / verifiable-credential-standard badges'],['Employer verification service','Trust','Instant, governed credential lookup for employers'],['Automated CPE compliance','Self-service','Renewal status computed, not self-reported and audited later'],['Chapter enablement toolkit','Local delivery','Shared tools chapters can adopt without losing local identity']],
+   tech:['Verifiable credentials / Open Badges standard','Public verification API','Automated compliance rules engine','Chapter toolkit templates'],
+   consider:'A credential a member "owns and can prove" — rather than one only ISACA’s own database can confirm — is the tangible member-facing payoff of every layer beneath it.',
+   decs:['Credentials issued as standards-based verifiable digital badges, not proprietary PDFs','Employer verification available without requiring an ISACA account','CPE compliance status computed automatically from L4, not self-attested']},
+  {n:'GOV',t:'Governance Plane',acc:'var(--risk)',phase:'Cross-cutting',gov:true,
+   d:'Data, AI, security and regulatory governance operating as one plane across every layer — chartered on ISACA’s own COBIT model, so the program is judged by the standard it sells.',
+   inv:[['Data governance','COBIT-aligned','Ownership, quality, lineage and access rules'],['AI governance','NIST AI RMF','Risk tiering, model cards, human-in-the-loop requirements'],['Security governance','ISO 27001 / NIST CSF','ISMS controls across member, exam and credential data'],['Regulatory & privacy governance','Multi-jurisdiction','GDPR and 180+ country data-protection compliance']],
+   tech:['GRC platform','Policy-as-code','Consent & privacy management','Continuous compliance monitoring'],
+   consider:'This plane is not a phase-1 deliverable that gets set aside — it is chartered in Phase 1 and re-assessed against COBIT and CMMI maturity levels at every subsequent gate.',
+   decs:['Executive Steering Committee and Architecture Review Board chartered before major system integration begins','Every phase gate includes a formal governance maturity assessment','No exception process that lets a workstream bypass data or AI governance for speed']}
+];
+const archStack=document.getElementById('archStack');
+LAYERS.forEach((l,i)=>{const d=document.createElement('div');d.className='layer'+(l.gov?' gov':'');d.style.setProperty('--accent',l.acc);d.setAttribute('aria-pressed','false');
+  d.innerHTML=`<div class="lbar"></div><div class="ln">${l.n}</div><div class="lt">${l.t}</div><div class="ln">${l.phase}</div>`;
+  d.onclick=()=>selectLayer(i);archStack.appendChild(d);});
+function selectLayer(i){const l=LAYERS[i];document.querySelectorAll('.layer').forEach((el,j)=>el.setAttribute('aria-pressed',j===i));
+  const el=document.getElementById('archDetail');el.style.setProperty('--accent',l.acc);
+  el.innerHTML=`<div class="athead"><div class="at">${l.t}</div><div class="aphase" style="color:${l.acc};border-color:${l.acc}66">${l.phase}</div></div>
+    <div class="ad">${l.d}</div>
+    <p class="blk" style="margin-top:0;color:${l.acc}">Component inventory</p>
+    <div class="inv">${l.inv.map(r=>`<div class="invrow"><div class="invn">${r[0]}</div><div class="invc" style="--accent:${l.acc}">${r[1]}</div><div class="invr">${r[2]}</div></div>`).join('')}</div>
+    <p class="blk">Representative technologies</p>
+    <div class="chips">${l.tech.map(t=>`<span class="chip">${t}</span>`).join('')}</div>
+    <p class="blk">Key decisions</p>
+    <ul class="decs">${l.decs.map(x=>`<li>${x}</li>`).join('')}</ul>
+    <div class="consider" style="--accent:${l.acc}">${l.consider}</div>`;
+}
+selectLayer(0);
+renderExpandableTable('archTable','<tr><th>Layer</th><th>Purpose</th><th>Phase</th></tr>',LAYERS,
+  l=>[`<b>${l.n} · ${l.t}</b>`,l.d,l.phase],
+  l=>`<div class="dgrid">
+      ${dfield('Representative technologies',l.tech.join(' · '))}
+      ${dfield('Consideration',l.consider)}
+    </div>
+    <p class="blk" style="margin-bottom:8px">Key decisions</p>
+    <ul class="decs">${l.decs.map(x=>`<li>${x}</li>`).join('')}</ul>`,
+  3);
+
+const PRINCIPLES=[
+  {n:'Semantic-first',d:'Every certification, competency, CPE record and chapter role has one formal definition in the shared ontology before any dashboard, model or app is built on top of it.'},
+  {n:'Governed autonomy',d:'AI earns scope through evidence and human review — never through a configuration flag — exactly as ISACA’s own AI governance guidance recommends to enterprises.'},
+  {n:'Global by design',d:'Data residency, language and jurisdictional rules are architectural requirements from Phase 1, not a localization pass bolted on for 180+ countries after launch.'},
+  {n:'Member-owned trust',d:'A member’s credential and CPE record is something they can show and prove themselves — verification does not require calling ISACA to confirm.'}
+];
+document.getElementById('principles').innerHTML=PRINCIPLES.map(p=>`<div class="principle"><div class="pn">${p.n}</div><div class="pd">${p.d}</div></div>`).join('');
+
+/* ---------------- ROADMAP ---------------- */
+const HORIZONS=[
+  {hz:'Phase 1',ht:'Foundation',hf:'Months 1–6',fill:15,inv:'Foundation · ~6 mo',
+   moves:[['Integration backbone',"Event mesh and API gateway stood up","Connects AMS, exam platform and LMS without replacing any of them."],['Governance charter',"Four-fold governance chartered on COBIT",'Executive Steering Committee and Architecture Review Board operating from day one.'],['Identity unification',"Single sign-on across every member surface","One identity per member, replacing separate logins per system."],['Ontology v1',"Credential & competency ontology seeded","First formal model linking the five certifications, prerequisites and CPE."]],
+   ws:[['Integration backbone build','Event mesh, API gateway, schema registry','Platform Team Lead','Accepted when every source system publishes at least one event type through the mesh with schema-registry validation and no point-to-point feeds remain uncataloged.'],['Governance charter','Steering Committee, Architecture Review Board, COBIT-aligned charter','Chief Digital Officer','Accepted when the Steering Committee has ratified decision rights per COBIT domain and the Architecture Review Board has approved the reference architecture.'],['Identity & SSO','Unified login across portal, app, exam and LMS','Integration Lead','Accepted when a member authenticates once and reaches portal, exam scheduling and LMS without a second login; depends on the AMS remaining system of record for identity attributes.'],['Ontology v1','Credential & competency model draft','Knowledge Engineer','Accepted when all five certifications, prerequisites and CPE categories are formally modeled and reviewed by the Certification and Learning domain teams.'],['Quick-win pilots','Mobile CPE logging pilot; employer verification API pilot','Domain Working Groups','Scoped to a limited member and employer cohort; success is qualitative adoption feedback, not scale metrics.']],
+   exit:"An integration backbone and unified identity live, governance chartered on COBIT, and the credential ontology seeded with the five core certifications.",
+   gate:"Gate 1 — event mesh and SSO operational, governance charter ratified, ontology v1 populated with core credential entities.",
+   kpi:[['Integration','live'],['Governance','chartered'],['Member 360','not yet']]},
+  {hz:'Phase 2',ht:'Connect',hf:'Months 4–12',fill:35,inv:'Connect · ~8 mo',
+   moves:[['Member 360',"Unified member record live across channels","Membership, certification and CPE status visible in one place."],['Digital credentials',"Verifiable badges issued for all five certs","Open Badge-standard credentials replace static PDF certificates."],['CPE self-service',"Automated CPE tracking and renewal","Renewal status computed from activity, not self-reported and audited later."],['Chapter platform',"200+ chapters joined into one community graph","Shared tools without losing each chapter’s local identity."]],
+   ws:[['Member 360 platform','Unified, deduplicated member data platform','Data Platform Lead','Accepted when membership, certification and CPE status resolve from one queried record rather than reconciled across AMS, LMS and exam systems.'],['Digital credential issuance','Verifiable-credential badges for CISA/CISM/CRISC/CGEIT/CDPSE','Certification Domain Team','Accepted when a passing candidate receives a standards-based digital badge automatically, with no manual issuance step.'],['CPE automation','Automated hour capture, compliance calculation, renewal workflow','Learning Domain Team','Accepted when compliance status is computed from qualifying activity for all integrated course providers, with self-reporting only for exception cases.'],['Chapter platform rollout','Shared chapter toolkit; community graph','Chapter Relations Team','Accepted when a majority of chapters are active on the shared toolkit without loss of local branding or content control.']],
+   exit:"A unified member-360 view live, verifiable digital credentials issued for every certification, and CPE compliance computed automatically.",
+   gate:"Gate 2 — member 360 operational, digital credentials issued at scale, chapter platform live for a majority of chapters.",
+   kpi:[['Member 360','live'],['Credentials','verifiable'],['CPE','automated']]},
+  {hz:'Phase 3',ht:'Intelligence',hf:'Months 9–18',fill:60,inv:'Intelligence · ~9 mo',
+   moves:[['MLOps & AI governance',"Model registry and risk-tiering board live","Full AI lifecycle with human-in-the-loop for anything credential-facing."],['Personalization',"Learning-path and content recommendations live","Members see relevant courses, events and guidance without searching."],['Retention modeling',"Predictive renewal risk models deployed","Early outreach to at-risk memberships replaces reactive win-back campaigns."],['AI-assisted authoring',"Draft support for research & guidance content","Human-approved AI drafting accelerates, never replaces, editorial review."]],
+   ws:[['MLOps & governance platform','Model registry, risk tiering, monitoring infrastructure','AI Governance Lead','Accepted when every model in production has a risk tier, a model card and active drift monitoring before it is released.'],['Personalization engine','Learning path & content recommendation, transparent to members','Member Experience Team','Accepted when members can view and adjust the factors driving a recommendation, not just receive it.'],['Retention & renewal models','Predictive at-risk membership scoring','Data Science Team','Accepted when scored members receive proactive outreach before lapse, validated against a holdout group.'],['Content support tooling','AI-assisted drafting with mandatory editorial review','Publications Team','Accepted when no AI-drafted guidance or research publishes without a named human editor of record.']],
+   exit:"An AI Governance Board operating on every model, personalization and retention models live, and AI-assisted content support in production under editorial review.",
+   gate:"Gate 3 — every AI capability risk-tiered and monitored, personalization and retention models deployed, zero AI-only credential decisions.",
+   kpi:[['AI models','risk-tiered'],['Personalization','live'],['Retention','predictive']]},
+  {hz:'Phase 4',ht:'Optimization',hf:'Months 15–24',fill:82,inv:'Optimization · ~9 mo',
+   moves:[['Exam integrity AI',"AI-augmented proctoring anomaly detection","Flags reviewed by human proctors, never auto-decides an integrity case."],['Employer verification at scale',"Public verification API generally available","Employers check credential status without contacting ISACA directly."],['Global chapter enablement',"Full chapter toolkit in local languages","Every chapter operates on shared tools with local-language support."],['Enterprise advisory feedback loop',"COBIT/CMMI usage data feeds standards development","Real-world framework adoption informs the next framework revision."]],
+   ws:[['Exam integrity monitoring','AI anomaly detection with human proctor review','Certification Domain Team','Accepted when every flagged anomaly routes to a human proctor decision; the model never revokes or denies a result on its own.'],['Employer verification GA','Public API, rate-limited, privacy-reviewed','Integration Lead','Accepted when employers can verify a credential without an ISACA account, within agreed rate limits and privacy review sign-off.'],['Chapter toolkit localization','Multi-language rollout across 180+ countries','Chapter Relations Team','Accepted when the toolkit is available in the languages spoken by a supermajority of chartered chapters.'],['Standards feedback loop','Framework usage analytics feeding COBIT/CMMI development','Research & Standards Team','Accepted when real-world assessment and maturity-level data from members routinely informs a framework revision cycle.']],
+   exit:"AI-augmented exam integrity monitoring live with human review intact, employer verification generally available, and chapter tooling localized globally.",
+   gate:"Gate 4 — integrity monitoring in production, verification API at scale, chapter toolkit adopted by a supermajority of chapters worldwide.",
+   kpi:[['Verification','public API'],['Chapters','globally enabled'],['Standards loop','closed']]},
+  {hz:'Phase 5',ht:'Evolution',hf:'Months 21+',fill:100,inv:'Sustain · ongoing',
+   moves:[['Self-tuning member experience',"Content, offers and learning paths tuned continuously","Personalization improves without manual campaign redesign."],['Governed AI advisory',"AI assistant helps members apply COBIT/CMMI","Bounded, cited guidance — never a substitute for professional judgment."],['Ecosystem extension',"Employer talent systems and regulator reporting connect","The trust thread extends beyond ISACA’s own membership boundary."],['Continuous governance audit',"Standing compliance monitoring across every layer","Governance maturity assessed continuously, not just at gate reviews."]],
+   ws:[['Self-tuning experience platform','Continuous optimization of content, offers and pathways','Member Experience Team','Accepted when optimization runs continuously against live engagement data, with periodic human review of what changed and why.'],['Governed AI advisory assistant','Cited, bounded guidance on framework application','AI Governance Lead','Accepted when every advisory response cites its source guidance and carries a visible disclaimer that it is not a substitute for professional judgment.'],['Ecosystem integration','Employer HR/talent systems, regulator reporting interfaces','Enterprise Architect','Accepted when at least one employer talent system and one regulator reporting interface consume verified credential data through governed APIs.'],['Continuous compliance monitoring','Standing GRC dashboards replacing periodic audit prep','Governance Lead','Accepted when governance status across data, AI, security and regulatory domains is visible on demand rather than assembled for each audit.']],
+   exit:"A self-tuning member platform, a governed AI advisory capability, and an ecosystem that extends the trust thread to employers and regulators — sustained under continuous governance audit.",
+   gate:"Gate 5 — self-tuning experience sustained, AI advisory operating at full governed scope, ecosystem integrations live, continuous audit in place.",
+   kpi:[['Experience','self-tuning'],['AI advisory','governed'],['Ecosystem','extended']]}
+];
+const roadRail=document.getElementById('roadRail');
+HORIZONS.forEach((h,i)=>{const b=document.createElement('button');b.className='h-btn';b.setAttribute('aria-pressed',i===0);
+  b.innerHTML=`<div class="hz">${h.hz}</div><div class="ht">${h.ht}</div><div class="hf">${h.hf}</div>`;b.onclick=()=>selectHorizon(i);roadRail.appendChild(b);});
+function selectHorizon(i){const h=HORIZONS[i];document.querySelectorAll('.h-btn').forEach((b,j)=>b.setAttribute('aria-pressed',j===i));
+  document.getElementById('roadFill').style.width=h.fill+'%';document.getElementById('rdTitle').textContent=h.hz+' · '+h.ht;
+  document.getElementById('roadMoves').innerHTML=h.moves.map((m,k)=>`<li><div class="ix">M${k+1}</div><div><div class="mt">${m[0]} — ${m[1]}</div><div class="md">${m[2]}</div></div></li>`).join('');
+  renderExpandableTable('roadWs','<tr><th>Workstream</th><th>Key deliverables</th><th>Owner</th></tr>',h.ws,
+    w=>[`<b>${w[0]}</b>`,w[1],w[2]],
+    w=>`<div class="dgrid">${dfield('Acceptance criteria',w[3])}</div>`,
+    3);
+  document.getElementById('roadInv').textContent=h.inv;
+  document.getElementById('roadExit').textContent=h.exit;
+  document.getElementById('roadKpi').innerHTML=h.kpi.map(k=>`<div class="kpi"><div class="v">${k[0]}</div><div class="l">${k[1]}</div></div>`).join('');
+  document.getElementById('roadGate').innerHTML=`<b>Gate review →</b> ${h.gate}`;}
+selectHorizon(0);
+
+/* program KPI scorecard */
+const KPIS=[
+  {n:'Credential issuance time (idx ↓)',v:['100','60','15','8','5'],
+   def:'Median calendar time from a recorded exam pass to verifiable credential/badge issuance, indexed to a Phase-0 baseline of 100.',
+   calc:'(median hours, result-recorded → badge-issued) ÷ baseline hours × 100.',
+   source:'Certification & Exam System event timestamps, correlated via the event mesh (L2).',
+   owner:'Certification Domain Team'},
+  {n:'CPE compliance rate',v:['base','+10%','+22%','+30%','+34%'],
+   def:'Share of certified members meeting their CPE reporting requirement on time, without manual chasing.',
+   calc:'Members with computed CPE status = compliant at cycle close ÷ members due that cycle.',
+   source:'Automated CPE ledger (L4), fed by LMS completion events.',
+   owner:'Learning Domain Team'},
+  {n:'Member self-service resolution (idx ↓ effort)',v:['100','85','62','45','38'],
+   def:'A proxy for member effort — support contacts and manual case time per 1,000 active members, indexed to baseline.',
+   calc:'(support tickets + manual CPE/renewal corrections) ÷ active members, indexed to Phase-0 = 100.',
+   source:'Member portal analytics + AMS case records.',
+   owner:'Member Experience Team'},
+  {n:'Renewal / retention rate',v:['base','+4%','+9%','+13%','+15%'],
+   def:'Year-over-year membership renewal rate, tracked as improvement over the Phase-0 baseline rate.',
+   calc:'Renewed memberships ÷ memberships due for renewal, delta vs. baseline period.',
+   source:'AMS renewal records joined with retention model scores (L5).',
+   owner:'Member Experience Team'},
+  {n:'Credential lineage coverage',v:['15%','60%','85%','97%','100%'],
+   def:'Share of active credentials whose full record — exam, issuance, every CPE cycle — is captured with unbroken, queryable lineage.',
+   calc:'Credentials with complete event lineage ÷ all active credentials.',
+   source:'Credential & competency ontology (L4) lineage metadata.',
+   owner:'Data Platform Lead'},
+  {n:'Chapter platform adoption',v:['base','35%','65%','88%','96%'],
+   def:'Share of chapters (of 200+ worldwide) actively using the shared chapter enablement toolkit rather than an independent local system.',
+   calc:'Active chapters on shared toolkit ÷ total chartered chapters.',
+   source:'Chapter platform usage telemetry.',
+   owner:'Chapter Relations Team'},
+  {n:'Employer verification requests via API',v:['0%','20%','55%','80%','92%'],
+   def:'Share of employer credential-verification checks completed through the governed public API rather than a manual request to ISACA staff.',
+   calc:'API-completed verifications ÷ total verification requests received.',
+   source:'Verification API gateway logs (L2/L6).',
+   owner:'Integration Lead'},
+  {n:'AI governance maturity phase',v:['P0','P1','P2','P3','P4'],
+   def:'The autonomy/oversight phase reached by the AI Governance Board’s risk-tiering framework — not a single AI system’s capability, but the maturity of governance over all of them.',
+   calc:'Assessed at each gate review against the NIST AI RMF-aligned rubric chartered in Phase 1.',
+   source:'AI Governance Board gate assessments.',
+   owner:'AI Governance Lead'}
+];
+renderExpandableTable('kpiBoard','<tr><th>KPI</th><th>Baseline</th><th>Ph.1</th><th>Ph.2</th><th>Ph.3</th><th>Ph.4–5</th></tr>',KPIS,
+  k=>[`<b>${k.n}</b>`,k.v[0],k.v[1],k.v[2],k.v[3],`<span style="color:var(--verify)">${k.v[4]}</span>`],
+  k=>`<div class="dgrid">${dfield('Definition',k.def)}${dfield('Calculation',k.calc)}${dfield('Data source',k.source)}${dfield('Owner',k.owner)}</div>`,
+  6);
+
+/* risk register */
+const RISKS=[
+  {r:'Data privacy & residency exposure across 180+ jurisdictions',l:'m',i:'h',
+   m:'Governed data platform with jurisdictional classification; GDPR-aligned controls from Phase 1; regulatory governance chartered alongside data governance.',
+   owner:'Regulatory & Privacy Governance Lead',trend:'Stable — tracked at every gate',
+   root:'Member and credential data has historically been replicated across AMS, LMS and chapter systems with no single jurisdictional classification, so a rule change in one country can be missed in systems that hold the same data elsewhere.'},
+  {r:'Legacy AMS / exam platform migration risk',l:'m',i:'h',
+   m:'Integrate before replace; phased connection via event mesh rather than a single cutover.',
+   owner:'Platform Team Lead',trend:'Improving — adapters live from Phase 1',
+   root:'The AMS and exam/proctoring platforms are deeply embedded, vendor-specific systems; a forced rip-and-replace on an aggressive timeline is the single most common cause of failed association-technology transformations.'},
+  {r:'AI over-trust eroding member confidence in credential integrity',l:'l',i:'h',
+   m:'Mandatory human review for any credential- or exam-facing AI output; risk-tiering under an AI Governance Board.',
+   owner:'AI Governance Lead',trend:'Monitored — no incidents to date',
+   root:'Members and employers extend ISACA a high degree of trust precisely because credentials are rigorously verified; any perception that AI is making unsupervised credential decisions would damage that trust disproportionately.'},
+  {r:'Credential or exam fraud aided by AI tools',l:'m',i:'h',
+   m:'AI-augmented proctoring anomaly detection paired with human proctor review; continuous integrity monitoring.',
+   owner:'Certification Domain Team',trend:'Rising industry-wide — actively tracked',
+   root:'Generative AI has materially lowered the cost of exam-assistance cheating industry-wide; proctoring approaches built before 2023 were not designed against this threat model.'},
+  {r:'Volunteer-run chapter adoption & change fatigue across 200+ chapters',l:'m',i:'m',
+   m:'Chapter enablement toolkit designed to preserve local identity; phased, opt-in rollout with champion network.',
+   owner:'Chapter Relations Team',trend:'Stable — phased rollout on schedule',
+   root:'Chapters are run largely by volunteers with limited bandwidth; a toolkit that feels imposed rather than helpful risks being quietly ignored rather than actively resisted.'},
+  {r:'Credibility risk — Association’s own systems not modeling its taught frameworks',l:'l',i:'h',
+   m:'COBIT-governed program office; CMMI maturity self-assessed at every gate; governance transparency as a design principle.',
+   owner:'Chief Digital Officer',trend:'Low — governance visible at every gate',
+   root:'ISACA sells governance, security and AI-risk expertise; any visible gap between what the Association teaches and how it runs its own platform is a reputational risk unique to this organization.'},
+  {r:'Vendor lock-in on AMS/LMS/exam platform replacement decisions',l:'m',i:'m',
+   m:'Integration-first architecture with defined interface contracts; disposition decisions made per system, not as a single platform bet.',
+   owner:'Enterprise Architect',trend:'Stable — no single-vendor commitment made',
+   root:'Association-management and exam platforms are a concentrated vendor market; committing early to one vendor’s full suite would trade near-term convenience for long-term negotiating leverage.'}
+];
+const RB={l:['b-l','Low'],m:['b-m','Med'],h:['b-h','High']};
+renderExpandableTable('riskTable','<tr><th>Risk</th><th>Likelihood</th><th>Impact</th><th>Mitigation</th></tr>',RISKS,
+  x=>[`<b>${x.r}</b>`,`<span class="badge ${RB[x.l][0]}">${RB[x.l][1]}</span>`,`<span class="badge ${RB[x.i][0]}">${RB[x.i][1]}</span>`,x.m],
+  x=>`<div class="dgrid">${dfield('Root cause',x.root)}${dfield('Owner',x.owner)}${dfield('Trend',x.trend)}</div>`,
+  4);
+
+/* portfolio rationalization */
+const PORT=[
+  {s:'Association Management System (AMS)',d:'integrate',r:'Remains engine of record for membership; connected via the event mesh',w:'Wave 1',
+   approach:'Adapter-based integration publishing membership and dues events onto the event mesh; no data model changes required inside the AMS itself.',
+   timeline:'Adapter live by end of Phase 1; fully event-driven by Phase 2.',deps:'Requires the event mesh (L2) and schema registry to be operational first.'},
+  {s:'Certification & exam / proctoring platform',d:'integrate',r:'Retained given psychometric investment; connected, not replaced',w:'Wave 1',
+   approach:'Results and proctoring events streamed into the credential ontology; psychometric engine and proctoring vendor relationship untouched.',
+   timeline:'Event integration in Phase 1; digital credential issuance triggered from it in Phase 2.',deps:'Depends on the credential & competency ontology (L4) being seeded.'},
+  {s:'Learning Management System (LMS / CPE)',d:'integrate',r:'Joined into the unified member data platform for automated CPE tracking',w:'Wave 1',
+   approach:'Course-completion events feed the automated CPE ledger, replacing manual self-reporting for integrated course providers.',
+   timeline:'Core integration Phase 1; full automated compliance calculation Phase 2.',deps:'Requires member-360 data platform (L4) for a single member identity across LMS and AMS.'},
+  {s:'Publications / content repository',d:'integrate',r:'Connected so guidance usage becomes measurable feedback for standards work',w:'Wave 1',
+   approach:'Usage and access events (not content itself) flow into analytics, informing which COBIT/CMMI guidance sees real adoption.',
+   timeline:'Analytics integration in Phase 1–2; feedback loop to standards development live by Phase 4.',deps:'Requires the analytics warehouse (L4).'},
+  {s:'Independent chapter microsites & tools',d:'consolidate',r:'Re-platformed on the shared chapter enablement toolkit',w:'Wave 2',
+   approach:'Opt-in migration onto a shared, templated toolkit that preserves each chapter’s branding and local content ownership.',
+   timeline:'Toolkit available from Phase 2; majority-adoption target by Phase 4.',deps:'Depends on the chapter enablement toolkit (L1/L6) and community platform integration.'},
+  {s:'Siloed CRM/marketing point tools',d:'consolidate',r:'Folded into the member-360 data platform',w:'Wave 2',
+   approach:'Contact and campaign data migrated into the unified member record; point tools decommissioned once parity is confirmed.',
+   timeline:'Migration planning Phase 2; consolidation complete by Phase 3.',deps:'Requires member-360 platform (L4) to reach general availability.'},
+  {s:'Spreadsheet-based CPE tracking',d:'retire',r:'Replaced by automated CPE capture and compliance calculation',w:'Wave 2',
+   approach:'Manual spreadsheets retired chapter-by-chapter and team-by-team as the automated CPE ledger reaches parity for each activity type.',
+   timeline:'Phased retirement through Phase 2–3; fully retired by Phase 3 gate.',deps:'Requires automated CPE compliance workstream (Phase 2) to cover all qualifying activity types.'},
+  {s:'Static PDF certificates',d:'retire',r:'Replaced by standards-based verifiable digital credentials',w:'Wave 2',
+   approach:'New credentials issued as verifiable digital badges by default; existing PDF holders offered a one-time re-issuance path.',
+   timeline:'Digital-first issuance from Phase 2; PDF issuance discontinued by Phase 3 gate.',deps:'Requires digital credential issuance (L6) to be live and employer verification API available.'}
+];
+const PD={integrate:['b-integrate','Integrate'],consolidate:['b-consolidate','Consolidate'],retire:['b-retire','Retire']};
+renderExpandableTable('portTable','<tr><th>System</th><th>Disposition</th><th>Rationale</th><th>Wave</th></tr>',PORT,
+  p=>[`<b>${p.s}</b>`,`<span class="badge ${PD[p.d][0]}">${PD[p.d][1]}</span>`,p.r,`<span class="wave">${p.w}</span>`],
+  p=>`<div class="dgrid">${dfield('Approach',p.approach)}${dfield('Timeline',p.timeline)}${dfield('Dependencies',p.deps)}</div>`,
+  4);
+</script>
+</body>
+</html>
