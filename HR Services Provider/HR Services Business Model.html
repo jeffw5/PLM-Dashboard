@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HR Services Architecture Map</title>
+<title>HR Services Architecture Map v2</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -27,6 +27,8 @@
   --dom-talent:#3f7d5c;
   --dom-client:#c17f17;
   --dom-tech:#6b4c93;
+  --dom-development:#a3367a;
+  --dom-values:#5f7f1a;
 
   --font-display:"Barlow Condensed", "Arial Narrow", sans-serif;
   --font-body:"Public Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -55,6 +57,8 @@
     --dom-talent:#67b78d;
     --dom-client:#e0a94a;
     --dom-tech:#a68ad4;
+    --dom-development:#e07ab8;
+    --dom-values:#a4c75a;
 
     --shadow-panel: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
   }
@@ -78,6 +82,8 @@
   --dom-talent:#67b78d;
   --dom-client:#e0a94a;
   --dom-tech:#a68ad4;
+  --dom-development:#e07ab8;
+  --dom-values:#a4c75a;
 
   --shadow-panel: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
 }
@@ -478,6 +484,65 @@ ul.tnode-list ul{ list-style:none; margin:0.2rem 0 0.2rem 1.1rem; padding-left:0
 .tchildren{ display:none; }
 .tchildren.open{ display:block; }
 
+
+/* ---------- v2: chips, indicators, Values & Privacy view ---------- */
+.chip.nav, .chip.principle, .chip.safeguard{ cursor:pointer; display:inline-flex; align-items:center; gap:0.35rem; }
+.chip.nav:hover, .chip.principle:hover, .chip.safeguard:hover{ border-color:var(--accent); color:var(--ink); }
+.chip.nav.on{ border-color:var(--accent); background:var(--accent-soft); color:var(--ink); }
+.chip .dot{ width:6px; height:6px; border-radius:50%; flex:none; }
+.chip.principle em{ font-style:normal; font-size:0.58rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--muted); }
+.chip.safeguard{ border-style:dashed; }
+.chip.reg{ font-size:0.64rem; }
+.insp-note{ font-size:0.78rem; line-height:1.5; color:var(--ink-soft); }
+.ind-card{ border:1px solid var(--border); border-radius:6px; padding:0.5rem 0.6rem; background:var(--surface-2); }
+.ind-name{ font-size:0.8rem; font-weight:600; }
+.ind-formula{ font-family:var(--font-mono); font-size:0.66rem; color:var(--muted); margin:0.2rem 0 0.35rem; line-height:1.45; }
+.ind-flags{ display:flex; flex-wrap:wrap; gap:0.3rem; margin-top:0.3rem; }
+.flag{ font-family:var(--font-mono); font-size:0.62rem; padding:0.12rem 0.4rem; border-radius:3px; border:1px solid var(--border); }
+.flag.no{ color:var(--dom-talent); border-color:color-mix(in srgb, var(--dom-talent) 45%, transparent); }
+.flag.warn{ color:var(--dom-compliance); border-color:color-mix(in srgb, var(--dom-compliance) 45%, transparent); }
+
+#view-values{ display:none; flex:1; overflow:auto; padding:1.75rem; position:absolute; inset:0; }
+.vp-shell{ max-width:1120px; margin:0 auto; display:flex; flex-direction:column; gap:1.25rem; }
+.vp-shell section{ background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:1.25rem 1.5rem 1.4rem; box-shadow:var(--shadow-panel); }
+.vp-shell h2{ font-family:var(--font-display); font-size:1.5rem; font-weight:600; margin:0 0 0.4rem; }
+.vp-shell h3{ font-family:var(--font-display); font-size:1.15rem; font-weight:600; margin:0 0 0.8rem; display:flex; align-items:center; gap:0.5rem; }
+.vp-shell h3 .count{ font-family:var(--font-mono); font-size:0.7rem; color:var(--muted); font-weight:500; }
+.vp-intro p, .vp-sub{ font-size:0.85rem; color:var(--ink-soft); line-height:1.55; margin:0; max-width:72ch; }
+.vp-sub{ margin:-0.4rem 0 0.9rem; color:var(--muted); font-size:0.78rem; }
+.sl-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:0.75rem; }
+.sl-card{ border:1px solid var(--border); border-radius:8px; padding:0.75rem 0.8rem; background:var(--surface-2); display:flex; flex-direction:column; gap:0.45rem; }
+.sl-card.on{ border-color:var(--accent); background:var(--accent-soft); }
+.sl-head{ display:flex; align-items:center; justify-content:space-between; gap:0.5rem; }
+.sl-name{ font-weight:700; font-size:0.9rem; }
+.sl-meta{ font-family:var(--font-mono); font-size:0.64rem; color:var(--muted); }
+.lens-btn{ font-size:0.66rem; padding:0.2rem 0.5rem; border-radius:4px; border:1px solid var(--border); background:var(--surface); color:var(--ink-soft); cursor:pointer; flex:none; }
+.lens-btn:hover{ border-color:var(--accent); color:var(--ink); }
+.pr-list{ display:flex; flex-direction:column; gap:0.75rem; }
+.pr-card, .sg-card{ border:1px solid var(--border); border-radius:8px; padding:0.85rem 0.95rem; background:var(--surface-2); scroll-margin-top:1rem; transition:box-shadow 0.3s; }
+.pr-card.flash, .sg-card.flash{ box-shadow:0 0 0 2px var(--accent); }
+.pr-head{ display:flex; align-items:center; gap:0.6rem; margin-bottom:0.25rem; }
+.pr-name, .sg-name{ font-family:var(--font-display); font-size:1.1rem; font-weight:600; }
+.sg-name{ font-size:1rem; margin-bottom:0.25rem; }
+.pr-comment{ font-size:0.78rem; color:var(--ink-soft); line-height:1.5; margin-bottom:0.7rem; }
+.pr-cols{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.6fr); gap:1rem; }
+.ind-list{ display:flex; flex-direction:column; gap:0.45rem; }
+.kind{ font-family:var(--font-mono); font-size:0.6rem; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; padding:0.14rem 0.45rem; border-radius:4px; }
+.kind-value{ background:color-mix(in srgb, var(--dom-values) 16%, transparent); color:var(--dom-values); }
+.kind-objective{ background:color-mix(in srgb, var(--dom-client) 16%, transparent); color:var(--dom-client); }
+.kind-value-objective{ background:color-mix(in srgb, var(--dom-development) 16%, transparent); color:var(--dom-development); }
+.sg-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(320px,1fr)); gap:0.75rem; }
+.sg-card .insp-section-title{ margin:0.6rem 0 0.35rem; }
+.ban-list{ margin:0; padding-left:1.1rem; font-size:0.76rem; line-height:1.5; color:var(--ink-soft); }
+.ban-list li::marker{ color:var(--dom-compliance); }
+.ban-list.big{ columns:2 320px; column-gap:2rem; font-size:0.82rem; }
+.ban-list.big li{ margin-bottom:0.35rem; break-inside:avoid; }
+@media (max-width: 760px){
+  .pr-cols{ grid-template-columns:1fr; }
+  #view-values{ padding:1rem; }
+  .vp-shell section{ padding:1rem; }
+}
+
 /* Scrollbars */
 ::-webkit-scrollbar{ width:9px; height:9px; }
 ::-webkit-scrollbar-track{ background:transparent; }
@@ -514,7 +579,7 @@ a{ color:var(--accent); }
     <svg class="brand-mark" width="26" height="26" viewBox="0 0 24 24"><use href="#ic-hub"/></svg>
     <div class="brand-text">
       <div class="brand-title">HR Services &amp; PEO Architecture Map</div>
-      <div class="brand-sub">Domain-driven service topology &middot; L1&ndash;L3 &plus; processes</div>
+      <div class="brand-sub">v2.0 &middot; L1&ndash;L3 &plus; processes &middot; service lines, values &amp; privacy</div>
     </div>
   </div>
   <div class="header-stats" id="header-stats"></div>
@@ -528,7 +593,7 @@ a{ color:var(--accent); }
   </div>
 
   <div class="field">
-    <label for="oparea-filter">Operational area lens</label>
+    <label for="oparea-filter">Lens</label>
     <select id="oparea-filter">
       <option value="">All processes</option>
     </select>
@@ -540,6 +605,7 @@ a{ color:var(--accent); }
     <button data-mode="radial" class="active" onclick="setView('radial')">Radial</button>
     <button data-mode="cluster" onclick="setView('cluster')">Cluster</button>
     <button data-mode="hierarchical" onclick="setView('hierarchical')">Hierarchical</button>
+    <button data-mode="values" onclick="setView('values')">Values &amp; Privacy</button>
   </div>
 
   <div class="slider-field">
@@ -588,13 +654,17 @@ a{ color:var(--accent); }
       </div>
     </div>
 
+    <div id="view-values">
+      <div class="vp-shell" id="values-target"></div>
+    </div>
+
     <div class="tooltip" id="tooltip"></div>
   </div>
 
   <div class="inspector" id="inspector">
     <div class="insp-empty" id="insp-empty">
       <svg viewBox="0 0 24 24"><use href="#ic-hub"/></svg>
-      <div>Select a domain, sub-domain, service, or process on the map to inspect its relationships &mdash; mapped ontology concepts, executing processes, and the operational areas that support them.</div>
+      <div>Select a domain, sub-domain, service, or process to inspect its relationships &mdash; ontology concepts, processes, operational areas, service lines, the values it promotes, and the privacy safeguards that govern it.</div>
     </div>
     <div id="insp-content" style="display:none;"></div>
   </div>
@@ -602,6 +672,7 @@ a{ color:var(--accent); }
 
 <script id="model-json" type="application/json">
 {
+ "version": "2.0 — core service lines, workforce development, and privacy-preserving values stewardship",
  "tree": [
   {
    "id": "WorkforceAdminDomain",
@@ -850,6 +921,12 @@ a{ color:var(--accent); }
           {
            "id": "OpHRTechnologyCyber",
            "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ],
+         "safeguards": [
+          {
+           "id": "SafeguardNoCovertSurveillance",
+           "label": "No Covert or Content-Level Surveillance for Values Measurement"
           }
          ]
         },
@@ -1571,6 +1648,16 @@ a{ color:var(--accent); }
           }
          ]
         }
+       ],
+       "complements": [
+        {
+         "id": "ValuesCommunicationEmbeddingService",
+         "label": "Values Communication & Employee Lifecycle Embedding Service"
+        },
+        {
+         "id": "NoticeConsentPurposeService",
+         "label": "Employee Notice, Consent & Purpose Limitation Service"
+        }
        ]
       },
       {
@@ -1614,6 +1701,16 @@ a{ color:var(--accent); }
           }
          ]
         }
+       ],
+       "complements": [
+        {
+         "id": "InstructorLedVirtualTrainingService",
+         "label": "Instructor-Led & Virtual Classroom Training Service"
+        },
+        {
+         "id": "SpeakUpEthicsChannelService",
+         "label": "Speak-Up & Ethics Concern Channel Service"
+        }
        ]
       },
       {
@@ -1652,6 +1749,12 @@ a{ color:var(--accent); }
            "label": "Employment Legal, Regulatory & Compliance Operations"
           }
          ]
+        }
+       ],
+       "complements": [
+        {
+         "id": "SpeakUpEthicsChannelService",
+         "label": "Speak-Up & Ethics Concern Channel Service"
         }
        ]
       },
@@ -2131,6 +2234,12 @@ a{ color:var(--accent); }
           }
          ]
         }
+       ],
+       "complements": [
+        {
+         "id": "ValuesCommunicationEmbeddingService",
+         "label": "Values Communication & Employee Lifecycle Embedding Service"
+        }
        ]
       }
      ]
@@ -2181,6 +2290,20 @@ a{ color:var(--accent); }
           }
          ]
         }
+       ],
+       "complements": [
+        {
+         "id": "SkillsGapTrainingPlanService",
+         "label": "Role-Based Skills Gap Analysis & Development Plan Service"
+        },
+        {
+         "id": "InstructorLedVirtualTrainingService",
+         "label": "Instructor-Led & Virtual Classroom Training Service"
+        },
+        {
+         "id": "LearningImpactMeasurementService",
+         "label": "Learning & Coaching Impact Measurement Service"
+        }
        ]
       },
       {
@@ -2207,6 +2330,12 @@ a{ color:var(--accent); }
            "id": "OpTalentAdvisory",
            "label": "Talent Acquisition & Organizational Consulting Operations"
           }
+         ],
+         "enforces": [
+          {
+           "id": "SafeguardHumanReview",
+           "label": "Human Review & Employee Right to Respond"
+          }
          ]
         },
         {
@@ -2219,6 +2348,16 @@ a{ color:var(--accent); }
            "label": "Talent Acquisition & Organizational Consulting Operations"
           }
          ]
+        }
+       ],
+       "complements": [
+        {
+         "id": "ContinuousPerformanceCheckInService",
+         "label": "Continuous Performance Check-In & Progress Monitoring Service"
+        },
+        {
+         "id": "ValuesInPerformanceDialogueService",
+         "label": "Values-in-Performance Dialogue Service"
         }
        ]
       },
@@ -2258,6 +2397,12 @@ a{ color:var(--accent); }
            "label": "Talent Acquisition & Organizational Consulting Operations"
           }
          ]
+        }
+       ],
+       "complements": [
+        {
+         "id": "ContinuousPerformanceCheckInService",
+         "label": "Continuous Performance Check-In & Progress Monitoring Service"
         }
        ]
       },
@@ -2340,6 +2485,12 @@ a{ color:var(--accent); }
            "label": "Talent Acquisition & Organizational Consulting Operations"
           }
          ]
+        }
+       ],
+       "complements": [
+        {
+         "id": "ManagerCoachingService",
+         "label": "Manager & Frontline Leader Coaching Service"
         }
        ]
       }
@@ -2572,6 +2723,12 @@ a{ color:var(--accent); }
            "label": "Sales, Contracting & Client Implementation Operations"
           }
          ]
+        }
+       ],
+       "complements": [
+        {
+         "id": "OrganizationalScorecardService",
+         "label": "Organizational Health & Objectives Scorecard Service"
         }
        ]
       },
@@ -2878,6 +3035,12 @@ a{ color:var(--accent); }
            "id": "OpLegalCompliance",
            "label": "Employment Legal, Regulatory & Compliance Operations"
           }
+         ],
+         "safeguards": [
+          {
+           "id": "SafeguardTransparencyNotice",
+           "label": "Employee Transparency & Monitoring Notice"
+          }
          ]
         }
        ]
@@ -2971,7 +3134,41 @@ a{ color:var(--accent); }
            "id": "OpTalentAdvisory",
            "label": "Talent Acquisition & Organizational Consulting Operations"
           }
+         ],
+         "safeguards": [
+          {
+           "id": "SafeguardProtectedTraitExclusion",
+           "label": "Protected-Characteristic Inference Exclusion"
+          },
+          {
+           "id": "SafeguardPurposeLimitation",
+           "label": "Purpose Limitation & Data Minimization"
+          }
          ]
+        }
+       ],
+       "safeguards": [
+        {
+         "id": "SafeguardAggregationThreshold",
+         "label": "Minimum Group Size (k-Anonymity) Threshold"
+        },
+        {
+         "id": "SafeguardProtectedTraitExclusion",
+         "label": "Protected-Characteristic Inference Exclusion"
+        }
+       ],
+       "complements": [
+        {
+         "id": "OrganizationalScorecardService",
+         "label": "Organizational Health & Objectives Scorecard Service"
+        },
+        {
+         "id": "ValuesIndexAnalyticsService",
+         "label": "Values & Culture Index Analytics Service"
+        },
+        {
+         "id": "DeIdentificationAggregationService",
+         "label": "De-Identification & Aggregation Enforcement Service"
         }
        ]
       },
@@ -3015,6 +3212,1370 @@ a{ color:var(--accent); }
            "label": "HR Technology Platform & Cybersecurity Operations"
           }
          ]
+        }
+       ],
+       "complements": [
+        {
+         "id": "PeopleAnalyticsPrivacyImpactService",
+         "label": "Privacy Impact & Monitoring Proportionality Assessment Service"
+        },
+        {
+         "id": "PeopleDataRetentionRightsService",
+         "label": "People-Data Retention & Employee Data Rights Service"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "WorkforceDevelopmentDomain",
+   "label": "Workforce Development, Coaching & Performance Measurement Domain",
+   "type": "domain",
+   "children": [
+    {
+     "id": "TrainingCoachingSubDomain",
+     "label": "Training & Coaching Delivery Bounded Context",
+     "type": "subdomain",
+     "children": [
+      {
+       "id": "SkillsGapTrainingPlanService",
+       "label": "Role-Based Skills Gap Analysis & Development Plan Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptSkillsTaxonomy",
+         "label": "Role-Based Skills & Competency Taxonomy"
+        },
+        {
+         "id": "ConceptIndividualDevelopmentPlan",
+         "label": "Individual Development Plan (IDP)"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcSkillsGapAssessment",
+         "label": "Role-Based Skills Gap Assessment Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLearningCoachingDelivery",
+           "label": "Learning, Coaching & Development Delivery Operations"
+          },
+          {
+           "id": "OpTalentAdvisory",
+           "label": "Talent Acquisition & Organizational Consulting Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcIndividualDevelopmentPlanBuild",
+         "label": "Individual Development Plan Build Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLearningCoachingDelivery",
+           "label": "Learning, Coaching & Development Delivery Operations"
+          }
+         ]
+        }
+       ],
+       "promotes": [
+        {
+         "id": "ValueEmbracingChange",
+         "label": "Embracing Change"
+        },
+        {
+         "id": "ValueCommitment",
+         "label": "Commitment"
+        }
+       ],
+       "complements": [
+        {
+         "id": "CorporateLMSDeliveryService",
+         "label": "Corporate Learning Management (LMS) Delivery Service"
+        }
+       ]
+      },
+      {
+       "id": "InstructorLedVirtualTrainingService",
+       "label": "Instructor-Led & Virtual Classroom Training Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptTrainingCatalog",
+         "label": "Instructor-Led & Virtual Training Catalog"
+        },
+        {
+         "id": "ConceptKirkpatrickEvaluationModel",
+         "label": "Kirkpatrick Four-Level Training Evaluation Model"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcTrainingSessionScheduling",
+         "label": "Instructor-Led Training Session Scheduling Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLearningCoachingDelivery",
+           "label": "Learning, Coaching & Development Delivery Operations"
+          },
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcTrainingEffectivenessEvaluation",
+         "label": "Training Effectiveness Evaluation (Kirkpatrick L1–L4) Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLearningCoachingDelivery",
+           "label": "Learning, Coaching & Development Delivery Operations"
+          }
+         ]
+        }
+       ],
+       "promotes": [
+        {
+         "id": "ValueIntegrity",
+         "label": "Integrity"
+        },
+        {
+         "id": "ValueRespect",
+         "label": "Respect"
+        }
+       ],
+       "complements": [
+        {
+         "id": "CorporateLMSDeliveryService",
+         "label": "Corporate Learning Management (LMS) Delivery Service"
+        },
+        {
+         "id": "HarassmentPreventionTrainingService",
+         "label": "Harassment Prevention & Mandatory Training Service"
+        }
+       ]
+      },
+      {
+       "id": "ManagerCoachingService",
+       "label": "Manager & Frontline Leader Coaching Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptCoachingAgreement",
+         "label": "Coaching Agreement & Confidentiality Terms"
+        },
+        {
+         "id": "ConceptCoachingSessionRecord",
+         "label": "Coachee-Owned Coaching Session Record"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcCoachingEngagementIntake",
+         "label": "Coaching Engagement Intake & Confidentiality Agreement Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLearningCoachingDelivery",
+           "label": "Learning, Coaching & Development Delivery Operations"
+          },
+          {
+           "id": "OpPrivacyOffice",
+           "label": "Employee Privacy & People-Data Protection Office Operations"
+          }
+         ],
+         "enforces": [
+          {
+           "id": "SafeguardCoachingConfidentiality",
+           "label": "Coaching Conversation Confidentiality"
+          }
+         ]
+        },
+        {
+         "id": "ProcCoachingConversationCadence",
+         "label": "Coaching Conversation Cadence Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLearningCoachingDelivery",
+           "label": "Learning, Coaching & Development Delivery Operations"
+          }
+         ]
+        }
+       ],
+       "comment": "Confidential developmental coaching. Session content belongs to the coachee and is not reported to the employer.",
+       "promotes": [
+        {
+         "id": "ValueAccountability",
+         "label": "Accountability"
+        },
+        {
+         "id": "ValuePerseverance",
+         "label": "Perseverance"
+        },
+        {
+         "id": "ValueRespect",
+         "label": "Respect"
+        }
+       ],
+       "safeguards": [
+        {
+         "id": "SafeguardCoachingConfidentiality",
+         "label": "Coaching Conversation Confidentiality"
+        }
+       ],
+       "complements": [
+        {
+         "id": "LeadershipSuccessionPlanningService",
+         "label": "Leadership Development & Succession Planning Service"
+        }
+       ]
+      },
+      {
+       "id": "PeerMentoringService",
+       "label": "Peer Mentoring & Knowledge Transfer Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptMentorMatchProfile",
+         "label": "Mentor–Mentee Match Profile"
+        },
+        {
+         "id": "ConceptMentoringProgramCharter",
+         "label": "Mentoring Program Charter"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcMentorMenteeMatching",
+         "label": "Mentor–Mentee Matching Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLearningCoachingDelivery",
+           "label": "Learning, Coaching & Development Delivery Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcMentoringProgramReview",
+         "label": "Mentoring Program Review Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLearningCoachingDelivery",
+           "label": "Learning, Coaching & Development Delivery Operations"
+          }
+         ]
+        }
+       ],
+       "promotes": [
+        {
+         "id": "ValueCommitment",
+         "label": "Commitment"
+        },
+        {
+         "id": "ValuePerseverance",
+         "label": "Perseverance"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "PerformanceMonitoringMeasurementSubDomain",
+     "label": "Performance Monitoring & Measurement Bounded Context",
+     "type": "subdomain",
+     "children": [
+      {
+       "id": "ContinuousPerformanceCheckInService",
+       "label": "Continuous Performance Check-In & Progress Monitoring Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptCheckInRecord",
+         "label": "Manager–Employee Check-In Record"
+        },
+        {
+         "id": "ConceptProgressSignal",
+         "label": "Goal Progress Status Signal (On Track / At Risk / Off Track)"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcPeriodicCheckInCycle",
+         "label": "Periodic Manager–Employee Check-In Cycle Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpTalentAdvisory",
+           "label": "Talent Acquisition & Organizational Consulting Operations"
+          },
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcGoalProgressMonitoring",
+         "label": "Goal Progress Monitoring Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpTalentAdvisory",
+           "label": "Talent Acquisition & Organizational Consulting Operations"
+          }
+         ]
+        }
+       ],
+       "promotes": [
+        {
+         "id": "ObjectiveAchievingGoals",
+         "label": "Achieving Goals"
+        },
+        {
+         "id": "ValueAccountability",
+         "label": "Accountability"
+        }
+       ],
+       "complements": [
+        {
+         "id": "StrategicGoalAlignmentOKRService",
+         "label": "Strategic Goal Alignment (OKR) & Tracking Service"
+        },
+        {
+         "id": "Feedback360AppraisalCycleService",
+         "label": "360-Degree Feedback & Appraisal Cycle Service"
+        },
+        {
+         "id": "ValuesInPerformanceDialogueService",
+         "label": "Values-in-Performance Dialogue Service"
+        }
+       ]
+      },
+      {
+       "id": "LearningImpactMeasurementService",
+       "label": "Learning & Coaching Impact Measurement Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptCompetencyProficiencyScale",
+         "label": "Competency Proficiency Rating Scale"
+        },
+        {
+         "id": "ConceptLearningROIModel",
+         "label": "Learning & Coaching Return-on-Investment Model"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcPrePostCompetencyMeasure",
+         "label": "Pre/Post Competency Proficiency Measurement Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLearningCoachingDelivery",
+           "label": "Learning, Coaching & Development Delivery Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcTrainingROIAnalysis",
+         "label": "Training & Coaching ROI Analysis Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLearningCoachingDelivery",
+           "label": "Learning, Coaching & Development Delivery Operations"
+          },
+          {
+           "id": "OpClientFinanceBilling",
+           "label": "Client Invoicing, Billing & Accounts Receivable Operations"
+          }
+         ]
+        }
+       ],
+       "safeguards": [
+        {
+         "id": "SafeguardAggregationThreshold",
+         "label": "Minimum Group Size (k-Anonymity) Threshold"
+        }
+       ],
+       "complements": [
+        {
+         "id": "CorporateLMSDeliveryService",
+         "label": "Corporate Learning Management (LMS) Delivery Service"
+        }
+       ]
+      },
+      {
+       "id": "OrganizationalScorecardService",
+       "label": "Organizational Health & Objectives Scorecard Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptBalancedScorecard",
+         "label": "Organizational Health & Objectives Balanced Scorecard"
+        },
+        {
+         "id": "ConceptMetricDefinitionCard",
+         "label": "Metric Definition Card (purpose, formula, owner, granularity, privacy class)"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcScorecardMetricDefinition",
+         "label": "Scorecard Metric Definition & Privacy Classification Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          },
+          {
+           "id": "OpPrivacyOffice",
+           "label": "Employee Privacy & People-Data Protection Office Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcScorecardPublication",
+         "label": "Organizational Scorecard Publication Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        }
+       ],
+       "promotes": [
+        {
+         "id": "ObjectiveAchievingGoals",
+         "label": "Achieving Goals"
+        },
+        {
+         "id": "ValueAccountability",
+         "label": "Accountability"
+        }
+       ],
+       "safeguards": [
+        {
+         "id": "SafeguardAggregationThreshold",
+         "label": "Minimum Group Size (k-Anonymity) Threshold"
+        },
+        {
+         "id": "SafeguardPurposeLimitation",
+         "label": "Purpose Limitation & Data Minimization"
+        }
+       ],
+       "complements": [
+        {
+         "id": "WorkforceAnalyticsReportingService",
+         "label": "Workforce Analytics & Predictive Reporting Service"
+        },
+        {
+         "id": "ClientHealthScoringRetentionService",
+         "label": "Client Health Scoring & Retention Service"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ValuesCultureStewardshipDomain",
+   "label": "Organizational Values, Culture & Ethics Stewardship Domain",
+   "type": "domain",
+   "children": [
+    {
+     "id": "ValuesPromotionCultureSubDomain",
+     "label": "Values Promotion & Culture Enablement Bounded Context",
+     "type": "subdomain",
+     "children": [
+      {
+       "id": "ValuesCommunicationEmbeddingService",
+       "label": "Values Communication & Employee Lifecycle Embedding Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptValuesCharter",
+         "label": "Corporate Values & Objectives Charter"
+        },
+        {
+         "id": "ConceptBehavioralAnchorLibrary",
+         "label": "Values Behavioral Anchor Library (observable do / don't behaviors per value)"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcValuesNarrativeCampaign",
+         "label": "Values Narrative & Communication Campaign Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpCultureValuesEthics",
+           "label": "Culture, Values & Ethics Office Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcValuesLifecycleIntegration",
+         "label": "Values Integration into Onboarding, Handbook, Training & Appraisal Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpCultureValuesEthics",
+           "label": "Culture, Values & Ethics Office Operations"
+          },
+          {
+           "id": "OpLearningCoachingDelivery",
+           "label": "Learning, Coaching & Development Delivery Operations"
+          }
+         ]
+        }
+       ],
+       "comment": "Embeds the values charter into onboarding, the handbook, training curricula and performance-dialogue prompts.",
+       "promotes": [
+        {
+         "id": "ValueIntegrity",
+         "label": "Integrity"
+        },
+        {
+         "id": "ValueRespect",
+         "label": "Respect"
+        },
+        {
+         "id": "ValueCommitment",
+         "label": "Commitment"
+        },
+        {
+         "id": "ValueAccountability",
+         "label": "Accountability"
+        },
+        {
+         "id": "ValueEmbracingChange",
+         "label": "Embracing Change"
+        },
+        {
+         "id": "ValuePerseverance",
+         "label": "Perseverance"
+        },
+        {
+         "id": "ValueInnovation",
+         "label": "Innovation"
+        },
+        {
+         "id": "ObjectiveAchievingGoals",
+         "label": "Achieving Goals"
+        },
+        {
+         "id": "ObjectiveContributingToCommunities",
+         "label": "Contributing to Communities"
+        }
+       ],
+       "complements": [
+        {
+         "id": "DigitalNewHireOnboardingService",
+         "label": "Self-Service Digital New Hire Onboarding Service"
+        },
+        {
+         "id": "MultiStateHandbookPolicyService",
+         "label": "Multi-State Employee Policy & Handbook Service"
+        }
+       ]
+      },
+      {
+       "id": "ValuesRecognitionService",
+       "label": "Values-Based Peer Recognition Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptRecognitionTaxonomy",
+         "label": "Values-Tagged Recognition Taxonomy"
+        },
+        {
+         "id": "ConceptRecognitionEquityReport",
+         "label": "Recognition Distribution Equity Report"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcPeerRecognitionNomination",
+         "label": "Values-Tagged Peer Recognition Nomination Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpCultureValuesEthics",
+           "label": "Culture, Values & Ethics Office Operations"
+          },
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcRecognitionEquityReview",
+         "label": "Recognition Distribution Equity Review Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpCultureValuesEthics",
+           "label": "Culture, Values & Ethics Office Operations"
+          },
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          }
+         ],
+         "enforces": [
+          {
+           "id": "SafeguardProtectedTraitExclusion",
+           "label": "Protected-Characteristic Inference Exclusion"
+          }
+         ]
+        }
+       ],
+       "promotes": [
+        {
+         "id": "ValueRespect",
+         "label": "Respect"
+        },
+        {
+         "id": "ValuePerseverance",
+         "label": "Perseverance"
+        },
+        {
+         "id": "ValueCommitment",
+         "label": "Commitment"
+        },
+        {
+         "id": "ValueInnovation",
+         "label": "Innovation"
+        }
+       ],
+       "safeguards": [
+        {
+         "id": "SafeguardAggregationThreshold",
+         "label": "Minimum Group Size (k-Anonymity) Threshold"
+        }
+       ]
+      },
+      {
+       "id": "CommunityEngagementService",
+       "label": "Community Volunteering & Giving Program Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptVolunteerTimeOffPolicy",
+         "label": "Volunteer Time Off (VTO) Policy"
+        },
+        {
+         "id": "ConceptCommunityImpactLedger",
+         "label": "Organizational Community Impact Ledger"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcVolunteerOpportunityCoordination",
+         "label": "Volunteer Opportunity Coordination Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpCultureValuesEthics",
+           "label": "Culture, Values & Ethics Office Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcVoluntaryHoursSelfReport",
+         "label": "Voluntary Volunteer-Hours Self-Report Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpCultureValuesEthics",
+           "label": "Culture, Values & Ethics Office Operations"
+          },
+          {
+           "id": "OpPrivacyOffice",
+           "label": "Employee Privacy & People-Data Protection Office Operations"
+          }
+         ],
+         "enforces": [
+          {
+           "id": "SafeguardVoluntaryParticipation",
+           "label": "Voluntary Participation — No Employment Consequence"
+          }
+         ]
+        }
+       ],
+       "comment": "Voluntary program. Individual participation is never visible to managers and never feeds employment decisions.",
+       "promotes": [
+        {
+         "id": "ObjectiveContributingToCommunities",
+         "label": "Contributing to Communities"
+        }
+       ],
+       "safeguards": [
+        {
+         "id": "SafeguardVoluntaryParticipation",
+         "label": "Voluntary Participation — No Employment Consequence"
+        },
+        {
+         "id": "SafeguardAggregationThreshold",
+         "label": "Minimum Group Size (k-Anonymity) Threshold"
+        }
+       ]
+      },
+      {
+       "id": "InnovationChangeEnablementService",
+       "label": "Idea Program & Change Readiness Enablement Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptIdeaPipeline",
+         "label": "Improvement Idea Pipeline"
+        },
+        {
+         "id": "ConceptChangeReadinessModel",
+         "label": "Change Readiness Assessment Model"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcIdeaSubmissionReview",
+         "label": "Improvement Idea Submission & Review Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpCultureValuesEthics",
+           "label": "Culture, Values & Ethics Office Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcChangeReadinessEnablement",
+         "label": "Change Readiness Enablement Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpCultureValuesEthics",
+           "label": "Culture, Values & Ethics Office Operations"
+          },
+          {
+           "id": "OpLearningCoachingDelivery",
+           "label": "Learning, Coaching & Development Delivery Operations"
+          }
+         ]
+        }
+       ],
+       "promotes": [
+        {
+         "id": "ValueInnovation",
+         "label": "Innovation"
+        },
+        {
+         "id": "ValueEmbracingChange",
+         "label": "Embracing Change"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "ValuesMonitoringMeasurementSubDomain",
+     "label": "Values Monitoring & Measurement Bounded Context",
+     "type": "subdomain",
+     "children": [
+      {
+       "id": "CulturePulseSurveyService",
+       "label": "Anonymous Culture & Values Pulse Survey Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptValuesPulseInstrument",
+         "label": "Values & Culture Pulse Survey Instrument"
+        },
+        {
+         "id": "ConceptAnonymityThresholdRule",
+         "label": "Survey Anonymity Minimum-Response Threshold Rule"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcPulseSurveyAdministration",
+         "label": "Anonymous Pulse Survey Administration Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpCultureValuesEthics",
+           "label": "Culture, Values & Ethics Office Operations"
+          },
+          {
+           "id": "OpPrivacyOffice",
+           "label": "Employee Privacy & People-Data Protection Office Operations"
+          }
+         ],
+         "enforces": [
+          {
+           "id": "SafeguardAnonymityProtection",
+           "label": "Survey & Speak-Up Anonymity Protection"
+          }
+         ]
+        },
+        {
+         "id": "ProcSmallGroupSuppression",
+         "label": "Small-Group Result Suppression Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpPrivacyOffice",
+           "label": "Employee Privacy & People-Data Protection Office Operations"
+          }
+         ],
+         "enforces": [
+          {
+           "id": "SafeguardAggregationThreshold",
+           "label": "Minimum Group Size (k-Anonymity) Threshold"
+          }
+         ]
+        }
+       ],
+       "safeguards": [
+        {
+         "id": "SafeguardAggregationThreshold",
+         "label": "Minimum Group Size (k-Anonymity) Threshold"
+        },
+        {
+         "id": "SafeguardAnonymityProtection",
+         "label": "Survey & Speak-Up Anonymity Protection"
+        },
+        {
+         "id": "SafeguardTransparencyNotice",
+         "label": "Employee Transparency & Monitoring Notice"
+        }
+       ]
+      },
+      {
+       "id": "SpeakUpEthicsChannelService",
+       "label": "Speak-Up & Ethics Concern Channel Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptAnonymousReportingChannel",
+         "label": "Third-Party Anonymous Ethics Reporting Channel"
+        },
+        {
+         "id": "ConceptNonRetaliationCaseRecord",
+         "label": "Non-Retaliation Follow-Up Case Record"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcConcernIntakeTriage",
+         "label": "Ethics Concern Intake & Triage Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpCultureValuesEthics",
+           "label": "Culture, Values & Ethics Office Operations"
+          },
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          }
+         ],
+         "enforces": [
+          {
+           "id": "SafeguardAnonymityProtection",
+           "label": "Survey & Speak-Up Anonymity Protection"
+          }
+         ]
+        },
+        {
+         "id": "ProcNonRetaliationMonitoring",
+         "label": "Post-Report Non-Retaliation Monitoring Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          }
+         ],
+         "enforces": [
+          {
+           "id": "SafeguardProtectedActivity",
+           "label": "Protected Concerted & Whistleblower Activity Safeguard"
+          }
+         ]
+        }
+       ],
+       "promotes": [
+        {
+         "id": "ValueIntegrity",
+         "label": "Integrity"
+        },
+        {
+         "id": "ValueRespect",
+         "label": "Respect"
+        }
+       ],
+       "safeguards": [
+        {
+         "id": "SafeguardAnonymityProtection",
+         "label": "Survey & Speak-Up Anonymity Protection"
+        },
+        {
+         "id": "SafeguardProtectedActivity",
+         "label": "Protected Concerted & Whistleblower Activity Safeguard"
+        }
+       ],
+       "complements": [
+        {
+         "id": "HarassmentPreventionTrainingService",
+         "label": "Harassment Prevention & Mandatory Training Service"
+        },
+        {
+         "id": "EEOC_DOL_DefenseConsultService",
+         "label": "EEOC & Department of Labor Defense Consultation Service"
+        }
+       ]
+      },
+      {
+       "id": "ValuesInPerformanceDialogueService",
+       "label": "Values-in-Performance Dialogue Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptBehavioralAnchorLibrary",
+         "label": "Values Behavioral Anchor Library (observable do / don't behaviors per value)"
+        },
+        {
+         "id": "ConceptValuesReflectionEntry",
+         "label": "Employee Values Self-Reflection Entry"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcValuesSelfReflection",
+         "label": "Employee Values Self-Reflection Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpTalentAdvisory",
+           "label": "Talent Acquisition & Organizational Consulting Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcValuesEvidenceCalibration",
+         "label": "Values Evidence Calibration & Employee Response Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpTalentAdvisory",
+           "label": "Talent Acquisition & Organizational Consulting Operations"
+          },
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          }
+         ],
+         "enforces": [
+          {
+           "id": "SafeguardHumanReview",
+           "label": "Human Review & Employee Right to Respond"
+          }
+         ]
+        }
+       ],
+       "comment": "Values are discussed in check-ins and appraisals using behavioral anchors, employee self-reflection and manager observation of ordinary work conduct. The employee sees and may respond to any values-related evidence recorded about them.",
+       "promotes": [
+        {
+         "id": "ValueIntegrity",
+         "label": "Integrity"
+        },
+        {
+         "id": "ValueRespect",
+         "label": "Respect"
+        },
+        {
+         "id": "ValueAccountability",
+         "label": "Accountability"
+        },
+        {
+         "id": "ValueCommitment",
+         "label": "Commitment"
+        }
+       ],
+       "safeguards": [
+        {
+         "id": "SafeguardHumanReview",
+         "label": "Human Review & Employee Right to Respond"
+        },
+        {
+         "id": "SafeguardTransparencyNotice",
+         "label": "Employee Transparency & Monitoring Notice"
+        }
+       ],
+       "complements": [
+        {
+         "id": "Feedback360AppraisalCycleService",
+         "label": "360-Degree Feedback & Appraisal Cycle Service"
+        },
+        {
+         "id": "ContinuousPerformanceCheckInService",
+         "label": "Continuous Performance Check-In & Progress Monitoring Service"
+        }
+       ]
+      },
+      {
+       "id": "ValuesIndexAnalyticsService",
+       "label": "Values & Culture Index Analytics Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptValuesIndexModel",
+         "label": "Aggregate Values & Culture Index Model"
+        },
+        {
+         "id": "ConceptLeaderActionPlan",
+         "label": "Leader Post-Survey Action Plan"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcValuesIndexComputation",
+         "label": "Aggregate Values & Culture Index Computation Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpCultureValuesEthics",
+           "label": "Culture, Values & Ethics Office Operations"
+          },
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ]
+        },
+        {
+         "id": "ProcLeaderActionPlanTracking",
+         "label": "Leader Action-Plan Tracking Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpCultureValuesEthics",
+           "label": "Culture, Values & Ethics Office Operations"
+          }
+         ]
+        }
+       ],
+       "promotes": [
+        {
+         "id": "ValueAccountability",
+         "label": "Accountability"
+        }
+       ],
+       "safeguards": [
+        {
+         "id": "SafeguardAggregationThreshold",
+         "label": "Minimum Group Size (k-Anonymity) Threshold"
+        },
+        {
+         "id": "SafeguardPurposeLimitation",
+         "label": "Purpose Limitation & Data Minimization"
+        },
+        {
+         "id": "SafeguardProtectedTraitExclusion",
+         "label": "Protected-Characteristic Inference Exclusion"
+        }
+       ],
+       "complements": [
+        {
+         "id": "WorkforceAnalyticsReportingService",
+         "label": "Workforce Analytics & Predictive Reporting Service"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "id": "PrivacyPreservingPeopleAnalyticsSubDomain",
+     "label": "Privacy-Preserving People Analytics Bounded Context",
+     "type": "subdomain",
+     "children": [
+      {
+       "id": "PeopleAnalyticsPrivacyImpactService",
+       "label": "Privacy Impact & Monitoring Proportionality Assessment Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptPrivacyImpactAssessment",
+         "label": "People-Analytics Privacy Impact Assessment (PIA) Record"
+        },
+        {
+         "id": "ConceptProhibitedMonitoringRegister",
+         "label": "Prohibited Monitoring Practices Register"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcPrivacyImpactAssessment",
+         "label": "People-Analytics Privacy Impact Assessment Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpPrivacyOffice",
+           "label": "Employee Privacy & People-Data Protection Office Operations"
+          },
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          }
+         ],
+         "enforces": [
+          {
+           "id": "SafeguardPurposeLimitation",
+           "label": "Purpose Limitation & Data Minimization"
+          },
+          {
+           "id": "SafeguardProtectedTraitExclusion",
+           "label": "Protected-Characteristic Inference Exclusion"
+          }
+         ]
+        },
+        {
+         "id": "ProcMonitoringProportionalityReview",
+         "label": "Monitoring Necessity & Proportionality Review Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpPrivacyOffice",
+           "label": "Employee Privacy & People-Data Protection Office Operations"
+          },
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          }
+         ],
+         "enforces": [
+          {
+           "id": "SafeguardNoCovertSurveillance",
+           "label": "No Covert or Content-Level Surveillance for Values Measurement"
+          }
+         ]
+        }
+       ],
+       "complements": [
+        {
+         "id": "DataPrivacySecurityGovernanceService",
+         "label": "Data Privacy & Security Governance Service"
+        }
+       ]
+      },
+      {
+       "id": "NoticeConsentPurposeService",
+       "label": "Employee Notice, Consent & Purpose Limitation Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptElectronicMonitoringNotice",
+         "label": "Electronic Monitoring Notice & Acknowledgment"
+        },
+        {
+         "id": "ConceptPurposeLimitationRegister",
+         "label": "People-Data Purpose Limitation Register"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcMonitoringNoticeIssuance",
+         "label": "Employee Monitoring Notice Issuance & Acknowledgment Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpPrivacyOffice",
+           "label": "Employee Privacy & People-Data Protection Office Operations"
+          },
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          }
+         ],
+         "enforces": [
+          {
+           "id": "SafeguardTransparencyNotice",
+           "label": "Employee Transparency & Monitoring Notice"
+          }
+         ]
+        },
+        {
+         "id": "ProcConsentPreferenceManagement",
+         "label": "Consent & Participation Preference Management Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpPrivacyOffice",
+           "label": "Employee Privacy & People-Data Protection Office Operations"
+          },
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ],
+         "enforces": [
+          {
+           "id": "SafeguardPurposeLimitation",
+           "label": "Purpose Limitation & Data Minimization"
+          },
+          {
+           "id": "SafeguardVoluntaryParticipation",
+           "label": "Voluntary Participation — No Employment Consequence"
+          }
+         ]
+        }
+       ],
+       "complements": [
+        {
+         "id": "MultiStateHandbookPolicyService",
+         "label": "Multi-State Employee Policy & Handbook Service"
+        }
+       ]
+      },
+      {
+       "id": "DeIdentificationAggregationService",
+       "label": "De-Identification & Aggregation Enforcement Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptKAnonymityPolicy",
+         "label": "k-Anonymity Minimum Group Size Policy"
+        },
+        {
+         "id": "ConceptReidentificationRiskTest",
+         "label": "Re-Identification Risk Test (small-cell & differencing)"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcKAnonymityThresholdCheck",
+         "label": "k-Anonymity Threshold Check Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpPrivacyOffice",
+           "label": "Employee Privacy & People-Data Protection Office Operations"
+          },
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ],
+         "enforces": [
+          {
+           "id": "SafeguardAggregationThreshold",
+           "label": "Minimum Group Size (k-Anonymity) Threshold"
+          }
+         ]
+        },
+        {
+         "id": "ProcDifferencingAttackReview",
+         "label": "Re-Identification (Differencing) Risk Review Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpPrivacyOffice",
+           "label": "Employee Privacy & People-Data Protection Office Operations"
+          }
+         ],
+         "enforces": [
+          {
+           "id": "SafeguardAggregationThreshold",
+           "label": "Minimum Group Size (k-Anonymity) Threshold"
+          }
+         ]
+        }
+       ],
+       "complements": [
+        {
+         "id": "WorkforceAnalyticsReportingService",
+         "label": "Workforce Analytics & Predictive Reporting Service"
+        }
+       ]
+      },
+      {
+       "id": "PeopleDataRetentionRightsService",
+       "label": "People-Data Retention & Employee Data Rights Service",
+       "type": "service",
+       "concepts": [
+        {
+         "id": "ConceptPeopleDataRetentionSchedule",
+         "label": "People-Data Retention Schedule"
+        },
+        {
+         "id": "ConceptEmployeeDataRightsRequest",
+         "label": "Employee Data Subject Rights Request"
+        }
+       ],
+       "children": [
+        {
+         "id": "ProcRetentionScheduleEnforcement",
+         "label": "People-Data Retention Schedule Enforcement Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpPrivacyOffice",
+           "label": "Employee Privacy & People-Data Protection Office Operations"
+          },
+          {
+           "id": "OpHRTechnologyCyber",
+           "label": "HR Technology Platform & Cybersecurity Operations"
+          }
+         ],
+         "enforces": [
+          {
+           "id": "SafeguardRetentionLimit",
+           "label": "Retention Limit & Secure Disposal"
+          }
+         ]
+        },
+        {
+         "id": "ProcEmployeeDataRightsRequest",
+         "label": "Employee Data Access, Correction & Deletion Request Process",
+         "type": "process",
+         "operations": [
+          {
+           "id": "OpPrivacyOffice",
+           "label": "Employee Privacy & People-Data Protection Office Operations"
+          },
+          {
+           "id": "OpLegalCompliance",
+           "label": "Employment Legal, Regulatory & Compliance Operations"
+          }
+         ],
+         "enforces": [
+          {
+           "id": "SafeguardRetentionLimit",
+           "label": "Retention Limit & Secure Disposal"
+          }
+         ]
+        }
+       ],
+       "complements": [
+        {
+         "id": "DataPrivacySecurityGovernanceService",
+         "label": "Data Privacy & Security Governance Service"
         }
        ]
       }
@@ -3063,15 +4624,1467 @@ a{ color:var(--accent); }
    "id": "OpClientFinanceBilling",
    "label": "Client Invoicing, Billing & Accounts Receivable Operations",
    "comment": "Service fee invoicing, accounts receivable collection, and client-facing financial reporting, distinct from worksite-employee payroll treasury."
+  },
+  {
+   "id": "OpLearningCoachingDelivery",
+   "label": "Learning, Coaching & Development Delivery Operations",
+   "comment": "Instructional design, facilitation, coach and mentor network management, and learning impact evaluation."
+  },
+  {
+   "id": "OpCultureValuesEthics",
+   "label": "Culture, Values & Ethics Office Operations",
+   "comment": "Values charter stewardship, recognition and community programs, speak-up channel operation, and culture measurement."
+  },
+  {
+   "id": "OpPrivacyOffice",
+   "label": "Employee Privacy & People-Data Protection Office Operations",
+   "comment": "Privacy impact assessments, notice and consent, de-identification, retention, and data-subject rights for worksite employee data. Operates independently of the teams that consume people analytics."
+  }
+ ],
+ "serviceLines": [
+  {
+   "id": "ServiceLinePayroll",
+   "label": "Payroll",
+   "comment": "",
+   "subdomains": [
+    {
+     "id": "PayrollTaxSubDomain",
+     "label": "Payroll Processing & Multi-State Tax Bounded Context"
+    },
+    {
+     "id": "TimeAttendanceLeaveSubDomain",
+     "label": "Time, Attendance & Leave Management Bounded Context"
+    }
+   ],
+   "services": []
+  },
+  {
+   "id": "ServiceLineBenefits",
+   "label": "Benefits",
+   "comment": "",
+   "subdomains": [
+    {
+     "id": "HealthWelfareSponsorshipSubDomain",
+     "label": "Group Health & Welfare Plan Sponsorship Bounded Context"
+    },
+    {
+     "id": "RetirementMEP401kSubDomain",
+     "label": "Retirement & 401(k) Multiple Employer Plan (MEP) Bounded Context"
+    }
+   ],
+   "services": []
+  },
+  {
+   "id": "ServiceLineTalentManagement",
+   "label": "Talent Management",
+   "comment": "",
+   "subdomains": [
+    {
+     "id": "TalentAcquisitionOnboardingSubDomain",
+     "label": "Talent Acquisition & Digital Onboarding Bounded Context"
+    },
+    {
+     "id": "LearningPerformanceSuccessionSubDomain",
+     "label": "Learning, Performance & Succession Bounded Context"
+    }
+   ],
+   "services": []
+  },
+  {
+   "id": "ServiceLineHRCompliance",
+   "label": "HR Compliance",
+   "comment": "",
+   "subdomains": [
+    {
+     "id": "EmployerLiabilityPracticesSubDomain",
+     "label": "Co-Employment Liability & Employment Practices Bounded Context"
+    },
+    {
+     "id": "WorkersCompWorksiteSafetySubDomain",
+     "label": "Workers' Compensation & Worksite Safety Bounded Context"
+    }
+   ],
+   "services": []
+  },
+  {
+   "id": "ServiceLineTraining",
+   "label": "Training",
+   "comment": "",
+   "subdomains": [
+    {
+     "id": "TrainingCoachingSubDomain",
+     "label": "Training & Coaching Delivery Bounded Context"
+    }
+   ],
+   "services": [
+    {
+     "id": "CorporateLMSDeliveryService",
+     "label": "Corporate Learning Management (LMS) Delivery Service"
+    },
+    {
+     "id": "HarassmentPreventionTrainingService",
+     "label": "Harassment Prevention & Mandatory Training Service"
+    }
+   ]
+  },
+  {
+   "id": "ServiceLineCoaching",
+   "label": "Coaching",
+   "comment": "",
+   "subdomains": [
+    {
+     "id": "TrainingCoachingSubDomain",
+     "label": "Training & Coaching Delivery Bounded Context"
+    }
+   ],
+   "services": [
+    {
+     "id": "LeadershipSuccessionPlanningService",
+     "label": "Leadership Development & Succession Planning Service"
+    }
+   ]
+  },
+  {
+   "id": "ServiceLineMonitoring",
+   "label": "Monitoring",
+   "comment": "Monitoring of goals, development progress, compliance status and aggregate culture signals. Excludes covert or individual surveillance (see hr:ProhibitedPractice).",
+   "subdomains": [
+    {
+     "id": "PerformanceMonitoringMeasurementSubDomain",
+     "label": "Performance Monitoring & Measurement Bounded Context"
+    },
+    {
+     "id": "ValuesMonitoringMeasurementSubDomain",
+     "label": "Values Monitoring & Measurement Bounded Context"
+    }
+   ],
+   "services": [
+    {
+     "id": "CPEOComplianceMonitoringService",
+     "label": "IRS Certified PEO (CPEO) Compliance Monitoring Service"
+    }
+   ]
+  },
+  {
+   "id": "ServiceLineMeasurement",
+   "label": "Measurement",
+   "comment": "",
+   "subdomains": [
+    {
+     "id": "PerformanceMonitoringMeasurementSubDomain",
+     "label": "Performance Monitoring & Measurement Bounded Context"
+    }
+   ],
+   "services": [
+    {
+     "id": "WorkforceAnalyticsReportingService",
+     "label": "Workforce Analytics & Predictive Reporting Service"
+    },
+    {
+     "id": "ValuesIndexAnalyticsService",
+     "label": "Values & Culture Index Analytics Service"
+    }
+   ]
+  },
+  {
+   "id": "ServiceLineValuesStewardship",
+   "label": "Values Stewardship (Promote, Monitor & Measure without Violating Privacy)",
+   "comment": "",
+   "subdomains": [
+    {
+     "id": "ValuesPromotionCultureSubDomain",
+     "label": "Values Promotion & Culture Enablement Bounded Context"
+    },
+    {
+     "id": "ValuesMonitoringMeasurementSubDomain",
+     "label": "Values Monitoring & Measurement Bounded Context"
+    },
+    {
+     "id": "PrivacyPreservingPeopleAnalyticsSubDomain",
+     "label": "Privacy-Preserving People Analytics Bounded Context"
+    }
+   ],
+   "services": []
+  }
+ ],
+ "principles": [
+  {
+   "id": "ValueIntegrity",
+   "label": "Integrity",
+   "comment": "Acting honestly and ethically, and raising concerns when something is wrong.",
+   "kinds": [
+    "value"
+   ],
+   "promotedBy": [
+    {
+     "id": "InstructorLedVirtualTrainingService",
+     "label": "Instructor-Led & Virtual Classroom Training Service"
+    },
+    {
+     "id": "ValuesCommunicationEmbeddingService",
+     "label": "Values Communication & Employee Lifecycle Embedding Service"
+    },
+    {
+     "id": "SpeakUpEthicsChannelService",
+     "label": "Speak-Up & Ethics Concern Channel Service"
+    },
+    {
+     "id": "ValuesInPerformanceDialogueService",
+     "label": "Values-in-Performance Dialogue Service"
+    }
+   ],
+   "indicators": [
+    "IndSpeakUpConfidence",
+    "IndSpeakUpResolutionHealth",
+    "IndEthicsTrainingCompletion"
+   ]
+  },
+  {
+   "id": "ValueRespect",
+   "label": "Respect",
+   "comment": "Treating colleagues, clients and communities with dignity and inclusion.",
+   "kinds": [
+    "value"
+   ],
+   "promotedBy": [
+    {
+     "id": "InstructorLedVirtualTrainingService",
+     "label": "Instructor-Led & Virtual Classroom Training Service"
+    },
+    {
+     "id": "ManagerCoachingService",
+     "label": "Manager & Frontline Leader Coaching Service"
+    },
+    {
+     "id": "ValuesCommunicationEmbeddingService",
+     "label": "Values Communication & Employee Lifecycle Embedding Service"
+    },
+    {
+     "id": "ValuesRecognitionService",
+     "label": "Values-Based Peer Recognition Service"
+    },
+    {
+     "id": "SpeakUpEthicsChannelService",
+     "label": "Speak-Up & Ethics Concern Channel Service"
+    },
+    {
+     "id": "ValuesInPerformanceDialogueService",
+     "label": "Values-in-Performance Dialogue Service"
+    }
+   ],
+   "indicators": [
+    "IndRespectInclusionIndex",
+    "IndSubstantiatedConductRate"
+   ]
+  },
+  {
+   "id": "ObjectiveAchievingGoals",
+   "label": "Achieving Goals",
+   "comment": "Delivering committed results for clients and the business.",
+   "kinds": [
+    "objective"
+   ],
+   "promotedBy": [
+    {
+     "id": "ContinuousPerformanceCheckInService",
+     "label": "Continuous Performance Check-In & Progress Monitoring Service"
+    },
+    {
+     "id": "OrganizationalScorecardService",
+     "label": "Organizational Health & Objectives Scorecard Service"
+    },
+    {
+     "id": "ValuesCommunicationEmbeddingService",
+     "label": "Values Communication & Employee Lifecycle Embedding Service"
+    }
+   ],
+   "indicators": [
+    "IndGoalAttainment",
+    "IndTeamOKRAttainment"
+   ]
+  },
+  {
+   "id": "ValueCommitment",
+   "label": "Commitment",
+   "comment": "Dedication to clients, colleagues and the organization's mission.",
+   "kinds": [
+    "value"
+   ],
+   "promotedBy": [
+    {
+     "id": "SkillsGapTrainingPlanService",
+     "label": "Role-Based Skills Gap Analysis & Development Plan Service"
+    },
+    {
+     "id": "PeerMentoringService",
+     "label": "Peer Mentoring & Knowledge Transfer Service"
+    },
+    {
+     "id": "ValuesCommunicationEmbeddingService",
+     "label": "Values Communication & Employee Lifecycle Embedding Service"
+    },
+    {
+     "id": "ValuesRecognitionService",
+     "label": "Values-Based Peer Recognition Service"
+    },
+    {
+     "id": "ValuesInPerformanceDialogueService",
+     "label": "Values-in-Performance Dialogue Service"
+    }
+   ],
+   "indicators": [
+    "IndEngagementIntentToStay",
+    "IndValuesBehaviorEvidence"
+   ]
+  },
+  {
+   "id": "ValueAccountability",
+   "label": "Accountability",
+   "comment": "Owning commitments and outcomes, including leaders acting on what employees tell them.",
+   "kinds": [
+    "value"
+   ],
+   "promotedBy": [
+    {
+     "id": "ManagerCoachingService",
+     "label": "Manager & Frontline Leader Coaching Service"
+    },
+    {
+     "id": "ContinuousPerformanceCheckInService",
+     "label": "Continuous Performance Check-In & Progress Monitoring Service"
+    },
+    {
+     "id": "OrganizationalScorecardService",
+     "label": "Organizational Health & Objectives Scorecard Service"
+    },
+    {
+     "id": "ValuesCommunicationEmbeddingService",
+     "label": "Values Communication & Employee Lifecycle Embedding Service"
+    },
+    {
+     "id": "ValuesInPerformanceDialogueService",
+     "label": "Values-in-Performance Dialogue Service"
+    },
+    {
+     "id": "ValuesIndexAnalyticsService",
+     "label": "Values & Culture Index Analytics Service"
+    }
+   ],
+   "indicators": [
+    "IndLeaderActionPlanClosure",
+    "IndValuesBehaviorEvidence"
+   ]
+  },
+  {
+   "id": "ValueInnovation",
+   "label": "Innovation",
+   "comment": "Behavior: trying better ways of working. Outcome: improvements actually implemented.",
+   "kinds": [
+    "value",
+    "objective"
+   ],
+   "promotedBy": [
+    {
+     "id": "ValuesCommunicationEmbeddingService",
+     "label": "Values Communication & Employee Lifecycle Embedding Service"
+    },
+    {
+     "id": "ValuesRecognitionService",
+     "label": "Values-Based Peer Recognition Service"
+    },
+    {
+     "id": "InnovationChangeEnablementService",
+     "label": "Idea Program & Change Readiness Enablement Service"
+    }
+   ],
+   "indicators": [
+    "IndIdeasImplemented",
+    "IndInnovationClimate"
+   ]
+  },
+  {
+   "id": "ValueEmbracingChange",
+   "label": "Embracing Change",
+   "comment": "Adapting constructively to new tools, processes and market conditions.",
+   "kinds": [
+    "value"
+   ],
+   "promotedBy": [
+    {
+     "id": "SkillsGapTrainingPlanService",
+     "label": "Role-Based Skills Gap Analysis & Development Plan Service"
+    },
+    {
+     "id": "ValuesCommunicationEmbeddingService",
+     "label": "Values Communication & Employee Lifecycle Embedding Service"
+    },
+    {
+     "id": "InnovationChangeEnablementService",
+     "label": "Idea Program & Change Readiness Enablement Service"
+    }
+   ],
+   "indicators": [
+    "IndChangeReadiness",
+    "IndReskillingParticipation"
+   ]
+  },
+  {
+   "id": "ObjectiveContributingToCommunities",
+   "label": "Contributing to Communities",
+   "comment": "Organizational contribution to the communities where employees live and work. Measured at the organizational level only.",
+   "kinds": [
+    "objective"
+   ],
+   "promotedBy": [
+    {
+     "id": "ValuesCommunicationEmbeddingService",
+     "label": "Values Communication & Employee Lifecycle Embedding Service"
+    },
+    {
+     "id": "CommunityEngagementService",
+     "label": "Community Volunteering & Giving Program Service"
+    }
+   ],
+   "indicators": [
+    "IndCommunityImpact"
+   ]
+  },
+  {
+   "id": "ValuePerseverance",
+   "label": "Perseverance",
+   "comment": "Staying with hard problems through setbacks. Hard to measure directly, so evidenced by recognition stories and aggregate climate items rather than individual scores.",
+   "kinds": [
+    "value"
+   ],
+   "promotedBy": [
+    {
+     "id": "ManagerCoachingService",
+     "label": "Manager & Frontline Leader Coaching Service"
+    },
+    {
+     "id": "PeerMentoringService",
+     "label": "Peer Mentoring & Knowledge Transfer Service"
+    },
+    {
+     "id": "ValuesCommunicationEmbeddingService",
+     "label": "Values Communication & Employee Lifecycle Embedding Service"
+    },
+    {
+     "id": "ValuesRecognitionService",
+     "label": "Values-Based Peer Recognition Service"
+    }
+   ],
+   "indicators": [
+    "IndPerseveranceRecognition",
+    "IndInnovationClimate"
+   ]
+  }
+ ],
+ "indicators": [
+  {
+   "id": "IndSpeakUpConfidence",
+   "label": "Speak-Up Confidence Score",
+   "comment": "",
+   "formula": "% favorable on 'I can raise a concern without fear of retaliation'",
+   "collectedBy": [
+    {
+     "id": "CulturePulseSurveyService",
+     "label": "Anonymous Culture & Values Pulse Survey Service"
+    }
+   ],
+   "mode": {
+    "id": "ModeAnonymousSurvey",
+    "label": "Anonymous Survey Response"
+   },
+   "granularity": {
+    "id": "GranularityAggregateGroup",
+    "label": "Aggregate Group (team, site, function) above minimum group size"
+   },
+   "k": 5,
+   "retentionMonths": null,
+   "attributable": false,
+   "decisionUse": false,
+   "safeguards": [
+    {
+     "id": "SafeguardAggregationThreshold",
+     "label": "Minimum Group Size (k-Anonymity) Threshold"
+    },
+    {
+     "id": "SafeguardAnonymityProtection",
+     "label": "Survey & Speak-Up Anonymity Protection"
+    }
+   ]
+  },
+  {
+   "id": "IndSpeakUpResolutionHealth",
+   "label": "Speak-Up Case Resolution & Non-Retaliation Health",
+   "comment": "",
+   "formula": "Median days to close concerns; count of substantiated retaliation findings",
+   "collectedBy": [
+    {
+     "id": "SpeakUpEthicsChannelService",
+     "label": "Speak-Up & Ethics Concern Channel Service"
+    }
+   ],
+   "mode": {
+    "id": "ModeSystemOfRecordAggregate",
+    "label": "Aggregation of Existing HR System-of-Record Data"
+   },
+   "granularity": {
+    "id": "GranularityOrganization",
+    "label": "Organization or Client-Company Level"
+   },
+   "k": null,
+   "retentionMonths": null,
+   "attributable": false,
+   "decisionUse": false,
+   "safeguards": [
+    {
+     "id": "SafeguardAnonymityProtection",
+     "label": "Survey & Speak-Up Anonymity Protection"
+    },
+    {
+     "id": "SafeguardProtectedActivity",
+     "label": "Protected Concerted & Whistleblower Activity Safeguard"
+    }
+   ]
+  },
+  {
+   "id": "IndEthicsTrainingCompletion",
+   "label": "Ethics & Code-of-Conduct Training Completion Rate",
+   "comment": "",
+   "formula": "Completed / assigned ethics modules, by work group",
+   "collectedBy": [
+    {
+     "id": "HarassmentPreventionTrainingService",
+     "label": "Harassment Prevention & Mandatory Training Service"
+    }
+   ],
+   "mode": {
+    "id": "ModeSystemOfRecordAggregate",
+    "label": "Aggregation of Existing HR System-of-Record Data"
+   },
+   "granularity": {
+    "id": "GranularityAggregateGroup",
+    "label": "Aggregate Group (team, site, function) above minimum group size"
+   },
+   "k": 5,
+   "retentionMonths": null,
+   "attributable": false,
+   "decisionUse": false,
+   "safeguards": [
+    {
+     "id": "SafeguardAggregationThreshold",
+     "label": "Minimum Group Size (k-Anonymity) Threshold"
+    },
+    {
+     "id": "SafeguardPurposeLimitation",
+     "label": "Purpose Limitation & Data Minimization"
+    }
+   ]
+  },
+  {
+   "id": "IndRespectInclusionIndex",
+   "label": "Respect & Inclusion Index",
+   "comment": "",
+   "formula": "Mean of 4 pulse items on dignity, voice, fairness and belonging",
+   "collectedBy": [
+    {
+     "id": "CulturePulseSurveyService",
+     "label": "Anonymous Culture & Values Pulse Survey Service"
+    }
+   ],
+   "mode": {
+    "id": "ModeAnonymousSurvey",
+    "label": "Anonymous Survey Response"
+   },
+   "granularity": {
+    "id": "GranularityAggregateGroup",
+    "label": "Aggregate Group (team, site, function) above minimum group size"
+   },
+   "k": 5,
+   "retentionMonths": null,
+   "attributable": false,
+   "decisionUse": false,
+   "safeguards": [
+    {
+     "id": "SafeguardAggregationThreshold",
+     "label": "Minimum Group Size (k-Anonymity) Threshold"
+    },
+    {
+     "id": "SafeguardAnonymityProtection",
+     "label": "Survey & Speak-Up Anonymity Protection"
+    },
+    {
+     "id": "SafeguardProtectedTraitExclusion",
+     "label": "Protected-Characteristic Inference Exclusion"
+    }
+   ]
+  },
+  {
+   "id": "IndSubstantiatedConductRate",
+   "label": "Substantiated Harassment & Misconduct Rate",
+   "comment": "",
+   "formula": "Substantiated cases per 100 worksite employees per year",
+   "collectedBy": [
+    {
+     "id": "SpeakUpEthicsChannelService",
+     "label": "Speak-Up & Ethics Concern Channel Service"
+    }
+   ],
+   "mode": {
+    "id": "ModeSystemOfRecordAggregate",
+    "label": "Aggregation of Existing HR System-of-Record Data"
+   },
+   "granularity": {
+    "id": "GranularityOrganization",
+    "label": "Organization or Client-Company Level"
+   },
+   "k": null,
+   "retentionMonths": null,
+   "attributable": false,
+   "decisionUse": false,
+   "safeguards": [
+    {
+     "id": "SafeguardAnonymityProtection",
+     "label": "Survey & Speak-Up Anonymity Protection"
+    }
+   ]
+  },
+  {
+   "id": "IndGoalAttainment",
+   "label": "Individual Goal Attainment",
+   "comment": "Already part of the v1 appraisal process; listed here to show it is the one goal indicator that feeds employment decisions.",
+   "formula": "Weighted % of agreed goals met in the review period",
+   "collectedBy": [
+    {
+     "id": "StrategicGoalAlignmentOKRService",
+     "label": "Strategic Goal Alignment (OKR) & Tracking Service"
+    }
+   ],
+   "mode": {
+    "id": "ModeSystemOfRecordAggregate",
+    "label": "Aggregation of Existing HR System-of-Record Data"
+   },
+   "granularity": {
+    "id": "GranularityIndividualDevelopmental",
+    "label": "Individual — Visible to Employee and Direct Manager Only"
+   },
+   "k": null,
+   "retentionMonths": 36,
+   "attributable": true,
+   "decisionUse": true,
+   "safeguards": [
+    {
+     "id": "SafeguardHumanReview",
+     "label": "Human Review & Employee Right to Respond"
+    },
+    {
+     "id": "SafeguardTransparencyNotice",
+     "label": "Employee Transparency & Monitoring Notice"
+    },
+    {
+     "id": "SafeguardRetentionLimit",
+     "label": "Retention Limit & Secure Disposal"
+    }
+   ]
+  },
+  {
+   "id": "IndTeamOKRAttainment",
+   "label": "Team & Company OKR Attainment",
+   "comment": "",
+   "formula": "Key results achieved / key results committed, by team and company",
+   "collectedBy": [
+    {
+     "id": "OrganizationalScorecardService",
+     "label": "Organizational Health & Objectives Scorecard Service"
+    }
+   ],
+   "mode": {
+    "id": "ModeOrganizationalOutcome",
+    "label": "Organizational Outcome Metric"
+   },
+   "granularity": {
+    "id": "GranularityOrganization",
+    "label": "Organization or Client-Company Level"
+   },
+   "k": null,
+   "retentionMonths": null,
+   "attributable": false,
+   "decisionUse": false,
+   "safeguards": [
+    {
+     "id": "SafeguardPurposeLimitation",
+     "label": "Purpose Limitation & Data Minimization"
+    }
+   ]
+  },
+  {
+   "id": "IndEngagementIntentToStay",
+   "label": "Engagement & Intent-to-Stay Index",
+   "comment": "",
+   "formula": "",
+   "collectedBy": [
+    {
+     "id": "CulturePulseSurveyService",
+     "label": "Anonymous Culture & Values Pulse Survey Service"
+    }
+   ],
+   "mode": {
+    "id": "ModeAnonymousSurvey",
+    "label": "Anonymous Survey Response"
+   },
+   "granularity": {
+    "id": "GranularityAggregateGroup",
+    "label": "Aggregate Group (team, site, function) above minimum group size"
+   },
+   "k": 5,
+   "retentionMonths": null,
+   "attributable": false,
+   "decisionUse": false,
+   "safeguards": [
+    {
+     "id": "SafeguardAggregationThreshold",
+     "label": "Minimum Group Size (k-Anonymity) Threshold"
+    },
+    {
+     "id": "SafeguardAnonymityProtection",
+     "label": "Survey & Speak-Up Anonymity Protection"
+    }
+   ]
+  },
+  {
+   "id": "IndValuesBehaviorEvidence",
+   "label": "Values-in-Action Behavioral Evidence",
+   "comment": "Specific examples of conduct against behavioral anchors, recorded by the employee and manager in check-ins. Narrative, not a numeric score; the employee sees and may respond to every entry.",
+   "formula": "",
+   "collectedBy": [
+    {
+     "id": "ValuesInPerformanceDialogueService",
+     "label": "Values-in-Performance Dialogue Service"
+    }
+   ],
+   "mode": {
+    "id": "ModeManagerObservedConduct",
+    "label": "Manager Observation of Ordinary Work Conduct"
+   },
+   "granularity": {
+    "id": "GranularityIndividualDevelopmental",
+    "label": "Individual — Visible to Employee and Direct Manager Only"
+   },
+   "k": null,
+   "retentionMonths": 36,
+   "attributable": true,
+   "decisionUse": true,
+   "safeguards": [
+    {
+     "id": "SafeguardHumanReview",
+     "label": "Human Review & Employee Right to Respond"
+    },
+    {
+     "id": "SafeguardTransparencyNotice",
+     "label": "Employee Transparency & Monitoring Notice"
+    },
+    {
+     "id": "SafeguardRetentionLimit",
+     "label": "Retention Limit & Secure Disposal"
+    },
+    {
+     "id": "SafeguardNoCovertSurveillance",
+     "label": "No Covert or Content-Level Surveillance for Values Measurement"
+    },
+    {
+     "id": "SafeguardProtectedActivity",
+     "label": "Protected Concerted & Whistleblower Activity Safeguard"
+    }
+   ]
+  },
+  {
+   "id": "IndLeaderActionPlanClosure",
+   "label": "Leader Action-Plan Closure Rate",
+   "comment": "Measures whether leaders act on survey results — accountability flows up, not only down.",
+   "formula": "Action items closed on time / action items committed after each pulse cycle",
+   "collectedBy": [
+    {
+     "id": "ValuesIndexAnalyticsService",
+     "label": "Values & Culture Index Analytics Service"
+    }
+   ],
+   "mode": {
+    "id": "ModeSystemOfRecordAggregate",
+    "label": "Aggregation of Existing HR System-of-Record Data"
+   },
+   "granularity": {
+    "id": "GranularityAggregateGroup",
+    "label": "Aggregate Group (team, site, function) above minimum group size"
+   },
+   "k": 5,
+   "retentionMonths": null,
+   "attributable": false,
+   "decisionUse": false,
+   "safeguards": [
+    {
+     "id": "SafeguardAggregationThreshold",
+     "label": "Minimum Group Size (k-Anonymity) Threshold"
+    }
+   ]
+  },
+  {
+   "id": "IndIdeasImplemented",
+   "label": "Improvement Ideas Implemented",
+   "comment": "",
+   "formula": "Count and estimated value of implemented ideas per quarter",
+   "collectedBy": [
+    {
+     "id": "InnovationChangeEnablementService",
+     "label": "Idea Program & Change Readiness Enablement Service"
+    }
+   ],
+   "mode": {
+    "id": "ModeOrganizationalOutcome",
+    "label": "Organizational Outcome Metric"
+   },
+   "granularity": {
+    "id": "GranularityOrganization",
+    "label": "Organization or Client-Company Level"
+   },
+   "k": null,
+   "retentionMonths": null,
+   "attributable": false,
+   "decisionUse": false,
+   "safeguards": [
+    {
+     "id": "SafeguardPurposeLimitation",
+     "label": "Purpose Limitation & Data Minimization"
+    }
+   ]
+  },
+  {
+   "id": "IndInnovationClimate",
+   "label": "Innovation & Resilience Climate Score",
+   "comment": "",
+   "formula": "% favorable on items about safety to experiment and support after setbacks",
+   "collectedBy": [
+    {
+     "id": "CulturePulseSurveyService",
+     "label": "Anonymous Culture & Values Pulse Survey Service"
+    }
+   ],
+   "mode": {
+    "id": "ModeAnonymousSurvey",
+    "label": "Anonymous Survey Response"
+   },
+   "granularity": {
+    "id": "GranularityAggregateGroup",
+    "label": "Aggregate Group (team, site, function) above minimum group size"
+   },
+   "k": 5,
+   "retentionMonths": null,
+   "attributable": false,
+   "decisionUse": false,
+   "safeguards": [
+    {
+     "id": "SafeguardAggregationThreshold",
+     "label": "Minimum Group Size (k-Anonymity) Threshold"
+    },
+    {
+     "id": "SafeguardAnonymityProtection",
+     "label": "Survey & Speak-Up Anonymity Protection"
+    }
+   ]
+  },
+  {
+   "id": "IndChangeReadiness",
+   "label": "Change Readiness Index",
+   "comment": "",
+   "formula": "",
+   "collectedBy": [
+    {
+     "id": "CulturePulseSurveyService",
+     "label": "Anonymous Culture & Values Pulse Survey Service"
+    }
+   ],
+   "mode": {
+    "id": "ModeAnonymousSurvey",
+    "label": "Anonymous Survey Response"
+   },
+   "granularity": {
+    "id": "GranularityAggregateGroup",
+    "label": "Aggregate Group (team, site, function) above minimum group size"
+   },
+   "k": 5,
+   "retentionMonths": null,
+   "attributable": false,
+   "decisionUse": false,
+   "safeguards": [
+    {
+     "id": "SafeguardAggregationThreshold",
+     "label": "Minimum Group Size (k-Anonymity) Threshold"
+    },
+    {
+     "id": "SafeguardAnonymityProtection",
+     "label": "Survey & Speak-Up Anonymity Protection"
+    }
+   ]
+  },
+  {
+   "id": "IndReskillingParticipation",
+   "label": "Voluntary Reskilling Participation Rate",
+   "comment": "",
+   "formula": "",
+   "collectedBy": [
+    {
+     "id": "SkillsGapTrainingPlanService",
+     "label": "Role-Based Skills Gap Analysis & Development Plan Service"
+    }
+   ],
+   "mode": {
+    "id": "ModeSystemOfRecordAggregate",
+    "label": "Aggregation of Existing HR System-of-Record Data"
+   },
+   "granularity": {
+    "id": "GranularityAggregateGroup",
+    "label": "Aggregate Group (team, site, function) above minimum group size"
+   },
+   "k": 5,
+   "retentionMonths": null,
+   "attributable": false,
+   "decisionUse": false,
+   "safeguards": [
+    {
+     "id": "SafeguardAggregationThreshold",
+     "label": "Minimum Group Size (k-Anonymity) Threshold"
+    },
+    {
+     "id": "SafeguardPurposeLimitation",
+     "label": "Purpose Limitation & Data Minimization"
+    }
+   ]
+  },
+  {
+   "id": "IndCommunityImpact",
+   "label": "Community Impact (Volunteer Hours & Giving)",
+   "comment": "Organization-level totals only. Individual participation is voluntary and never visible to managers.",
+   "formula": "Total volunteer hours, dollars given and matched, organizations served",
+   "collectedBy": [
+    {
+     "id": "CommunityEngagementService",
+     "label": "Community Volunteering & Giving Program Service"
+    }
+   ],
+   "mode": {
+    "id": "ModeVoluntarySelfReport",
+    "label": "Voluntary Opt-In Self-Report"
+   },
+   "granularity": {
+    "id": "GranularityOrganization",
+    "label": "Organization or Client-Company Level"
+   },
+   "k": 10,
+   "retentionMonths": null,
+   "attributable": false,
+   "decisionUse": false,
+   "safeguards": [
+    {
+     "id": "SafeguardVoluntaryParticipation",
+     "label": "Voluntary Participation — No Employment Consequence"
+    },
+    {
+     "id": "SafeguardAggregationThreshold",
+     "label": "Minimum Group Size (k-Anonymity) Threshold"
+    }
+   ]
+  },
+  {
+   "id": "IndPerseveranceRecognition",
+   "label": "Perseverance Recognition Stories",
+   "comment": "",
+   "formula": "Count of peer recognitions tagged 'Perseverance', reported by work group",
+   "collectedBy": [
+    {
+     "id": "ValuesRecognitionService",
+     "label": "Values-Based Peer Recognition Service"
+    }
+   ],
+   "mode": {
+    "id": "ModeSystemOfRecordAggregate",
+    "label": "Aggregation of Existing HR System-of-Record Data"
+   },
+   "granularity": {
+    "id": "GranularityAggregateGroup",
+    "label": "Aggregate Group (team, site, function) above minimum group size"
+   },
+   "k": 5,
+   "retentionMonths": null,
+   "attributable": false,
+   "decisionUse": false,
+   "safeguards": [
+    {
+     "id": "SafeguardAggregationThreshold",
+     "label": "Minimum Group Size (k-Anonymity) Threshold"
+    }
+   ]
+  }
+ ],
+ "safeguards": [
+  {
+   "id": "SafeguardAggregationThreshold",
+   "label": "Minimum Group Size (k-Anonymity) Threshold",
+   "comment": "Aggregate results are suppressed for any cut with fewer than k respondents (default k = 5), including cuts produced by filtering or differencing.",
+   "enforcedBy": [
+    {
+     "id": "ProcSmallGroupSuppression",
+     "label": "Small-Group Result Suppression Process"
+    },
+    {
+     "id": "ProcKAnonymityThresholdCheck",
+     "label": "k-Anonymity Threshold Check Process"
+    },
+    {
+     "id": "ProcDifferencingAttackReview",
+     "label": "Re-Identification (Differencing) Risk Review Process"
+    }
+   ],
+   "prohibits": [
+    {
+     "id": "ProhibitedDeanonymization",
+     "label": "Re-identification of anonymous survey or speak-up respondents, including by small-cell filtering or differencing"
+    }
+   ],
+   "regulations": [],
+   "governs": [
+    {
+     "id": "LearningImpactMeasurementService",
+     "label": "Learning & Coaching Impact Measurement Service"
+    },
+    {
+     "id": "OrganizationalScorecardService",
+     "label": "Organizational Health & Objectives Scorecard Service"
+    },
+    {
+     "id": "ValuesRecognitionService",
+     "label": "Values-Based Peer Recognition Service"
+    },
+    {
+     "id": "CommunityEngagementService",
+     "label": "Community Volunteering & Giving Program Service"
+    },
+    {
+     "id": "CulturePulseSurveyService",
+     "label": "Anonymous Culture & Values Pulse Survey Service"
+    },
+    {
+     "id": "ValuesIndexAnalyticsService",
+     "label": "Values & Culture Index Analytics Service"
+    },
+    {
+     "id": "WorkforceAnalyticsReportingService",
+     "label": "Workforce Analytics & Predictive Reporting Service"
+    }
+   ]
+  },
+  {
+   "id": "SafeguardAnonymityProtection",
+   "label": "Survey & Speak-Up Anonymity Protection",
+   "comment": "",
+   "enforcedBy": [
+    {
+     "id": "ProcPulseSurveyAdministration",
+     "label": "Anonymous Pulse Survey Administration Process"
+    },
+    {
+     "id": "ProcConcernIntakeTriage",
+     "label": "Ethics Concern Intake & Triage Process"
+    }
+   ],
+   "prohibits": [
+    {
+     "id": "ProhibitedDeanonymization",
+     "label": "Re-identification of anonymous survey or speak-up respondents, including by small-cell filtering or differencing"
+    }
+   ],
+   "regulations": [],
+   "governs": [
+    {
+     "id": "CulturePulseSurveyService",
+     "label": "Anonymous Culture & Values Pulse Survey Service"
+    },
+    {
+     "id": "SpeakUpEthicsChannelService",
+     "label": "Speak-Up & Ethics Concern Channel Service"
+    }
+   ]
+  },
+  {
+   "id": "SafeguardPurposeLimitation",
+   "label": "Purpose Limitation & Data Minimization",
+   "comment": "People data is collected only for a registered purpose and not reused for an incompatible one.",
+   "enforcedBy": [
+    {
+     "id": "ProcPrivacyImpactAssessment",
+     "label": "People-Analytics Privacy Impact Assessment Process"
+    },
+    {
+     "id": "ProcConsentPreferenceManagement",
+     "label": "Consent & Participation Preference Management Process"
+    }
+   ],
+   "prohibits": [],
+   "regulations": [
+    {
+     "id": "RegCPRAEmployeeData",
+     "label": "California Consumer Privacy Act as amended by CPRA — employee personal information (full scope since 1 Jan 2023)"
+    },
+    {
+     "id": "RegGDPRArticle88",
+     "label": "EU GDPR Article 88 — Processing in the Context of Employment (for non-U.S. worksite employees)"
+    }
+   ],
+   "governs": [
+    {
+     "id": "OrganizationalScorecardService",
+     "label": "Organizational Health & Objectives Scorecard Service"
+    },
+    {
+     "id": "ValuesIndexAnalyticsService",
+     "label": "Values & Culture Index Analytics Service"
+    },
+    {
+     "id": "ProcTurnoverPredictiveModeling",
+     "label": "Turnover Predictive Modeling Process"
+    }
+   ]
+  },
+  {
+   "id": "SafeguardTransparencyNotice",
+   "label": "Employee Transparency & Monitoring Notice",
+   "comment": "Employees are told in advance what is measured, why, at what granularity, and who can see it.",
+   "enforcedBy": [
+    {
+     "id": "ProcMonitoringNoticeIssuance",
+     "label": "Employee Monitoring Notice Issuance & Acknowledgment Process"
+    }
+   ],
+   "prohibits": [],
+   "regulations": [
+    {
+     "id": "RegNYElectronicMonitoringNotice",
+     "label": "New York Civil Rights Law §52-c — Electronic Monitoring Notice"
+    },
+    {
+     "id": "RegCTElectronicMonitoringNotice",
+     "label": "Connecticut Gen. Stat. §31-48d — Electronic Monitoring Notice"
+    },
+    {
+     "id": "RegCPRAEmployeeData",
+     "label": "California Consumer Privacy Act as amended by CPRA — employee personal information (full scope since 1 Jan 2023)"
+    }
+   ],
+   "governs": [
+    {
+     "id": "CulturePulseSurveyService",
+     "label": "Anonymous Culture & Values Pulse Survey Service"
+    },
+    {
+     "id": "ValuesInPerformanceDialogueService",
+     "label": "Values-in-Performance Dialogue Service"
+    },
+    {
+     "id": "ProcGeofencedClockInValidation",
+     "label": "Geofenced Clock-In Validation Process"
+    }
+   ]
+  },
+  {
+   "id": "SafeguardHumanReview",
+   "label": "Human Review & Employee Right to Respond",
+   "comment": "No employment decision is made solely from an automated values or culture score. The employee sees the evidence and may respond before it is used.",
+   "enforcedBy": [
+    {
+     "id": "ProcValuesEvidenceCalibration",
+     "label": "Values Evidence Calibration & Employee Response Process"
+    },
+    {
+     "id": "ProcAppraisalWorkflowCycle",
+     "label": "Performance Appraisal Workflow Cycle Process"
+    }
+   ],
+   "prohibits": [
+    {
+     "id": "ProhibitedAutomatedValuesScoring",
+     "label": "Automated individual values scores used as the sole basis for an employment decision"
+    }
+   ],
+   "regulations": [],
+   "governs": [
+    {
+     "id": "ValuesInPerformanceDialogueService",
+     "label": "Values-in-Performance Dialogue Service"
+    }
+   ]
+  },
+  {
+   "id": "SafeguardNoCovertSurveillance",
+   "label": "No Covert or Content-Level Surveillance for Values Measurement",
+   "comment": "",
+   "enforcedBy": [
+    {
+     "id": "ProcMonitoringProportionalityReview",
+     "label": "Monitoring Necessity & Proportionality Review Process"
+    }
+   ],
+   "prohibits": [
+    {
+     "id": "ProhibitedKeystrokeScreenCapture",
+     "label": "Keystroke logging, screen capture or activity tracking used to score values or culture fit"
+    },
+    {
+     "id": "ProhibitedCommunicationsSentimentMining",
+     "label": "Sentiment or content mining of employee email, chat or calls to infer values alignment"
+    },
+    {
+     "id": "ProhibitedOffDutySocialMonitoring",
+     "label": "Monitoring of off-duty conduct or personal social media for values compliance"
+    },
+    {
+     "id": "ProhibitedBiometricWithoutConsent",
+     "label": "Collection of biometric identifiers without written informed consent"
+    }
+   ],
+   "regulations": [
+    {
+     "id": "RegIllinoisBIPA",
+     "label": "Illinois Biometric Information Privacy Act (740 ILCS 14)"
+    },
+    {
+     "id": "RegNYElectronicMonitoringNotice",
+     "label": "New York Civil Rights Law §52-c — Electronic Monitoring Notice"
+    }
+   ],
+   "governs": [
+    {
+     "id": "ProcPunchIngestionAudit",
+     "label": "Time Punch Ingestion & Audit Process"
+    }
+   ]
+  },
+  {
+   "id": "SafeguardProtectedTraitExclusion",
+   "label": "Protected-Characteristic Inference Exclusion",
+   "comment": "Values analytics never infer protected characteristics. Demographic cuts, where lawful, are run only for adverse-impact testing and are subject to the minimum group size.",
+   "enforcedBy": [
+    {
+     "id": "ProcPrivacyImpactAssessment",
+     "label": "People-Analytics Privacy Impact Assessment Process"
+    },
+    {
+     "id": "ProcRecognitionEquityReview",
+     "label": "Recognition Distribution Equity Review Process"
+    }
+   ],
+   "prohibits": [
+    {
+     "id": "ProhibitedProtectedTraitInference",
+     "label": "Inference of protected characteristics from behavioral or engagement data"
+    }
+   ],
+   "regulations": [],
+   "governs": [
+    {
+     "id": "ValuesIndexAnalyticsService",
+     "label": "Values & Culture Index Analytics Service"
+    },
+    {
+     "id": "ProcTurnoverPredictiveModeling",
+     "label": "Turnover Predictive Modeling Process"
+    },
+    {
+     "id": "WorkforceAnalyticsReportingService",
+     "label": "Workforce Analytics & Predictive Reporting Service"
+    }
+   ]
+  },
+  {
+   "id": "SafeguardProtectedActivity",
+   "label": "Protected Concerted & Whistleblower Activity Safeguard",
+   "comment": "Speak-up use, complaints and concerted activity are never treated as negative values evidence.",
+   "enforcedBy": [
+    {
+     "id": "ProcNonRetaliationMonitoring",
+     "label": "Post-Report Non-Retaliation Monitoring Process"
+    }
+   ],
+   "prohibits": [
+    {
+     "id": "ProhibitedConcertedActivitySurveillance",
+     "label": "Surveillance of union or other protected concerted activity"
+    }
+   ],
+   "regulations": [
+    {
+     "id": "RegNLRASection7",
+     "label": "National Labor Relations Act §7 — Protected Concerted Activity"
+    }
+   ],
+   "governs": [
+    {
+     "id": "SpeakUpEthicsChannelService",
+     "label": "Speak-Up & Ethics Concern Channel Service"
+    }
+   ]
+  },
+  {
+   "id": "SafeguardVoluntaryParticipation",
+   "label": "Voluntary Participation — No Employment Consequence",
+   "comment": "",
+   "enforcedBy": [
+    {
+     "id": "ProcVoluntaryHoursSelfReport",
+     "label": "Voluntary Volunteer-Hours Self-Report Process"
+    },
+    {
+     "id": "ProcConsentPreferenceManagement",
+     "label": "Consent & Participation Preference Management Process"
+    }
+   ],
+   "prohibits": [
+    {
+     "id": "ProhibitedParticipationInEvaluation",
+     "label": "Using volunteer, giving or other voluntary participation in performance, pay or promotion decisions"
+    }
+   ],
+   "regulations": [],
+   "governs": [
+    {
+     "id": "CommunityEngagementService",
+     "label": "Community Volunteering & Giving Program Service"
+    }
+   ]
+  },
+  {
+   "id": "SafeguardCoachingConfidentiality",
+   "label": "Coaching Conversation Confidentiality",
+   "comment": "Coaching session content is not disclosed to the employer; only attendance and program-level outcomes are reported, in aggregate.",
+   "enforcedBy": [
+    {
+     "id": "ProcCoachingEngagementIntake",
+     "label": "Coaching Engagement Intake & Confidentiality Agreement Process"
+    }
+   ],
+   "prohibits": [],
+   "regulations": [],
+   "governs": [
+    {
+     "id": "ManagerCoachingService",
+     "label": "Manager & Frontline Leader Coaching Service"
+    }
+   ]
+  },
+  {
+   "id": "SafeguardRetentionLimit",
+   "label": "Retention Limit & Secure Disposal",
+   "comment": "",
+   "enforcedBy": [
+    {
+     "id": "ProcRetentionScheduleEnforcement",
+     "label": "People-Data Retention Schedule Enforcement Process"
+    },
+    {
+     "id": "ProcEmployeeDataRightsRequest",
+     "label": "Employee Data Access, Correction & Deletion Request Process"
+    }
+   ],
+   "prohibits": [],
+   "regulations": [
+    {
+     "id": "RegCPRAEmployeeData",
+     "label": "California Consumer Privacy Act as amended by CPRA — employee personal information (full scope since 1 Jan 2023)"
+    },
+    {
+     "id": "RegGDPRArticle88",
+     "label": "EU GDPR Article 88 — Processing in the Context of Employment (for non-U.S. worksite employees)"
+    }
+   ],
+   "governs": []
+  }
+ ],
+ "prohibitedPractices": [
+  {
+   "id": "ProhibitedKeystrokeScreenCapture",
+   "label": "Keystroke logging, screen capture or activity tracking used to score values or culture fit"
+  },
+  {
+   "id": "ProhibitedCommunicationsSentimentMining",
+   "label": "Sentiment or content mining of employee email, chat or calls to infer values alignment"
+  },
+  {
+   "id": "ProhibitedOffDutySocialMonitoring",
+   "label": "Monitoring of off-duty conduct or personal social media for values compliance"
+  },
+  {
+   "id": "ProhibitedBiometricWithoutConsent",
+   "label": "Collection of biometric identifiers without written informed consent"
+  },
+  {
+   "id": "ProhibitedDeanonymization",
+   "label": "Re-identification of anonymous survey or speak-up respondents, including by small-cell filtering or differencing"
+  },
+  {
+   "id": "ProhibitedAutomatedValuesScoring",
+   "label": "Automated individual values scores used as the sole basis for an employment decision"
+  },
+  {
+   "id": "ProhibitedProtectedTraitInference",
+   "label": "Inference of protected characteristics from behavioral or engagement data"
+  },
+  {
+   "id": "ProhibitedConcertedActivitySurveillance",
+   "label": "Surveillance of union or other protected concerted activity"
+  },
+  {
+   "id": "ProhibitedParticipationInEvaluation",
+   "label": "Using volunteer, giving or other voluntary participation in performance, pay or promotion decisions"
+  }
+ ],
+ "regulations": [
+  {
+   "id": "RegCPRAEmployeeData",
+   "label": "California Consumer Privacy Act as amended by CPRA — employee personal information (full scope since 1 Jan 2023)"
+  },
+  {
+   "id": "RegIllinoisBIPA",
+   "label": "Illinois Biometric Information Privacy Act (740 ILCS 14)"
+  },
+  {
+   "id": "RegNYElectronicMonitoringNotice",
+   "label": "New York Civil Rights Law §52-c — Electronic Monitoring Notice"
+  },
+  {
+   "id": "RegCTElectronicMonitoringNotice",
+   "label": "Connecticut Gen. Stat. §31-48d — Electronic Monitoring Notice"
+  },
+  {
+   "id": "RegNLRASection7",
+   "label": "National Labor Relations Act §7 — Protected Concerted Activity"
+  },
+  {
+   "id": "RegGDPRArticle88",
+   "label": "EU GDPR Article 88 — Processing in the Context of Employment (for non-U.S. worksite employees)"
   }
  ],
  "stats": {
-  "domains": 6,
-  "subdomains": 12,
-  "services": 55,
-  "processes": 110,
-  "operationalAreas": 8,
-  "concepts": 110
+  "domains": 8,
+  "subdomains": 17,
+  "services": 74,
+  "processes": 148,
+  "operationalAreas": 11,
+  "concepts": 147,
+  "serviceLines": 9,
+  "principles": 9,
+  "indicators": 16,
+  "safeguards": 11,
+  "prohibited": 9,
+  "regulations": 6
  }
 }
 </script>
@@ -3080,7 +6093,7 @@ a{ color:var(--accent); }
 const MODEL = JSON.parse(document.getElementById('model-json').textContent);
 
 const DOMAIN_COLOR_VARS = {};
-const DOMAIN_KEYS = ['workforce','benefits','compliance','talent','client','tech'];
+const DOMAIN_KEYS = ['workforce','benefits','compliance','talent','client','tech','development','values'];
 MODEL.tree.forEach((d,i)=>{ DOMAIN_COLOR_VARS[d.id] = 'var(--dom-'+DOMAIN_KEYS[i % DOMAIN_KEYS.length]+')'; });
 
 function domainColor(domainId){ return DOMAIN_COLOR_VARS[domainId] || 'var(--muted)'; }
@@ -3095,6 +6108,8 @@ function indexNode(n, parentId, domainId, ancestry){
     parentId, domainId, ancestry: ancestry.slice(),
     childIds: [],
     concepts:n.concepts||null, operations:n.operations||null,
+    comment:n.comment||'', promotes:n.promotes||[], safeguards:n.safeguards||[],
+    complements:n.complements||[], enforces:n.enforces||[],
     pos:{}, pinned:false
   };
   NODES[n.id] = rec;
@@ -3129,7 +6144,14 @@ function leafCountById(id){
 const OPAREAS = {};
 MODEL.operationalAreas.forEach(o=>OPAREAS[o.id]=o);
 
-const OPAREA_TO_PROCESSES = {};
+const OPAREA_TO_PROCESSES = {};   // lens id (operational area OR service line) -> process ids
+const SERVICE_LINES = {};
+const SVC_TO_LINES = {};
+function descendantProcesses(id){
+  const r = NODES[id]; if(!r) return [];
+  if(r.type==='process') return [id];
+  return r.childIds.flatMap(descendantProcesses);
+}
 Object.values(NODES).forEach(n=>{
   if(n.type==='process' && n.operations){
     n.operations.forEach(o=>{
@@ -3541,7 +6563,7 @@ function syncLayoutDepth(){
 }
 
 function render(){
-  if(viewMode==='list') return; // list view renders via renderTree()
+  if(viewMode==='list' || viewMode==='values') return; // list view renders via renderTree()
 
   syncLayoutDepth();
 
@@ -3685,6 +6707,24 @@ function startNodeDrag(e, n){
 
 function octagonOrCircleRadius(n){ return NODE_R[n.depth]; }
 
+/* ---------------- Service line lens index ---------------- */
+MODEL.serviceLines.forEach(sl=>{
+  SERVICE_LINES[sl.id] = sl;
+  const roots = sl.subdomains.map(x=>x.id).concat(sl.services.map(x=>x.id));
+  OPAREA_TO_PROCESSES[sl.id] = [...new Set(roots.flatMap(descendantProcesses))];
+  roots.forEach(r=>{
+    const r0 = NODES[r];
+    const svcs = r0.type==='service' ? [r] : r0.childIds;
+    svcs.forEach(sv=>{ (SVC_TO_LINES[sv] = SVC_TO_LINES[sv]||new Set()).add(sl.id); });
+  });
+});
+const INDICATORS = {}; MODEL.indicators.forEach(i=>INDICATORS[i.id]=i);
+const PRINCIPLES = {}; MODEL.principles.forEach(p=>PRINCIPLES[p.id]=p);
+const SVC_TO_INDICATORS = {};
+MODEL.indicators.forEach(i=>i.collectedBy.forEach(c=>{ (SVC_TO_INDICATORS[c.id]=SVC_TO_INDICATORS[c.id]||[]).push(i); }));
+function principleKindLabel(p){ return p.kinds.length>1 ? 'Value + Objective' : (p.kinds[0]==='value' ? 'Value' : 'Objective'); }
+function lensLabel(id){ return (SERVICE_LINES[id]||OPAREAS[id]||{label:id}).label; }
+
 /* ---------------- Tooltip ---------------- */
 const tooltipEl = document.getElementById('tooltip');
 function showTooltip(e, n){
@@ -3773,20 +6813,31 @@ function renderStats(){
   if(box.dataset.built) return;
   box.dataset.built = '1';
   const s = MODEL.stats;
-  const entries = [['domains','Domains'],['subdomains','Contexts'],['services','Services'],['processes','Processes'],['operationalAreas','Op. Areas']];
+  const entries = [['serviceLines','Service lines'],['domains','Domains'],['subdomains','Contexts'],['services','Services'],['processes','Processes'],['operationalAreas','Op. Areas'],['principles','Values & obj.']];
   box.innerHTML = entries.map(([k,label])=>`<div class="stat"><b>${s[k]}</b><span>${label}</span></div>`).join('');
 }
 
 /* ---------------- Operational area filter ---------------- */
 const opSelect = document.getElementById('oparea-filter');
-MODEL.operationalAreas.forEach(o=>{
-  const opt = document.createElement('option');
-  opt.value = o.id; opt.textContent = o.label;
-  opSelect.appendChild(opt);
-});
+(function buildLensOptions(){
+  const g1 = document.createElement('optgroup'); g1.label = 'Core service line';
+  MODEL.serviceLines.forEach(o=>{
+    const opt = document.createElement('option');
+    opt.value = o.id; opt.textContent = o.label.replace(/ \(.*\)$/,'');
+    g1.appendChild(opt);
+  });
+  const g2 = document.createElement('optgroup'); g2.label = 'Operational area';
+  MODEL.operationalAreas.forEach(o=>{
+    const opt = document.createElement('option');
+    opt.value = o.id; opt.textContent = o.label;
+    g2.appendChild(opt);
+  });
+  opSelect.appendChild(g1); opSelect.appendChild(g2);
+})();
 opSelect.addEventListener('change', ()=>{
   opAreaFilter = opSelect.value;
-  if(viewMode==='list') renderTree(); else render();
+  if(viewMode==='list') renderTree(); else if(viewMode==='values') renderValuesView(); else render();
+  if(selectedId) renderInspector(selectedId);
 });
 
 /* ---------------- Selection + Inspector ---------------- */
@@ -3824,6 +6875,10 @@ function renderInspector(id){
         <div class="stat-tile"><b>${s.subdomains}</b><span>Contexts</span></div>
         <div class="stat-tile"><b>${s.services}</b><span>Services</span></div>
         <div class="stat-tile"><b>${s.processes}</b><span>Processes</span></div>
+        <div class="stat-tile"><b>${s.serviceLines}</b><span>Svc lines</span></div>
+        <div class="stat-tile"><b>${s.principles}</b><span>Values/obj.</span></div>
+        <div class="stat-tile"><b>${s.indicators}</b><span>Indicators</span></div>
+        <div class="stat-tile"><b>${s.safeguards}</b><span>Safeguards</span></div>
       </div>
     </div>`;
     html += `<div class="insp-section">
@@ -3862,6 +6917,41 @@ function renderInspector(id){
   }
 
   if(n.type==='service'){
+    if(n.comment){
+      html += `<div class="insp-section"><div class="insp-note">${n.comment}</div></div>`;
+    }
+    const lines = [...(SVC_TO_LINES[n.id]||[])];
+    if(lines.length){
+      html += `<div class="insp-section">
+        <div class="insp-section-title">Core Service Lines</div>
+        <div class="chip-row">${lines.map(l=>`<span class="chip nav ${opAreaFilter===l?'on':''}" onclick="toggleOpAreaLens('${l}')" title="Toggle lens">${SERVICE_LINES[l].label.replace(/ \(.*\)$/,'')}</span>`).join('')}</div>
+      </div>`;
+    }
+    if(n.promotes.length){
+      html += `<div class="insp-section">
+        <div class="insp-section-title">Promotes Values &amp; Objectives</div>
+        <div class="chip-row">${n.promotes.map(p=>`<span class="chip principle" onclick="openPrinciple('${p.id}')">${p.label}<em>${principleKindLabel(PRINCIPLES[p.id])}</em></span>`).join('')}</div>
+      </div>`;
+    }
+    const inds = SVC_TO_INDICATORS[n.id]||[];
+    if(inds.length){
+      html += `<div class="insp-section">
+        <div class="insp-section-title">Collects Indicators</div>
+        <div class="proc-list">${inds.map(indicatorCardHTML).join('')}</div>
+      </div>`;
+    }
+    if(n.safeguards.length){
+      html += `<div class="insp-section">
+        <div class="insp-section-title">Governed By Privacy Safeguards</div>
+        <div class="chip-row">${n.safeguards.map(g=>`<span class="chip safeguard" onclick="openSafeguard('${g.id}')">${g.label}</span>`).join('')}</div>
+      </div>`;
+    }
+    if(n.complements.length){
+      html += `<div class="insp-section">
+        <div class="insp-section-title">Complements Services</div>
+        <div class="child-list">${n.complements.map(c=>`<div class="child-row" onclick="selectNode('${c.id}')"><span class="dot" style="background:${domainColor(NODES[c.id].domainId)}"></span>${c.label}</div>`).join('')}</div>
+      </div>`;
+    }
     html += `<div class="insp-section">
       <div class="insp-section-title">Mapped Ontology Concepts</div>
       <div class="chip-row">${(n.concepts||[]).map(c=>`<span class="chip">${c.label}</span>`).join('')}</div>
@@ -3891,6 +6981,18 @@ function renderInspector(id){
       <div class="insp-section-title">Supported By Operational Areas</div>
       <div class="chip-row">${(n.operations||[]).map(o=>`<span class="chip">${o.label}</span>`).join('') || '<span class="chip">&mdash;</span>'}</div>
     </div>`;
+    if(n.enforces.length){
+      html += `<div class="insp-section">
+        <div class="insp-section-title">Enforces Privacy Safeguards</div>
+        <div class="chip-row">${n.enforces.map(g=>`<span class="chip safeguard" onclick="openSafeguard('${g.id}')">${g.label}</span>`).join('')}</div>
+      </div>`;
+    }
+    if(n.safeguards.length){
+      html += `<div class="insp-section">
+        <div class="insp-section-title">Governed By Privacy Safeguards</div>
+        <div class="chip-row">${n.safeguards.map(g=>`<span class="chip safeguard" onclick="openSafeguard('${g.id}')">${g.label}</span>`).join('')}</div>
+      </div>`;
+    }
     if(svc.concepts && svc.concepts.length){
       html += `<div class="insp-section">
         <div class="insp-section-title">Related Ontology Concepts</div>
@@ -3899,6 +7001,16 @@ function renderInspector(id){
     }
   }
 
+  html += `<div class="insp-section">
+    <div class="insp-section-title">Core Service Lines &middot; click for lens</div>
+    <div class="oparea-list">
+      ${MODEL.serviceLines.map(o=>`
+        <div class="oparea-item ${opAreaFilter===o.id?'active-filter':''}" onclick="toggleOpAreaLens('${o.id}')">
+          <div class="oparea-name">${o.label}</div>
+          <div class="oparea-desc">${OPAREA_TO_PROCESSES[o.id].length} processes${o.comment?' &middot; '+o.comment:''}</div>
+        </div>`).join('')}
+    </div>
+  </div>`;
   html += `<div class="insp-section">
     <div class="insp-section-title">Operational Areas Reference</div>
     <div class="oparea-list">
@@ -3916,7 +7028,7 @@ function renderInspector(id){
 function toggleOpAreaLens(id){
   opAreaFilter = (opAreaFilter===id) ? '' : id;
   opSelect.value = opAreaFilter;
-  if(viewMode==='list') renderTree(); else render();
+  if(viewMode==='list') renderTree(); else if(viewMode==='values') renderValuesView(); else render();
   if(selectedId) renderInspector(selectedId);
 }
 
@@ -3962,7 +7074,7 @@ function applySpacing(){
   layoutRadialSubtree(ROOT_ID, 0, 2*Math.PI, 0);
   lastHierDepth = null;
   lastClusterDepth = null;
-  if(viewMode==='list') return;
+  if(viewMode==='list' || viewMode==='values') return;
   // Deliberately do NOT call resetView() here: fitting the new (larger or
   // smaller) layout back to the viewport would rescale it right back to
   // the same on-screen size, cancelling out the whole point of the slider.
@@ -3976,10 +7088,12 @@ function applySpacing(){
 function setView(mode){
   viewMode = mode;
   document.querySelectorAll('#view-toggle button').forEach(b=>b.classList.toggle('active', b.dataset.mode===mode));
-  document.getElementById('view-map').style.display = mode==='list' ? 'none' : 'block';
+  const isPanel = mode==='list' || mode==='values';
+  document.getElementById('view-map').style.display = isPanel ? 'none' : 'block';
   document.getElementById('view-tree').style.display = mode==='list' ? 'block' : 'none';
-  detailFieldEl.classList.toggle('disabled', mode==='list');
-  spacingFieldEl.classList.toggle('disabled', mode==='list');
+  document.getElementById('view-values').style.display = mode==='values' ? 'block' : 'none';
+  detailFieldEl.classList.toggle('disabled', isPanel);
+  spacingFieldEl.classList.toggle('disabled', isPanel);
 
   ringGridG.style.display = mode==='radial' ? '' : 'none';
   sectorLayerG.style.display = mode==='radial' ? '' : 'none';
@@ -3996,6 +7110,8 @@ function setView(mode){
 
   if(mode==='list'){
     renderTree();
+  } else if(mode==='values'){
+    renderValuesView();
   } else {
     resetView();
     render();
@@ -4064,6 +7180,7 @@ searchResults.addEventListener('click', (e)=>{
   if(!item || !item.dataset.id) return;
   const id = item.dataset.id;
   const targetDepth = NODES[id].depth;
+  if(viewMode==='values') setView('radial');
   if(viewMode!=='list' && targetDepth > currentDetail){
     currentDetail = targetDepth;
     detailSlider.value = targetDepth;
@@ -4084,6 +7201,112 @@ function panToNode(id){
   tx = -p.x * scale;
   ty = -p.y * scale;
   applyTransform();
+}
+
+
+/* ---------------- Values & Privacy view ---------------- */
+function flag(v, yes, no, warnOnYes){
+  if(v===null || v===undefined) return '<span class="flag">&mdash;</span>';
+  return `<span class="flag ${v ? (warnOnYes?'warn':'yes') : 'no'}">${v?yes:no}</span>`;
+}
+function indicatorCardHTML(i){
+  return `<div class="ind-card">
+    <div class="ind-name">${i.label}</div>
+    ${i.formula ? `<div class="ind-formula">${i.formula}</div>` : ''}
+    <div class="ind-flags">
+      <span class="op-tag">${i.mode.label}</span>
+      <span class="op-tag">${i.granularity.label}</span>
+      ${i.k ? `<span class="op-tag">k &ge; ${i.k}</span>` : ''}
+      ${flag(i.attributable,'Named individual','Not attributable', true)}
+      ${flag(i.decisionUse,'Employment decisions','No decision use', true)}
+    </div>
+  </div>`;
+}
+function svcChip(c){
+  const col = NODES[c.id] ? domainColor(NODES[c.id].domainId) : 'var(--muted)';
+  return `<span class="chip nav" onclick="selectNode('${c.id}')"><span class="dot" style="background:${col}"></span>${c.label}</span>`;
+}
+function openPrinciple(id){
+  if(viewMode!=='values') setView('values');
+  const elx = document.getElementById('pr-'+id);
+  if(elx){ elx.scrollIntoView({behavior:'smooth', block:'start'}); elx.classList.add('flash'); setTimeout(()=>elx.classList.remove('flash'),1200); }
+}
+function openSafeguard(id){
+  if(viewMode!=='values') setView('values');
+  const elx = document.getElementById('sg-'+id);
+  if(elx){ elx.scrollIntoView({behavior:'smooth', block:'start'}); elx.classList.add('flash'); setTimeout(()=>elx.classList.remove('flash'),1200); }
+}
+function renderValuesView(){
+  const t = document.getElementById('values-target');
+  const S = MODEL.stats;
+  const decisionGrade = MODEL.indicators.filter(i=>i.decisionUse);
+  let html = `
+  <section class="vp-intro">
+    <h2>Values &amp; Privacy Stewardship</h2>
+    <p>How the business model promotes, monitors and measures its values and objectives. Most signals are aggregated or anonymous,
+    and only <b>${decisionGrade.length} of ${S.indicators}</b> indicators may inform employment decisions. Those require human review,
+    notice to the employee, and a retention limit.</p>
+  </section>
+
+  <section>
+    <h3>Core service lines <span class="count">${S.serviceLines}</span></h3>
+    <div class="sl-grid">
+      ${MODEL.serviceLines.map(sl=>`
+        <div class="sl-card ${opAreaFilter===sl.id?'on':''}">
+          <div class="sl-head">
+            <div class="sl-name">${sl.label.replace(/ \(.*\)$/,'')}</div>
+            <button class="lens-btn" onclick="toggleOpAreaLens('${sl.id}'); renderValuesView();">${opAreaFilter===sl.id?'Lens on':'Use as lens'}</button>
+          </div>
+          <div class="sl-meta">${OPAREA_TO_PROCESSES[sl.id].length} processes</div>
+          <div class="chip-row">${sl.subdomains.concat(sl.services).map(svcChip).join('')}</div>
+        </div>`).join('')}
+    </div>
+  </section>
+
+  <section>
+    <h3>Values &amp; corporate objectives <span class="count">${S.principles}</span></h3>
+    <p class="vp-sub">Values describe conduct and objectives describe outcomes. Innovation is modeled as both.</p>
+    <div class="pr-list">
+      ${MODEL.principles.map(p=>`
+        <article class="pr-card" id="pr-${p.id}">
+          <div class="pr-head">
+            <div class="pr-name">${p.label}</div>
+            <span class="kind kind-${p.kinds.join('-')}">${principleKindLabel(p)}</span>
+          </div>
+          <div class="pr-comment">${p.comment}</div>
+          <div class="pr-cols">
+            <div>
+              <div class="insp-section-title">Promoted by</div>
+              <div class="chip-row">${p.promotedBy.map(svcChip).join('')}</div>
+            </div>
+            <div>
+              <div class="insp-section-title">Evidenced by</div>
+              <div class="ind-list">${p.indicators.map(id=>indicatorCardHTML(INDICATORS[id])).join('')}</div>
+            </div>
+          </div>
+        </article>`).join('')}
+    </div>
+  </section>
+
+  <section>
+    <h3>Privacy safeguards <span class="count">${S.safeguards}</span></h3>
+    <div class="sg-grid">
+      ${MODEL.safeguards.map(g=>`
+        <article class="sg-card" id="sg-${g.id}">
+          <div class="sg-name">${g.label}</div>
+          ${g.comment?`<div class="pr-comment">${g.comment}</div>`:''}
+          ${g.prohibits.length?`<div class="insp-section-title">Prohibits</div><ul class="ban-list">${g.prohibits.map(x=>`<li>${x.label}</li>`).join('')}</ul>`:''}
+          ${g.enforcedBy.length?`<div class="insp-section-title">Enforced by</div><div class="chip-row">${g.enforcedBy.map(svcChip).join('')}</div>`:''}
+          ${g.regulations.length?`<div class="insp-section-title">Derived from</div><div class="chip-row">${g.regulations.map(r=>`<span class="chip reg">${r.label}</span>`).join('')}</div>`:''}
+        </article>`).join('')}
+    </div>
+  </section>
+
+  <section>
+    <h3>Explicitly prohibited practices <span class="count">${S.prohibited}</span></h3>
+    <ul class="ban-list big">${MODEL.prohibitedPractices.map(x=>`<li>${x.label}</li>`).join('')}</ul>
+  </section>`;
+  t.innerHTML = html;
 }
 
 /* ---------------- Init ---------------- */

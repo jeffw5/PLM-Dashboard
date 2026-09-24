@@ -1373,3 +1373,1256 @@ hr:ConceptDataAccessAuditTrail a hr:OntologyConcept ;
 hr:ConceptEncryptionKeyRotationPolicy a hr:OntologyConcept ;
     rdfs:label "PII Encryption Key Rotation Policy" .
 
+
+# #################################################################
+# #################################################################
+#
+#   EXTENSION v2.0 — CORE SERVICE LINES, WORKFORCE DEVELOPMENT,
+#   AND PRIVACY-PRESERVING VALUES STEWARDSHIP
+#
+#   Adds:
+#     (1) A business-model layer of Core Service Lines mapped onto the
+#         existing DDD topology (payroll, benefits, talent management,
+#         HR compliance, training, monitoring, coaching, measurement,
+#         values stewardship).
+#     (2) Domain 7 — Workforce Development, Coaching & Performance
+#         Measurement.
+#     (3) Domain 8 — Organizational Values, Culture & Ethics Stewardship,
+#         including a Privacy-Preserving People Analytics bounded context.
+#     (4) A Guiding Principle model that separates behavioral VALUES from
+#         outcome-oriented CORPORATE OBJECTIVES, each evidenced by
+#         indicators that carry explicit privacy metadata.
+#     (5) Privacy safeguards, prohibited monitoring practices, governing
+#         regulations, and SHACL shapes that make the privacy rules
+#         machine-checkable.
+#
+#   Design stance: "monitoring" in this model means monitoring progress,
+#   outcomes and aggregate signals — never covert surveillance of
+#   individuals. Values are promoted through the employee lifecycle,
+#   observed through ordinary work conduct and voluntary self-report,
+#   and measured primarily in aggregate.
+#
+#   The v1 content above is unchanged; everything below is additive.
+#
+# #################################################################
+# #################################################################
+
+@prefix sh:       <http://www.w3.org/ns/shacl#> .
+
+hr:HRServicesEnterpriseModel
+    owl:versionInfo "2.0 — core service lines, workforce development, and privacy-preserving values stewardship" .
+
+# =================================================================
+# EXTENSION TBOX: CLASSES
+# =================================================================
+
+hr:ServiceLine a owl:Class ;
+    rdfs:label "Core Service Line (Business Model Offering)" ;
+    rdfs:comment "A client-facing offering in the PEO business model. Realized by one or more L2 bounded contexts and/or L3 domain services." .
+
+hr:GuidingPrinciple a owl:Class ;
+    rdfs:label "Guiding Principle" ;
+    rdfs:comment "A stated corporate value or objective that the organization commits to promote, monitor and measure." .
+
+hr:OrganizationalValue a owl:Class ;
+    rdfs:subClassOf hr:GuidingPrinciple ;
+    rdfs:label "Organizational Value (Behavioral)" ;
+    rdfs:comment "A principle about HOW people act. Evidenced by observable conduct and culture signals; measured mostly in aggregate." .
+
+hr:CorporateObjective a owl:Class ;
+    rdfs:subClassOf hr:GuidingPrinciple ;
+    rdfs:label "Corporate Objective (Outcome)" ;
+    rdfs:comment "A principle about WHAT the organization achieves. Evidenced by outcome metrics. A principle may be typed as both a value and an objective when it has a behavioral and an outcome face (e.g. Innovation)." .
+
+hr:ValueIndicator a owl:Class ;
+    rdfs:label "Guiding Principle Indicator" ;
+    rdfs:comment "A defined, measurable signal that evidences a guiding principle, carrying its collection mode, reporting granularity and privacy constraints." .
+
+hr:DataCollectionMode a owl:Class ;
+    rdfs:label "Indicator Data Collection Mode" .
+
+hr:ReportingGranularity a owl:Class ;
+    rdfs:label "Indicator Reporting Granularity" .
+
+hr:PrivacySafeguard a owl:Class ;
+    rdfs:label "Privacy Safeguard" ;
+    rdfs:comment "A control that constrains how people data is collected, used, disclosed or retained." .
+
+hr:ProhibitedPractice a owl:Class ;
+    rdfs:label "Prohibited Monitoring Practice" ;
+    rdfs:comment "A monitoring or measurement technique the model explicitly rules out for values and culture measurement." .
+
+hr:RegulatoryInstrument a owl:Class ;
+    rdfs:subClassOf hr:OntologyConcept ;
+    rdfs:label "Governing Law or Regulatory Instrument" .
+
+# =================================================================
+# EXTENSION TBOX: OBJECT PROPERTIES (with inverses)
+# =================================================================
+
+hr:realizedBySubDomain a owl:ObjectProperty ;
+    rdfs:domain hr:ServiceLine ;
+    rdfs:range hr:SubDomain ;
+    rdfs:label "Realized By Sub-Domain" .
+
+hr:realizesServiceLine a owl:ObjectProperty ;
+    owl:inverseOf hr:realizedBySubDomain ;
+    rdfs:domain hr:SubDomain ;
+    rdfs:range hr:ServiceLine ;
+    rdfs:label "Realizes Service Line" .
+
+hr:realizedByService a owl:ObjectProperty ;
+    rdfs:domain hr:ServiceLine ;
+    rdfs:range hr:DomainService ;
+    rdfs:label "Realized By Domain Service" ;
+    rdfs:comment "Used where a service line draws on an individual service inside a bounded context owned by another service line." .
+
+hr:contributesToServiceLine a owl:ObjectProperty ;
+    owl:inverseOf hr:realizedByService ;
+    rdfs:domain hr:DomainService ;
+    rdfs:range hr:ServiceLine ;
+    rdfs:label "Contributes To Service Line" .
+
+hr:complementsService a owl:ObjectProperty , owl:SymmetricProperty ;
+    rdfs:domain hr:DomainService ;
+    rdfs:range hr:DomainService ;
+    rdfs:label "Complements Domain Service" ;
+    rdfs:comment "Links a v2 service to a v1 service it extends or collaborates with, keeping bounded contexts separate." .
+
+hr:promotesPrinciple a owl:ObjectProperty ;
+    rdfs:domain hr:DomainService ;
+    rdfs:range hr:GuidingPrinciple ;
+    rdfs:label "Promotes Guiding Principle" .
+
+hr:isPromotedByService a owl:ObjectProperty ;
+    owl:inverseOf hr:promotesPrinciple ;
+    rdfs:domain hr:GuidingPrinciple ;
+    rdfs:range hr:DomainService ;
+    rdfs:label "Is Promoted By Service" .
+
+hr:evidencedByIndicator a owl:ObjectProperty ;
+    rdfs:domain hr:GuidingPrinciple ;
+    rdfs:range hr:ValueIndicator ;
+    rdfs:label "Evidenced By Indicator" .
+
+hr:isIndicatorOf a owl:ObjectProperty ;
+    owl:inverseOf hr:evidencedByIndicator ;
+    rdfs:domain hr:ValueIndicator ;
+    rdfs:range hr:GuidingPrinciple ;
+    rdfs:label "Is Indicator Of" .
+
+hr:collectedByService a owl:ObjectProperty ;
+    rdfs:domain hr:ValueIndicator ;
+    rdfs:range hr:DomainService ;
+    rdfs:label "Collected By Service" .
+
+hr:collectsIndicator a owl:ObjectProperty ;
+    owl:inverseOf hr:collectedByService ;
+    rdfs:domain hr:DomainService ;
+    rdfs:range hr:ValueIndicator ;
+    rdfs:label "Collects Indicator" .
+
+hr:hasCollectionMode a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:domain hr:ValueIndicator ;
+    rdfs:range hr:DataCollectionMode ;
+    rdfs:label "Has Collection Mode" .
+
+hr:reportingGranularity a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:domain hr:ValueIndicator ;
+    rdfs:range hr:ReportingGranularity ;
+    rdfs:label "Reporting Granularity" .
+
+hr:governedBySafeguard a owl:ObjectProperty ;
+    rdfs:range hr:PrivacySafeguard ;
+    rdfs:label "Governed By Privacy Safeguard" ;
+    rdfs:comment "Applies to indicators, domain services and business processes; domain intentionally left open." .
+
+hr:governsResource a owl:ObjectProperty ;
+    owl:inverseOf hr:governedBySafeguard ;
+    rdfs:domain hr:PrivacySafeguard ;
+    rdfs:label "Governs Resource" .
+
+hr:enforcedByProcess a owl:ObjectProperty ;
+    rdfs:domain hr:PrivacySafeguard ;
+    rdfs:range hr:BusinessProcess ;
+    rdfs:label "Enforced By Process" .
+
+hr:enforcesSafeguard a owl:ObjectProperty ;
+    owl:inverseOf hr:enforcedByProcess ;
+    rdfs:domain hr:BusinessProcess ;
+    rdfs:range hr:PrivacySafeguard ;
+    rdfs:label "Enforces Safeguard" .
+
+hr:prohibitsPractice a owl:ObjectProperty ;
+    rdfs:domain hr:PrivacySafeguard ;
+    rdfs:range hr:ProhibitedPractice ;
+    rdfs:label "Prohibits Practice" .
+
+hr:isProhibitedBy a owl:ObjectProperty ;
+    owl:inverseOf hr:prohibitsPractice ;
+    rdfs:domain hr:ProhibitedPractice ;
+    rdfs:range hr:PrivacySafeguard ;
+    rdfs:label "Is Prohibited By" .
+
+hr:derivedFromRegulation a owl:ObjectProperty ;
+    rdfs:domain hr:PrivacySafeguard ;
+    rdfs:range hr:RegulatoryInstrument ;
+    rdfs:label "Derived From Regulation" .
+
+# =================================================================
+# EXTENSION TBOX: DATATYPE PROPERTIES
+# =================================================================
+
+hr:isIndividuallyAttributable a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:domain hr:ValueIndicator ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "Is Individually Attributable" ;
+    rdfs:comment "True when a stored data point can be linked to a named employee." .
+
+hr:usableInEmploymentDecisions a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:domain hr:ValueIndicator ;
+    rdfs:range xsd:boolean ;
+    rdfs:label "Usable In Employment Decisions" ;
+    rdfs:comment "True only when the indicator may inform pay, promotion, discipline or termination decisions about an individual." .
+
+hr:minimumGroupSize a owl:DatatypeProperty ;
+    rdfs:domain hr:ValueIndicator ;
+    rdfs:range xsd:nonNegativeInteger ;
+    rdfs:label "Minimum Reporting Group Size (k)" .
+
+hr:retentionPeriodMonths a owl:DatatypeProperty ;
+    rdfs:range xsd:nonNegativeInteger ;
+    rdfs:label "Raw Data Retention Period (Months)" .
+
+hr:indicatorFormula a owl:DatatypeProperty ;
+    rdfs:domain hr:ValueIndicator ;
+    rdfs:range xsd:string ;
+    rdfs:label "Indicator Formula" .
+
+# =================================================================
+# NEW FUNCTIONAL & CORPORATE OPERATIONAL AREAS
+# =================================================================
+
+hr:OpLearningCoachingDelivery a hr:OperationalArea ;
+    rdfs:label "Learning, Coaching & Development Delivery Operations" ;
+    rdfs:comment "Instructional design, facilitation, coach and mentor network management, and learning impact evaluation." .
+
+hr:OpCultureValuesEthics a hr:OperationalArea ;
+    rdfs:label "Culture, Values & Ethics Office Operations" ;
+    rdfs:comment "Values charter stewardship, recognition and community programs, speak-up channel operation, and culture measurement." .
+
+hr:OpPrivacyOffice a hr:OperationalArea ;
+    rdfs:label "Employee Privacy & People-Data Protection Office Operations" ;
+    rdfs:comment "Privacy impact assessments, notice and consent, de-identification, retention, and data-subject rights for worksite employee data. Operates independently of the teams that consume people analytics." .
+
+# =================================================================
+# CORE SERVICE LINES (BUSINESS MODEL LAYER)
+# =================================================================
+
+hr:ServiceLinePayroll a hr:ServiceLine ;
+    rdfs:label "Payroll" ;
+    hr:realizedBySubDomain hr:PayrollTaxSubDomain , hr:TimeAttendanceLeaveSubDomain .
+
+hr:ServiceLineBenefits a hr:ServiceLine ;
+    rdfs:label "Benefits" ;
+    hr:realizedBySubDomain hr:HealthWelfareSponsorshipSubDomain , hr:RetirementMEP401kSubDomain .
+
+hr:ServiceLineTalentManagement a hr:ServiceLine ;
+    rdfs:label "Talent Management" ;
+    hr:realizedBySubDomain hr:TalentAcquisitionOnboardingSubDomain , hr:LearningPerformanceSuccessionSubDomain .
+
+hr:ServiceLineHRCompliance a hr:ServiceLine ;
+    rdfs:label "HR Compliance" ;
+    hr:realizedBySubDomain hr:EmployerLiabilityPracticesSubDomain , hr:WorkersCompWorksiteSafetySubDomain .
+
+hr:ServiceLineTraining a hr:ServiceLine ;
+    rdfs:label "Training" ;
+    hr:realizedBySubDomain hr:TrainingCoachingSubDomain ;
+    hr:realizedByService hr:CorporateLMSDeliveryService , hr:HarassmentPreventionTrainingService .
+
+hr:ServiceLineCoaching a hr:ServiceLine ;
+    rdfs:label "Coaching" ;
+    hr:realizedBySubDomain hr:TrainingCoachingSubDomain ;
+    hr:realizedByService hr:LeadershipSuccessionPlanningService .
+
+hr:ServiceLineMonitoring a hr:ServiceLine ;
+    rdfs:label "Monitoring" ;
+    rdfs:comment "Monitoring of goals, development progress, compliance status and aggregate culture signals. Excludes covert or individual surveillance (see hr:ProhibitedPractice)." ;
+    hr:realizedBySubDomain hr:PerformanceMonitoringMeasurementSubDomain , hr:ValuesMonitoringMeasurementSubDomain ;
+    hr:realizedByService hr:CPEOComplianceMonitoringService .
+
+hr:ServiceLineMeasurement a hr:ServiceLine ;
+    rdfs:label "Measurement" ;
+    hr:realizedBySubDomain hr:PerformanceMonitoringMeasurementSubDomain ;
+    hr:realizedByService hr:WorkforceAnalyticsReportingService , hr:ValuesIndexAnalyticsService .
+
+hr:ServiceLineValuesStewardship a hr:ServiceLine ;
+    rdfs:label "Values Stewardship (Promote, Monitor & Measure without Violating Privacy)" ;
+    hr:realizedBySubDomain hr:ValuesPromotionCultureSubDomain ,
+                           hr:ValuesMonitoringMeasurementSubDomain ,
+                           hr:PrivacyPreservingPeopleAnalyticsSubDomain .
+
+# =================================================================
+# DOMAIN 7: WORKFORCE DEVELOPMENT, COACHING & PERFORMANCE
+#           MEASUREMENT DOMAIN (L1)
+# =================================================================
+
+hr:WorkforceDevelopmentDomain a hr:Domain ;
+    rdfs:label "Workforce Development, Coaching & Performance Measurement Domain" ;
+    hr:hasSubDomain hr:TrainingCoachingSubDomain ,
+                    hr:PerformanceMonitoringMeasurementSubDomain .
+
+# --- Sub-Domain: Training & Coaching Delivery Context (L2) ---
+hr:TrainingCoachingSubDomain a hr:SubDomain ;
+    rdfs:label "Training & Coaching Delivery Bounded Context" ;
+    hr:providesService hr:SkillsGapTrainingPlanService ,
+                       hr:InstructorLedVirtualTrainingService ,
+                       hr:ManagerCoachingService ,
+                       hr:PeerMentoringService .
+
+hr:SkillsGapTrainingPlanService a hr:DomainService ;
+    rdfs:label "Role-Based Skills Gap Analysis & Development Plan Service" ;
+    hr:executedByProcess hr:ProcSkillsGapAssessment , hr:ProcIndividualDevelopmentPlanBuild ;
+    hr:mapsToOntologyConcept hr:ConceptSkillsTaxonomy , hr:ConceptIndividualDevelopmentPlan ;
+    hr:complementsService hr:CorporateLMSDeliveryService ;
+    hr:promotesPrinciple hr:ValueEmbracingChange , hr:ValueCommitment .
+
+hr:InstructorLedVirtualTrainingService a hr:DomainService ;
+    rdfs:label "Instructor-Led & Virtual Classroom Training Service" ;
+    hr:executedByProcess hr:ProcTrainingSessionScheduling , hr:ProcTrainingEffectivenessEvaluation ;
+    hr:mapsToOntologyConcept hr:ConceptTrainingCatalog , hr:ConceptKirkpatrickEvaluationModel ;
+    hr:complementsService hr:CorporateLMSDeliveryService , hr:HarassmentPreventionTrainingService ;
+    hr:promotesPrinciple hr:ValueIntegrity , hr:ValueRespect .
+
+hr:ManagerCoachingService a hr:DomainService ;
+    rdfs:label "Manager & Frontline Leader Coaching Service" ;
+    rdfs:comment "Confidential developmental coaching. Session content belongs to the coachee and is not reported to the employer." ;
+    hr:executedByProcess hr:ProcCoachingEngagementIntake , hr:ProcCoachingConversationCadence ;
+    hr:mapsToOntologyConcept hr:ConceptCoachingAgreement , hr:ConceptCoachingSessionRecord ;
+    hr:complementsService hr:LeadershipSuccessionPlanningService ;
+    hr:promotesPrinciple hr:ValueAccountability , hr:ValuePerseverance , hr:ValueRespect ;
+    hr:governedBySafeguard hr:SafeguardCoachingConfidentiality .
+
+hr:PeerMentoringService a hr:DomainService ;
+    rdfs:label "Peer Mentoring & Knowledge Transfer Service" ;
+    hr:executedByProcess hr:ProcMentorMenteeMatching , hr:ProcMentoringProgramReview ;
+    hr:mapsToOntologyConcept hr:ConceptMentorMatchProfile , hr:ConceptMentoringProgramCharter ;
+    hr:promotesPrinciple hr:ValueCommitment , hr:ValuePerseverance .
+
+# --- Sub-Domain: Performance Monitoring & Measurement Context (L2) ---
+hr:PerformanceMonitoringMeasurementSubDomain a hr:SubDomain ;
+    rdfs:label "Performance Monitoring & Measurement Bounded Context" ;
+    hr:providesService hr:ContinuousPerformanceCheckInService ,
+                       hr:LearningImpactMeasurementService ,
+                       hr:OrganizationalScorecardService .
+
+hr:ContinuousPerformanceCheckInService a hr:DomainService ;
+    rdfs:label "Continuous Performance Check-In & Progress Monitoring Service" ;
+    hr:executedByProcess hr:ProcPeriodicCheckInCycle , hr:ProcGoalProgressMonitoring ;
+    hr:mapsToOntologyConcept hr:ConceptCheckInRecord , hr:ConceptProgressSignal ;
+    hr:complementsService hr:StrategicGoalAlignmentOKRService , hr:Feedback360AppraisalCycleService ;
+    hr:promotesPrinciple hr:ObjectiveAchievingGoals , hr:ValueAccountability .
+
+hr:LearningImpactMeasurementService a hr:DomainService ;
+    rdfs:label "Learning & Coaching Impact Measurement Service" ;
+    hr:executedByProcess hr:ProcPrePostCompetencyMeasure , hr:ProcTrainingROIAnalysis ;
+    hr:mapsToOntologyConcept hr:ConceptCompetencyProficiencyScale , hr:ConceptLearningROIModel ;
+    hr:complementsService hr:CorporateLMSDeliveryService ;
+    hr:governedBySafeguard hr:SafeguardAggregationThreshold .
+
+hr:OrganizationalScorecardService a hr:DomainService ;
+    rdfs:label "Organizational Health & Objectives Scorecard Service" ;
+    hr:executedByProcess hr:ProcScorecardMetricDefinition , hr:ProcScorecardPublication ;
+    hr:mapsToOntologyConcept hr:ConceptBalancedScorecard , hr:ConceptMetricDefinitionCard ;
+    hr:complementsService hr:WorkforceAnalyticsReportingService , hr:ClientHealthScoringRetentionService ;
+    hr:promotesPrinciple hr:ObjectiveAchievingGoals , hr:ValueAccountability ;
+    hr:governedBySafeguard hr:SafeguardAggregationThreshold , hr:SafeguardPurposeLimitation .
+
+# =================================================================
+# DOMAIN 8: ORGANIZATIONAL VALUES, CULTURE & ETHICS
+#           STEWARDSHIP DOMAIN (L1)
+# =================================================================
+
+hr:ValuesCultureStewardshipDomain a hr:Domain ;
+    rdfs:label "Organizational Values, Culture & Ethics Stewardship Domain" ;
+    hr:hasSubDomain hr:ValuesPromotionCultureSubDomain ,
+                    hr:ValuesMonitoringMeasurementSubDomain ,
+                    hr:PrivacyPreservingPeopleAnalyticsSubDomain .
+
+# --- Sub-Domain: Values Promotion & Culture Enablement Context (L2) ---
+hr:ValuesPromotionCultureSubDomain a hr:SubDomain ;
+    rdfs:label "Values Promotion & Culture Enablement Bounded Context" ;
+    hr:providesService hr:ValuesCommunicationEmbeddingService ,
+                       hr:ValuesRecognitionService ,
+                       hr:CommunityEngagementService ,
+                       hr:InnovationChangeEnablementService .
+
+hr:ValuesCommunicationEmbeddingService a hr:DomainService ;
+    rdfs:label "Values Communication & Employee Lifecycle Embedding Service" ;
+    rdfs:comment "Embeds the values charter into onboarding, the handbook, training curricula and performance-dialogue prompts." ;
+    hr:executedByProcess hr:ProcValuesNarrativeCampaign , hr:ProcValuesLifecycleIntegration ;
+    hr:mapsToOntologyConcept hr:ConceptValuesCharter , hr:ConceptBehavioralAnchorLibrary ;
+    hr:complementsService hr:DigitalNewHireOnboardingService , hr:MultiStateHandbookPolicyService ;
+    hr:promotesPrinciple hr:ValueIntegrity , hr:ValueRespect , hr:ValueCommitment ,
+                         hr:ValueAccountability , hr:ValueEmbracingChange , hr:ValuePerseverance ,
+                         hr:ValueInnovation , hr:ObjectiveAchievingGoals , hr:ObjectiveContributingToCommunities .
+
+hr:ValuesRecognitionService a hr:DomainService ;
+    rdfs:label "Values-Based Peer Recognition Service" ;
+    hr:executedByProcess hr:ProcPeerRecognitionNomination , hr:ProcRecognitionEquityReview ;
+    hr:mapsToOntologyConcept hr:ConceptRecognitionTaxonomy , hr:ConceptRecognitionEquityReport ;
+    hr:promotesPrinciple hr:ValueRespect , hr:ValuePerseverance , hr:ValueCommitment , hr:ValueInnovation ;
+    hr:governedBySafeguard hr:SafeguardAggregationThreshold .
+
+hr:CommunityEngagementService a hr:DomainService ;
+    rdfs:label "Community Volunteering & Giving Program Service" ;
+    rdfs:comment "Voluntary program. Individual participation is never visible to managers and never feeds employment decisions." ;
+    hr:executedByProcess hr:ProcVolunteerOpportunityCoordination , hr:ProcVoluntaryHoursSelfReport ;
+    hr:mapsToOntologyConcept hr:ConceptVolunteerTimeOffPolicy , hr:ConceptCommunityImpactLedger ;
+    hr:promotesPrinciple hr:ObjectiveContributingToCommunities ;
+    hr:governedBySafeguard hr:SafeguardVoluntaryParticipation , hr:SafeguardAggregationThreshold .
+
+hr:InnovationChangeEnablementService a hr:DomainService ;
+    rdfs:label "Idea Program & Change Readiness Enablement Service" ;
+    hr:executedByProcess hr:ProcIdeaSubmissionReview , hr:ProcChangeReadinessEnablement ;
+    hr:mapsToOntologyConcept hr:ConceptIdeaPipeline , hr:ConceptChangeReadinessModel ;
+    hr:promotesPrinciple hr:ValueInnovation , hr:ValueEmbracingChange .
+
+# --- Sub-Domain: Values Monitoring & Measurement Context (L2) ---
+hr:ValuesMonitoringMeasurementSubDomain a hr:SubDomain ;
+    rdfs:label "Values Monitoring & Measurement Bounded Context" ;
+    hr:providesService hr:CulturePulseSurveyService ,
+                       hr:SpeakUpEthicsChannelService ,
+                       hr:ValuesInPerformanceDialogueService ,
+                       hr:ValuesIndexAnalyticsService .
+
+hr:CulturePulseSurveyService a hr:DomainService ;
+    rdfs:label "Anonymous Culture & Values Pulse Survey Service" ;
+    hr:executedByProcess hr:ProcPulseSurveyAdministration , hr:ProcSmallGroupSuppression ;
+    hr:mapsToOntologyConcept hr:ConceptValuesPulseInstrument , hr:ConceptAnonymityThresholdRule ;
+    hr:governedBySafeguard hr:SafeguardAggregationThreshold , hr:SafeguardAnonymityProtection , hr:SafeguardTransparencyNotice .
+
+hr:SpeakUpEthicsChannelService a hr:DomainService ;
+    rdfs:label "Speak-Up & Ethics Concern Channel Service" ;
+    hr:executedByProcess hr:ProcConcernIntakeTriage , hr:ProcNonRetaliationMonitoring ;
+    hr:mapsToOntologyConcept hr:ConceptAnonymousReportingChannel , hr:ConceptNonRetaliationCaseRecord ;
+    hr:complementsService hr:HarassmentPreventionTrainingService , hr:EEOC_DOL_DefenseConsultService ;
+    hr:promotesPrinciple hr:ValueIntegrity , hr:ValueRespect ;
+    hr:governedBySafeguard hr:SafeguardAnonymityProtection , hr:SafeguardProtectedActivity .
+
+hr:ValuesInPerformanceDialogueService a hr:DomainService ;
+    rdfs:label "Values-in-Performance Dialogue Service" ;
+    rdfs:comment "Values are discussed in check-ins and appraisals using behavioral anchors, employee self-reflection and manager observation of ordinary work conduct. The employee sees and may respond to any values-related evidence recorded about them." ;
+    hr:executedByProcess hr:ProcValuesSelfReflection , hr:ProcValuesEvidenceCalibration ;
+    hr:mapsToOntologyConcept hr:ConceptBehavioralAnchorLibrary , hr:ConceptValuesReflectionEntry ;
+    hr:complementsService hr:Feedback360AppraisalCycleService , hr:ContinuousPerformanceCheckInService ;
+    hr:promotesPrinciple hr:ValueIntegrity , hr:ValueRespect , hr:ValueAccountability , hr:ValueCommitment ;
+    hr:governedBySafeguard hr:SafeguardHumanReview , hr:SafeguardTransparencyNotice .
+
+hr:ValuesIndexAnalyticsService a hr:DomainService ;
+    rdfs:label "Values & Culture Index Analytics Service" ;
+    hr:executedByProcess hr:ProcValuesIndexComputation , hr:ProcLeaderActionPlanTracking ;
+    hr:mapsToOntologyConcept hr:ConceptValuesIndexModel , hr:ConceptLeaderActionPlan ;
+    hr:complementsService hr:WorkforceAnalyticsReportingService ;
+    hr:promotesPrinciple hr:ValueAccountability ;
+    hr:governedBySafeguard hr:SafeguardAggregationThreshold , hr:SafeguardPurposeLimitation , hr:SafeguardProtectedTraitExclusion .
+
+# --- Sub-Domain: Privacy-Preserving People Analytics Context (L2) ---
+hr:PrivacyPreservingPeopleAnalyticsSubDomain a hr:SubDomain ;
+    rdfs:label "Privacy-Preserving People Analytics Bounded Context" ;
+    hr:providesService hr:PeopleAnalyticsPrivacyImpactService ,
+                       hr:NoticeConsentPurposeService ,
+                       hr:DeIdentificationAggregationService ,
+                       hr:PeopleDataRetentionRightsService .
+
+hr:PeopleAnalyticsPrivacyImpactService a hr:DomainService ;
+    rdfs:label "Privacy Impact & Monitoring Proportionality Assessment Service" ;
+    hr:executedByProcess hr:ProcPrivacyImpactAssessment , hr:ProcMonitoringProportionalityReview ;
+    hr:mapsToOntologyConcept hr:ConceptPrivacyImpactAssessment , hr:ConceptProhibitedMonitoringRegister ;
+    hr:complementsService hr:DataPrivacySecurityGovernanceService .
+
+hr:NoticeConsentPurposeService a hr:DomainService ;
+    rdfs:label "Employee Notice, Consent & Purpose Limitation Service" ;
+    hr:executedByProcess hr:ProcMonitoringNoticeIssuance , hr:ProcConsentPreferenceManagement ;
+    hr:mapsToOntologyConcept hr:ConceptElectronicMonitoringNotice , hr:ConceptPurposeLimitationRegister ;
+    hr:complementsService hr:MultiStateHandbookPolicyService .
+
+hr:DeIdentificationAggregationService a hr:DomainService ;
+    rdfs:label "De-Identification & Aggregation Enforcement Service" ;
+    hr:executedByProcess hr:ProcKAnonymityThresholdCheck , hr:ProcDifferencingAttackReview ;
+    hr:mapsToOntologyConcept hr:ConceptKAnonymityPolicy , hr:ConceptReidentificationRiskTest ;
+    hr:complementsService hr:WorkforceAnalyticsReportingService .
+
+hr:PeopleDataRetentionRightsService a hr:DomainService ;
+    rdfs:label "People-Data Retention & Employee Data Rights Service" ;
+    hr:executedByProcess hr:ProcRetentionScheduleEnforcement , hr:ProcEmployeeDataRightsRequest ;
+    hr:mapsToOntologyConcept hr:ConceptPeopleDataRetentionSchedule , hr:ConceptEmployeeDataRightsRequest ;
+    hr:complementsService hr:DataPrivacySecurityGovernanceService .
+
+# =================================================================
+# GUIDING PRINCIPLES: VALUES vs. CORPORATE OBJECTIVES
+# =================================================================
+# Values describe conduct; objectives describe outcomes. Innovation is
+# typed as both: the behavior (trying new approaches) is a value, the
+# output (implemented improvements) is an objective.
+
+hr:ValueIntegrity a hr:OrganizationalValue ;
+    rdfs:label "Integrity" ;
+    rdfs:comment "Acting honestly and ethically, and raising concerns when something is wrong." ;
+    hr:evidencedByIndicator hr:IndSpeakUpConfidence , hr:IndSpeakUpResolutionHealth , hr:IndEthicsTrainingCompletion .
+
+hr:ValueRespect a hr:OrganizationalValue ;
+    rdfs:label "Respect" ;
+    rdfs:comment "Treating colleagues, clients and communities with dignity and inclusion." ;
+    hr:evidencedByIndicator hr:IndRespectInclusionIndex , hr:IndSubstantiatedConductRate .
+
+hr:ObjectiveAchievingGoals a hr:CorporateObjective ;
+    rdfs:label "Achieving Goals" ;
+    rdfs:comment "Delivering committed results for clients and the business." ;
+    hr:evidencedByIndicator hr:IndGoalAttainment , hr:IndTeamOKRAttainment .
+
+hr:ValueCommitment a hr:OrganizationalValue ;
+    rdfs:label "Commitment" ;
+    rdfs:comment "Dedication to clients, colleagues and the organization's mission." ;
+    hr:evidencedByIndicator hr:IndEngagementIntentToStay , hr:IndValuesBehaviorEvidence .
+
+hr:ValueAccountability a hr:OrganizationalValue ;
+    rdfs:label "Accountability" ;
+    rdfs:comment "Owning commitments and outcomes, including leaders acting on what employees tell them." ;
+    hr:evidencedByIndicator hr:IndLeaderActionPlanClosure , hr:IndValuesBehaviorEvidence .
+
+hr:ValueInnovation a hr:OrganizationalValue , hr:CorporateObjective ;
+    rdfs:label "Innovation" ;
+    rdfs:comment "Behavior: trying better ways of working. Outcome: improvements actually implemented." ;
+    hr:evidencedByIndicator hr:IndIdeasImplemented , hr:IndInnovationClimate .
+
+hr:ValueEmbracingChange a hr:OrganizationalValue ;
+    rdfs:label "Embracing Change" ;
+    rdfs:comment "Adapting constructively to new tools, processes and market conditions." ;
+    hr:evidencedByIndicator hr:IndChangeReadiness , hr:IndReskillingParticipation .
+
+hr:ObjectiveContributingToCommunities a hr:CorporateObjective ;
+    rdfs:label "Contributing to Communities" ;
+    rdfs:comment "Organizational contribution to the communities where employees live and work. Measured at the organizational level only." ;
+    hr:evidencedByIndicator hr:IndCommunityImpact .
+
+hr:ValuePerseverance a hr:OrganizationalValue ;
+    rdfs:label "Perseverance" ;
+    rdfs:comment "Staying with hard problems through setbacks. Hard to measure directly, so evidenced by recognition stories and aggregate climate items rather than individual scores." ;
+    hr:evidencedByIndicator hr:IndPerseveranceRecognition , hr:IndInnovationClimate .
+
+# =================================================================
+# COLLECTION MODES & REPORTING GRANULARITIES
+# =================================================================
+
+hr:ModeAnonymousSurvey a hr:DataCollectionMode ;
+    rdfs:label "Anonymous Survey Response" ;
+    rdfs:comment "Responses are collected by a third party or with identity stripped at intake; no link back to the respondent is stored." .
+
+hr:ModeVoluntarySelfReport a hr:DataCollectionMode ;
+    rdfs:label "Voluntary Opt-In Self-Report" .
+
+hr:ModeManagerObservedConduct a hr:DataCollectionMode ;
+    rdfs:label "Manager Observation of Ordinary Work Conduct" ;
+    rdfs:comment "Documented against behavioral anchors in the normal course of work. No monitoring technology is used to generate it." .
+
+hr:ModeSystemOfRecordAggregate a hr:DataCollectionMode ;
+    rdfs:label "Aggregation of Existing HR System-of-Record Data" ;
+    rdfs:comment "Reuses data already held for a legitimate HR purpose (e.g. LMS completions, case records); no new collection." .
+
+hr:ModeOrganizationalOutcome a hr:DataCollectionMode ;
+    rdfs:label "Organizational Outcome Metric" ;
+    rdfs:comment "Measured about the organization, not about people (e.g. dollars donated, ideas implemented)." .
+
+hr:GranularityOrganization a hr:ReportingGranularity ;
+    rdfs:label "Organization or Client-Company Level" .
+
+hr:GranularityAggregateGroup a hr:ReportingGranularity ;
+    rdfs:label "Aggregate Group (team, site, function) above minimum group size" .
+
+hr:GranularityIndividualDevelopmental a hr:ReportingGranularity ;
+    rdfs:label "Individual — Visible to Employee and Direct Manager Only" .
+
+# =================================================================
+# GUIDING PRINCIPLE INDICATORS
+# =================================================================
+
+# --- Integrity ---
+hr:IndSpeakUpConfidence a hr:ValueIndicator ;
+    rdfs:label "Speak-Up Confidence Score" ;
+    hr:indicatorFormula "% favorable on 'I can raise a concern without fear of retaliation'" ;
+    hr:collectedByService hr:CulturePulseSurveyService ;
+    hr:hasCollectionMode hr:ModeAnonymousSurvey ;
+    hr:reportingGranularity hr:GranularityAggregateGroup ;
+    hr:minimumGroupSize 5 ;
+    hr:isIndividuallyAttributable false ;
+    hr:usableInEmploymentDecisions false ;
+    hr:governedBySafeguard hr:SafeguardAggregationThreshold , hr:SafeguardAnonymityProtection .
+
+hr:IndSpeakUpResolutionHealth a hr:ValueIndicator ;
+    rdfs:label "Speak-Up Case Resolution & Non-Retaliation Health" ;
+    hr:indicatorFormula "Median days to close concerns; count of substantiated retaliation findings" ;
+    hr:collectedByService hr:SpeakUpEthicsChannelService ;
+    hr:hasCollectionMode hr:ModeSystemOfRecordAggregate ;
+    hr:reportingGranularity hr:GranularityOrganization ;
+    hr:isIndividuallyAttributable false ;
+    hr:usableInEmploymentDecisions false ;
+    hr:governedBySafeguard hr:SafeguardAnonymityProtection , hr:SafeguardProtectedActivity .
+
+hr:IndEthicsTrainingCompletion a hr:ValueIndicator ;
+    rdfs:label "Ethics & Code-of-Conduct Training Completion Rate" ;
+    hr:indicatorFormula "Completed / assigned ethics modules, by work group" ;
+    hr:collectedByService hr:HarassmentPreventionTrainingService ;
+    hr:hasCollectionMode hr:ModeSystemOfRecordAggregate ;
+    hr:reportingGranularity hr:GranularityAggregateGroup ;
+    hr:minimumGroupSize 5 ;
+    hr:isIndividuallyAttributable false ;
+    hr:usableInEmploymentDecisions false ;
+    hr:governedBySafeguard hr:SafeguardAggregationThreshold , hr:SafeguardPurposeLimitation .
+
+# --- Respect ---
+hr:IndRespectInclusionIndex a hr:ValueIndicator ;
+    rdfs:label "Respect & Inclusion Index" ;
+    hr:indicatorFormula "Mean of 4 pulse items on dignity, voice, fairness and belonging" ;
+    hr:collectedByService hr:CulturePulseSurveyService ;
+    hr:hasCollectionMode hr:ModeAnonymousSurvey ;
+    hr:reportingGranularity hr:GranularityAggregateGroup ;
+    hr:minimumGroupSize 5 ;
+    hr:isIndividuallyAttributable false ;
+    hr:usableInEmploymentDecisions false ;
+    hr:governedBySafeguard hr:SafeguardAggregationThreshold , hr:SafeguardAnonymityProtection , hr:SafeguardProtectedTraitExclusion .
+
+hr:IndSubstantiatedConductRate a hr:ValueIndicator ;
+    rdfs:label "Substantiated Harassment & Misconduct Rate" ;
+    hr:indicatorFormula "Substantiated cases per 100 worksite employees per year" ;
+    hr:collectedByService hr:SpeakUpEthicsChannelService ;
+    hr:hasCollectionMode hr:ModeSystemOfRecordAggregate ;
+    hr:reportingGranularity hr:GranularityOrganization ;
+    hr:isIndividuallyAttributable false ;
+    hr:usableInEmploymentDecisions false ;
+    hr:governedBySafeguard hr:SafeguardAnonymityProtection .
+
+# --- Achieving Goals ---
+hr:IndGoalAttainment a hr:ValueIndicator ;
+    rdfs:label "Individual Goal Attainment" ;
+    rdfs:comment "Already part of the v1 appraisal process; listed here to show it is the one goal indicator that feeds employment decisions." ;
+    hr:indicatorFormula "Weighted % of agreed goals met in the review period" ;
+    hr:collectedByService hr:StrategicGoalAlignmentOKRService ;
+    hr:hasCollectionMode hr:ModeSystemOfRecordAggregate ;
+    hr:reportingGranularity hr:GranularityIndividualDevelopmental ;
+    hr:isIndividuallyAttributable true ;
+    hr:usableInEmploymentDecisions true ;
+    hr:retentionPeriodMonths 36 ;
+    hr:governedBySafeguard hr:SafeguardHumanReview , hr:SafeguardTransparencyNotice , hr:SafeguardRetentionLimit .
+
+hr:IndTeamOKRAttainment a hr:ValueIndicator ;
+    rdfs:label "Team & Company OKR Attainment" ;
+    hr:indicatorFormula "Key results achieved / key results committed, by team and company" ;
+    hr:collectedByService hr:OrganizationalScorecardService ;
+    hr:hasCollectionMode hr:ModeOrganizationalOutcome ;
+    hr:reportingGranularity hr:GranularityOrganization ;
+    hr:isIndividuallyAttributable false ;
+    hr:usableInEmploymentDecisions false ;
+    hr:governedBySafeguard hr:SafeguardPurposeLimitation .
+
+# --- Commitment ---
+hr:IndEngagementIntentToStay a hr:ValueIndicator ;
+    rdfs:label "Engagement & Intent-to-Stay Index" ;
+    hr:collectedByService hr:CulturePulseSurveyService ;
+    hr:hasCollectionMode hr:ModeAnonymousSurvey ;
+    hr:reportingGranularity hr:GranularityAggregateGroup ;
+    hr:minimumGroupSize 5 ;
+    hr:isIndividuallyAttributable false ;
+    hr:usableInEmploymentDecisions false ;
+    hr:governedBySafeguard hr:SafeguardAggregationThreshold , hr:SafeguardAnonymityProtection .
+
+# --- Commitment & Accountability (individual, conduct-based) ---
+hr:IndValuesBehaviorEvidence a hr:ValueIndicator ;
+    rdfs:label "Values-in-Action Behavioral Evidence" ;
+    rdfs:comment "Specific examples of conduct against behavioral anchors, recorded by the employee and manager in check-ins. Narrative, not a numeric score; the employee sees and may respond to every entry." ;
+    hr:collectedByService hr:ValuesInPerformanceDialogueService ;
+    hr:hasCollectionMode hr:ModeManagerObservedConduct ;
+    hr:reportingGranularity hr:GranularityIndividualDevelopmental ;
+    hr:isIndividuallyAttributable true ;
+    hr:usableInEmploymentDecisions true ;
+    hr:retentionPeriodMonths 36 ;
+    hr:governedBySafeguard hr:SafeguardHumanReview , hr:SafeguardTransparencyNotice ,
+                           hr:SafeguardRetentionLimit , hr:SafeguardNoCovertSurveillance ,
+                           hr:SafeguardProtectedActivity .
+
+# --- Accountability (leaders) ---
+hr:IndLeaderActionPlanClosure a hr:ValueIndicator ;
+    rdfs:label "Leader Action-Plan Closure Rate" ;
+    rdfs:comment "Measures whether leaders act on survey results — accountability flows up, not only down." ;
+    hr:indicatorFormula "Action items closed on time / action items committed after each pulse cycle" ;
+    hr:collectedByService hr:ValuesIndexAnalyticsService ;
+    hr:hasCollectionMode hr:ModeSystemOfRecordAggregate ;
+    hr:reportingGranularity hr:GranularityAggregateGroup ;
+    hr:minimumGroupSize 5 ;
+    hr:isIndividuallyAttributable false ;
+    hr:usableInEmploymentDecisions false ;
+    hr:governedBySafeguard hr:SafeguardAggregationThreshold .
+
+# --- Innovation ---
+hr:IndIdeasImplemented a hr:ValueIndicator ;
+    rdfs:label "Improvement Ideas Implemented" ;
+    hr:indicatorFormula "Count and estimated value of implemented ideas per quarter" ;
+    hr:collectedByService hr:InnovationChangeEnablementService ;
+    hr:hasCollectionMode hr:ModeOrganizationalOutcome ;
+    hr:reportingGranularity hr:GranularityOrganization ;
+    hr:isIndividuallyAttributable false ;
+    hr:usableInEmploymentDecisions false ;
+    hr:governedBySafeguard hr:SafeguardPurposeLimitation .
+
+hr:IndInnovationClimate a hr:ValueIndicator ;
+    rdfs:label "Innovation & Resilience Climate Score" ;
+    hr:indicatorFormula "% favorable on items about safety to experiment and support after setbacks" ;
+    hr:collectedByService hr:CulturePulseSurveyService ;
+    hr:hasCollectionMode hr:ModeAnonymousSurvey ;
+    hr:reportingGranularity hr:GranularityAggregateGroup ;
+    hr:minimumGroupSize 5 ;
+    hr:isIndividuallyAttributable false ;
+    hr:usableInEmploymentDecisions false ;
+    hr:governedBySafeguard hr:SafeguardAggregationThreshold , hr:SafeguardAnonymityProtection .
+
+# --- Embracing Change ---
+hr:IndChangeReadiness a hr:ValueIndicator ;
+    rdfs:label "Change Readiness Index" ;
+    hr:collectedByService hr:CulturePulseSurveyService ;
+    hr:hasCollectionMode hr:ModeAnonymousSurvey ;
+    hr:reportingGranularity hr:GranularityAggregateGroup ;
+    hr:minimumGroupSize 5 ;
+    hr:isIndividuallyAttributable false ;
+    hr:usableInEmploymentDecisions false ;
+    hr:governedBySafeguard hr:SafeguardAggregationThreshold , hr:SafeguardAnonymityProtection .
+
+hr:IndReskillingParticipation a hr:ValueIndicator ;
+    rdfs:label "Voluntary Reskilling Participation Rate" ;
+    hr:collectedByService hr:SkillsGapTrainingPlanService ;
+    hr:hasCollectionMode hr:ModeSystemOfRecordAggregate ;
+    hr:reportingGranularity hr:GranularityAggregateGroup ;
+    hr:minimumGroupSize 5 ;
+    hr:isIndividuallyAttributable false ;
+    hr:usableInEmploymentDecisions false ;
+    hr:governedBySafeguard hr:SafeguardAggregationThreshold , hr:SafeguardPurposeLimitation .
+
+# --- Contributing to Communities ---
+hr:IndCommunityImpact a hr:ValueIndicator ;
+    rdfs:label "Community Impact (Volunteer Hours & Giving)" ;
+    rdfs:comment "Organization-level totals only. Individual participation is voluntary and never visible to managers." ;
+    hr:indicatorFormula "Total volunteer hours, dollars given and matched, organizations served" ;
+    hr:collectedByService hr:CommunityEngagementService ;
+    hr:hasCollectionMode hr:ModeVoluntarySelfReport ;
+    hr:reportingGranularity hr:GranularityOrganization ;
+    hr:minimumGroupSize 10 ;
+    hr:isIndividuallyAttributable false ;
+    hr:usableInEmploymentDecisions false ;
+    hr:governedBySafeguard hr:SafeguardVoluntaryParticipation , hr:SafeguardAggregationThreshold .
+
+# --- Perseverance ---
+hr:IndPerseveranceRecognition a hr:ValueIndicator ;
+    rdfs:label "Perseverance Recognition Stories" ;
+    hr:indicatorFormula "Count of peer recognitions tagged 'Perseverance', reported by work group" ;
+    hr:collectedByService hr:ValuesRecognitionService ;
+    hr:hasCollectionMode hr:ModeSystemOfRecordAggregate ;
+    hr:reportingGranularity hr:GranularityAggregateGroup ;
+    hr:minimumGroupSize 5 ;
+    hr:isIndividuallyAttributable false ;
+    hr:usableInEmploymentDecisions false ;
+    hr:governedBySafeguard hr:SafeguardAggregationThreshold .
+
+# =================================================================
+# PRIVACY SAFEGUARDS
+# =================================================================
+
+hr:SafeguardAggregationThreshold a hr:PrivacySafeguard ;
+    rdfs:label "Minimum Group Size (k-Anonymity) Threshold" ;
+    rdfs:comment "Aggregate results are suppressed for any cut with fewer than k respondents (default k = 5), including cuts produced by filtering or differencing." ;
+    hr:enforcedByProcess hr:ProcSmallGroupSuppression , hr:ProcKAnonymityThresholdCheck , hr:ProcDifferencingAttackReview ;
+    hr:prohibitsPractice hr:ProhibitedDeanonymization .
+
+hr:SafeguardAnonymityProtection a hr:PrivacySafeguard ;
+    rdfs:label "Survey & Speak-Up Anonymity Protection" ;
+    hr:enforcedByProcess hr:ProcPulseSurveyAdministration , hr:ProcConcernIntakeTriage ;
+    hr:prohibitsPractice hr:ProhibitedDeanonymization .
+
+hr:SafeguardPurposeLimitation a hr:PrivacySafeguard ;
+    rdfs:label "Purpose Limitation & Data Minimization" ;
+    rdfs:comment "People data is collected only for a registered purpose and not reused for an incompatible one." ;
+    hr:enforcedByProcess hr:ProcPrivacyImpactAssessment , hr:ProcConsentPreferenceManagement ;
+    hr:derivedFromRegulation hr:RegCPRAEmployeeData , hr:RegGDPRArticle88 .
+
+hr:SafeguardTransparencyNotice a hr:PrivacySafeguard ;
+    rdfs:label "Employee Transparency & Monitoring Notice" ;
+    rdfs:comment "Employees are told in advance what is measured, why, at what granularity, and who can see it." ;
+    hr:enforcedByProcess hr:ProcMonitoringNoticeIssuance ;
+    hr:derivedFromRegulation hr:RegNYElectronicMonitoringNotice , hr:RegCTElectronicMonitoringNotice , hr:RegCPRAEmployeeData .
+
+hr:SafeguardHumanReview a hr:PrivacySafeguard ;
+    rdfs:label "Human Review & Employee Right to Respond" ;
+    rdfs:comment "No employment decision is made solely from an automated values or culture score. The employee sees the evidence and may respond before it is used." ;
+    hr:enforcedByProcess hr:ProcValuesEvidenceCalibration , hr:ProcAppraisalWorkflowCycle ;
+    hr:prohibitsPractice hr:ProhibitedAutomatedValuesScoring .
+
+hr:SafeguardNoCovertSurveillance a hr:PrivacySafeguard ;
+    rdfs:label "No Covert or Content-Level Surveillance for Values Measurement" ;
+    hr:enforcedByProcess hr:ProcMonitoringProportionalityReview ;
+    hr:prohibitsPractice hr:ProhibitedKeystrokeScreenCapture , hr:ProhibitedCommunicationsSentimentMining ,
+                         hr:ProhibitedOffDutySocialMonitoring , hr:ProhibitedBiometricWithoutConsent ;
+    hr:derivedFromRegulation hr:RegIllinoisBIPA , hr:RegNYElectronicMonitoringNotice .
+
+hr:SafeguardProtectedTraitExclusion a hr:PrivacySafeguard ;
+    rdfs:label "Protected-Characteristic Inference Exclusion" ;
+    rdfs:comment "Values analytics never infer protected characteristics. Demographic cuts, where lawful, are run only for adverse-impact testing and are subject to the minimum group size." ;
+    hr:enforcedByProcess hr:ProcPrivacyImpactAssessment , hr:ProcRecognitionEquityReview ;
+    hr:prohibitsPractice hr:ProhibitedProtectedTraitInference .
+
+hr:SafeguardProtectedActivity a hr:PrivacySafeguard ;
+    rdfs:label "Protected Concerted & Whistleblower Activity Safeguard" ;
+    rdfs:comment "Speak-up use, complaints and concerted activity are never treated as negative values evidence." ;
+    hr:enforcedByProcess hr:ProcNonRetaliationMonitoring ;
+    hr:prohibitsPractice hr:ProhibitedConcertedActivitySurveillance ;
+    hr:derivedFromRegulation hr:RegNLRASection7 .
+
+hr:SafeguardVoluntaryParticipation a hr:PrivacySafeguard ;
+    rdfs:label "Voluntary Participation — No Employment Consequence" ;
+    hr:enforcedByProcess hr:ProcVoluntaryHoursSelfReport , hr:ProcConsentPreferenceManagement ;
+    hr:prohibitsPractice hr:ProhibitedParticipationInEvaluation .
+
+hr:SafeguardCoachingConfidentiality a hr:PrivacySafeguard ;
+    rdfs:label "Coaching Conversation Confidentiality" ;
+    rdfs:comment "Coaching session content is not disclosed to the employer; only attendance and program-level outcomes are reported, in aggregate." ;
+    hr:enforcedByProcess hr:ProcCoachingEngagementIntake .
+
+hr:SafeguardRetentionLimit a hr:PrivacySafeguard ;
+    rdfs:label "Retention Limit & Secure Disposal" ;
+    hr:enforcedByProcess hr:ProcRetentionScheduleEnforcement , hr:ProcEmployeeDataRightsRequest ;
+    hr:derivedFromRegulation hr:RegCPRAEmployeeData , hr:RegGDPRArticle88 .
+
+# =================================================================
+# PROHIBITED MONITORING PRACTICES
+# =================================================================
+
+hr:ProhibitedKeystrokeScreenCapture a hr:ProhibitedPractice ;
+    rdfs:label "Keystroke logging, screen capture or activity tracking used to score values or culture fit" .
+
+hr:ProhibitedCommunicationsSentimentMining a hr:ProhibitedPractice ;
+    rdfs:label "Sentiment or content mining of employee email, chat or calls to infer values alignment" .
+
+hr:ProhibitedOffDutySocialMonitoring a hr:ProhibitedPractice ;
+    rdfs:label "Monitoring of off-duty conduct or personal social media for values compliance" .
+
+hr:ProhibitedBiometricWithoutConsent a hr:ProhibitedPractice ;
+    rdfs:label "Collection of biometric identifiers without written informed consent" .
+
+hr:ProhibitedDeanonymization a hr:ProhibitedPractice ;
+    rdfs:label "Re-identification of anonymous survey or speak-up respondents, including by small-cell filtering or differencing" .
+
+hr:ProhibitedAutomatedValuesScoring a hr:ProhibitedPractice ;
+    rdfs:label "Automated individual values scores used as the sole basis for an employment decision" .
+
+hr:ProhibitedProtectedTraitInference a hr:ProhibitedPractice ;
+    rdfs:label "Inference of protected characteristics from behavioral or engagement data" .
+
+hr:ProhibitedConcertedActivitySurveillance a hr:ProhibitedPractice ;
+    rdfs:label "Surveillance of union or other protected concerted activity" .
+
+hr:ProhibitedParticipationInEvaluation a hr:ProhibitedPractice ;
+    rdfs:label "Using volunteer, giving or other voluntary participation in performance, pay or promotion decisions" .
+
+# =================================================================
+# GOVERNING LAWS & REGULATORY INSTRUMENTS
+# =================================================================
+
+hr:RegCPRAEmployeeData a hr:RegulatoryInstrument ;
+    rdfs:label "California Consumer Privacy Act as amended by CPRA — employee personal information (full scope since 1 Jan 2023)" .
+
+hr:RegIllinoisBIPA a hr:RegulatoryInstrument ;
+    rdfs:label "Illinois Biometric Information Privacy Act (740 ILCS 14)" .
+
+hr:RegNYElectronicMonitoringNotice a hr:RegulatoryInstrument ;
+    rdfs:label "New York Civil Rights Law §52-c — Electronic Monitoring Notice" .
+
+hr:RegCTElectronicMonitoringNotice a hr:RegulatoryInstrument ;
+    rdfs:label "Connecticut Gen. Stat. §31-48d — Electronic Monitoring Notice" .
+
+hr:RegNLRASection7 a hr:RegulatoryInstrument ;
+    rdfs:label "National Labor Relations Act §7 — Protected Concerted Activity" .
+
+hr:RegGDPRArticle88 a hr:RegulatoryInstrument ;
+    rdfs:label "EU GDPR Article 88 — Processing in the Context of Employment (for non-U.S. worksite employees)" .
+
+# =================================================================
+# DOMAIN 7 & 8 BUSINESS PROCESSES
+# =================================================================
+
+# --- Workforce Development, Coaching & Performance Measurement Processes ---
+hr:ProcSkillsGapAssessment a hr:BusinessProcess ;
+    rdfs:label "Role-Based Skills Gap Assessment Process" .
+
+hr:ProcIndividualDevelopmentPlanBuild a hr:BusinessProcess ;
+    rdfs:label "Individual Development Plan Build Process" .
+
+hr:ProcTrainingSessionScheduling a hr:BusinessProcess ;
+    rdfs:label "Instructor-Led Training Session Scheduling Process" .
+
+hr:ProcTrainingEffectivenessEvaluation a hr:BusinessProcess ;
+    rdfs:label "Training Effectiveness Evaluation (Kirkpatrick L1–L4) Process" .
+
+hr:ProcCoachingEngagementIntake a hr:BusinessProcess ;
+    rdfs:label "Coaching Engagement Intake & Confidentiality Agreement Process" .
+
+hr:ProcCoachingConversationCadence a hr:BusinessProcess ;
+    rdfs:label "Coaching Conversation Cadence Process" .
+
+hr:ProcMentorMenteeMatching a hr:BusinessProcess ;
+    rdfs:label "Mentor–Mentee Matching Process" .
+
+hr:ProcMentoringProgramReview a hr:BusinessProcess ;
+    rdfs:label "Mentoring Program Review Process" .
+
+hr:ProcPeriodicCheckInCycle a hr:BusinessProcess ;
+    rdfs:label "Periodic Manager–Employee Check-In Cycle Process" .
+
+hr:ProcGoalProgressMonitoring a hr:BusinessProcess ;
+    rdfs:label "Goal Progress Monitoring Process" .
+
+hr:ProcPrePostCompetencyMeasure a hr:BusinessProcess ;
+    rdfs:label "Pre/Post Competency Proficiency Measurement Process" .
+
+hr:ProcTrainingROIAnalysis a hr:BusinessProcess ;
+    rdfs:label "Training & Coaching ROI Analysis Process" .
+
+hr:ProcScorecardMetricDefinition a hr:BusinessProcess ;
+    rdfs:label "Scorecard Metric Definition & Privacy Classification Process" .
+
+hr:ProcScorecardPublication a hr:BusinessProcess ;
+    rdfs:label "Organizational Scorecard Publication Process" .
+
+# --- Organizational Values, Culture & Ethics Stewardship Processes ---
+hr:ProcValuesNarrativeCampaign a hr:BusinessProcess ;
+    rdfs:label "Values Narrative & Communication Campaign Process" .
+
+hr:ProcValuesLifecycleIntegration a hr:BusinessProcess ;
+    rdfs:label "Values Integration into Onboarding, Handbook, Training & Appraisal Process" .
+
+hr:ProcPeerRecognitionNomination a hr:BusinessProcess ;
+    rdfs:label "Values-Tagged Peer Recognition Nomination Process" .
+
+hr:ProcRecognitionEquityReview a hr:BusinessProcess ;
+    rdfs:label "Recognition Distribution Equity Review Process" .
+
+hr:ProcVolunteerOpportunityCoordination a hr:BusinessProcess ;
+    rdfs:label "Volunteer Opportunity Coordination Process" .
+
+hr:ProcVoluntaryHoursSelfReport a hr:BusinessProcess ;
+    rdfs:label "Voluntary Volunteer-Hours Self-Report Process" .
+
+hr:ProcIdeaSubmissionReview a hr:BusinessProcess ;
+    rdfs:label "Improvement Idea Submission & Review Process" .
+
+hr:ProcChangeReadinessEnablement a hr:BusinessProcess ;
+    rdfs:label "Change Readiness Enablement Process" .
+
+hr:ProcPulseSurveyAdministration a hr:BusinessProcess ;
+    rdfs:label "Anonymous Pulse Survey Administration Process" .
+
+hr:ProcSmallGroupSuppression a hr:BusinessProcess ;
+    rdfs:label "Small-Group Result Suppression Process" .
+
+hr:ProcConcernIntakeTriage a hr:BusinessProcess ;
+    rdfs:label "Ethics Concern Intake & Triage Process" .
+
+hr:ProcNonRetaliationMonitoring a hr:BusinessProcess ;
+    rdfs:label "Post-Report Non-Retaliation Monitoring Process" .
+
+hr:ProcValuesSelfReflection a hr:BusinessProcess ;
+    rdfs:label "Employee Values Self-Reflection Process" .
+
+hr:ProcValuesEvidenceCalibration a hr:BusinessProcess ;
+    rdfs:label "Values Evidence Calibration & Employee Response Process" .
+
+hr:ProcValuesIndexComputation a hr:BusinessProcess ;
+    rdfs:label "Aggregate Values & Culture Index Computation Process" .
+
+hr:ProcLeaderActionPlanTracking a hr:BusinessProcess ;
+    rdfs:label "Leader Action-Plan Tracking Process" .
+
+hr:ProcPrivacyImpactAssessment a hr:BusinessProcess ;
+    rdfs:label "People-Analytics Privacy Impact Assessment Process" .
+
+hr:ProcMonitoringProportionalityReview a hr:BusinessProcess ;
+    rdfs:label "Monitoring Necessity & Proportionality Review Process" .
+
+hr:ProcMonitoringNoticeIssuance a hr:BusinessProcess ;
+    rdfs:label "Employee Monitoring Notice Issuance & Acknowledgment Process" .
+
+hr:ProcConsentPreferenceManagement a hr:BusinessProcess ;
+    rdfs:label "Consent & Participation Preference Management Process" .
+
+hr:ProcKAnonymityThresholdCheck a hr:BusinessProcess ;
+    rdfs:label "k-Anonymity Threshold Check Process" .
+
+hr:ProcDifferencingAttackReview a hr:BusinessProcess ;
+    rdfs:label "Re-Identification (Differencing) Risk Review Process" .
+
+hr:ProcRetentionScheduleEnforcement a hr:BusinessProcess ;
+    rdfs:label "People-Data Retention Schedule Enforcement Process" .
+
+hr:ProcEmployeeDataRightsRequest a hr:BusinessProcess ;
+    rdfs:label "Employee Data Access, Correction & Deletion Request Process" .
+
+# =================================================================
+# PROCESS-TO-OPERATIONS SEMANTIC BINDINGS (v2)
+# =================================================================
+
+# Workforce Development, Coaching & Measurement Processes
+hr:ProcSkillsGapAssessment hr:supportedByOperation hr:OpLearningCoachingDelivery , hr:OpTalentAdvisory .
+hr:ProcIndividualDevelopmentPlanBuild hr:supportedByOperation hr:OpLearningCoachingDelivery .
+hr:ProcTrainingSessionScheduling hr:supportedByOperation hr:OpLearningCoachingDelivery , hr:OpHRTechnologyCyber .
+hr:ProcTrainingEffectivenessEvaluation hr:supportedByOperation hr:OpLearningCoachingDelivery .
+hr:ProcCoachingEngagementIntake hr:supportedByOperation hr:OpLearningCoachingDelivery , hr:OpPrivacyOffice .
+hr:ProcCoachingConversationCadence hr:supportedByOperation hr:OpLearningCoachingDelivery .
+hr:ProcMentorMenteeMatching hr:supportedByOperation hr:OpLearningCoachingDelivery .
+hr:ProcMentoringProgramReview hr:supportedByOperation hr:OpLearningCoachingDelivery .
+hr:ProcPeriodicCheckInCycle hr:supportedByOperation hr:OpTalentAdvisory , hr:OpHRTechnologyCyber .
+hr:ProcGoalProgressMonitoring hr:supportedByOperation hr:OpTalentAdvisory .
+hr:ProcPrePostCompetencyMeasure hr:supportedByOperation hr:OpLearningCoachingDelivery .
+hr:ProcTrainingROIAnalysis hr:supportedByOperation hr:OpLearningCoachingDelivery , hr:OpClientFinanceBilling .
+hr:ProcScorecardMetricDefinition hr:supportedByOperation hr:OpHRTechnologyCyber , hr:OpPrivacyOffice .
+hr:ProcScorecardPublication hr:supportedByOperation hr:OpHRTechnologyCyber .
+
+# Values, Culture & Ethics Stewardship Processes
+hr:ProcValuesNarrativeCampaign hr:supportedByOperation hr:OpCultureValuesEthics .
+hr:ProcValuesLifecycleIntegration hr:supportedByOperation hr:OpCultureValuesEthics , hr:OpLearningCoachingDelivery .
+hr:ProcPeerRecognitionNomination hr:supportedByOperation hr:OpCultureValuesEthics , hr:OpHRTechnologyCyber .
+hr:ProcRecognitionEquityReview hr:supportedByOperation hr:OpCultureValuesEthics , hr:OpLegalCompliance .
+hr:ProcVolunteerOpportunityCoordination hr:supportedByOperation hr:OpCultureValuesEthics .
+hr:ProcVoluntaryHoursSelfReport hr:supportedByOperation hr:OpCultureValuesEthics , hr:OpPrivacyOffice .
+hr:ProcIdeaSubmissionReview hr:supportedByOperation hr:OpCultureValuesEthics .
+hr:ProcChangeReadinessEnablement hr:supportedByOperation hr:OpCultureValuesEthics , hr:OpLearningCoachingDelivery .
+hr:ProcPulseSurveyAdministration hr:supportedByOperation hr:OpCultureValuesEthics , hr:OpPrivacyOffice .
+hr:ProcSmallGroupSuppression hr:supportedByOperation hr:OpPrivacyOffice .
+hr:ProcConcernIntakeTriage hr:supportedByOperation hr:OpCultureValuesEthics , hr:OpLegalCompliance .
+hr:ProcNonRetaliationMonitoring hr:supportedByOperation hr:OpLegalCompliance .
+hr:ProcValuesSelfReflection hr:supportedByOperation hr:OpTalentAdvisory .
+hr:ProcValuesEvidenceCalibration hr:supportedByOperation hr:OpTalentAdvisory , hr:OpLegalCompliance .
+hr:ProcValuesIndexComputation hr:supportedByOperation hr:OpCultureValuesEthics , hr:OpHRTechnologyCyber .
+hr:ProcLeaderActionPlanTracking hr:supportedByOperation hr:OpCultureValuesEthics .
+
+# Privacy-Preserving People Analytics Processes
+hr:ProcPrivacyImpactAssessment hr:supportedByOperation hr:OpPrivacyOffice , hr:OpLegalCompliance .
+hr:ProcMonitoringProportionalityReview hr:supportedByOperation hr:OpPrivacyOffice , hr:OpLegalCompliance .
+hr:ProcMonitoringNoticeIssuance hr:supportedByOperation hr:OpPrivacyOffice , hr:OpLegalCompliance .
+hr:ProcConsentPreferenceManagement hr:supportedByOperation hr:OpPrivacyOffice , hr:OpHRTechnologyCyber .
+hr:ProcKAnonymityThresholdCheck hr:supportedByOperation hr:OpPrivacyOffice , hr:OpHRTechnologyCyber .
+hr:ProcDifferencingAttackReview hr:supportedByOperation hr:OpPrivacyOffice .
+hr:ProcRetentionScheduleEnforcement hr:supportedByOperation hr:OpPrivacyOffice , hr:OpHRTechnologyCyber .
+hr:ProcEmployeeDataRightsRequest hr:supportedByOperation hr:OpPrivacyOffice , hr:OpLegalCompliance .
+
+# Cross-links from v1 processes to v2 safeguards
+hr:ProcTurnoverPredictiveModeling hr:governedBySafeguard hr:SafeguardProtectedTraitExclusion , hr:SafeguardPurposeLimitation .
+hr:ProcGeofencedClockInValidation hr:governedBySafeguard hr:SafeguardTransparencyNotice .
+hr:ProcPunchIngestionAudit hr:governedBySafeguard hr:SafeguardNoCovertSurveillance .
+hr:WorkforceAnalyticsReportingService hr:governedBySafeguard hr:SafeguardAggregationThreshold , hr:SafeguardProtectedTraitExclusion .
+
+# =================================================================
+# DOMAIN 7 & 8 ONTOLOGY CONCEPTS
+# =================================================================
+
+hr:ConceptSkillsTaxonomy a hr:OntologyConcept ;
+    rdfs:label "Role-Based Skills & Competency Taxonomy" .
+
+hr:ConceptIndividualDevelopmentPlan a hr:OntologyConcept ;
+    rdfs:label "Individual Development Plan (IDP)" .
+
+hr:ConceptTrainingCatalog a hr:OntologyConcept ;
+    rdfs:label "Instructor-Led & Virtual Training Catalog" .
+
+hr:ConceptKirkpatrickEvaluationModel a hr:OntologyConcept ;
+    rdfs:label "Kirkpatrick Four-Level Training Evaluation Model" .
+
+hr:ConceptCoachingAgreement a hr:OntologyConcept ;
+    rdfs:label "Coaching Agreement & Confidentiality Terms" .
+
+hr:ConceptCoachingSessionRecord a hr:OntologyConcept ;
+    rdfs:label "Coachee-Owned Coaching Session Record" .
+
+hr:ConceptMentorMatchProfile a hr:OntologyConcept ;
+    rdfs:label "Mentor–Mentee Match Profile" .
+
+hr:ConceptMentoringProgramCharter a hr:OntologyConcept ;
+    rdfs:label "Mentoring Program Charter" .
+
+hr:ConceptCheckInRecord a hr:OntologyConcept ;
+    rdfs:label "Manager–Employee Check-In Record" .
+
+hr:ConceptProgressSignal a hr:OntologyConcept ;
+    rdfs:label "Goal Progress Status Signal (On Track / At Risk / Off Track)" .
+
+hr:ConceptCompetencyProficiencyScale a hr:OntologyConcept ;
+    rdfs:label "Competency Proficiency Rating Scale" .
+
+hr:ConceptLearningROIModel a hr:OntologyConcept ;
+    rdfs:label "Learning & Coaching Return-on-Investment Model" .
+
+hr:ConceptBalancedScorecard a hr:OntologyConcept ;
+    rdfs:label "Organizational Health & Objectives Balanced Scorecard" .
+
+hr:ConceptMetricDefinitionCard a hr:OntologyConcept ;
+    rdfs:label "Metric Definition Card (purpose, formula, owner, granularity, privacy class)" .
+
+hr:ConceptValuesCharter a hr:OntologyConcept ;
+    rdfs:label "Corporate Values & Objectives Charter" .
+
+hr:ConceptBehavioralAnchorLibrary a hr:OntologyConcept ;
+    rdfs:label "Values Behavioral Anchor Library (observable do / don't behaviors per value)" .
+
+hr:ConceptRecognitionTaxonomy a hr:OntologyConcept ;
+    rdfs:label "Values-Tagged Recognition Taxonomy" .
+
+hr:ConceptRecognitionEquityReport a hr:OntologyConcept ;
+    rdfs:label "Recognition Distribution Equity Report" .
+
+hr:ConceptVolunteerTimeOffPolicy a hr:OntologyConcept ;
+    rdfs:label "Volunteer Time Off (VTO) Policy" .
+
+hr:ConceptCommunityImpactLedger a hr:OntologyConcept ;
+    rdfs:label "Organizational Community Impact Ledger" .
+
+hr:ConceptIdeaPipeline a hr:OntologyConcept ;
+    rdfs:label "Improvement Idea Pipeline" .
+
+hr:ConceptChangeReadinessModel a hr:OntologyConcept ;
+    rdfs:label "Change Readiness Assessment Model" .
+
+hr:ConceptValuesPulseInstrument a hr:OntologyConcept ;
+    rdfs:label "Values & Culture Pulse Survey Instrument" .
+
+hr:ConceptAnonymityThresholdRule a hr:OntologyConcept ;
+    rdfs:label "Survey Anonymity Minimum-Response Threshold Rule" .
+
+hr:ConceptAnonymousReportingChannel a hr:OntologyConcept ;
+    rdfs:label "Third-Party Anonymous Ethics Reporting Channel" .
+
+hr:ConceptNonRetaliationCaseRecord a hr:OntologyConcept ;
+    rdfs:label "Non-Retaliation Follow-Up Case Record" .
+
+hr:ConceptValuesReflectionEntry a hr:OntologyConcept ;
+    rdfs:label "Employee Values Self-Reflection Entry" .
+
+hr:ConceptValuesIndexModel a hr:OntologyConcept ;
+    rdfs:label "Aggregate Values & Culture Index Model" .
+
+hr:ConceptLeaderActionPlan a hr:OntologyConcept ;
+    rdfs:label "Leader Post-Survey Action Plan" .
+
+hr:ConceptPrivacyImpactAssessment a hr:OntologyConcept ;
+    rdfs:label "People-Analytics Privacy Impact Assessment (PIA) Record" .
+
+hr:ConceptProhibitedMonitoringRegister a hr:OntologyConcept ;
+    rdfs:label "Prohibited Monitoring Practices Register" .
+
+hr:ConceptElectronicMonitoringNotice a hr:OntologyConcept ;
+    rdfs:label "Electronic Monitoring Notice & Acknowledgment" .
+
+hr:ConceptPurposeLimitationRegister a hr:OntologyConcept ;
+    rdfs:label "People-Data Purpose Limitation Register" .
+
+hr:ConceptKAnonymityPolicy a hr:OntologyConcept ;
+    rdfs:label "k-Anonymity Minimum Group Size Policy" .
+
+hr:ConceptReidentificationRiskTest a hr:OntologyConcept ;
+    rdfs:label "Re-Identification Risk Test (small-cell & differencing)" .
+
+hr:ConceptPeopleDataRetentionSchedule a hr:OntologyConcept ;
+    rdfs:label "People-Data Retention Schedule" .
+
+hr:ConceptEmployeeDataRightsRequest a hr:OntologyConcept ;
+    rdfs:label "Employee Data Subject Rights Request" .
+
+# =================================================================
+# SHACL SHAPES — MACHINE-CHECKABLE PRIVACY RULES
+# =================================================================
+
+hr:ValueIndicatorShape a sh:NodeShape ;
+    sh:targetClass hr:ValueIndicator ;
+    rdfs:comment "Every indicator must declare what it evidences, how it is collected, its granularity, its privacy flags, and at least one safeguard." ;
+    sh:property [ sh:path hr:isIndicatorOf ; sh:minCount 1 ] ,
+                [ sh:path hr:collectedByService ; sh:minCount 1 ; sh:class hr:DomainService ] ,
+                [ sh:path hr:hasCollectionMode ; sh:minCount 1 ; sh:maxCount 1 ; sh:class hr:DataCollectionMode ] ,
+                [ sh:path hr:reportingGranularity ; sh:minCount 1 ; sh:maxCount 1 ; sh:class hr:ReportingGranularity ] ,
+                [ sh:path hr:isIndividuallyAttributable ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:boolean ] ,
+                [ sh:path hr:usableInEmploymentDecisions ; sh:minCount 1 ; sh:maxCount 1 ; sh:datatype xsd:boolean ] ,
+                [ sh:path hr:governedBySafeguard ; sh:minCount 1 ; sh:class hr:PrivacySafeguard ] .
+
+hr:AggregateThresholdShape a sh:NodeShape ;
+    sh:targetClass hr:ValueIndicator ;
+    rdfs:comment "Group-level indicators must set a minimum group size of at least 5 and be governed by the aggregation threshold safeguard." ;
+    sh:sparql [
+        sh:message "Aggregate-group indicator lacks k >= 5 or the aggregation threshold safeguard." ;
+        sh:prefixes hr:HRServicesEnterpriseModel ;
+        sh:select """
+            SELECT $this WHERE {
+                $this hr:reportingGranularity hr:GranularityAggregateGroup .
+                FILTER ( NOT EXISTS { $this hr:minimumGroupSize ?k . FILTER (?k >= 5) }
+                      || NOT EXISTS { $this hr:governedBySafeguard hr:SafeguardAggregationThreshold } )
+            }""" ] .
+
+hr:AnonymousNotAttributableShape a sh:NodeShape ;
+    sh:targetClass hr:ValueIndicator ;
+    sh:sparql [
+        sh:message "Anonymous-survey indicator must not be individually attributable or usable in employment decisions." ;
+        sh:prefixes hr:HRServicesEnterpriseModel ;
+        sh:select """
+            SELECT $this WHERE {
+                $this hr:hasCollectionMode hr:ModeAnonymousSurvey .
+                { $this hr:isIndividuallyAttributable true } UNION { $this hr:usableInEmploymentDecisions true }
+            }""" ] .
+
+hr:EmploymentDecisionShape a sh:NodeShape ;
+    sh:targetClass hr:ValueIndicator ;
+    rdfs:comment "An indicator usable in employment decisions must be conduct- or record-based, transparent to the employee, human-reviewed and retention-limited; survey and voluntary data never qualify." ;
+    sh:sparql [
+        sh:message "Decision-grade indicator is missing a required safeguard or uses a prohibited collection mode." ;
+        sh:prefixes hr:HRServicesEnterpriseModel ;
+        sh:select """
+            SELECT $this WHERE {
+                $this hr:usableInEmploymentDecisions true .
+                FILTER ( NOT EXISTS { $this hr:governedBySafeguard hr:SafeguardHumanReview }
+                      || NOT EXISTS { $this hr:governedBySafeguard hr:SafeguardTransparencyNotice }
+                      || NOT EXISTS { $this hr:governedBySafeguard hr:SafeguardRetentionLimit }
+                      || EXISTS { $this hr:hasCollectionMode hr:ModeAnonymousSurvey }
+                      || EXISTS { $this hr:hasCollectionMode hr:ModeVoluntarySelfReport } )
+            }""" ] .
+
+hr:GuidingPrincipleShape a sh:NodeShape ;
+    sh:targetClass hr:GuidingPrinciple ;
+    rdfs:comment "Every value or objective must be promoted by at least one service and evidenced by at least one indicator." ;
+    sh:property [ sh:path hr:evidencedByIndicator ; sh:minCount 1 ; sh:class hr:ValueIndicator ] ,
+                [ sh:path [ sh:inversePath hr:promotesPrinciple ] ; sh:minCount 1 ] .
+
+hr:HRServicesEnterpriseModel sh:declare
+    [ sh:prefix "hr" ; sh:namespace "http://example.org/hrservices/ddd#"^^xsd:anyURI ] .
+
+# =================================================================
+# COMPETENCY QUESTIONS (sample SPARQL)
+# =================================================================
+# CQ1  Which indicators may be used in employment decisions, and which
+#      safeguards govern them?
+#   SELECT ?ind ?sg WHERE { ?ind hr:usableInEmploymentDecisions true ;
+#                                 hr:governedBySafeguard ?sg . }
+#
+# CQ2  For each value/objective, which services promote it and how is it
+#      measured?
+#   SELECT ?p ?svc ?ind ?mode WHERE { ?svc hr:promotesPrinciple ?p .
+#       ?p hr:evidencedByIndicator ?ind . ?ind hr:hasCollectionMode ?mode . }
+#
+# CQ3  Which practices are prohibited, by which safeguard, under which law?
+#   SELECT ?practice ?sg ?reg WHERE { ?sg hr:prohibitsPractice ?practice .
+#       OPTIONAL { ?sg hr:derivedFromRegulation ?reg } }
+#
+# CQ4  Which operational areas carry the values-stewardship service line?
+#   SELECT DISTINCT ?op WHERE { hr:ServiceLineValuesStewardship hr:realizedBySubDomain ?sd .
+#       ?sd hr:providesService ?svc . ?svc hr:executedByProcess ?proc .
+#       ?proc hr:supportedByOperation ?op . }
