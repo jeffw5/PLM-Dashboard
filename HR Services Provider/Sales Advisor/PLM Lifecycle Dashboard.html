@@ -169,42 +169,81 @@ tr.grp td{background:var(--sunk);font:600 12px var(--f-head);letter-spacing:.03e
 .issue p{margin:3px 0 0;font-size:13px;color:var(--ink-2);max-width:85ch}
 footer{color:var(--muted);font-size:12px;margin-top:26px;border-top:1px solid var(--line-2);padding-top:12px;max-width:100ch}
 </style>
+<style>
+:root{ --c1:#1f6e8c; --c2:#4a3aa7; --c3:#5c6b7a; --c4:#7a4fa8; --c5:#0d7f78; --c6:#b07a12; --c7:#2b7a4b; --c8:#b3261e; }
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){ --c1:#5fb3d2; --c2:#9085e9; --c3:#93a2b0; --c4:#c39cf0; --c5:#4fc4bb; --c6:#e2b44e; --c7:#6cc590; --c8:#f08077; }}
+:root[data-theme="dark"]{ --c1:#5fb3d2; --c2:#9085e9; --c3:#93a2b0; --c4:#c39cf0; --c5:#4fc4bb; --c6:#e2b44e; --c7:#6cc590; --c8:#f08077; }
+.ccards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:1060px){.ccards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.ccards{grid-template-columns:minmax(0,1fr)}}
+.cc{background:var(--paper);border:1px solid var(--line);border-top:4px solid var(--c);padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.cc h3{font-size:17px}
+.cc p{margin:0;font-size:12.5px;color:var(--ink-2)}
+.cc .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.weights{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:860px){.weights{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.wt{border:1px solid var(--line);padding:10px 12px;background:var(--paper);min-width:0}
+.wt input{width:100%;accent-color:var(--accent)}
+.wt b{font:600 14px var(--f-head)}
+.wt .v{font:600 18px var(--f-mono);float:right}
+.risk-layout{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:980px){.risk-layout{grid-template-columns:minmax(0,1fr)}}
+.rm svg{display:block;width:100%;max-width:420px;height:auto}
+.rm text{font-family:var(--f-mono)}
+.dep td.d{text-align:center;font:600 12px var(--f-mono);min-width:44px}
+.dep td.d.s3{background:color-mix(in srgb,var(--crit) 22%,var(--paper))}
+.dep td.d.s2{background:color-mix(in srgb,var(--buf) 18%,var(--paper))}
+.dep td.d.s1{background:var(--sunk);color:var(--muted)}
+.dep tr.sel td{outline:1px solid var(--ink)}
+.dep th.cmp{white-space:normal;min-width:64px;text-align:center}
+.dep tbody tr{cursor:pointer}
+.imp{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:18px}
+@media (max-width:900px){.imp{grid-template-columns:minmax(0,1fr)}}
+.imp ul{margin:4px 0 0;padding-left:1.1em;font-size:13px;display:flex;flex-direction:column;gap:3px}
+.band{font:700 11px var(--f-mono);padding:2px 7px;border-radius:2px}
+.band.hi{background:var(--crit-soft);color:var(--crit)} .band.md{background:var(--warn-soft);color:var(--warn)} .band.lo{background:var(--good-soft);color:var(--good)}
+.lc td{font-size:12.5px;min-width:150px}
+.lc td.cn{min-width:170px;font:600 13.5px var(--f-head);border-left:4px solid var(--c)}
+.lc .when{display:block;font:500 11px var(--f-mono);color:var(--muted);margin-top:3px}
+.lc .none{color:var(--faint)}
+</style>
 <div class="wrap">
   <header class="tb">
-    <div><div class="lab">Luxury jet manufacturing · product lifecycle management</div><h1>PLM Lifecycle Dashboard</h1><p>Build-out roadmap, lifecycle scorecard and gate plan for six portfolios, phased with buffers because the lifecycle is new to the organization.</p></div>
+    <div><div class="lab">PEO Sales Advisor · Keel &amp; North Star · product lifecycle management</div><h1>PLM Lifecycle Dashboard</h1><p>Build-out of the eight component sets in the Sales Advisor solution design, phased with buffers, with impact and risk scored against business value and persona desired outcomes.</p></div>
     <div><div class="lab">Program start</div><div class="val" id="tbStart"></div></div>
-    <div><div class="lab">Planned finish (G5)</div><div class="val" id="tbEnd"></div></div>
+    <div><div class="lab">Planned finish (G3)</div><div class="val" id="tbEnd"></div></div>
     <div><div class="lab">Buffer held</div><div class="val" id="tbBuf"></div></div>
-    <div><div class="lab">Sheet · Rev</div><div class="val">PLM-RM-001 · A</div></div>
+    <div><div class="lab">Scope</div><div class="val">8 component sets · 38 agents</div></div>
   </header>
 
   <nav class="tabs" role="tablist" aria-label="Views">
     <button class="tab" role="tab" data-v="overview" aria-selected="true">Overview</button>
     <button class="tab" role="tab" data-v="roadmap" aria-selected="false">Roadmap</button>
-    <button class="tab" role="tab" data-v="scorecard" aria-selected="false">Scorecard</button>
-    <button class="tab" role="tab" data-v="gates" aria-selected="false">Portfolio gates</button>
+    <button class="tab" role="tab" data-v="risk" aria-selected="false">Impact &amp; risk</button>
+    <button class="tab" role="tab" data-v="value" aria-selected="false">Value &amp; outcomes</button>
+    <button class="tab" role="tab" data-v="lifecycle" aria-selected="false">Lifecycle gates</button>
     <button class="tab" role="tab" data-v="readiness" aria-selected="false">Readiness gaps</button>
   </nav>
 
-  <!-- OVERVIEW -->
   <section class="view" id="v-overview">
     <div class="kpis" id="kpis"></div>
     <div class="panel">
-      <h2>Six phases, each closed by a program gate and a buffer</h2>
-      <p class="hint">Bars show each phase’s work; the amber block at the end of each phase is its buffer, sized to how new and how regulated the work is. A gate passes when its buffer is not exhausted and the scorecard rule for the portfolios in that phase is met.</p>
+      <h2>Four phases, each closed by a gate and a buffer</h2>
+      <p class="hint">The phases follow the Sales Advisor design: Keel work first in each phase, North Star work on what the Keel has released. Buffers are sized to how new the work is to the organization.</p>
       <div class="svgwrap" id="phaseStrip"></div>
     </div>
-    <div class="grid3" id="phaseCards"></div>
+    <div class="panel">
+      <h2>The eight component sets</h2>
+      <p class="hint">Risk = likelihood × impact (1–25). Impact comes from the business value at stake in the persona job steps that depend on the component; see the Impact &amp; risk tab.</p>
+      <div class="ccards" id="ccards"></div>
+    </div>
   </section>
 
-  <!-- ROADMAP -->
   <section class="view" id="v-roadmap" hidden>
     <div class="panel">
       <h2>Roadmap with dependencies</h2>
-      <p class="hint">Every bar is scheduled from its predecessors. Click a bar for its dependencies, what it builds on the scorecard, and its slack. Red outlines mark the critical path. Use the slip control to stress the plan: buffers absorb slip until they run out, and only then do gates move.</p>
-      <div class="ctrl">
-        <div class="chips" id="wsChips" role="group" aria-label="Filter by workstream"></div>
-      </div>
+      <p class="hint">Every bar is scheduled from its predecessors. Click a bar for its dependencies, the job-step gaps it closes and its slack. Red outlines mark the critical path. The slip control stresses every task; buffers absorb slip until they run out.</p>
+      <div class="ctrl"><div class="chips" id="wsChips" role="group" aria-label="Filter by component"></div></div>
       <div class="ctrl">
         <label class="tog"><input type="checkbox" id="critOnly"> Critical path only</label>
         <label class="tog"><input type="checkbox" id="showDeps" checked> Dependency lines</label>
@@ -217,663 +256,514 @@ footer{color:var(--muted);font-size:12px;margin-top:26px;border-top:1px solid va
     </div>
     <div class="panel">
       <h2>Buffer consumption</h2>
-      <p class="hint">Green under a third used, amber up to two thirds, red beyond. A red buffer is the early warning to replan before its gate.</p>
-      <div class="fever" id="fever"></div>
+      <p class="hint">Green under a third used, amber up to two thirds, red beyond. A red buffer is the signal to replan before its gate.</p>
+      <div class="fever" id="fever" style="grid-template-columns:repeat(4,minmax(0,1fr))"></div>
     </div>
   </section>
 
-  <!-- SCORECARD -->
-  <section class="view" id="v-scorecard" hidden>
+  <section class="view" id="v-risk" hidden>
     <div class="panel">
-      <h2>Digital Supply Chain pilot · lifecycle scorecard</h2>
-      <p class="hint">Phase score = sum of assessed maturity ÷ sum of baseline targets (0–3 each), as in the PLM Assessment sheet. Coverage shows how many targeted items have actually been assessed. Click any assessment to try a different score; edits stay on this screen only and reset on reload.</p>
-      <div class="phrow" id="phRoll"></div>
+      <h2>Business value weights</h2>
+      <p class="hint">How much each value driver matters to the sponsor (1–5). Impact and risk scores recompute as you change them. Defaults are equal until the sponsor sets them at G0.</p>
+      <div class="weights" id="weights"></div>
+    </div>
+    <div class="panel">
+      <h2>Risk by component</h2>
+      <div class="risk-layout">
+        <div class="rm" id="riskMatrix"></div>
+        <div class="tw"><table id="riskTbl"></table></div>
+      </div>
+      <p class="hint" style="margin-top:10px">Likelihood averages four factors scored 1–5: novelty to the organization, technical complexity, input readiness (data, content and baselines available) and dependency depth (how many components must land first). Impact scales the component’s value at stake against the most it could carry.</p>
+    </div>
+    <div class="panel">
+      <h2>Impact assessment</h2>
+      <p class="hint">Pick a component and what goes wrong. The schedule recomputes, buffers absorb what they can, and the affected job steps, desired outcomes, decision questions and value drivers are listed.</p>
+      <div class="ctrl" style="margin-top:8px">
+        <select id="impComp" aria-label="Component"></select>
+        <select id="impScn" aria-label="Scenario"><option value="4">Finishes 4 weeks late</option><option value="8" selected>Finishes 8 weeks late</option><option value="12">Finishes 12 weeks late</option><option value="q">Passes its gate but under-performs (quality)</option></select>
+      </div>
+      <div class="imp" id="impOut"></div>
+    </div>
+  </section>
+
+  <section class="view" id="v-value" hidden>
+    <div class="panel">
+      <h2>Which job steps depend on which components</h2>
+      <p class="hint">3 = critical (the step’s answers fail without it), 2 = supporting, 1 = measures or sustains it. Value at stake per step = driver weight × 3 desired outcomes × (1 + gap at baseline) × (1 + tier-H decision questions ÷ 4). Click a row for the step’s outcomes and what blocks it today.</p>
+      <div class="tw"><table class="dep" id="depTbl"></table></div>
+    </div>
+    <div class="panel" id="stepDetail"></div>
+  </section>
+
+  <section class="view" id="v-lifecycle" hidden>
+    <div class="panel">
+      <h2>Lifecycle gates per component</h2>
+      <p class="hint">Each component passes the six lifecycle phases from the PLM assessment scorecard. Cells show the roadmap work in each phase and when its gate evidence is due; Discover, Define and Design gates for each component close before its build starts. No component has been assessed yet; the first assessment is at G0.</p>
+      <div class="tw"><table class="lc" id="lcTbl"></table></div>
     </div>
     <div class="panel gng">
       <div>
-        <div class="lab">Go / No-Go for OPR &amp; Release Management · proposed rule</div>
-        <div class="verdict" id="verdict"></div>
-        <p class="hint" style="margin-top:6px">The sheet says to aggregate debt into the final Go/No-Go but does not define the threshold. This rule is a proposal for the PLM Council to confirm at G0.</p>
+        <div class="lab">Go / No-Go for release · proposed rule</div>
+        <div class="verdict no">NOT ASSESSED</div>
+        <p class="hint" style="margin-top:6px">The scorecard template says to aggregate debt into the release decision but does not set a threshold. This rule is a proposal for the steering group to confirm at G0.</p>
       </div>
-      <ul class="checks" id="checks"></ul>
-    </div>
-    <div class="panel">
-      <h2>Portfolio heatmap</h2>
-      <p class="hint">Only the Digital Supply Chain has assessment data today. The other five portfolios are baselined in task G-03 and assessed as each wave starts.</p>
-      <div class="tw"><table class="heat" id="heat"></table></div>
-    </div>
-    <div class="panel">
-      <h2>Digital Supply Chain components</h2>
-      <p class="hint">From the “PLM Scorecard (example)” sheet. The aggregate averages all eight components, so unassessed components pull it down.</p>
-      <div class="tw"><table id="compTbl"></table></div>
-    </div>
-    <div class="panel">
-      <h2>Scorecard items</h2>
-      <div class="ctrl"><div class="chips" id="itemFilter" role="group" aria-label="Filter items"></div><button class="linkbtn" id="resetEdits" type="button">Reset what-if edits</button></div>
-      <div class="tw"><table id="itemTbl"></table></div>
+      <ul class="checks" id="rule"></ul>
     </div>
   </section>
 
-  <!-- GATES -->
-  <section class="view" id="v-gates" hidden>
-    <div class="panel">
-      <h2>Portfolio artifacts and gates, with planned dates</h2>
-      <p class="hint">Required artifacts and mandatory reviews from the policy cross-reference, dated from the roadmap. Gate 0 falls about 40% of the way through Discover &amp; Define; the Define gate closes it. Run reviews recur after Delivery.</p>
-      <div class="tw"><table class="gm" id="gm"></table></div>
-    </div>
-  </section>
-
-  <!-- READINESS -->
   <section class="view" id="v-readiness" hidden>
     <div class="panel">
-      <h2>What has to be fixed before the scorecard can steer decisions</h2>
-      <p class="hint">Gaps found while reading the scorecard and the policy cross-reference, each tied to the roadmap task that closes it.</p>
+      <h2>What has to be settled before the scores can steer decisions</h2>
+      <p class="hint">Each gap is tied to the roadmap task that closes it.</p>
       <div class="issues" id="issues"></div>
     </div>
     <div class="panel">
       <h2>Assumptions behind the plan</h2>
       <ul style="margin:0;padding-left:1.2em;font-size:13.5px;display:flex;flex-direction:column;gap:6px;max-width:95ch">
-        <li>All scorecard components and all six portfolios are built from scratch; no existing practice is reused without being rebuilt to the new standard.</li>
-        <li>Durations are in weeks for a dedicated core team per workstream; portfolio teams join at their wave. Each portfolio’s Discover &amp; Define overlaps the previous wave so the next team learns from it.</li>
-        <li>Buffers total <span id="bufTxt"></span>, sized by novelty and regulatory exposure: 2 weeks to mobilize, 4 for foundations, 6 for the pilot and wave 2, 8 for in-service support (DO-178C/DO-254, FAA/EASA), 4 for the final wave.</li>
-        <li>The Digital Supply Chain is the pilot because it is the only portfolio with assessment data and it feeds every later wave (serialized parts, supplier quality, spares).</li>
+        <li>Scope is only the eight component sets of the Sales Advisor design. Quoting, CRM, payroll and enrollment systems are consumed as they are, through the virtual graph.</li>
+        <li>Durations are in weeks for a dedicated team per component; stewards and SMEs join for ontology, rules and golden answers.</li>
+        <li>Buffers total <span id="bufTxt"></span>: 2 weeks for the Keel, 4 for the content graph, 6 for the advisor launch and 4 for the learning loop.</li>
+        <li>Value at stake uses the 12 core job steps, their baseline gaps from the advisor’s value-gap monitor (synthetic design values) and the tier-H counts from the decision-question baseline. The other 72 desired outcomes enter when their baselines are measured.</li>
         <li>Dates start on the first Monday of November 2026 and are planning dates, not commitments.</li>
       </ul>
     </div>
   </section>
 
-  <footer>Sources: “Policy Cross-Reference of Portfolios to PLM for Aircraft Mfg” and “PLM Assessment Scorecard” (sheets PLM Assessment, PLM Scorecard (example), OPR Breakdown). Durations, buffers, dependencies and the Go/No-Go rule are proposals. Prepared by Jeffrey Wallk, The Value Enablement Group, LLC.</footer>
+  <footer>Sources: PEO Sales Advisor solution design (components, agents, EXT rules, phases and gates), buyer persona job studies (desired outcomes), decision-question baseline (tier-H questions) and the PLM Assessment Scorecard template (lifecycle phases and practices). Weights, scores, durations and thresholds are proposals with synthetic values. Prepared by Jeffrey Wallk, The Value Enablement Group, LLC.</footer>
 </div>
 <script>
-// ===================== SOURCE DATA =====================
-const PHASES = ['Discover','Define','Design','Develop','Deliver','Run'];
-const PH_COLOR = ['--ph1','--ph2','--ph3','--ph4','--ph5','--ph6'];
-
-// PLM Assessment Scorecard (sheet "PLM Assessment"): [phase index, practice, item, baseline target 0-3 | null, DSC pilot assessment 0-3 | null]
-const SC = [
- [0,'DT · Design Thinking','Consumer Needs (Jobs To Be Done)',1,2],
- [0,'DT · Design Thinking','Design Thinking (Outcome Discovery)',2,2],
- [0,'DT · Design Thinking','Persona Mapping (Desired Outcomes)',2,2],
- [0,'DT · Design Thinking','Future State Planning (Outcome Gaps)',0,1],
- [0,'DT · Design Thinking','Impact Analysis (Strategy & Operations)',0,0],
- [0,'DT · Design Thinking','Bundling and Prioritization',0,0],
- [0,'DT · Design Thinking','Inspections',3,0],
- [0,'DT · Design Thinking','Defect Log: major defects addressed',3,0],
- [1,'RE · Business specifications','Capability Maps (enabled by Services & Products)',0,null],
- [1,'RE · Business specifications','Persona Maps (Desired Outcomes)',3,null],
- [1,'RE · Business specifications','Service Maps (Delivered Outcomes)',0,null],
- [1,'RE · Business specifications','Service Gaps (Providers & Partners)',0,null],
- [1,'RE · Business specifications','Measurement (KPIs, OKRs, SLEs)',3,2],
- [1,'RE · Business specifications','Test Scope and Planning',3,2],
- [1,'RE · Business specifications','Business Continuity Planning',3,1],
- [1,'RE · Design specifications','Use Cases',3,3],
- [1,'RE · Design specifications','Feature Matrix (FFs to Services & Outcomes)',3,0],
- [1,'RE · Design specifications','Feature Decomposition (FFs to NFFs to Stories)',3,0],
- [1,'RE · Design specifications','Requirements Mapping & Traceability',0,0],
- [1,'RE · Design specifications','Inspections',3,0],
- [1,'RE · Design specifications','Defect Log: major defects addressed',3,2],
- [2,'ODD · Outcome-Driven Design','Northstar Value (Customer Centricity)',3,null],
- [2,'ODD · Outcome-Driven Design','Design for Integration & Interoperability',3,null],
- [2,'ODD · Outcome-Driven Design','Design for Sustainability & Operational Resiliency',3,null],
- [2,'ODD · Outcome-Driven Design','Design for Continuous Improvement & Adaptation',3,null],
- [2,'ODD · Outcome-Driven Design','Design for Complexity & Continuity at Scale',3,null],
- [2,'ODD · Outcome-Driven Design','Northstar Architecture (Speed, Scale, Efficiency, Cost)',3,null],
- [2,'ODD · Outcome-Driven Design','Solution Architecture',3,null],
- [2,'ODD · Outcome-Driven Design','Solution Design',3,null],
- [2,'ODD · Outcome-Driven Design','ARB Review',3,null],
- [2,'ODD · Outcome-Driven Design','ARB Remediation',3,null],
- [2,'ODD · Outcome-Driven Design','Inspections',3,null],
- [2,'ODD · Outcome-Driven Design','Defect Log: major defects addressed',3,null],
- [3,'DE · Data Engineering (DCAM)','Data Acquisition (D5 services)',null,null],
- [3,'DE · Data Engineering (DCAM)','Data Warehousing (RT, Batch, Archival)',3,null],
- [3,'DE · Data Engineering (DCAM)','Data Transformations',3,null],
- [3,'DE · Data Engineering (DCAM)','Data Access & Delivery',3,null],
- [3,'DE · Data Engineering (DCAM)','Data Destruction',null,null],
- [3,'DE · Data Engineering (DCAM)','Policy Enforcement',3,null],
- [3,'DE · Data Engineering (DCAM)','Asset Management (Data, Products, Models)',null,null],
- [3,'KE · Knowledge Engineering','Structured Vocabulary Design & Extension',null,null],
- [3,'KE · Knowledge Engineering','Semantic Extension',null,null],
- [3,'KE · Knowledge Engineering','Taxonomy Modeling & Optimization',null,null],
- [3,'KE · Knowledge Engineering','Ontology Design, Modeling & Optimization',null,null],
- [3,'KE · Knowledge Engineering','RDB Mapping to RDF',null,null],
- [3,'KE · Knowledge Engineering','Integration, Mastering & Mapping at Scale',null,null],
- [3,'SE · Systems Engineering','CI/CD (Check-in, Regression Test, Code Analysis, CCM)',3,null],
- [3,'SE · Systems Engineering','Continuous Verification and Validation',3,null],
- [3,'SE · Systems Engineering','Documentation Standards',3,null],
- [3,'SE · Systems Engineering','Runbook (SOPs)',3,null],
- [3,'SE · Systems Engineering','Change Control Log',3,null],
- [3,'SE · Systems Engineering','Event & Orchestration Management',3,null],
- [3,'SE · Systems Engineering','Auditing & Instrumentation (logs)',3,null],
- [3,'SE · Systems Engineering','Testing (Functional, Integration, Performance, UAT)',3,null],
- [3,'SE · Systems Engineering','Error Management, Dispositioning & Resiliency',3,null],
- [3,'SE · Systems Engineering','Inspections',3,null],
- [3,'SE · Systems Engineering','Defect Log: major defects addressed',3,null],
- [4,'OPR · Operations Management','Business Operations',2,null],
- [4,'OPR · Operations Management','Data Operations',2,null],
- [4,'OPR · Operations Management','Systems Operations',2,null],
- [4,'OPR · Operations Management','Platform Operations',2,null],
- [4,'OPR · Operations Management','Release Management',2,null],
- [4,'OPR · Operations Management','Security Management',2,null],
- [4,'OPR · Operations Management','Data Quality Management',2,null],
- [4,'OPR · Operations Management','Policy Management',3,null],
- [4,'OPR · Operations Management','Quality Engineering',3,null],
- [4,'OPR · Operations Management','Certification Management',null,null],
- [4,'OPR · Operations Management','Inspections',3,null],
- [4,'OPR · Operations Management','Defect Log: major defects addressed',3,null],
- [5,'SCM · Supply Chain Management','Order Entry (Requests)',null,null],
- [5,'SCM · Supply Chain Management','Order Management',null,null],
- [5,'SCM · Supply Chain Management','Order Optimization',null,null],
- [5,'SCM · Supply Chain Management','Order Fulfillment',null,null],
- [5,'SCM · Supply Chain Management','Order Delivery (Logistics)',2,null],
- [5,'SCM · Supply Chain Management','Customer Support & Engagement',null,null],
- [5,'SCM · Supply Chain Management','Inventory Acquisition (Onboarding)',null,null],
- [5,'SCM · Supply Chain Management','Inventory Management (Warehousing)',null,null],
- [5,'SCM · Supply Chain Management','Provider & Partner Qualification',null,null],
- [5,'SCM · Supply Chain Management','Orchestration Management (Events & Services)',2,null],
- [5,'SLM · Service Level Management','Service Matrix (lifecycle & operations x-ref)',2,null],
- [5,'SLM · Service Level Management','Service Level Impact (Outcome Gaps)',2,null],
- [5,'SLM · Service Level Management','Service Changes (products, services, systems, processes)',2,null],
- [5,'SLM · Service Level Management','Service Level Measurement (changes)',2,null],
+// ===================== PEO SALES ADVISOR · PLM DATA =====================
+const LIFE = ['Discover','Define','Design','Develop','Deliver','Run'];
+const LIFE_EVIDENCE = [
+ 'DT · JTBD, outcome discovery, persona maps, future-state gaps, impact analysis, prioritization',
+ 'RE · capability, persona and service maps; KPIs/OKRs/SLEs; feature matrix; requirements traceability',
+ 'ODD · North Star value and architecture; design for integration, resiliency, scale; ARB review and remediation',
+ 'DE · KE · SE · data services, vocabularies, ontologies, RDB-to-RDF mappings, CI/CD, V&V, runbooks',
+ 'OPR · business, data, systems, platform and release operations; security; data quality; policy; certification',
+ 'SLM · service matrix, outcome gaps, service changes and their measurement',
 ];
-// Sheet "PLM Scorecard (example)": Digital Supply Chain components. Portal = the pilot assessment above; CC has Discover scores only.
-const DSC_COMPONENTS = ['Portal','CC','WKC','OS-ME','OS-ATLAS','OS-MDE','GCP','Deliver'];
-const CC_DISCOVER = [0,0,0,0,1,0,0,3];
 
-// Policy cross-reference: portfolio -> per phase [artifacts, gate]
-const PORTS = [
- { id:'DSC', name:'Digital Supply Chain', col:'--pf1', rows:[
-  ['Supply Chain Maturity Assessment; Control Tower Business Case','Gate 0: Portfolio Strategy Alignment'],
-  ['Supplier Integration Architecture; EDI/API Data Standards; Tier-1/2 Risk Models','SRR: System Requirements Review'],
-  ['Digital Twin Supply Chain Specs; Vendor Portal UX; Track-and-Trace Data Schemas','PDR / CDR: System Architecture Design Review'],
-  ['ERP/PLM–Supplier Integration Code; Automated AS9102 FAI Ingestion Workflows','TRR: Supply Chain Integration Test Review'],
-  ['Control Tower Go-Live Playbook; Serialized Component Tracking Sign-offs','Deployment Review: Supply Chain Operations Approval'],
-  ['Real-Time Supplier Lead-Time Dashboards; Automated Vendor Risk Scoring Logs','Quarterly Vendor Governance Review']]},
- { id:'MES', name:'Shop Floor & MES', col:'--pf2', rows:[
-  ['Industry 4.0 Vision Document; Automation & Robotics Feasibility Study','Gate 0: Shop Floor Modernization Approval'],
-  ['MES Functional Specs; IoT Sensor Integration Specs; Tooling Tracking ConOps','SRR / SFR: MES System Architecture Review'],
-  ['Electronic Work Instructions (eWI) Specs; Line-Balancing Digital Twin Models','PDR / CDR: MES Design Freeze'],
-  ['MES Core Workflows; PLC/IoT Connectivity Protocols; Smart Tool Calibration Code','TRR: Pilot Line & Integration Readiness Review'],
-  ['Factory Acceptance Testing (FAT) Reports; Shop Floor Operator Training Kits','G3: Assembly Line Go-Live Gate'],
-  ['Real-time OEE Reports; Continuous Line Balance Logs','Monthly Operations & Manufacturing Review']]},
- { id:'QI', name:'Quality Intelligence', col:'--pf3', rows:[
-  ['Quality 4.0 Vision; Computer Vision & Acoustic Sensing AI Feasibility Study','Gate 0: Quality Transformation Gate'],
-  ['Digital QMS Architecture; Non-Conformance Taxonomy; Defect Prediction Specs','SRR: Quality Intelligence Requirements Review'],
-  ['AI Defect Detection Models; Automated NDT Sensor Specs','PDR / CDR: Quality Model & Sensor Hardware Design'],
-  ['Computer Vision Training Datasets; Closed-Loop CAPA Automation Pipelines','TRR: Quality Gate Validation Review'],
-  ['Automated Certificate of Conformance (CoC) Sign-offs; Regulatory Audits','Airworthiness Review: FAA/EASA Quality Sign-off'],
-  ['Real-Time Defect Prediction Dashboards; 8D Root Cause Logs; AI Drift Reports','Quality Board Review: AS9100 Oversight Audit']]},
- { id:'MRO', name:'MRO & Predictive Maintenance', col:'--pf4', rows:[
-  ['AHMS Market Study; Telemetry Business Case','Gate 0: In-Service Analytics Investment Gate'],
-  ['Telemetry Data Lake ConOps; Fleet Maintenance Requirements; FAA/EASA Data Strategy','SRR: AHMS Functional & Safety Requirements Review'],
-  ['Predictive Failure ML Models; Sensor Telemetry Data Models; DO-178C/DO-254 Specs','PDR / CDR: Predictive Algorithms & Hardware Design'],
-  ['AHMS Model Validation Reports; MRO Portal Code; Telemetry Pipeline Build','TRR / FTRR: Flight Test Telemetry Validation'],
-  ['CAMP Digital Integration Sign-off','Gate 4: Entry-Into-Service Maintenance Readiness'],
-  ['Real-Time Anomaly Alerts; Fleet Health Dashboards; Continuous ML Retraining Logs','CARB: Continued Airworthiness Review Board']]},
- { id:'ODR', name:'On-Demand Repair', col:'--pf5', rows:[
-  ['AOG Response Benchmark; Mobile Repair Strategy Document','Gate 0: Rapid Service Investment Gate'],
-  ['Mobile Repair Team ConOps; Rapid Engineering Order (REO) Requirements','SRR: On-Demand Service Requirements Review'],
-  ['3D-Printable Spare Part CAD Specs; Rapid Field-Repair Approval Workflows','PDR / CDR: Field Repair Standards Design Review'],
-  ['Mobile AOG Service App; Automated REO Generation Pipeline; Spares Dispatch Hub','TRR: Field Repair Simulation & App Testing'],
-  ['AOG Command Center Playbook; Field Tooling & Logistics Certification Pack','EIS Gate: Service Network Deployment Sign-off'],
-  ['MTTR Logs; AOG Dispatch Metrics; Field Repair Quality Audits','Monthly AOG & Field Service Governance']]},
- { id:'CS', name:'Customer Support', col:'--pf6', rows:[
-  ['VIP Jet Owner Experience Benchmark; Digital Cabin Support Strategy','Gate 0: Customer Experience Investment Approval'],
-  ['Customer Portal Requirements; Cabin Interior Maintenance Specs; Warranty Rules','SRR: Customer Portal & Support Requirements'],
-  ['Jet Owner App Architecture; Interactive Electronic Technical Pubs (IETP) Spec','PDR / CDR: Customer Systems Design Freeze'],
-  ['VIP Owner Portal; 24/7 Global Support Desk Integration; Warranty Engine Build','TRR: Support Desk Simulation & Portal User Testing'],
-  ['Jet Acceptance Digital Checklist; Crew Training Manuals; Warranty Certificates','Final Customer Acceptance Review'],
-  ['NPS Dashboards; Flight Hour & Warranty Claims Analytics','Annual Owner Operations Review']]},
+// Eight component sets from the PEO Sales Advisor solution design
+const COMPS = [
+ { id:'C1', name:'Semantic foundation (Keel)', col:'--c1', short:'Keel',
+   what:'Sales domain knowledge, isp-sal / isp-cnt / isp-dec / isp-ext / isp-vg ontologies, SKOS vocabularies, RDF structures and SHACL shapes for in-house and external content.',
+   agents:[], nov:4, cx:4, ready:3 },
+ { id:'C2', name:'SSOT rules, constraints & logic', col:'--c2', short:'SSOT rules',
+   what:'EXT-001 to EXT-016 authored in the SSOT register as LKIF norms and SHACL shapes, validated by scenario tests, versioned through GOV-003 and compiled to OPA/Rego, JSON Schema and dbt.',
+   agents:[], nov:2, cx:3, ready:2 },
+ { id:'C3', name:'Ingestion & identity pipelines', col:'--c3', short:'Ingestion',
+   what:'Change capture from SharePoint, allow-listed websites and third-party feeds; canonical identity (GOV-007) and format extraction.',
+   agents:['SharePoint Delta Agent','Web Crawl Agent','Feed Listener Agent','Identity Resolver','Format Extractor'], nov:2, cx:3, ready:3 },
+ { id:'C4', name:'AI fabric enrichment & control', col:'--c4', short:'AI fabric',
+   what:'Classify, tag persona and job step, extract claims, mine jurisdiction and validity, detect PII and enforce entitlements.',
+   agents:['Content-Type Classifier','Persona & Job-Step Tagger','Claim Extractor','Jurisdiction & Validity Miner','PII & Sensitivity Detector','Entitlement Enforcer'], nov:5, cx:4, ready:3 },
+ { id:'C5', name:'Mapping & publishing', col:'--c5', short:'Mapping',
+   what:'Concept mapping and rule binding to the ontologies, SHACL-validated RDF publishing with KGCL records, mapping drift detection.',
+   agents:['Concept Mapping Agent','Rule Binding Agent','SHACL Publisher','Mapping Drift Sentinel'], nov:4, cx:4, ready:4 },
+ { id:'C6', name:'Faceted search & Sales Advisor', col:'--c6', short:'Advisor',
+   what:'Federated graph query → mappings → RDF content → precision extraction → assembly into persona briefs and machine packages, with decisions, orchestrated events and the MTBH grounding guard.',
+   agents:['Intent & RCB Agent','Federated Query Planner','Facet Navigator','Mapping Resolver','Precision Extractor','Brief Assembler','Machine Package Agent','Grounding Guard (MTBH)'], nov:5, cx:5, ready:3 },
+ { id:'C7', name:'Value-gap monitoring & decision baseline', col:'--c7', short:'Value gaps',
+   what:'Desired outcomes bound to metric cards, job-step telemetry, value-gap monitoring, decision impact tracking, and the 48-question decision baseline.',
+   agents:['Outcome Binder','Job-Step Telemetry Agent','Value-Gap Monitor','Decision Impact Tracker'], nov:3, cx:3, ready:4 },
+ { id:'C8', name:'Change, impact & causal analysis', col:'--c8', short:'Change & causal',
+   what:'Monitors on content, semantics and RDF structures; impact analysis, incremental refresh and cache invalidation; causal analysis of risk and opportunity; circuit breakers for all agents.',
+   agents:['Content Change Monitor','Semantic Change Monitor','RDF Structure Monitor','Impact Analyzer','Incremental Refresh Service','Cache Invalidation Agent','Causal Graph Builder','Effect Estimator','Risk & Opportunity Ranker','Counterfactual Explainer','Action Proposer'], nov:5, cx:4, ready:4 },
 ];
+// Component-level dependencies (what must exist before the component can be built)
+const CDEPS = { C1:[], C2:['C1'], C3:['C1','C2'], C4:['C3','C2'], C5:['C1','C2','C4'], C6:['C5','C2'], C7:['C1','C6'], C8:['C5','C6','C7'] };
+
+// Business value drivers
+const DRIVERS = {
+ vel:{ name:'Sales velocity', desc:'Shorter time from first question to signed client' },
+ win:{ name:'Win rate & deal quality', desc:'More first-draft approvals, fewer re-quotes and redlines' },
+ cmp:{ name:'Compliance exposure', desc:'Fewer unassessed jurisdictions, conflicts and penalties' },
+ ret:{ name:'Client retention & onboarding', desc:'Clean cut-over, no coverage gaps, fewer early escalations' },
+};
+
+// Core persona job steps (job J1 of each job study) with value-gap baselines from the advisor design
+// [id, persona, stage, job step, driver, desired outcome, unit, direction, target, baseline, tier-H questions, cause of the gap]
+const STEPS = [
+ ['CA-J1.1','CA','Discover','Understand what a PEO takes off my plate','vel','Minimize time to understand what a PEO covers','min',  'min',10,7.5,1,''],
+ ['CA-J1.2','CA','Qualify','Confirm we fit (size, industry, states)','vel','Minimize steps to confirm eligibility','steps','min',3,4,3,'Industry exclusions sit in an unmapped SharePoint list'],
+ ['CA-J1.3','CA','Evaluate','Compare total cost against our current stack','vel','Minimize time from first cost question to binding quote','days','min',10,16,2,'Census uploads fail validation 38% of the time'],
+ ['CA-J1.4','CA','Propose','See the co-employment split before signing','win','Maximize sessions with no follow-up on who does what','%','max',85,81,3,'Allocation briefs omit state-specific items'],
+ ['CA-J1.5','CA','Decide','Get sign-off from owners and finance','win','Maximize first-draft owner approval','%','max',80,64,2,'Owner package lacks the HR Specialist’s risk line'],
+ ['CA-J1.6','CA','Onboard','Move payroll without a missed paycheck','ret','Minimize cut-over errors per 100 employees','errors','min',0.5,0.4,3,''],
+ ['HR-J1.1','HR','Discover','Find where we carry compliance risk today','cmp','Minimize time to see where we carry risk','min','min',15,12,2,''],
+ ['HR-J1.2','HR','Qualify','Check coverage for every state we hire in','cmp','Maximize hiring states assessed','%','max',100,88,3,'Remote employees not resolved to a jurisdiction (GOV-007)'],
+ ['HR-J1.3','HR','Evaluate','Compare benefit plans employees will see','win','Minimize time to compare plans','min','min',20,34,2,'Two plan-comparison claims held as Candidate'],
+ ['HR-J1.4','HR','Propose','Map our handbook to PEO policy','cmp','Minimize handbook policies left unmapped','%','min',5,18,1,'Scanned handbooks fall below the EXT-002 confidence floor'],
+ ['HR-J1.5','HR','Decide','Show leadership the risk we remove','win','Maximize decisions with a risk brief attached','%','max',90,71,2,'Risk brief not linked into the owner package'],
+ ['HR-J1.6','HR','Onboard','Re-enroll employees with no coverage gap','ret','Minimize employees with a coverage gap per 1,000','per 1,000','min',0,1.2,3,'Carrier lead times are not in the content graph'],
+].map(r=>({id:r[0],p:r[1],stage:r[2],name:r[3],drv:r[4],out:r[5],unit:r[6],dir:r[7],target:r[8],base:r[9],H:r[10],cause:r[11]}));
+
+// Dependency strength of each job step on each component: 3 critical (the step's answers fail without it), 2 supporting, 1 measures or sustains
+const DEP = {
+ C1:{'CA-J1.1':2,'CA-J1.2':2,'CA-J1.3':2,'CA-J1.4':3,'CA-J1.5':2,'CA-J1.6':2,'HR-J1.1':3,'HR-J1.2':3,'HR-J1.3':2,'HR-J1.4':2,'HR-J1.5':2,'HR-J1.6':3},
+ C2:{'CA-J1.1':2,'CA-J1.2':3,'CA-J1.3':3,'CA-J1.4':2,'CA-J1.5':2,'CA-J1.6':2,'HR-J1.1':2,'HR-J1.2':3,'HR-J1.3':3,'HR-J1.4':2,'HR-J1.5':2,'HR-J1.6':2},
+ C3:{'CA-J1.1':2,'CA-J1.2':3,'CA-J1.3':2,'CA-J1.4':2,'CA-J1.5':1,'CA-J1.6':2,'HR-J1.1':2,'HR-J1.2':3,'HR-J1.3':2,'HR-J1.4':2,'HR-J1.5':1,'HR-J1.6':3},
+ C4:{'CA-J1.1':2,'CA-J1.2':2,'CA-J1.3':2,'CA-J1.4':2,'CA-J1.5':2,'CA-J1.6':1,'HR-J1.1':2,'HR-J1.2':2,'HR-J1.3':3,'HR-J1.4':3,'HR-J1.5':2,'HR-J1.6':1},
+ C5:{'CA-J1.1':2,'CA-J1.2':3,'CA-J1.3':3,'CA-J1.4':2,'CA-J1.5':2,'CA-J1.6':2,'HR-J1.1':2,'HR-J1.2':2,'HR-J1.3':3,'HR-J1.4':3,'HR-J1.5':2,'HR-J1.6':2},
+ C6:{'CA-J1.1':3,'CA-J1.2':3,'CA-J1.3':3,'CA-J1.4':3,'CA-J1.5':3,'CA-J1.6':3,'HR-J1.1':3,'HR-J1.2':3,'HR-J1.3':3,'HR-J1.4':3,'HR-J1.5':3,'HR-J1.6':3},
+ C7:{'CA-J1.1':1,'CA-J1.2':1,'CA-J1.3':1,'CA-J1.4':1,'CA-J1.5':2,'CA-J1.6':1,'HR-J1.1':1,'HR-J1.2':1,'HR-J1.3':1,'HR-J1.4':1,'HR-J1.5':2,'HR-J1.6':1},
+ C8:{'CA-J1.1':1,'CA-J1.2':1,'CA-J1.3':2,'CA-J1.4':1,'CA-J1.5':1,'CA-J1.6':1,'HR-J1.1':1,'HR-J1.2':2,'HR-J1.3':1,'HR-J1.4':1,'HR-J1.5':1,'HR-J1.6':1},
+};
 
 // ===================== ROADMAP =====================
-// Workstreams
-const WS = {
- GOV:{name:'Governance & change', col:'--ws-gov'}, DT:{name:'Design Thinking', col:'--ph1'}, RE:{name:'Requirements Eng.', col:'--ph2'},
- ODD:{name:'Outcome-Driven Design', col:'--ph3'}, KE:{name:'Knowledge Eng.', col:'--ws-ke'}, DE:{name:'Data Eng.', col:'--ws-de'},
- SE:{name:'Systems Eng.', col:'--ph4'}, OPR:{name:'Operations (OPR)', col:'--ph5'}, RUN:{name:'Run (SCM · SLM)', col:'--ph6'},
- DASH:{name:'PLM dashboard', col:'--ws-dash'}, PORT:{name:'Portfolio delivery', col:'--ink-2'}, BUF:{name:'Buffer', col:'--buf'}, GATE:{name:'Program gate', col:'--ink'}
-};
-// Program phases
 const PPH = [
- { id:'P0', name:'Mobilize', goal:'Sponsor, governance bodies, baseline scorecard and a manual dashboard, so the organization learns the lifecycle before building on it.' },
- { id:'P1', name:'Foundations', goal:'Build the shared practices and platforms every portfolio needs: outcome discovery, requirements standards, vocabulary and ontology, data services, CI/CD and OPR checklists.' },
- { id:'P2', name:'Pilot · Digital Supply Chain', goal:'Run one portfolio end-to-end through every gate with the new practices, using the scorecard that already exists for it, and harvest lessons before scaling.' },
- { id:'P3', name:'Wave 2 · Shop Floor & Quality', goal:'Scale to the factory: MES and Quality Intelligence share inspection points, non-conformance data and as-built records.' },
- { id:'P4', name:'Wave 3 · In-Service Support', goal:'Extend to aircraft in service: predictive maintenance and on-demand repair, with the heaviest certification load (DO-178C/DO-254, FAA/EASA).' },
- { id:'P5', name:'Wave 4 · Customer & Run at scale', goal:'Close the loop with jet owners and run service-level management across all six portfolios.' },
+ { id:'P0', name:'Keel foundations', goal:'Model the sales domain, publish the first ontologies and vocabularies, release the first SSOT extraction rules, define the metric cards for every desired outcome, and stand up ingestion on one library.' },
+ { id:'P1', name:'Content graph & AI fabric', goal:'Publish RDF for in-house and external content, mine the metadata the CMS never held, enforce access and privacy, and map content to the ontologies. Read-only briefs for two BPA teams.' },
+ { id:'P2', name:'Faceted search & advisor', goal:'Build the faceted search chain and assembly, the AI circuit breaker, the decision-question baseline and outcome binding, then take the advisor live for both personas.' },
+ { id:'P3', name:'Measure, monitor, learn', goal:'Measure value gaps per job step, watch upstream change and refresh incrementally, extend circuit breakers to all agents, and turn changes and gaps into causal risk and opportunity.' },
 ];
-// Tasks: id, phase, ws, name, weeks, deps, builds (scorecard practices/items), deliverables, portfolio(optional), seg (portfolio lifecycle segment index 0-4)
+// [id, phase, component, lifecycle stage, name, weeks, deps, deliverables, closes gap in job steps]
 const T = [
- // P0
- ['G-01','P0','GOV','Charter the program, name the sponsor, stand up the PLM Council',3,[],'Governance','Program charter; decision rights; PLM Council terms of reference'],
- ['G-02','P0','GOV','Gate calendar plus ARB and RMB charters (Gate 0 → Run reviews)',4,['G-01'],'ODD · ARB Review; OPR · Release Management','Gate calendar; ARB and RMB charters; 2-week release train'],
- ['G-03','P0','GOV','Baseline scorecard for all six portfolios',4,['G-01'],'All phases','Baseline maturity per portfolio; targets for the 18 unscored items'],
- ['G-04','P0','GOV','Role model and RACI for every lifecycle artifact',3,['G-02'],'Governance','RACI per artifact and gate; named artifact owners'],
- ['G-05','P0','GOV','Training wave 1: lifecycle, scorecard, gates',4,['G-04'],'Inspections (all phases)','Role-based curriculum; 60 practitioners trained'],
- ['DB-01','P0','DASH','Dashboard MVP: scorecard capture and phase roll-up (manual entry)',5,['G-03'],'Measurement (KPIs, OKRs, SLEs)','Scorecard form; phase % roll-up; Go/No-Go checklist'],
- ['BF-0','P0','BUF','Phase buffer',2,['G-05','DB-01']],
- ['M-0','P0','GATE','G0 · Mobilized',0,['BF-0'],'','Council approves foundations scope and pilot choice'],
- // P1
- ['DT-01','P1','DT','JTBD and outcome-discovery playbook; persona and desired-outcome templates',6,['M-0'],'DT · all items','Playbook; persona, job map and desired-outcome templates'],
- ['RE-01','P1','RE','Capability, persona and service map standards; KPI/OKR/SLE library',6,['M-0'],'RE · Business specifications','Map standards; measurement library'],
- ['KE-01','P1','KE','Controlled vocabulary and taxonomy v1 (artifacts, gates, parts, phases)',8,['M-0'],'KE · Vocabulary; Taxonomy','SKOS vocabulary; phase names normalized (Delivery/Deliver, RUN/Run)'],
- ['KE-02','P1','KE','PLM ontology v1 with SHACL quality shapes',8,['KE-01'],'KE · Ontology','Classes: portfolio, phase, artifact, gate, requirement, outcome, debt'],
- ['DE-01','P1','DE','D5 data services: profiling, quality, cleansing, contextualization, cataloging',10,['M-0'],'DE · Data Acquisition (D5)','Data catalog; DQ rules; profiling reports'],
- ['DE-02','P1','DE','Warehousing tiers, access and delivery, destruction policy',8,['DE-01'],'DE · Warehousing; Access; Destruction; Policy Enforcement','RT/batch/archival tiers; retention and destruction rules'],
- ['SE-01','P1','SE','CI/CD, change control, documentation standards, runbook template',8,['M-0'],'SE · CI/CD; Change Control; Docs; Runbook','Pipeline templates; change-control log; SOP template'],
- ['SE-02','P1','SE','Continuous V&V, test strategy, auditing and instrumentation',6,['SE-01'],'SE · V&V; Testing; Auditing; Error Mgmt','Test strategy; log and audit standards'],
- ['OP-01','P1','OPR','Operationalize the OPR checklists (business, systems, platform, release, security, DQ, policy, QE)',8,['M-0'],'OPR · all checklists','Checklists in ServiceNow; go/no-go criteria'],
- ['OP-02','P1','OPR','Certification management process (AS9100, AS9102, DO-178C/DO-254 evidence)',6,['OP-01'],'OPR · Certification Management','Certification checklist and evidence register'],
- ['DB-02','P1','DASH','Dashboard v1: ontology-backed gates, debt roll-up, Go/No-Go rule',6,['KE-02','DB-01'],'Measurement; Requirements Traceability','Gate status by portfolio; lifecycle debt index'],
- ['BF-1','P1','BUF','Phase buffer',4,['DT-01','RE-01','KE-02','DE-02','SE-02','OP-02','DB-02']],
- ['M-1','P1','GATE','G1 · Foundations ready',0,['BF-1'],'','Practices, platforms and dashboard v1 certified for the pilot'],
- // P2
- ['ODD-01','P2','ODD','Outcome-driven design standards and North Star architecture principles',6,['M-1'],'ODD · all items','Design principles; ARB review and remediation process'],
- ['RE-02','P2','RE','Requirements traceability in tooling (feature matrix → NFFs → stories)',6,['M-1'],'RE · Feature Matrix; Decomposition; Traceability','Trace links from outcome to story to test'],
- ['KE-03','P2','KE','RDB-to-RDF mappings for ERP, PLM and supplier sources',8,['M-1'],'KE · RDB Mapping to RDF','R2RML mappings; virtual graph over ERP/PLM'],
- ['KE-04','P2','KE','Non-conformance taxonomy and defect ontology (semantic extension)',6,['M-1'],'KE · Semantic Extension','NC taxonomy ready for Quality Intelligence'],
- ['DSC-1','P2','PORT','Digital Supply Chain · Discover & Define',8,['M-1'],'DT; RE','Maturity assessment; control-tower case; supplier integration architecture','DSC',0],
- ['DSC-2','P2','PORT','Digital Supply Chain · Design',8,['DSC-1','ODD-01','RE-02'],'ODD','Digital-twin supply chain; track-and-trace schemas','DSC',2],
- ['DSC-3','P2','PORT','Digital Supply Chain · Develop',12,['DSC-2','KE-03'],'DE; KE; SE','ERP/PLM–supplier integration; AS9102 FAI ingestion','DSC',3],
- ['DSC-4','P2','PORT','Digital Supply Chain · Delivery',6,['DSC-3'],'OPR','Control-tower go-live; serialized tracking sign-off','DSC',4],
- ['DB-03','P2','DASH','Dashboard v2: live feeds from CI/CD, defect logs and gate decisions',8,['M-1'],'SE · Auditing; Inspections; Defect Logs','Automated scoring evidence; debt trend'],
- ['BF-2','P2','BUF','Phase buffer',6,['DSC-4','DB-03']],
- ['M-2','P2','GATE','G2 · Pilot live, lessons learned',0,['BF-2'],'','Pilot through Deployment Review; playbooks updated'],
- // P3
- ['MES-1','P3','PORT','Shop Floor & MES · Discover & Define',8,['DSC-2'],'DT; RE','Industry 4.0 vision; MES functional specs','MES',0],
- ['QI-1','P3','PORT','Quality Intelligence · Discover & Define',8,['DSC-2','KE-04'],'DT; RE','Quality 4.0 vision; QMS architecture; NC taxonomy','QI',0],
- ['MES-2','P3','PORT','Shop Floor & MES · Design',8,['MES-1','M-2'],'ODD','eWI specs; line-balancing twin','MES',2],
- ['DE-03','P3','DE','Asset management for data, products and ML models',6,['M-2'],'DE · Asset Management','Model registry; data product catalog'],
- ['KE-05','P3','KE','Integration, mastering and mapping at scale',10,['M-2'],'KE · Integration at Scale','Entity mastering; mapping governance'],
- ['QI-2','P3','PORT','Quality Intelligence · Design',10,['QI-1','M-2','DE-03'],'ODD','AI defect models; NDT sensor specs','QI',2],
- ['MES-3','P3','PORT','Shop Floor & MES · Develop',14,['MES-2'],'DE; KE; SE','MES workflows; PLC/IoT connectivity','MES',3],
- ['QI-3','P3','PORT','Quality Intelligence · Develop',12,['QI-2','MES-2'],'DE; KE; SE','CV datasets; closed-loop CAPA','QI',3],
- ['MES-4','P3','PORT','Shop Floor & MES · Delivery',6,['MES-3'],'OPR','FAT reports; operator training','MES',4],
- ['QI-4','P3','PORT','Quality Intelligence · Delivery',8,['QI-3'],'OPR · Certification','Automated CoC; FAA/EASA quality sign-off','QI',4],
- ['SCM-01','P3','RUN','Supply-chain run capabilities: order entry to inventory, partner qualification',12,['M-2'],'SCM · all items','Order-to-delivery operations for the live control tower'],
- ['BF-3','P3','BUF','Phase buffer',6,['MES-4','QI-4','KE-05','SCM-01']],
- ['M-3','P3','GATE','G3 · Factory and quality live',0,['BF-3'],'','Assembly line go-live and AS9100 oversight audit passed'],
- // P4
- ['MRO-1','P4','PORT','MRO & Predictive Maintenance · Discover & Define',10,['M-2'],'DT; RE','AHMS case; telemetry ConOps; FAA/EASA data strategy','MRO',0],
- ['ODR-1','P4','PORT','On-Demand Repair · Discover & Define',8,['M-2'],'DT; RE','AOG benchmark; MRT ConOps; REO requirements','ODR',0],
- ['MRO-2','P4','PORT','MRO & Predictive Maintenance · Design',12,['MRO-1','M-3'],'ODD','Predictive failure models; DO-178C/DO-254 specs','MRO',2],
- ['ODR-2','P4','PORT','On-Demand Repair · Design',8,['ODR-1','M-3'],'ODD','Printable spares CAD specs; field-repair approval','ODR',2],
- ['MRO-3','P4','PORT','MRO & Predictive Maintenance · Develop',14,['MRO-2'],'DE; KE; SE','Telemetry pipeline; model validation','MRO',3],
- ['ODR-3','P4','PORT','On-Demand Repair · Develop',12,['ODR-2','MRO-2'],'DE; KE; SE','AOG app; REO pipeline; spares hub','ODR',3],
- ['MRO-4','P4','PORT','MRO & Predictive Maintenance · Delivery',8,['MRO-3'],'OPR · Certification','CAMP digital integration (Gate 4 EIS)','MRO',4],
- ['ODR-4','P4','PORT','On-Demand Repair · Delivery',6,['ODR-3'],'OPR','AOG command-center playbook; certification pack','ODR',4],
- ['DB-04','P4','DASH','Dashboard v3: run metrics (OEE, MTTR, defect drift) and outcome gaps',8,['M-3'],'SLM · Service Level Impact','Run-phase views per portfolio'],
- ['BF-4','P4','BUF','Phase buffer (certification risk)',8,['MRO-4','ODR-4','DB-04']],
- ['M-4','P4','GATE','G4 · In-service support live',0,['BF-4'],'','Entry-into-service maintenance readiness signed'],
- // P5
- ['CS-1','P5','PORT','Customer Support · Discover & Define',8,['M-3'],'DT; RE','Owner experience benchmark; portal requirements; warranty rules','CS',0],
- ['CS-2','P5','PORT','Customer Support · Design',8,['CS-1','MRO-2'],'ODD','Owner app architecture; IETP spec','CS',2],
- ['CS-3','P5','PORT','Customer Support · Develop',12,['CS-2','ODR-3'],'DE; KE; SE','Owner portal; support desk; warranty engine','CS',3],
- ['CS-4','P5','PORT','Customer Support · Delivery',6,['CS-3','M-4'],'OPR','Digital acceptance checklist; warranty certificates','CS',4],
- ['SLM-01','P5','RUN','Service-level management across all portfolios',8,['M-4'],'SLM · all items','Service matrix; outcome-gap measurement; change impact'],
- ['BF-5','P5','BUF','Project buffer',4,['CS-4','SLM-01']],
- ['M-5','P5','GATE','G5 · Lifecycle at scale',0,['BF-5'],'','All six portfolios in Run with monthly or quarterly reviews'],
-].map(r=>({id:r[0],ph:r[1],ws:r[2],name:r[3],dur:r[4],deps:r[5],builds:r[6]||'',deliv:r[7]||'',pf:r[8]||null,seg:r[9]}));
+ ['C1-01','P0','C1','Discover','Sales domain model: personas, jobs, job steps and desired outcomes with sales leaders and BPAs',4,[],'Job studies for both personas; 84 desired outcomes'],
+ ['C2-01','P0','C2','Define','Extend the SSOT register for EXT rules (14-field schema, LKIF + SHACL forms)',3,[],'Rule template; GOV-003 promotion path'],
+ ['C1-02','P0','C1','Design','Publish isp-sal 1.0 and isp-cnt 1.0, aligned to isp-core and BFO',6,['C1-01'],'Ontologies Released; KGCL change log'],
+ ['C1-03','P0','C1','Develop','SKOS vocabularies: content types, pipeline stages, sensitivity labels',4,['C1-01'],'Three Released concept schemes'],
+ ['C7-01','P0','C7','Define','Metric definition cards for the 84 desired outcomes; baseline time studies',6,['C1-01'],'Metric cards bound to outcomes (MET-014)'],
+ ['C2-02','P0','C2','Develop','Author and release EXT-001 to EXT-008 with scenario tests',6,['C2-01','C1-03'],'Ingest, classify and control rules Released'],
+ ['C3-01','P0','C3','Develop','SharePoint Delta Agent, Identity Resolver and Format Extractor on one library',6,['C1-02','C2-02'],'Change capture and canonical URIs for the first library'],
+ ['BF-0','P0','BUF','',  'Phase buffer',2,['C3-01','C7-01']],
+ ['M-0','P0','GATE','', 'G0 · Keel released',0,['BF-0'],'isp-sal and isp-cnt Released; 12 core job steps with measurable outcomes; EXT-001–008 pass scenario tests'],
+
+ ['C1-04','P1','C1','Develop','RDF structures and SHACL shapes for in-house content (sales, enablement, case studies, implementation)',6,['M-0'],'Content objects, chunks and claims as RDF'],
+ ['C1-05','P1','C1','Develop','RDF structures for external content (websites, competitors, regulatory and firmographic feeds)',5,['C1-04'],'External content in the same graph with usage policies'],
+ ['C2-03','P1','C2','Develop','Release EXT-009 and EXT-010 (mapping and publishing rules)',4,['M-0'],'Mapping confidence and publish gates Released'],
+ ['C3-02','P1','C3','Develop','Web Crawl and Feed Listener agents; regulatory and firmographic feed connectors',6,['M-0'],'Allow-listed crawl; normalized feed items'],
+ ['C3-03','P1','C3','Develop','Carrier lead-time and remote-worksite jurisdiction sources',4,['C3-02'],'Closes HR-J1.2 and HR-J1.6 source gaps','HR-J1.2 HR-J1.6'],
+ ['C4-01','P1','C4','Develop','Content-Type Classifier and Persona & Job-Step Tagger (EXT-002 floor)',7,['M-0'],'Typed, persona-tagged content'],
+ ['C4-02','P1','C4','Develop','Claim Extractor and Jurisdiction & Validity Miner',6,['C4-01','C1-04'],'Atomic claims with spans, jurisdictions and validity'],
+ ['C4-03','P1','C4','Develop','PII & Sensitivity Detector and Entitlement Enforcer, with red-team test',6,['M-0'],'Fail-closed access control (EXT-003, EXT-006)'],
+ ['C4-04','P1','C4','Develop','OCR for scanned handbooks above the EXT-002 confidence floor',4,['C4-02'],'Closes the HR-J1.4 gap','HR-J1.4'],
+ ['C5-01','P1','C5','Develop','Concept Mapping and Rule Binding agents (GOV-006, EXT-008, EXT-009)',6,['C2-03','C1-04'],'Typed correspondences; claims bound to SSOT rules'],
+ ['C5-02','P1','C5','Deliver','SHACL Publisher with KGCL records; Mapping Drift Sentinel',4,['C5-01'],'Validated RDF publishing; drift flags'],
+ ['C5-03','P1','C5','Develop','Eligibility, quote and rate mappings (MAP-ELG-01, MAP-QTE-03, MAP-RTE-01)',4,['C5-01'],'Closes CA-J1.2 and CA-J1.3 mapping gaps','CA-J1.2 CA-J1.3'],
+ ['C6-01','P1','C6','Deliver','Read-only persona briefs for two BPA teams',4,['C5-02','C4-03','C4-02'],'First briefs in use; feedback loop'],
+ ['BF-1','P1','BUF','','Phase buffer',4,['C1-05','C3-03','C4-04','C5-03','C6-01']],
+ ['M-1','P1','GATE','','G1 · Content graph live',0,['BF-1'],'≥ 20,000 objects published; SHACL pass ≥ 98%; 0 PII leaks in red team; classification precision ≥ 0.90'],
+
+ ['C2-04','P2','C2','Develop','Release EXT-011 to EXT-014; persona brief templates versioned in the SSOT',5,['M-1'],'Search, extraction, assembly and outcome rules Released'],
+ ['C6-02','P2','C6','Design','Intent & RCB agent and Federated Query Planner over a virtual graph of CRM and quoting',7,['M-1'],'Context bundles; scoped queries with no data copies'],
+ ['C6-03','P2','C6','Develop','Facet Navigator, Mapping Resolver and Precision Extractor',6,['C6-02','C2-04'],'Only the claims that answer the job step'],
+ ['C6-04','P2','C6','Develop','Brief Assembler and Machine Package Agent; decision options and orchestrated events',6,['C6-03'],'Cited briefs; JSON-LD packages; isp-dec decisions'],
+ ['C6-05','P2','C6','Develop','Grounding Guard and AI circuit breaker service (MTBH metrology, states, fallbacks)',5,['C6-02'],'Breakers on the decision path'],
+ ['C7-02','P2','C7','Define','Decision-question baseline: golden answers for the 48 questions, SME sign-off',6,['M-1'],'Frozen baseline records for QbD'],
+ ['C7-03','P2','C7','Develop','Outcome Binder: every decision bound to a metric card',4,['C6-04','C7-01'],'Decisions with bound outcomes'],
+ ['C6-06','P2','C6','Deliver','Advisor live for both personas across all six pipeline stages',4,['C6-04','C6-05','C7-02','C7-03'],'Advisor in production; closes CA-J1.4, CA-J1.5, HR-J1.5 assembly gaps','CA-J1.4 CA-J1.5 HR-J1.5'],
+ ['BF-2','P2','BUF','','Phase buffer',6,['C6-06']],
+ ['M-2','P2','GATE','','G2 · Advisor live',0,['BF-2'],'Grounding ≥ 0.90; MTBH trip rate ≤ 2%; 100% of decisions bound; P95 answer ≤ 4 s'],
+
+ ['C2-05','P3','C2','Develop','Release EXT-015 and EXT-016 (value-gap, causal and refresh rules)',3,['M-2'],'Measurement and refresh rules Released'],
+ ['C7-04','P3','C7','Run','Job-Step Telemetry, Value-Gap Monitor, Decision Impact Tracker; outcome importance survey',7,['M-2'],'Measured gaps for all 84 outcomes'],
+ ['C8-01','P3','C8','Develop','Content, Semantic and RDF Structure monitors',5,['M-2'],'Change events from every upstream layer'],
+ ['C8-02','P3','C8','Develop','Impact Analyzer, Incremental Refresh and Cache Invalidation',6,['C8-01','C2-05'],'Only affected answers re-run; stale briefs withdrawn'],
+ ['C8-03','P3','C8','Deliver','Circuit breakers extended to all 38 agents; nightly decision-question probes',4,['C8-02'],'Integrity monitored on every agent'],
+ ['C8-04','P3','C8','Develop','Causal family: graph builder, effect estimator, risk ranker, counterfactual explainer, action proposer',8,['C7-04','C2-05'],'Risk and opportunity findings for owners'],
+ ['C7-05','P3','C7','Run','Value-gap dashboard per persona job step',4,['C7-04'],'Desired versus delivered, every job step'],
+ ['BF-3','P3','BUF','','Project buffer',4,['C8-03','C8-04','C7-05']],
+ ['M-3','P3','GATE','','G3 · Learning loop running',0,['BF-3'],'Affected briefs withdrawn ≤ 1 h after a change; ≥ 80% of job steps meet their outcome; findings reviewed ≤ 10 days'],
+].map(r=>({id:r[0],ph:r[1],ws:r[2],life:r[3],name:r[4],dur:r[5],deps:r[6],deliv:r[7]||'',closes:r[8]?r[8].split(' '):[]}));
 (function(){
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const BY = {}; T.forEach(t=>BY[t.id]=t);
 const SUCC = {}; T.forEach(t=>SUCC[t.id]=[]); T.forEach(t=>t.deps.forEach(d=>SUCC[d].push(t.id)));
-const START = new Date(2026,10,2); // Mon 2 Nov 2026
+const CBY = {}; COMPS.forEach(c=>CBY[c.id]=c);
+const SBY = {}; STEPS.forEach(s=>SBY[s.id]=s);
+const START = new Date(2026,10,2);
 const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const wkDate = w => new Date(START.getTime() + Math.round(w*7)*86400000);
 const fmtD = w => { const d = wkDate(w); return d.getDate()+' '+MON[d.getMonth()]+' '+d.getFullYear(); };
 const fmtM = w => { const d = wkDate(w); return MON[d.getMonth()]+' '+d.getFullYear(); };
-const cssv = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const r1 = v => Math.round(v*10)/10;
 
 // ---------- scheduling ----------
-function schedule(slip){
-  const f = 1 + slip/100, out = {}, base = slip ? PLAN0 : null;
-  T.forEach(t=>{ // T is in topological order
+function schedule(slipPct, extra){ // extra: {taskId: weeks}
+  const f = 1 + (slipPct||0)/100, out = {}, base = (slipPct||extra) ? PLAN0 : null;
+  T.forEach(t=>{
     const s = Math.max(0, ...t.deps.map(d=>out[d].e));
-    let dur = t.ws==='BUF' || t.ws==='GATE' ? t.dur : t.dur*f, used = 0;
+    let dur = (t.ws==='BUF'||t.ws==='GATE') ? t.dur : t.dur*f + ((extra&&extra[t.id])||0);
     if(t.ws==='BUF' && base){
       const planned = Math.max(0, ...t.deps.map(d=>base[d].e));
-      used = Math.max(0, s - planned);
-      dur = Math.max(0, t.dur - used); // the buffer shrinks to absorb the slip
-      out[t.id] = { s, e: s + dur, used, dur };
-      return;
+      const used = Math.max(0, s - planned);
+      out[t.id] = { s, e: s + Math.max(0, t.dur - used), used }; return;
     }
-    out[t.id] = { s, e: s + dur, used, dur };
+    out[t.id] = { s, e: s + dur, used:0 };
   });
   return out;
 }
 const PLAN0 = schedule(0);
-const END0 = PLAN0['M-5'].e;
-// Critical path (planned)
+const END0 = PLAN0['M-3'].e;
 (function(){
   const lf = {};
-  [...T].reverse().forEach(t=>{
-    const su = SUCC[t.id];
-    lf[t.id] = su.length ? Math.min(...su.map(s=>lf[s] - BY[s].dur)) : END0;
-  });
-  T.forEach(t=>{ t.slack = Math.round((lf[t.id] - t.dur - PLAN0[t.id].s)*10)/10; t.crit = t.slack <= 0; });
+  [...T].reverse().forEach(t=>{ const su = SUCC[t.id]; lf[t.id] = su.length ? Math.min(...su.map(s=>lf[s] - BY[s].dur)) : END0; });
+  T.forEach(t=>{ t.slack = r1(lf[t.id] - t.dur - PLAN0[t.id].s); t.crit = t.slack <= 0; });
 })();
 const BUFTOTAL = T.filter(t=>t.ws==='BUF').reduce((a,t)=>a+t.dur,0);
+const compSpan = cid => { const ts = T.filter(t=>t.ws===cid); return { s: Math.min(...ts.map(t=>PLAN0[t.id].s)), e: Math.max(...ts.map(t=>PLAN0[t.id].e)), ts }; };
 
-// ---------- header ----------
+// ---------- value & risk model ----------
+const W = { vel:3, win:3, cmp:3, ret:3 };
+const gapOf = s => { let g = s.dir==='min' ? (s.target===0 ? (s.base>0?1:0) : (s.base-s.target)/s.target) : (s.target-s.base)/s.target; return Math.min(1, Math.max(0, g)); };
+const stepValue = s => W[s.drv] * 3 * (1 + gapOf(s)) * (1 + s.H/4);
+function upstream(cid, acc=new Set()){ CDEPS[cid].forEach(d=>{ if(!acc.has(d)){ acc.add(d); upstream(d, acc); } }); return acc; }
+const depScore = n => n===0?1 : n===1?2 : n<=3?3 : n<=5?4 : 5;
+function scores(){
+  const maxP = STEPS.reduce((a,s)=>a+3*stepValue(s),0);
+  return COMPS.map(c=>{
+    const raw = STEPS.reduce((a,s)=>a + DEP[c.id][s.id]*stepValue(s), 0);
+    const I = Math.max(1, r1(5*raw/maxP));
+    const ds = depScore(upstream(c.id).size);
+    const L = r1((c.nov + c.cx + c.ready + ds)/4);
+    const R = r1(L*I);
+    const top = STEPS.filter(s=>DEP[c.id][s.id]===3).sort((a,b)=>stepValue(b)-stepValue(a)).slice(0,3);
+    return { c, raw: Math.round(raw), I, L, ds, R, band: R>=15?'hi':R>=8?'md':'lo', top };
+  });
+}
+const bandName = b => ({hi:'High',md:'Medium',lo:'Low'})[b];
+
+// ---------- header & KPIs ----------
 $('tbStart').textContent = fmtD(0);
 $('tbEnd').textContent = fmtD(END0) + ' · wk ' + END0;
 $('tbBuf').textContent = BUFTOTAL + ' wk (' + Math.round(100*BUFTOTAL/END0) + '% of plan)';
 $('bufTxt').textContent = BUFTOTAL + ' weeks, ' + Math.round(100*BUFTOTAL/END0) + '% of the ' + END0 + '-week plan';
-
-// ---------- scorecard model ----------
-const edits = new Map();
-const asmt = i => edits.has(i) ? edits.get(i) : SC[i][4];
-function roll(p){
-  let b=0,a=0,tg=0,cv=0;
-  SC.forEach((r,i)=>{ if(r[0]!==p) return; const v = asmt(i); b += r[3]||0; a += v||0; if((r[3]||0)>0){ tg++; if(v!==null && v!==undefined) cv++; } });
-  return { b, a, pct: b ? Math.round(100*a/b) : 0, tg, cv };
-}
-function goNoGo(){
-  const R = PHASES.map((_,p)=>roll(p));
-  const opr = SC.map((r,i)=>({r,i})).filter(x=>x.r[0]===4 && (x.r[3]||0)>0);
-  const major = SC.map((r,i)=>({r,i})).filter(x=>x.r[3]===3 && asmt(x.i)===0);
-  const checks = [
-    [R.every(x=>x.cv===x.tg), 'Every targeted item in all six phases has been assessed', R.reduce((a,x)=>a+x.cv,0)+' of '+R.reduce((a,x)=>a+x.tg,0)+' assessed'],
-    [R[0].pct>=70 && R[1].pct>=70, 'Discover and Define each score at least 70%', 'Discover '+R[0].pct+'% · Define '+R[1].pct+'%'],
-    [R[2].pct>=80 && R[3].pct>=80, 'Design and Develop each score at least 80%', 'Design '+R[2].pct+'% · Develop '+R[3].pct+'%'],
-    [opr.every(x=>(asmt(x.i)||0) >= x.r[3]), 'Every OPR item in Deliver meets its target', opr.filter(x=>(asmt(x.i)||0) >= x.r[3]).length+' of '+opr.length+' meet target'],
-    [major.length===0, 'No target-3 item is scored 0 (open major debt)', major.length+' items at 0'],
-    [R[5].pct>=70, 'Run readiness scores at least 70%', 'Run '+R[5].pct+'%'],
-  ];
-  return { go: checks.every(c=>c[0]), checks, R };
-}
-
-// ---------- KPIs & overview ----------
 function renderKPIs(){
-  const g = goNoGo();
+  const S = scores().sort((a,b)=>b.R-a.R), hi = S.filter(x=>x.band==='hi').length;
+  const atStake = STEPS.reduce((a,s)=>a+stepValue(s),0);
   $('kpis').innerHTML = [
-    ['', fmtM(END0), 'Planned finish of all six portfolios (G5)'],
-    ['', Math.round(END0/4.345)+' mo', END0+' weeks across 6 program phases'],
-    ['bufk', BUFTOTAL+' wk', 'Buffer held: '+Math.round(100*BUFTOTAL/END0)+'% of the plan, in 6 phase buffers'],
-    ['', fmtD(PLAN0['M-1'].e).replace(/^\d+ /,''), 'Dashboard v1 and foundations ready (G1)'],
-    ['', g.R[0].pct+'% · '+g.R[1].pct+'%', 'Pilot Discover · Define scores today'],
-    [g.go?'':'bad', g.go?'Go':'No-Go', 'Pilot release decision under the proposed rule'],
+    ['', fmtM(END0), 'Learning loop running (G3)'],
+    ['', Math.round(END0/4.345)+' mo', END0+' weeks across 4 phases'],
+    ['bufk', BUFTOTAL+' wk', 'Buffer held: '+Math.round(100*BUFTOTAL/END0)+'% of the plan'],
+    ['', fmtM(PLAN0['M-2'].s), 'Advisor live for both personas (G2)'],
+    [hi?'bad':'', esc(S[0].c.short)+' · '+S[0].R, 'Highest risk component (score of 25); '+hi+' rated high'],
+    ['', Math.round(atStake), 'Value-at-stake points across the 12 core job steps'],
   ].map(([c,b,s])=>`<div class="kpi ${c}"><b>${b}</b><span>${s}</span></div>`).join('');
 }
 
-function phaseSpan(ph){
-  const ts = T.filter(t=>t.ph===ph.id);
-  const s = Math.min(...ts.map(t=>PLAN0[t.id].s)), e = Math.max(...ts.map(t=>PLAN0[t.id].e));
-  const buf = ts.find(t=>t.ws==='BUF'), gate = ts.find(t=>t.ws==='GATE');
-  return { s, e, buf, gate, bs: PLAN0[buf.id].s, ts };
-}
+// ---------- overview ----------
 function renderPhaseStrip(){
-  const W = 1180, L = 16, R = 30, H = 170, sc = (W-L-R)/END0, x = w => L + w*sc;
-  let s = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Six program phases on a timeline with buffers and gates">`;
-  s += `<defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--buf-soft)"/><line x1="0" y1="0" x2="0" y2="6" stroke="var(--buf)" stroke-width="2"/></pattern></defs>`;
-  // year ticks
-  for(let w=0; w<=END0; w++){
-    const d = wkDate(w), dp = wkDate(w-1);
-    if(w===0 || d.getFullYear()!==dp.getFullYear()){
-      s += `<line x1="${x(w)}" y1="18" x2="${x(w)}" y2="${H-8}" stroke="var(--line)" stroke-dasharray="2 3"/><text x="${x(w)+4}" y="14" font-size="11" fill="var(--muted)">${d.getFullYear()}</text>`;
-    }
-  }
+  const Wd = 1180, L = 16, R = 30, H = 140, sc = (Wd-L-R)/END0, x = w => L + w*sc;
+  let s = `<svg viewBox="0 0 ${Wd} ${H}" width="${Wd}" height="${H}" role="img" aria-label="Four phases with buffers and gates">
+    <defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--buf-soft)"/><line x1="0" y1="0" x2="0" y2="6" stroke="var(--buf)" stroke-width="2"/></pattern></defs>`;
+  for(let w=0; w<=END0; w++){ const d = wkDate(w), dp = wkDate(w-1);
+    if(w===0 || d.getFullYear()!==dp.getFullYear()) s += `<line x1="${x(w)}" y1="18" x2="${x(w)}" y2="${H-26}" stroke="var(--line)" stroke-dasharray="2 3"/><text x="${x(w)+4}" y="14" font-size="11" fill="var(--muted)">${d.getFullYear()}</text>`; }
   PPH.forEach((ph,i)=>{
-    const p = phaseSpan(ph), y = 30 + (i%2)*56;
-    s += `<rect x="${x(p.s)}" y="${y}" width="${Math.max(2,x(p.bs)-x(p.s))}" height="22" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1"/>`;
-    s += `<rect x="${x(p.bs)}" y="${y}" width="${x(p.e)-x(p.bs)}" height="22" fill="url(#hatch)" stroke="var(--buf)" stroke-width="1"/>`;
-    const gx = x(p.e);
-    s += `<path d="M${gx} ${y-4} l7 15 l-7 15 l-7 -15z" fill="var(--ink)"/>`;
-    s += `<text x="${x(p.s)+5}" y="${y+15}" font-size="11.5" font-weight="600" fill="var(--ink)">${ph.id} ${esc(ph.name.split(' · ')[0])}</text>`;
-    s += `<text x="${gx}" y="${y+38}" text-anchor="end" font-size="10.5" fill="var(--muted)">${esc(BY[p.gate.id].name.split(' · ')[0])} · ${fmtM(p.e)}</text>`;
+    const ts = T.filter(t=>t.ph===ph.id), s0 = Math.min(...ts.map(t=>PLAN0[t.id].s)), e0 = Math.max(...ts.map(t=>PLAN0[t.id].e));
+    const buf = ts.find(t=>t.ws==='BUF'), gate = ts.find(t=>t.ws==='GATE'), bs = PLAN0[buf.id].s, y = 32;
+    s += `<rect x="${x(s0)}" y="${y}" width="${x(bs)-x(s0)}" height="26" fill="var(--accent-soft)" stroke="var(--accent)"/><rect x="${x(bs)}" y="${y}" width="${x(e0)-x(bs)}" height="26" fill="url(#hatch)" stroke="var(--buf)"/>`;
+    s += `<path d="M${x(e0)} ${y-4} l7 17 l-7 17 l-7 -17z" fill="var(--ink)"/>`;
+    s += `<text x="${x(s0)+6}" y="${y+17}" font-size="11.5" font-weight="600" fill="var(--ink)">${ph.id} ${esc(ph.name)}</text>`;
+    s += `<text x="${x(e0)}" y="${y+46}" text-anchor="${i===PPH.length-1?'end':'middle'}" font-size="10.5" fill="var(--muted)">${esc(gate.name.split(' · ')[0])} · ${fmtM(e0)}</text>`;
   });
-  s += `<g font-size="10.5" fill="var(--muted)"><rect x="${L}" y="${H-20}" width="14" height="10" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="${L+20}" y="${H-11}">phase work</text><rect x="${L+110}" y="${H-20}" width="14" height="10" fill="url(#hatch)" stroke="var(--buf)"/><text x="${L+130}" y="${H-11}">buffer</text><path d="M${L+200} ${H-22} l5 7 l-5 7 l-5 -7z" fill="var(--ink)"/><text x="${L+212}" y="${H-11}">program gate</text></g>`;
+  s += `<g font-size="10.5" fill="var(--muted)"><rect x="${L}" y="${H-20}" width="14" height="10" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="${L+20}" y="${H-11}">phase work</text><rect x="${L+110}" y="${H-20}" width="14" height="10" fill="url(#hatch)" stroke="var(--buf)"/><text x="${L+130}" y="${H-11}">buffer</text><path d="M${L+200} ${H-22} l5 7 l-5 7 l-5 -7z" fill="var(--ink)"/><text x="${L+212}" y="${H-11}">gate</text></g>`;
   $('phaseStrip').innerHTML = s + '</svg>';
 }
-function renderPhaseCards(){
-  $('phaseCards').innerHTML = PPH.map((ph,i)=>{
-    const p = phaseSpan(ph), work = p.ts.filter(t=>t.ws!=='BUF'&&t.ws!=='GATE');
-    const cols = ['--ph1','--ph2','--ph3','--ph4','--ph5','--ph6'];
-    return `<div class="phcard" style="--c:var(${cols[i]})">
-      <div class="lab">${ph.id} · ${work.length} work items</div>
-      <h3>${esc(ph.name)}</h3>
-      <div class="dates">${fmtD(p.s)} → ${fmtD(p.e)} · ${p.e-p.s} wk</div>
-      <p>${esc(ph.goal)}</p>
-      <ul>${work.slice(0,5).map(t=>`<li>${esc(t.name)}</li>`).join('')}${work.length>5?`<li>+${work.length-5} more on the Roadmap tab</li>`:''}</ul>
-      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px"><span class="pill buf">${p.buf.dur} wk buffer</span><span class="pill mute">${esc(BY[p.gate.id].name)}</span></div>
-    </div>`;
-  }).join('');
+function renderCards(){
+  const S = scores();
+  $('ccards').innerHTML = S.map(x=>{ const sp = compSpan(x.c.id);
+    return `<div class="cc" style="--c:var(${x.c.col})"><div class="lab">${x.c.id} · ${x.c.agents.length ? x.c.agents.length+' agents' : 'stewarded assets'}</div><h3>${esc(x.c.name)}</h3>
+      <p>${esc(x.c.what)}</p>
+      <div class="dates mono" style="font-size:11.5px;color:var(--muted)">${fmtM(sp.s)} → ${fmtM(sp.e)} · ${sp.ts.length} work items</div>
+      <div class="row"><span class="band ${x.band}">Risk ${x.R}</span><span class="pill mute">L ${x.L} × I ${x.I}</span><span class="pill mute">${x.raw} value pts</span></div></div>`; }).join('');
 }
 
 // ---------- roadmap ----------
-const wsState = new Set(Object.keys(WS));
-let selected = 'DSC-1', slip = 0, critOnly = false, showDeps = true;
+const wsKeys = COMPS.map(c=>c.id).concat(['BUF','GATE']);
+const wsName = k => k==='BUF' ? 'Buffers' : k==='GATE' ? 'Gates' : CBY[k].id+' '+CBY[k].short;
+const wsCol = k => k==='BUF' ? '--buf' : k==='GATE' ? '--ink' : CBY[k].col;
+const wsState = new Set(wsKeys);
+let selected = 'C6-06', slip = 0, critOnly = false, showDeps = true;
 function renderWsChips(){
-  const keys = Object.keys(WS);
-  $('wsChips').innerHTML = keys.map(k=>`<button type="button" class="chip" data-ws="${k}" style="--c:var(${WS[k].col})" aria-pressed="${wsState.has(k)}"><i></i>${esc(WS[k].name)}</button>`).join('');
-  $('wsChips').querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>{
-    const k=b.dataset.ws; if(wsState.has(k)) wsState.delete(k); else wsState.add(k); renderWsChips(); renderGantt();
-  }));
-}
-function barColor(t){
-  if(t.pf){ const p = PORTS.find(x=>x.id===t.pf); return `var(${p.col})`; }
-  return `var(${WS[t.ws].col})`;
+  $('wsChips').innerHTML = wsKeys.map(k=>`<button type="button" class="chip" data-ws="${k}" style="--c:var(${wsCol(k)})" aria-pressed="${wsState.has(k)}"><i></i>${esc(wsName(k))}</button>`).join('');
+  $('wsChips').querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.ws; wsState.has(k)?wsState.delete(k):wsState.add(k); renderWsChips(); renderGantt(); }));
 }
 function renderGantt(){
-  const P = schedule(slip);
-  const endW = Math.max(P['M-5'].e, END0);
-  const LBL = 320, PX = 6.2, RH = 22, TOP = 34;
+  const P = schedule(slip), endW = Math.max(P['M-3'].e, END0);
+  const LBL = 330, PX = 9, RH = 22, TOP = 34;
   const vis = T.filter(t=>wsState.has(t.ws) && (!critOnly || t.crit));
   const rows = []; PPH.forEach(ph=>{ const ts = vis.filter(t=>t.ph===ph.id); if(ts.length){ rows.push({hdr:ph}); ts.forEach(t=>rows.push({t})); } });
-  const W = LBL + Math.ceil(endW*PX) + 120, H = TOP + rows.length*RH + 10;
-  const x = w => LBL + w*PX;
-  const rowY = {};
-  let s = `<svg class="gantt" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Gantt chart of the PLM roadmap with dependencies and buffers">`;
-  s += `<defs><pattern id="hatch2" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--buf-soft)"/><line x1="0" y1="0" x2="0" y2="6" stroke="var(--buf)" stroke-width="2"/></pattern>
+  const Wd = LBL + Math.ceil(endW*PX) + 130, H = TOP + rows.length*RH + 10, x = w => LBL + w*PX, rowY = {};
+  let s = `<svg class="gantt" viewBox="0 0 ${Wd} ${H}" width="${Wd}" height="${H}" role="img" aria-label="Gantt chart of the component build-out with dependencies and buffers">
+    <defs><pattern id="hatch2" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--buf-soft)"/><line x1="0" y1="0" x2="0" y2="6" stroke="var(--buf)" stroke-width="2"/></pattern>
     <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--faint)"/></marker>
     <marker id="arrS" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--accent)"/></marker></defs>`;
-  // quarter grid
-  for(let w=0; w<=endW; w++){
-    const d = wkDate(w), dp = wkDate(w-1);
-    if(w===0 || (d.getMonth()%3===0 && d.getMonth()!==dp.getMonth())){
-      const q = Math.floor(d.getMonth()/3)+1;
-      s += `<line x1="${x(w)}" y1="${TOP-12}" x2="${x(w)}" y2="${H}" stroke="var(--line)" ${q===1?'':'stroke-dasharray="2 3"'}/>`;
-      s += `<text x="${x(w)+3}" y="${TOP-16}" font-size="10" fill="var(--muted)">${q===1||w===0?d.getFullYear()+' ':''}Q${q}</text>`;
-    }
-  }
-  let y = TOP;
+  for(let w=0; w<=endW; w++){ const d = wkDate(w), dp = wkDate(w-1);
+    if(w===0 || (d.getMonth()%3===0 && d.getMonth()!==dp.getMonth())){ const q = Math.floor(d.getMonth()/3)+1;
+      s += `<line x1="${x(w)}" y1="${TOP-12}" x2="${x(w)}" y2="${H}" stroke="var(--line)" ${q===1?'':'stroke-dasharray="2 3"'}/><text x="${x(w)+3}" y="${TOP-16}" font-size="10" fill="var(--muted)">${q===1||w===0?d.getFullYear()+' ':''}Q${q}</text>`; } }
+  let y = TOP, lines = '', hi = '';
   rows.forEach(r=>{
-    if(r.hdr){
-      s += `<rect x="0" y="${y}" width="${W}" height="${RH}" fill="var(--sunk)"/><text x="8" y="${y+15}" font-size="11.5" font-weight="600" fill="var(--ink)">${r.hdr.id} · ${esc(r.hdr.name)}</text>`;
-    } else {
-      const t = r.t, p = P[t.id]; rowY[t.id] = y + RH/2;
-      const nm = t.name.length > 36 ? t.name.slice(0,35)+'…' : t.name;
-      s += `<g class="row" data-id="${t.id}"><rect class="hov" x="0" y="${y}" width="${W}" height="${RH}" fill="transparent"/>`;
-      s += `<text x="8" y="${y+15}" font-size="10.5" fill="var(--muted)">${t.id}</text><text x="62" y="${y+15}" font-size="11" fill="var(--ink-2)">${esc(nm)}</text>`;
-      if(t.ws==='GATE'){
-        const gx = x(p.s);
-        s += `<path class="bar" data-id="${t.id}" d="M${gx} ${y+3} l8 8 l-8 8 l-8 -8z" fill="var(--ink)" ${t.id===selected?'stroke="var(--accent)" stroke-width="2.5"':''}/><text x="${gx+12}" y="${y+15}" font-size="10.5" fill="var(--ink)">${fmtD(p.s)}</text>`;
-      } else if(t.ws==='BUF'){
-        const bx = x(p.s), bw = Math.max(0, p.e - p.s)*PX, full = t.dur*PX;
+    if(r.hdr){ s += `<rect x="0" y="${y}" width="${Wd}" height="${RH}" fill="var(--sunk)"/><text x="8" y="${y+15}" font-size="11.5" font-weight="600" fill="var(--ink)">${r.hdr.id} · ${esc(r.hdr.name)}</text>`; }
+    else { const t = r.t, p = P[t.id]; rowY[t.id] = y + RH/2;
+      const nm = t.name.length > 38 ? t.name.slice(0,37)+'…' : t.name;
+      s += `<g class="row" data-id="${t.id}"><rect class="hov" x="0" y="${y}" width="${Wd}" height="${RH}" fill="transparent"/><text x="8" y="${y+15}" font-size="10.5" fill="var(--muted)">${t.id}</text><text x="56" y="${y+15}" font-size="11" fill="var(--ink-2)">${esc(nm)}</text>`;
+      if(t.ws==='GATE'){ const gx = x(p.s); s += `<path class="bar" d="M${gx} ${y+3} l8 8 l-8 8 l-8 -8z" fill="var(--ink)"/><text x="${gx+12}" y="${y+15}" font-size="10.5" fill="var(--ink)">${fmtD(p.s)}</text>`; }
+      else if(t.ws==='BUF'){ const bx = x(p.s), full = t.dur*PX, bw = Math.max(0,p.e-p.s)*PX;
         s += `<rect x="${bx}" y="${y+5}" width="${full}" height="12" fill="none" stroke="var(--buf)" stroke-dasharray="3 2"/>`;
-        if(p.used>0){ const uw = Math.min(full, p.used*PX); s += `<rect x="${bx - uw}" y="${y+5}" width="${uw}" height="12" fill="${p.used>=t.dur?'var(--crit)':'var(--buf)'}" opacity=".35"/>`; }
-        s += `<rect class="bar ${t.id===selected?'sel':''}" data-id="${t.id}" x="${bx}" y="${y+5}" width="${Math.max(bw,1)}" height="12" fill="url(#hatch2)"/>`;
-        s += `<text x="${bx+full+6}" y="${y+15}" font-size="10" fill="var(--buf)">${(Math.round(Math.max(0,p.e-p.s)*10)/10)} of ${t.dur} wk left</text>`;
-      } else {
-        const bx = x(p.s), bw = Math.max(2,(p.e-p.s)*PX);
-        s += `<rect class="bar ${t.id===selected?'sel':''}" data-id="${t.id}" x="${bx}" y="${y+4}" width="${bw}" height="14" fill="${barColor(t)}" ${t.crit?'stroke="var(--crit)" stroke-width="1.5"':''}/>`;
-      }
-      s += `</g>`;
-    }
+        if(p.used>0) s += `<rect x="${bx-Math.min(full,p.used*PX)}" y="${y+5}" width="${Math.min(full,p.used*PX)}" height="12" fill="${p.used>=t.dur?'var(--crit)':'var(--buf)'}" opacity=".35"/>`;
+        s += `<rect class="bar" x="${bx}" y="${y+5}" width="${Math.max(bw,1)}" height="12" fill="url(#hatch2)"/><text x="${bx+full+6}" y="${y+15}" font-size="10" fill="var(--buf)">${r1(Math.max(0,p.e-p.s))} of ${t.dur} wk left</text>`; }
+      else { s += `<rect class="bar ${t.id===selected?'sel':''}" x="${x(p.s)}" y="${y+4}" width="${Math.max(2,(p.e-p.s)*PX)}" height="14" fill="var(${CBY[t.ws].col})" ${t.crit?'stroke="var(--crit)" stroke-width="1.5"':''}/>`;
+        if(t.closes.length) s += `<circle cx="${x(p.e)+6}" cy="${y+11}" r="3.5" fill="var(--good)"/>`; }
+      s += `</g>`; }
     y += RH;
   });
-  // dependency lines
-  if(showDeps){
-    let lines = '', hi = '';
-    vis.forEach(t=>t.deps.forEach(d=>{
-      if(rowY[d]===undefined || rowY[t.id]===undefined) return;
-      const x1 = x(P[d].e), y1 = rowY[d], x2 = x(P[t.id].s), y2 = rowY[t.id];
-      const mid = Math.max(x1+4, x2-6);
-      const path = `M${x1} ${y1} H${mid} V${y2} H${x2-1}`;
-      const isSel = t.id===selected || d===selected;
-      if(isSel) hi += `<path d="${path}" fill="none" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#arrS)"/>`;
-      else lines += `<path d="${path}" fill="none" stroke="var(--faint)" stroke-width=".7" opacity=".55" marker-end="url(#arr)"/>`;
-    }));
-    s = s.replace('<g class="row"', `<g>${lines}</g><g class="row"`);
-    s += hi;
-  }
+  if(showDeps){ vis.forEach(t=>t.deps.forEach(d=>{ if(rowY[d]===undefined||rowY[t.id]===undefined) return;
+      const x1 = x(P[d].e), y1 = rowY[d], x2 = x(P[t.id].s), y2 = rowY[t.id], mid = Math.max(x1+4, x2-6), path = `M${x1} ${y1} H${mid} V${y2} H${x2-1}`;
+      if(t.id===selected||d===selected) hi += `<path d="${path}" fill="none" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#arrS)"/>`;
+      else lines += `<path d="${path}" fill="none" stroke="var(--faint)" stroke-width=".7" opacity=".55" marker-end="url(#arr)"/>`; }));
+    s = s.replace('<g class="row"', `<g>${lines}</g><g class="row"`); s += hi; }
   $('gantt').innerHTML = s + '</svg>';
   $('gantt').querySelectorAll('.row').forEach(g=>g.addEventListener('click',()=>{ selected = g.dataset.id; renderGantt(); renderDetail(); }));
   renderFever(P);
 }
 function renderDetail(){
-  const t = BY[selected], P = schedule(slip), p = P[t.id];
+  const t = BY[selected], p = schedule(slip)[t.id], ph = PPH.find(x=>x.id===t.ph);
   const link = id => `<div><button type="button" class="linkbtn" data-go="${id}">${id}</button> <span style="color:var(--muted)">${esc(BY[id].name)}</span></div>`;
-  const ph = PPH.find(x=>x.id===t.ph);
-  let html = `<div class="lab">${t.id} · ${esc(WS[t.ws].name)}${t.pf?' · '+esc(PORTS.find(x=>x.id===t.pf).name):''}</div><h3>${esc(t.name)}</h3>
+  const comp = CBY[t.ws];
+  $('detail').innerHTML = `<div class="lab">${t.id}${comp?' · '+esc(comp.name):''}${t.life?' · '+t.life:''}</div><h3>${esc(t.name)}</h3>
     <div style="display:flex;gap:6px;flex-wrap:wrap">${t.crit?'<span class="pill crit">Critical path</span>':`<span class="pill mute">${t.slack} wk slack</span>`}${t.ws==='BUF'?'<span class="pill buf">Buffer</span>':''}</div>
-    <dl>
-      <dt>Phase</dt><dd>${ph.id} · ${esc(ph.name)}</dd>
-      <dt>Dates</dt><dd class="mono" style="font-size:12px">${fmtD(p.s)} → ${fmtD(p.e)}</dd>
-      <dt>Duration</dt><dd>${t.ws==='GATE'?'Milestone':(Math.round((p.e-p.s)*10)/10)+' wk'+(slip&&t.ws!=='BUF'?` (planned ${t.dur})`:'')}</dd>
-      ${t.ws==='BUF'?`<dt>Consumed</dt><dd>${Math.round(p.used*10)/10} of ${t.dur} wk</dd>`:''}
-      ${t.builds?`<dt>Builds</dt><dd>${esc(t.builds)}</dd>`:''}
-      ${t.deliv?`<dt>Delivers</dt><dd>${esc(t.deliv)}</dd>`:''}
-    </dl>
-    <div class="lab">Depends on</div><div style="display:flex;flex-direction:column;gap:3px;font-size:12.5px">${t.deps.length?t.deps.map(link).join(''):'<span style="color:var(--muted)">Nothing: program start</span>'}</div>
+    <dl><dt>Phase</dt><dd>${ph.id} · ${esc(ph.name)}</dd><dt>Dates</dt><dd class="mono" style="font-size:12px">${fmtD(p.s)} → ${fmtD(p.e)}</dd>
+      <dt>Duration</dt><dd>${t.ws==='GATE'?'Gate':r1(p.e-p.s)+' wk'}</dd>${t.ws==='BUF'?`<dt>Consumed</dt><dd>${r1(p.used)} of ${t.dur} wk</dd>`:''}
+      ${t.deliv?`<dt>${t.ws==='GATE'?'Criteria':'Delivers'}</dt><dd>${esc(t.deliv)}</dd>`:''}
+      ${t.closes.length?`<dt>Closes gaps</dt><dd>${t.closes.map(id=>`${id} · ${esc(SBY[id].name)}`).join('<br>')}</dd>`:''}</dl>
+    <div class="lab">Depends on</div><div style="display:flex;flex-direction:column;gap:3px;font-size:12.5px">${t.deps.length?t.deps.map(link).join(''):'<span style="color:var(--muted)">Program start</span>'}</div>
     <div class="lab">Unlocks</div><div style="display:flex;flex-direction:column;gap:3px;font-size:12.5px">${SUCC[t.id].length?SUCC[t.id].map(link).join(''):'<span style="color:var(--muted)">End of program</span>'}</div>`;
-  $('detail').innerHTML = html;
   $('detail').querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>{ selected=b.dataset.go; wsState.add(BY[selected].ws); renderWsChips(); renderGantt(); renderDetail(); }));
 }
 function renderFever(P){
-  $('fever').innerHTML = T.filter(t=>t.ws==='BUF').map(t=>{
-    const p = P[t.id], pct = Math.min(100, Math.round(100*p.used/t.dur));
-    const cls = pct>=67?'red':pct>=34?'amber':'';
-    const gate = T.find(g=>g.ws==='GATE' && g.deps.includes(t.id));
-    const moved = P[gate.id].s - PLAN0[gate.id].s;
-    return `<div class="fv"><div class="t">${t.id} · ${t.ph}</div><b>${pct}%</b><div class="bar"><i class="${cls}" style="width:${pct}%"></i></div>
-      <small>${Math.round(p.used*10)/10} wk of slip into a ${t.dur} wk buffer</small><small>${esc(gate.name.split(' · ')[0])}: ${moved>0.05?`<span style="color:var(--crit)">slips ${Math.round(moved*10)/10} wk</span>`:'holds'} · ${fmtM(P[gate.id].s)}</small></div>`;
-  }).join('');
+  $('fever').innerHTML = T.filter(t=>t.ws==='BUF').map(t=>{ const p = P[t.id], pct = Math.min(100, Math.round(100*p.used/t.dur)), cls = pct>=67?'red':pct>=34?'amber':'';
+    const gate = T.find(g=>g.ws==='GATE' && g.deps.includes(t.id)), moved = P[gate.id].s - PLAN0[gate.id].s;
+    return `<div class="fv"><div class="t">${t.id} · ${t.ph}</div><b>${pct}%</b><div class="bar"><i class="${cls}" style="width:${pct}%"></i></div><small>${r1(p.used)} wk of slip into a ${t.dur} wk buffer</small><small>${esc(gate.name.split(' · ')[0])}: ${moved>0.05?`<span style="color:var(--crit)">slips ${r1(moved)} wk</span>`:'holds'} · ${fmtM(P[gate.id].s)}</small></div>`; }).join('');
 }
 $('critOnly').addEventListener('change', e=>{ critOnly = e.target.checked; renderGantt(); });
 $('showDeps').addEventListener('change', e=>{ showDeps = e.target.checked; renderGantt(); });
 $('slip').addEventListener('input', e=>{ slip = +e.target.value; $('slipVal').textContent = slip+'%'; renderGantt(); renderDetail(); });
 
-// ---------- scorecard views ----------
-function buildsTask(r){
-  const [p, pr, item] = r;
-  if(/Inspections|Defect Log/.test(item)) return p<=1 ? 'G-05' : 'DB-03';
-  if(pr.startsWith('DT')) return 'DT-01';
-  if(pr.includes('Business')) return 'RE-01';
-  if(pr.includes('Design specifications')) return /Use Cases/.test(item)?'RE-01':'RE-02';
-  if(pr.startsWith('ODD')) return /ARB/.test(item)?'G-02':'ODD-01';
-  if(pr.startsWith('DE')) return /Acquisition/.test(item)?'DE-01':/Asset/.test(item)?'DE-03':'DE-02';
-  if(pr.startsWith('KE')) return /Vocabulary|Taxonomy/.test(item)?'KE-01':/Semantic/.test(item)?'KE-04':/Ontology/.test(item)?'KE-02':/RDB/.test(item)?'KE-03':'KE-05';
-  if(pr.startsWith('SE')) return /CI\/CD|Documentation|Runbook|Change/.test(item)?'SE-01':'SE-02';
-  if(pr.startsWith('OPR')) return /Certification/.test(item)?'OP-02':'OP-01';
-  if(pr.startsWith('SCM')) return 'SCM-01';
-  if(pr.startsWith('SLM')) return 'SLM-01';
-  return '';
+// ---------- impact & risk ----------
+function renderWeights(){
+  $('weights').innerHTML = Object.entries(DRIVERS).map(([k,d])=>`<div class="wt"><span class="v" id="wv-${k}">${W[k]}</span><b>${esc(d.name)}</b><div class="hint" style="margin:2px 0 6px">${esc(d.desc)}</div><input type="range" min="1" max="5" step="1" value="${W[k]}" data-k="${k}" aria-label="Weight for ${esc(d.name)}"></div>`).join('');
+  $('weights').querySelectorAll('input').forEach(i=>i.addEventListener('input',()=>{ W[i.dataset.k] = +i.value; $('wv-'+i.dataset.k).textContent = i.value; renderRisk(); renderKPIs(); renderCards(); renderDep(); renderImpact(); }));
 }
-const PHC = ['--ph1','--ph2','--ph3','--ph4','--ph5','--ph6'];
-function renderRoll(){
-  $('phRoll').innerHTML = PHASES.map((ph,p)=>{
-    const r = roll(p);
-    return `<div class="phs" style="--c:var(${PHC[p]})"><div class="lab">${p+1} · ${ph}</div><b>${r.cv?r.pct+'%':'—'}</b><div class="meter"><i style="width:${r.pct}%"></i></div>
-      <small>${r.a} of ${r.b} target points</small><small>${r.cv} of ${r.tg} targeted items assessed</small></div>`;
-  }).join('');
-  const g = goNoGo();
-  $('verdict').className = 'verdict ' + (g.go?'go':'no'); $('verdict').textContent = g.go ? 'GO' : 'NO-GO';
-  $('checks').innerHTML = g.checks.map(([ok,txt,ev])=>`<li class="${ok?'ok':'no'}" data-m="${ok?'✓':'✗'}"><span>${esc(txt)} <span style="color:var(--muted)">· ${esc(ev)}</span></span></li>`).join('');
-  renderHeat(); renderComp(); renderKPIs();
+function renderRisk(){
+  const S = scores();
+  const Sz = 400, M = 40, cell = (Sz-M-10)/5;
+  let s = `<svg viewBox="0 0 ${Sz} ${Sz}" role="img" aria-label="Risk matrix of likelihood against impact for the eight components">`;
+  for(let i=0;i<5;i++) for(let j=0;j<5;j++){ const l = j+1, im = i+1, v = l*im, fill = v>=15?'var(--crit-soft)':v>=8?'var(--warn-soft)':'var(--good-soft)';
+    s += `<rect x="${M+i*cell}" y="${10+(4-j)*cell}" width="${cell-2}" height="${cell-2}" fill="${fill}"/>`; }
+  for(let k=1;k<=5;k++){ s += `<text x="${M+(k-.5)*cell}" y="${Sz-14}" text-anchor="middle" font-size="11" fill="var(--muted)">${k}</text><text x="${M-10}" y="${10+(5-k+.5)*cell+4}" text-anchor="end" font-size="11" fill="var(--muted)">${k}</text>`; }
+  s += `<text x="${M+2.5*cell}" y="${Sz-1}" text-anchor="middle" font-size="11" fill="var(--ink-2)">Impact →</text><text x="12" y="${10+2.5*cell}" text-anchor="middle" font-size="11" fill="var(--ink-2)" transform="rotate(-90 12 ${10+2.5*cell})">Likelihood →</text>`;
+  const placed = {};
+  S.forEach(x=>{ const cx = M + (x.I-.5)*cell, cy = 10 + (5 - x.L + .5)*cell; const key = Math.round(cx/14)+'-'+Math.round(cy/14); const off = (placed[key]=(placed[key]||0)+1)-1;
+    s += `<g><circle cx="${cx+off*14}" cy="${cy-off*6}" r="13" fill="var(${x.c.col})" stroke="var(--paper)" stroke-width="2"/><text x="${cx+off*14}" y="${cy-off*6+4}" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--paper)">${x.c.id}</text></g>`; });
+  $('riskMatrix').innerHTML = s + '</svg>';
+  const sorted = [...S].sort((a,b)=>b.R-a.R);
+  $('riskTbl').innerHTML = `<thead><tr><th>Component</th><th class="num">Novelty</th><th class="num">Complexity</th><th class="num">Readiness gap</th><th class="num">Dependency</th><th class="num">L</th><th class="num">Value pts</th><th class="num">I</th><th class="num">Risk</th><th>Most exposed job steps</th></tr></thead><tbody>`
+    + sorted.map(x=>`<tr><td style="border-left:4px solid var(${x.c.col});min-width:190px"><b>${x.c.id}</b> ${esc(x.c.name)}</td><td class="num">${x.c.nov}</td><td class="num">${x.c.cx}</td><td class="num">${x.c.ready}</td><td class="num">${x.ds}</td><td class="num"><b>${x.L}</b></td><td class="num">${x.raw}</td><td class="num"><b>${x.I}</b></td><td class="num"><span class="band ${x.band}">${x.R}</span></td><td style="font-size:12px;min-width:140px">${x.top.map(s=>s.id).join(', ')||'measures and sustains'}</td></tr>`).join('') + '</tbody>';
 }
-function tone(pct){ return pct>=70?'var(--good-soft)':pct>=40?'var(--warn-soft)':'var(--crit-soft)'; }
-function renderHeat(){
-  let h = `<thead><tr><th>Portfolio</th>${PHASES.map(p=>`<th class="num">${p}</th>`).join('')}<th>Next assessment</th></tr></thead><tbody>`;
-  PORTS.forEach(pf=>{
-    const first = T.find(t=>t.pf===pf.id && t.seg===0);
-    h += `<tr><td style="border-left:4px solid var(${pf.col});font-weight:600">${esc(pf.name)}</td>`;
-    PHASES.forEach((_,p)=>{
-      if(pf.id==='DSC'){ const r = roll(p); h += r.cv ? `<td class="h" style="background:${tone(r.pct)}">${r.pct}%<br><span style="font-weight:400;color:var(--muted);font-size:10.5px">${r.cv}/${r.tg} items</span></td>` : `<td class="h" style="color:var(--faint);background:var(--sunk)">not yet</td>`; }
-      else h += `<td class="h" style="color:var(--faint);background:var(--sunk)">—</td>`;
-    });
-    h += `<td class="mono" style="font-size:11.5px">${pf.id==='DSC'?'Design (PDR/CDR) · '+fmtM(PLAN0['DSC-2'].e):'Baseline in G-03 · wave starts '+fmtM(PLAN0[first.id].s)}</td></tr>`;
-  });
-  $('heat').innerHTML = h + '</tbody>';
+function renderImpact(){
+  const cid = $('impComp').value, scn = $('impScn').value, c = CBY[cid], S = scores(), me = S.find(x=>x.c.id===cid);
+  const steps = STEPS.filter(s=>DEP[cid][s.id]>=2).sort((a,b)=>DEP[cid][b.id]-DEP[cid][a.id] || stepValue(b)-stepValue(a));
+  const crit = steps.filter(s=>DEP[cid][s.id]===3);
+  const hit = scn==='q' ? crit : steps;
+  const valLost = Math.round(hit.reduce((a,s)=>a + stepValue(s)*DEP[cid][s.id]/3, 0));
+  const drvs = {}; hit.forEach(s=>drvs[s.drv]=(drvs[s.drv]||0)+stepValue(s)*DEP[cid][s.id]/3);
+  const dq = hit.length*4, dqH = hit.reduce((a,s)=>a+s.H,0);
+  let sched = '';
+  if(scn!=='q'){
+    const ts = T.filter(t=>t.ws===cid), last = ts.reduce((a,t)=>PLAN0[t.id].e>PLAN0[a.id].e?t:a, ts[0]);
+    const P = schedule(0, {[last.id]: +scn});
+    const gates = T.filter(t=>t.ws==='GATE').map(g=>({g, d: r1(P[g.id].s-PLAN0[g.id].s)}));
+    const delayed = COMPS.filter(k=>k.id!==cid && T.some(t=>t.ws===k.id && P[t.id].s - PLAN0[t.id].s > 0.05));
+    const bufs = T.filter(t=>t.ws==='BUF' && P[t.id].used>0).map(b=>`${b.id} uses ${r1(P[b.id].used)} of ${b.dur} wk`);
+    sched = `<div class="lab">Schedule</div><ul>
+      <li>${esc(last.id)} (${esc(last.name)}) finishes ${scn} weeks late.</li>
+      <li>${bufs.length?esc(bufs.join('; ')):'No buffer is touched: the task has enough slack.'}</li>
+      <li>Gates: ${gates.map(x=>`${esc(x.g.name.split(' · ')[0])} ${x.d>0?`<b style="color:var(--crit)">+${x.d} wk</b>`:'holds'}`).join(' · ')}</li>
+      <li>Downstream components delayed: ${delayed.length?delayed.map(k=>`<span class="pill mute">${k.id} ${esc(k.short)}</span>`).join(' '):'none'}</li></ul>`;
+  } else {
+    sched = `<div class="lab">Schedule</div><ul><li>Dates hold, but the ${crit.length} job steps that depend critically on ${esc(c.short)} get weaker answers until it is fixed.</li><li>Expected signals: grounding falls, MTBH breakers on ${esc(c.agents.slice(0,2).join(' and ')||'its consumers')} go half-open, value gaps widen.</li></ul>`;
+  }
+  $('impOut').innerHTML = `<div>
+      <div class="lab">${esc(c.id)} · ${esc(c.name)}</div>
+      <div style="display:flex;gap:8px;align-items:baseline;margin:4px 0 8px"><span class="band ${me.band}">Risk ${me.R}</span><span class="hint">L ${me.L} × I ${me.I}</span></div>
+      ${sched}
+      <div class="lab" style="margin-top:10px">Business value</div>
+      <ul><li><b>${valLost}</b> of ${Math.round(STEPS.reduce((a,s)=>a+stepValue(s),0))} value-at-stake points exposed</li>
+      ${Object.entries(drvs).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<li>${esc(DRIVERS[k].name)}: ${Math.round(v)} pts</li>`).join('')}</ul>
+    </div>
+    <div>
+      <div class="lab">Persona job steps, desired outcomes and decision questions affected</div>
+      <p class="hint" style="margin:2px 0 6px">${hit.length} job steps · ${hit.length*3} desired outcomes · ${dq} decision questions, ${dqH} of them tier H</p>
+      <div class="tw"><table><thead><tr><th>Step</th><th>Desired outcome</th><th class="num">Dep.</th><th class="num">Gap</th><th class="num">Value</th></tr></thead><tbody>
+      ${hit.map(s=>`<tr><td class="mono" style="font-size:11.5px;white-space:nowrap">${s.id}<br><span style="color:var(--muted)">${s.stage}</span></td><td>${esc(s.out)}<div class="hint">${s.cause?esc(s.cause):'Meets target today'}</div></td><td class="num">${DEP[cid][s.id]}</td><td class="num">${Math.round(100*gapOf(s))}%</td><td class="num">${Math.round(stepValue(s))}</td></tr>`).join('')}
+      </tbody></table></div>
+    </div>`;
 }
-function renderComp(){
-  const cols = DSC_COMPONENTS;
-  let h = `<thead><tr><th>Phase</th>${cols.map(c=>`<th class="num">${c}</th>`).join('')}<th class="num">Aggregate</th></tr></thead><tbody>`;
-  PHASES.forEach((ph,p)=>{
-    const portal = roll(p);
-    const vals = cols.map((c,i)=>{
-      if(i===0) return portal.cv ? portal.pct : null;
-      if(i===1 && p===0){ const it = SC.filter(r=>r[0]===0); const b = it.reduce((a,r)=>a+(r[3]||0),0); return Math.round(100*CC_DISCOVER.reduce((a,v)=>a+v,0)/b); }
-      return null;
-    });
-    const agg = Math.round(vals.reduce((a,v)=>a+(v||0),0)/cols.length);
-    h += `<tr><td>${p+1} · ${ph}</td>${vals.map(v=>`<td class="num" ${v===null?'style="color:var(--faint)"':''}>${v===null?'—':v+'%'}</td>`).join('')}<td class="num"><b>${agg}%</b></td></tr>`;
-  });
-  $('compTbl').innerHTML = h + '</tbody>';
-}
-let itemF = 'all';
-const IF = [['all','All 83 items'],['na','Targeted, not assessed'],['below','Below target'],['notarget','No target set'],['zero','Target 0']];
-function renderItemFilter(){
-  $('itemFilter').innerHTML = IF.map(([k,l])=>`<button type="button" class="chip" data-f="${k}" aria-pressed="${itemF===k}">${l}</button>`).join('');
-  $('itemFilter').querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>{ itemF=b.dataset.f; renderItemFilter(); renderItems(); }));
-}
-function renderItems(){
-  let h = `<thead><tr><th>Item</th><th class="num">Target</th><th class="num">Assessed</th><th class="num">Gap</th><th>Flag</th><th>Built by</th></tr></thead><tbody>`;
-  let lastGrp = '';
-  SC.forEach((r,i)=>{
-    const v = asmt(i), tg = r[3];
-    const f = itemF==='all' || (itemF==='na' && (tg||0)>0 && v===null) || (itemF==='below' && v!==null && tg!==null && v<tg) || (itemF==='notarget' && tg===null) || (itemF==='zero' && tg===0);
-    if(!f) return;
-    const grp = PHASES[r[0]]+' · '+r[1];
-    if(grp!==lastGrp){ h += `<tr class="grp"><td colspan="6">${esc(grp)}</td></tr>`; lastGrp = grp; }
-    const gap = (tg!==null && v!==null) ? tg - v : null;
-    const flag = tg===null ? '<span class="pill warn">no target</span>' : tg===0 ? '<span class="pill warn">target 0</span>' : v===null ? '<span class="pill mute">not assessed</span>' : (v===0 && tg===3) ? '<span class="pill crit">major debt</span>' : gap>0 ? '<span class="pill crit">below</span>' : '<span class="pill good">meets</span>';
-    const bt = buildsTask(r);
-    h += `<tr><td>${esc(r[2])}</td><td class="num">${tg===null?'—':tg}</td>
-      <td class="num"><button type="button" class="cellbtn ${edits.has(i)?'edited':''} ${v!==null?'sc'+v:''}" data-i="${i}" aria-label="Assessment for ${esc(r[2])}, click to change">${v===null?'—':v}</button></td>
-      <td class="num">${gap===null?'':gap>0?'−'+gap:gap<0?'+'+(-gap):'0'}</td><td>${flag}</td>
-      <td>${bt?`<button type="button" class="linkbtn" data-task="${bt}">${bt}</button>`:''}</td></tr>`;
-  });
-  $('itemTbl').innerHTML = h + '</tbody>';
-  $('itemTbl').querySelectorAll('.cellbtn').forEach(b=>b.addEventListener('click',()=>{
-    const i = +b.dataset.i, cur = asmt(i), next = cur===null ? 0 : cur===3 ? null : cur+1;
-    if(next === SC[i][4]) edits.delete(i); else edits.set(i, next);
-    renderItems(); renderRoll();
-  }));
-  $('itemTbl').querySelectorAll('[data-task]').forEach(b=>b.addEventListener('click',()=>{ selected=b.dataset.task; wsState.add(BY[selected].ws); renderWsChips(); show('roadmap'); renderGantt(); renderDetail(); }));
-}
-$('resetEdits').addEventListener('click',()=>{ edits.clear(); renderItems(); renderRoll(); });
+$('impComp').innerHTML = COMPS.map(c=>`<option value="${c.id}" ${c.id==='C5'?'selected':''}>${c.id} · ${esc(c.name)}</option>`).join('');
+$('impComp').addEventListener('change', renderImpact); $('impScn').addEventListener('change', renderImpact);
 
-// ---------- gates ----------
-function renderGates(){
-  let h = `<thead><tr><th>Portfolio</th>${PHASES.map(p=>`<th>${p}</th>`).join('')}</tr></thead><tbody>`;
-  PORTS.forEach(pf=>{
-    const seg = i => T.find(t=>t.pf===pf.id && t.seg===i);
-    const d0 = seg(0), when = [
-      fmtD(PLAN0[d0.id].s + 0.4*d0.dur), fmtD(PLAN0[d0.id].e), fmtD(PLAN0[seg(2).id].e), fmtD(PLAN0[seg(3).id].e), fmtD(PLAN0[seg(4).id].e), 'from '+fmtM(PLAN0[seg(4).id].e)
-    ];
-    h += `<tr><td class="pf" style="--c:var(${pf.col})">${esc(pf.name)}<span class="when">${PPH.find(x=>x.id===d0.ph).name}</span></td>`;
-    pf.rows.forEach(([art,gate],i)=>{
-      h += `<td>${esc(art).replace(/; /g,'<br>')}<span class="gate">${esc(gate)}</span><span class="when">${i<5?'planned ':''}${when[i]}</span></td>`;
-    });
-    h += '</tr>';
-  });
-  $('gm').innerHTML = h + '</tbody>';
+// ---------- value & outcomes ----------
+let selStep = 'HR-J1.6';
+function renderDep(){
+  $('depTbl').innerHTML = `<thead><tr><th>Job step</th><th>Value driver</th><th class="num">Gap</th><th class="num">Tier H</th><th class="num">Value</th>${COMPS.map(c=>`<th class="cmp" style="border-bottom:3px solid var(${c.col})">${c.id}<br><span style="text-transform:none;letter-spacing:0">${esc(c.short)}</span></th>`).join('')}</tr></thead><tbody>`
+    + STEPS.map(s=>`<tr data-s="${s.id}" class="${s.id===selStep?'sel':''}"><td><span class="mono" style="font-size:11.5px;color:var(--muted)">${s.id} · ${s.stage}</span><br>${esc(s.name)}</td><td style="font-size:12px">${esc(DRIVERS[s.drv].name)}</td><td class="num">${Math.round(100*gapOf(s))}%</td><td class="num">${s.H}</td><td class="num"><b>${Math.round(stepValue(s))}</b></td>${COMPS.map(c=>`<td class="d s${DEP[c.id][s.id]}">${DEP[c.id][s.id]}</td>`).join('')}</tr>`).join('') + '</tbody>';
+  $('depTbl').querySelectorAll('tbody tr').forEach(r=>r.addEventListener('click',()=>{ selStep = r.dataset.s; renderDep(); renderStep(); }));
+}
+function renderStep(){
+  const s = SBY[selStep], code = s.id.replace('-J1.','-');
+  const closers = T.filter(t=>t.closes.includes(s.id));
+  const crit = COMPS.filter(c=>DEP[c.id][s.id]===3);
+  const n = s.id.split('.')[1], pfx = s.p==='CA' ? 'DO-CA-J1-'+n : 'DO-HR-J1-'+n;
+  $('stepDetail').innerHTML = `<div class="lab">${s.id} · ${s.p==='CA'?'Client Admin':'HR Specialist'} · ${s.stage}</div><h2 style="margin:2px 0 8px">${esc(s.name)}</h2>
+    <div class="grid3">
+      <div><div class="lab">Desired outcome (measured)</div><p style="margin:4px 0">${esc(s.out)}</p><p class="mono" style="font-size:12px;margin:0">target ${s.dir==='min'?'≤':'≥'} ${s.target} ${esc(s.unit)} · baseline ${s.base} · gap ${Math.round(100*gapOf(s))}%</p>
+        <p class="hint" style="margin-top:6px">Outcomes ${pfx}-1, -2, -3 in the job study; decision questions DQ-${code}-01 to -04 (${s.H} tier H).</p></div>
+      <div><div class="lab">What blocks it today</div><p style="margin:4px 0">${s.cause?esc(s.cause):'Nothing: the step meets its target at baseline.'}</p>
+        <div class="lab" style="margin-top:8px">Closed by</div><p style="margin:4px 0;font-size:13px">${closers.length?closers.map(t=>`<b>${t.id}</b> ${esc(t.name)} · ${fmtM(PLAN0[t.id].e)}`).join('<br>'):'General build of the components below'}</p></div>
+      <div><div class="lab">Critical components</div><p style="margin:4px 0;font-size:13px">${crit.map(c=>`<span class="pill mute" style="margin:0 4px 4px 0">${c.id} ${esc(c.short)}</span>`).join('')}</p>
+        <p class="hint">Value at stake: <b>${Math.round(stepValue(s))}</b> points (${esc(DRIVERS[s.drv].name)}, weight ${W[s.drv]}).</p></div>
+    </div>`;
+}
+
+// ---------- lifecycle ----------
+function renderLifecycle(){
+  $('lcTbl').innerHTML = `<thead><tr><th>Component</th>${LIFE.map((l,i)=>`<th title="${esc(LIFE_EVIDENCE[i])}">${l}</th>`).join('')}</tr></thead><tbody>`
+    + COMPS.map(c=>{ const ts = T.filter(t=>t.ws===c.id), sp = compSpan(c.id);
+      const firstDev = ts.filter(t=>t.life==='Develop'||t.life==='Deliver').reduce((m,t)=>Math.min(m,PLAN0[t.id].s), Infinity);
+      const due = { Discover: sp.s, Define: sp.s, Design: isFinite(firstDev)?firstDev:sp.s, Develop: null, Deliver: sp.e, Run: null };
+      const lbl = { Discover:'gate before build starts', Define:'gate before build starts', Design:'design freeze before development', Deliver:'release through the OPR checklist' };
+      return `<tr><td class="cn" style="--c:var(${c.col})">${c.id} · ${esc(c.name)}<span class="when">risk ${scores().find(x=>x.c.id===c.id).R}</span></td>`
+       + LIFE.map((l,i)=>{ const lt = ts.filter(t=>t.life===l);
+          const list = lt.map(t=>`<b>${t.id}</b> ${esc(t.name.length>60?t.name.slice(0,58)+'…':t.name)}`).join('<br>');
+          if(l==='Run') return `<td>${lt.length?list+'<br>':''}<span class="when">operates from ${fmtM(Math.max(sp.e, PLAN0['M-1'].s))}</span><span class="when">SLM · value gaps · MTBH breakers</span></td>`;
+          if(l==='Develop'){ const d = lt.length ? Math.max(...lt.map(t=>PLAN0[t.id].e)) : null; return lt.length ? `<td>${list}<span class="when">evidence due ${fmtD(d)}</span></td>` : `<td class="none">no separate build work</td>`; }
+          const d = lt.length ? Math.max(...lt.map(t=>PLAN0[t.id].e)) : due[l];
+          return `<td>${list?list+'<br>':''}<span class="when">${lt.length?'evidence due':lbl[l]+' ·'} ${fmtD(d)}</span></td>`; }).join('') + '</tr>'; }).join('')
+    + `<tr><td class="cn" style="--c:var(--line-2)">Evidence the scorecard asks for</td>${LIFE_EVIDENCE.map(e=>`<td class="hint">${esc(e)}</td>`).join('')}</tr></tbody>`;
+  $('rule').innerHTML = [
+    'Every targeted scorecard item in all six lifecycle phases has been assessed',
+    'Discover and Define each score at least 70% of their target points',
+    'Design and Develop each score at least 80%',
+    'Every operations (OPR) item meets its target before release',
+    'No item with target 3 is scored 0 (open major debt)',
+    'Every agent in the component has a closed MTBH circuit breaker and passes the decision-question probes',
+    'No persona job step that depends critically on the component loses value at stake versus baseline',
+  ].map(t=>`<li class="no" data-m="○"><span>${esc(t)}</span></li>`).join('');
 }
 
 // ---------- readiness ----------
 const ISSUES = [
- ['High','18 scorecard items have no target','Knowledge Engineering (6), Data Engineering (3), supply-chain Run (8) and Certification Management (1) carry no baseline, so they never count toward a phase score. Develop and Run look more mature than they are.',['G-03','KE-01']],
- ['High','Seven traceability items are targeted at 0','Future State Planning, Impact Analysis, Bundling and Prioritization, Capability Maps, Service Maps, Service Gaps, and Requirements Mapping & Traceability link outcomes to features. At target 0 a project can pass without tracing a requirement to an outcome. Proposed target: 2 or higher.',['RE-01','RE-02']],
- ['High','The aggregate score and the Go/No-Go threshold are undefined','The sheet’s aggregate row reads TBD, and the instruction to feed debt into the OPR and Release Management decision has no rule. The dashboard uses a proposed rule until the PLM Council sets one.',['G-02','DB-02']],
- ['Medium','Inspections and defect logs score 0 in the pilot','Both are targeted at 3 in Discover and Define, yet scored 0 (Define’s defect log is 2). There is no inspection evidence trail yet, which is also what the dashboard needs to score automatically.',['G-05','DB-03']],
- ['Medium','Run measures supply chain only','Run items cover order-to-delivery and service levels. The Run artifacts of the other five portfolios (OEE, fleet health, MTTR, defect drift, NPS) and their reviews (CARB, AS9100 oversight) have no scorecard items.',['SLM-01','DB-04']],
- ['Medium','Certification Management has no checklist','The OPR breakdown says “see Checklist & Process” with nothing behind it, yet AS9102 FAI, DO-178C/DO-254 and FAA/EASA sign-offs gate three portfolios.',['OP-02']],
- ['Medium','Phase and gate names differ between the two documents','The policy uses Delivery and SRR/PDR/CDR/TRR; the scorecard uses Deliver, RUN and practice codes. A controlled vocabulary has to map each gate to the scorecard phase it evidences.',['KE-01']],
- ['Low','A development sheet holds formula errors and personal metadata','The fourth sheet is #VALUE!/#REF! rows plus an embedded user and machine identifier. Remove it before the workbook is shared or used as a data source.',['G-03']],
- ['Low','One Develop row is malformed','The Testing row in Develop is missing its assessment cells, so a formula range may skip it.',['G-03']],
+ ['High','Only 13 of 84 desired outcomes have a measured baseline','Impact and risk scores rest on the 12 core job steps whose gaps the advisor design measured (synthetic values). The other 72 outcomes need metric cards and baseline time studies before value at stake is complete.',['C7-01','C7-04']],
+ ['High','Golden answers for the 48 decision questions are not written','The decision-question baseline is what the circuit breakers probe and what quality by design compares against. Without it the G2 grounding and MTBH criteria cannot be tested.',['C7-02']],
+ ['High','The scorecard template has no targets for Knowledge Engineering','All six KE items (vocabulary, semantic extension, taxonomy, ontology, RDB-to-RDF mapping, integration at scale) have no baseline, yet C1 and C5 are knowledge-engineering components. 18 template items have no target in all.',['C1-02','C5-01']],
+ ['High','Seven traceability items in the template are targeted at 0','Future-state planning, impact analysis, prioritization, capability maps, service maps, service gaps and requirements traceability are exactly the links from desired outcomes to components that this dashboard scores. Proposed target: 2 or higher.',['C1-01','C7-01']],
+ ['High','The release Go/No-Go threshold is undefined','The template’s aggregate score reads TBD. The dashboard shows a proposed rule, extended with circuit-breaker and value-at-stake checks, for the steering group to confirm.',['C2-01']],
+ ['Medium','The plan runs longer than the solution design’s 15 months','Sequencing the agents behind their rules and mappings, plus 16 weeks of buffer for an organization new to this work, gives about '+Math.round(END0/4.345)+' months. The design roadmap should be updated or scope trimmed.',['M-2']],
+ ['Medium','The template’s Run phase measures supply-chain operations','For the advisor, Run should measure service levels, value gaps per job step and agent integrity (MTBH), as the Lifecycle gates tab assumes.',['C7-05','C8-03']],
+ ['Medium','Value-driver weights and outcome importance are not yet set','Weights default to equal. The sponsor sets them at G0; the outcome importance survey in C7-04 then replaces the tier-H proxy.',['C7-04']],
+ ['Low','The scorecard workbook holds a development sheet with errors and personal metadata','Remove it before the workbook is shared or used as a data source.',['C2-01']],
 ];
 function renderIssues(){
   $('issues').innerHTML = ISSUES.map(([sev,t,d,tasks])=>`<div class="issue"><span class="pill ${sev==='High'?'crit':sev==='Medium'?'warn':'mute'}">${sev}</span><div><h3>${esc(t)}</h3><p>${esc(d)}</p></div>
@@ -882,19 +772,19 @@ function renderIssues(){
 }
 
 // ---------- tabs ----------
-const VIEWS = ['overview','roadmap','scorecard','gates','readiness'];
+const VIEWS = ['overview','roadmap','risk','value','lifecycle','readiness'];
 function show(v){
   VIEWS.forEach(k=>{ $('v-'+k).hidden = k!==v; });
   document.querySelectorAll('.tab').forEach(b=>b.setAttribute('aria-selected', String(b.dataset.v===v)));
   try{ history.replaceState(null,'','#'+v); }catch(e){}
-  try{ localStorage.setItem('plm-tab', v); }catch(e){}
+  try{ localStorage.setItem('plm2-tab', v); }catch(e){}
 }
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>show(b.dataset.v)));
 
-renderPhaseStrip(); renderPhaseCards(); renderWsChips(); renderGantt(); renderDetail();
-renderItemFilter(); renderItems(); renderRoll(); renderGates(); renderIssues();
+renderKPIs(); renderPhaseStrip(); renderCards(); renderWsChips(); renderGantt(); renderDetail();
+renderWeights(); renderRisk(); renderImpact(); renderDep(); renderStep(); renderLifecycle(); renderIssues();
 let start = 'overview';
-try{ const s = localStorage.getItem('plm-tab'); if(VIEWS.includes(s)) start = s; }catch(e){}
+try{ const s = localStorage.getItem('plm2-tab'); if(VIEWS.includes(s)) start = s; }catch(e){}
 const h = (location.hash||'').slice(1); if(VIEWS.includes(h)) start = h;
 show(start);
 })();
