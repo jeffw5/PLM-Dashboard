@@ -170,6 +170,8 @@ tr.grp td{background:var(--sunk);font:600 12px var(--f-head);letter-spacing:.03e
 footer{color:var(--muted);font-size:12px;margin-top:26px;border-top:1px solid var(--line-2);padding-top:12px;max-width:100ch}
 </style>
 <style>
+.grid2q{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+@media (max-width:860px){.grid2q{grid-template-columns:minmax(0,1fr)}}
 :root{ --c1:#1f6e8c; --c2:#4a3aa7; --c3:#5c6b7a; --c4:#7a4fa8; --c5:#0d7f78; --c6:#b07a12; --c7:#2b7a4b; --c8:#b3261e; }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){ --c1:#5fb3d2; --c2:#9085e9; --c3:#93a2b0; --c4:#c39cf0; --c5:#4fc4bb; --c6:#e2b44e; --c7:#6cc590; --c8:#f08077; }}
 :root[data-theme="dark"]{ --c1:#5fb3d2; --c2:#9085e9; --c3:#93a2b0; --c4:#c39cf0; --c5:#4fc4bb; --c6:#e2b44e; --c7:#6cc590; --c8:#f08077; }
@@ -209,7 +211,7 @@ footer{color:var(--muted);font-size:12px;margin-top:26px;border-top:1px solid va
 </style>
 <div class="wrap">
   <header class="tb">
-    <div><div class="lab">PEO Sales Advisor · Keel &amp; North Star · product lifecycle management</div><h1>PLM Lifecycle Dashboard</h1><p>Build-out of the eight component sets in the Sales Advisor solution design, phased with buffers, with impact and risk scored against business value and persona desired outcomes.</p></div>
+    <div><div class="lab">PEO Sales Advisor · Keel &amp; North Star · product lifecycle management</div><h1>PLM Lifecycle Dashboard</h1><p>Build-out of the eight component sets in the Sales Advisor solution design by the end of Q1 2027, phased with buffers, with impact and risk scored against business value and persona desired outcomes.</p></div>
     <div><div class="lab">Program start</div><div class="val" id="tbStart"></div></div>
     <div><div class="lab">Planned finish (G3)</div><div class="val" id="tbEnd"></div></div>
     <div><div class="lab">Buffer held</div><div class="val" id="tbBuf"></div></div>
@@ -228,9 +230,13 @@ footer{color:var(--muted);font-size:12px;margin-top:26px;border-top:1px solid va
   <section class="view" id="v-overview">
     <div class="kpis" id="kpis"></div>
     <div class="panel">
-      <h2>Four phases, each closed by a gate and a buffer</h2>
-      <p class="hint">The phases follow the Sales Advisor design: Keel work first in each phase, North Star work on what the Keel has released. Buffers are sized to how new the work is to the organization.</p>
+      <h2>Four overlapping phases, each closed by a buffer and a gate</h2>
+      <p class="hint">The phases follow the Sales Advisor design, but overlap: work in a later phase starts as soon as the interface contracts and upstream items it needs exist, not when the previous gate passes. Gates remain the decision points.</p>
       <div class="svgwrap" id="phaseStrip"></div>
+    </div>
+    <div class="panel grid2q">
+      <div><h2>How the plan fits by end of Q1 2027</h2><ul id="levers" style="margin:8px 0 0;padding-left:1.1em;font-size:13.5px;display:flex;flex-direction:column;gap:6px"></ul></div>
+      <div><h2>Moved to Q2 2027</h2><ul id="deferred" style="margin:8px 0 0;padding-left:1.1em;font-size:13.5px;display:flex;flex-direction:column;gap:6px"></ul></div>
     </div>
     <div class="panel">
       <h2>The eight component sets</h2>
@@ -273,14 +279,14 @@ footer{color:var(--muted);font-size:12px;margin-top:26px;border-top:1px solid va
         <div class="rm" id="riskMatrix"></div>
         <div class="tw"><table id="riskTbl"></table></div>
       </div>
-      <p class="hint" style="margin-top:10px">Likelihood averages four factors scored 1–5: novelty to the organization, technical complexity, input readiness (data, content and baselines available) and dependency depth (how many components must land first). Impact scales the component’s value at stake against the most it could carry.</p>
+      <p class="hint" style="margin-top:10px">Likelihood averages five factors scored 1–5: novelty to the organization, technical complexity, input readiness (data, content and baselines available), dependency depth (how many components must land first) and schedule pressure from compressing the build into Q1 2027. Impact scales the component’s value at stake against the most it could carry.</p>
     </div>
     <div class="panel">
       <h2>Impact assessment</h2>
       <p class="hint">Pick a component and what goes wrong. The schedule recomputes, buffers absorb what they can, and the affected job steps, desired outcomes, decision questions and value drivers are listed.</p>
       <div class="ctrl" style="margin-top:8px">
         <select id="impComp" aria-label="Component"></select>
-        <select id="impScn" aria-label="Scenario"><option value="4">Finishes 4 weeks late</option><option value="8" selected>Finishes 8 weeks late</option><option value="12">Finishes 12 weeks late</option><option value="q">Passes its gate but under-performs (quality)</option></select>
+        <select id="impScn" aria-label="Scenario"><option value="1">Finishes 1 week late</option><option value="2" selected>Finishes 2 weeks late</option><option value="4">Finishes 4 weeks late</option><option value="q">Passes its gate but under-performs (quality)</option></select>
       </div>
       <div class="imp" id="impOut"></div>
     </div>
@@ -321,10 +327,10 @@ footer{color:var(--muted);font-size:12px;margin-top:26px;border-top:1px solid va
       <h2>Assumptions behind the plan</h2>
       <ul style="margin:0;padding-left:1.2em;font-size:13.5px;display:flex;flex-direction:column;gap:6px;max-width:95ch">
         <li>Scope is only the eight component sets of the Sales Advisor design. Quoting, CRM, payroll and enrollment systems are consumed as they are, through the virtual graph.</li>
-        <li>Durations are in weeks for a dedicated team per component; stewards and SMEs join for ontology, rules and golden answers.</li>
-        <li>Buffers total <span id="bufTxt"></span>: 2 weeks for the Keel, 4 for the content graph, 6 for the advisor launch and 4 for the learning loop.</li>
-        <li>Value at stake uses the 12 core job steps, their baseline gaps from the advisor’s value-gap monitor (synthetic design values) and the tier-H counts from the decision-question baseline. The other 72 desired outcomes enter when their baselines are measured.</li>
-        <li>Dates start on the first Monday of November 2026 and are planning dates, not commitments.</li>
+        <li>Durations are in weeks for one dedicated squad per component set working in parallel; ontology stewards, rule owners and SMEs join for the Keel, the SSOT rules and the golden answers.</li>
+        <li>Buffers total <span id="bufTxt"></span>: 1 week for the Keel, 2 for the content graph (covering the year-end holidays), 2 for the advisor launch and a 1-week project buffer before G3.</li>
+        <li>Value at stake uses the 12 core job steps, their baseline gaps from the advisor’s value-gap monitor (synthetic design values) and the tier-H counts from the decision-question baseline. The other desired outcomes enter when their baselines are measured; jobs J2 and J3 move to Q2 2027.</li>
+        <li>Work starts on Monday 19 October 2026 and must finish by 31 March 2027. Dates are planning dates, not commitments.</li>
       </ul>
     </div>
   </section>
@@ -347,28 +353,28 @@ const LIFE_EVIDENCE = [
 const COMPS = [
  { id:'C1', name:'Semantic foundation (Keel)', col:'--c1', short:'Keel',
    what:'Sales domain knowledge, isp-sal / isp-cnt / isp-dec / isp-ext / isp-vg ontologies, SKOS vocabularies, RDF structures and SHACL shapes for in-house and external content.',
-   agents:[], nov:4, cx:4, ready:3 },
+   agents:[], nov:4, cx:4, ready:3 , press:4 },
  { id:'C2', name:'SSOT rules, constraints & logic', col:'--c2', short:'SSOT rules',
    what:'EXT-001 to EXT-016 authored in the SSOT register as LKIF norms and SHACL shapes, validated by scenario tests, versioned through GOV-003 and compiled to OPA/Rego, JSON Schema and dbt.',
-   agents:[], nov:2, cx:3, ready:2 },
+   agents:[], nov:2, cx:3, ready:2 , press:3 },
  { id:'C3', name:'Ingestion & identity pipelines', col:'--c3', short:'Ingestion',
    what:'Change capture from SharePoint, allow-listed websites and third-party feeds; canonical identity (GOV-007) and format extraction.',
-   agents:['SharePoint Delta Agent','Web Crawl Agent','Feed Listener Agent','Identity Resolver','Format Extractor'], nov:2, cx:3, ready:3 },
+   agents:['SharePoint Delta Agent','Web Crawl Agent','Feed Listener Agent','Identity Resolver','Format Extractor'], nov:2, cx:3, ready:3 , press:3 },
  { id:'C4', name:'AI fabric enrichment & control', col:'--c4', short:'AI fabric',
    what:'Classify, tag persona and job step, extract claims, mine jurisdiction and validity, detect PII and enforce entitlements.',
-   agents:['Content-Type Classifier','Persona & Job-Step Tagger','Claim Extractor','Jurisdiction & Validity Miner','PII & Sensitivity Detector','Entitlement Enforcer'], nov:5, cx:4, ready:3 },
+   agents:['Content-Type Classifier','Persona & Job-Step Tagger','Claim Extractor','Jurisdiction & Validity Miner','PII & Sensitivity Detector','Entitlement Enforcer'], nov:5, cx:4, ready:3 , press:4 },
  { id:'C5', name:'Mapping & publishing', col:'--c5', short:'Mapping',
    what:'Concept mapping and rule binding to the ontologies, SHACL-validated RDF publishing with KGCL records, mapping drift detection.',
-   agents:['Concept Mapping Agent','Rule Binding Agent','SHACL Publisher','Mapping Drift Sentinel'], nov:4, cx:4, ready:4 },
+   agents:['Concept Mapping Agent','Rule Binding Agent','SHACL Publisher','Mapping Drift Sentinel'], nov:4, cx:4, ready:4 , press:5 },
  { id:'C6', name:'Faceted search & Sales Advisor', col:'--c6', short:'Advisor',
    what:'Federated graph query → mappings → RDF content → precision extraction → assembly into persona briefs and machine packages, with decisions, orchestrated events and the MTBH grounding guard.',
-   agents:['Intent & RCB Agent','Federated Query Planner','Facet Navigator','Mapping Resolver','Precision Extractor','Brief Assembler','Machine Package Agent','Grounding Guard (MTBH)'], nov:5, cx:5, ready:3 },
+   agents:['Intent & RCB Agent','Federated Query Planner','Facet Navigator','Mapping Resolver','Precision Extractor','Brief Assembler','Machine Package Agent','Grounding Guard (MTBH)'], nov:5, cx:5, ready:3 , press:5 },
  { id:'C7', name:'Value-gap monitoring & decision baseline', col:'--c7', short:'Value gaps',
    what:'Desired outcomes bound to metric cards, job-step telemetry, value-gap monitoring, decision impact tracking, and the 48-question decision baseline.',
-   agents:['Outcome Binder','Job-Step Telemetry Agent','Value-Gap Monitor','Decision Impact Tracker'], nov:3, cx:3, ready:4 },
+   agents:['Outcome Binder','Job-Step Telemetry Agent','Value-Gap Monitor','Decision Impact Tracker'], nov:3, cx:3, ready:4 , press:4 },
  { id:'C8', name:'Change, impact & causal analysis', col:'--c8', short:'Change & causal',
    what:'Monitors on content, semantics and RDF structures; impact analysis, incremental refresh and cache invalidation; causal analysis of risk and opportunity; circuit breakers for all agents.',
-   agents:['Content Change Monitor','Semantic Change Monitor','RDF Structure Monitor','Impact Analyzer','Incremental Refresh Service','Cache Invalidation Agent','Causal Graph Builder','Effect Estimator','Risk & Opportunity Ranker','Counterfactual Explainer','Action Proposer'], nov:5, cx:4, ready:4 },
+   agents:['Content Change Monitor','Semantic Change Monitor','RDF Structure Monitor','Impact Analyzer','Incremental Refresh Service','Cache Invalidation Agent','Causal Graph Builder','Effect Estimator','Risk & Opportunity Ranker','Counterfactual Explainer','Action Proposer'], nov:5, cx:4, ready:4 , press:5 },
 ];
 // Component-level dependencies (what must exist before the component can be built)
 const CDEPS = { C1:[], C2:['C1'], C3:['C1','C2'], C4:['C3','C2'], C5:['C1','C2','C4'], C6:['C5','C2'], C7:['C1','C6'], C8:['C5','C6','C7'] };
@@ -412,60 +418,78 @@ const DEP = {
 
 // ===================== ROADMAP =====================
 const PPH = [
- { id:'P0', name:'Keel foundations', goal:'Model the sales domain, publish the first ontologies and vocabularies, release the first SSOT extraction rules, define the metric cards for every desired outcome, and stand up ingestion on one library.' },
- { id:'P1', name:'Content graph & AI fabric', goal:'Publish RDF for in-house and external content, mine the metadata the CMS never held, enforce access and privacy, and map content to the ontologies. Read-only briefs for two BPA teams.' },
- { id:'P2', name:'Faceted search & advisor', goal:'Build the faceted search chain and assembly, the AI circuit breaker, the decision-question baseline and outcome binding, then take the advisor live for both personas.' },
- { id:'P3', name:'Measure, monitor, learn', goal:'Measure value gaps per job step, watch upstream change and refresh incrementally, extend circuit breakers to all agents, and turn changes and gaps into causal risk and opportunity.' },
+ { id:'P0', name:'Keel foundations', goal:'In five weeks: model the 12 core job steps, publish minimum-viable isp-sal and isp-cnt, release EXT-001 to EXT-008, write the metric cards and stand up ingestion on one SharePoint library.' },
+ { id:'P1', name:'Content graph & AI fabric', goal:'RDF for in-house content and three external sources, AI fabric enrichment and fail-closed access control, mappings and SHACL publishing. Read-only briefs for two BPA teams before the holidays.' },
+ { id:'P2', name:'Faceted search & advisor', goal:'Search, extraction and assembly built against interface contracts from week 8, so the advisor goes live for both personas in early March with the circuit breaker on its decision path.' },
+ { id:'P3', name:'Measure, monitor, learn', goal:'Change monitors, incremental refresh, breakers on all 38 agents and the first value-gap and causal readings, running by the end of March. Outcome attainment is reviewed at the end of Q2.' },
 ];
+// Compressed plan: one squad per component set, contract-first interfaces, minimum-viable scope.
 // [id, phase, component, lifecycle stage, name, weeks, deps, deliverables, closes gap in job steps]
 const T = [
- ['C1-01','P0','C1','Discover','Sales domain model: personas, jobs, job steps and desired outcomes with sales leaders and BPAs',4,[],'Job studies for both personas; 84 desired outcomes'],
- ['C2-01','P0','C2','Define','Extend the SSOT register for EXT rules (14-field schema, LKIF + SHACL forms)',3,[],'Rule template; GOV-003 promotion path'],
- ['C1-02','P0','C1','Design','Publish isp-sal 1.0 and isp-cnt 1.0, aligned to isp-core and BFO',6,['C1-01'],'Ontologies Released; KGCL change log'],
- ['C1-03','P0','C1','Develop','SKOS vocabularies: content types, pipeline stages, sensitivity labels',4,['C1-01'],'Three Released concept schemes'],
- ['C7-01','P0','C7','Define','Metric definition cards for the 84 desired outcomes; baseline time studies',6,['C1-01'],'Metric cards bound to outcomes (MET-014)'],
- ['C2-02','P0','C2','Develop','Author and release EXT-001 to EXT-008 with scenario tests',6,['C2-01','C1-03'],'Ingest, classify and control rules Released'],
- ['C3-01','P0','C3','Develop','SharePoint Delta Agent, Identity Resolver and Format Extractor on one library',6,['C1-02','C2-02'],'Change capture and canonical URIs for the first library'],
- ['BF-0','P0','BUF','',  'Phase buffer',2,['C3-01','C7-01']],
- ['M-0','P0','GATE','', 'G0 · Keel released',0,['BF-0'],'isp-sal and isp-cnt Released; 12 core job steps with measurable outcomes; EXT-001–008 pass scenario tests'],
+ ['C1-01','P0','C1','Discover','Sales domain model for the 12 core job steps with sales leaders and BPAs',2,[],'Job maps, desired outcomes and interface contracts for every component'],
+ ['C2-01','P0','C2','Define','Extend the SSOT register for EXT rules (14-field schema, LKIF + SHACL forms)',1,[],'Rule template; GOV-003 promotion path'],
+ ['C1-02','P0','C1','Design','Publish minimum-viable isp-sal 1.0 and isp-cnt 1.0',3,['C1-01'],'Core classes Released; extensions queued for Q2'],
+ ['C1-03','P0','C1','Develop','SKOS vocabularies: content types, pipeline stages, sensitivity labels',2,['C1-01'],'Three Released concept schemes'],
+ ['C7-01','P0','C7','Define','Metric definition cards for the 36 core-step outcomes',3,['C1-01'],'Metric cards bound to outcomes (MET-014)'],
+ ['C2-02','P0','C2','Develop','Author and release EXT-001 to EXT-008 with scenario tests',3,['C2-01'],'Ingest, classify and control rules Released'],
+ ['C3-01','P0','C3','Develop','SharePoint Delta Agent, Identity Resolver and Format Extractor on one library',3,['C1-01'],'Built against the identity contract; canonical URIs'],
+ ['BF-0','P0','BUF','','Phase buffer',1,['C1-02','C1-03','C2-02','C3-01','C7-01']],
+ ['M-0','P0','GATE','','G0 · Keel released',0,['BF-0'],'Minimum-viable ontologies Released; 12 core job steps with metric cards; EXT-001–008 pass scenario tests'],
 
- ['C1-04','P1','C1','Develop','RDF structures and SHACL shapes for in-house content (sales, enablement, case studies, implementation)',6,['M-0'],'Content objects, chunks and claims as RDF'],
- ['C1-05','P1','C1','Develop','RDF structures for external content (websites, competitors, regulatory and firmographic feeds)',5,['C1-04'],'External content in the same graph with usage policies'],
- ['C2-03','P1','C2','Develop','Release EXT-009 and EXT-010 (mapping and publishing rules)',4,['M-0'],'Mapping confidence and publish gates Released'],
- ['C3-02','P1','C3','Develop','Web Crawl and Feed Listener agents; regulatory and firmographic feed connectors',6,['M-0'],'Allow-listed crawl; normalized feed items'],
- ['C3-03','P1','C3','Develop','Carrier lead-time and remote-worksite jurisdiction sources',4,['C3-02'],'Closes HR-J1.2 and HR-J1.6 source gaps','HR-J1.2 HR-J1.6'],
- ['C4-01','P1','C4','Develop','Content-Type Classifier and Persona & Job-Step Tagger (EXT-002 floor)',7,['M-0'],'Typed, persona-tagged content'],
- ['C4-02','P1','C4','Develop','Claim Extractor and Jurisdiction & Validity Miner',6,['C4-01','C1-04'],'Atomic claims with spans, jurisdictions and validity'],
- ['C4-03','P1','C4','Develop','PII & Sensitivity Detector and Entitlement Enforcer, with red-team test',6,['M-0'],'Fail-closed access control (EXT-003, EXT-006)'],
- ['C4-04','P1','C4','Develop','OCR for scanned handbooks above the EXT-002 confidence floor',4,['C4-02'],'Closes the HR-J1.4 gap','HR-J1.4'],
- ['C5-01','P1','C5','Develop','Concept Mapping and Rule Binding agents (GOV-006, EXT-008, EXT-009)',6,['C2-03','C1-04'],'Typed correspondences; claims bound to SSOT rules'],
- ['C5-02','P1','C5','Deliver','SHACL Publisher with KGCL records; Mapping Drift Sentinel',4,['C5-01'],'Validated RDF publishing; drift flags'],
- ['C5-03','P1','C5','Develop','Eligibility, quote and rate mappings (MAP-ELG-01, MAP-QTE-03, MAP-RTE-01)',4,['C5-01'],'Closes CA-J1.2 and CA-J1.3 mapping gaps','CA-J1.2 CA-J1.3'],
- ['C6-01','P1','C6','Deliver','Read-only persona briefs for two BPA teams',4,['C5-02','C4-03','C4-02'],'First briefs in use; feedback loop'],
- ['BF-1','P1','BUF','','Phase buffer',4,['C1-05','C3-03','C4-04','C5-03','C6-01']],
- ['M-1','P1','GATE','','G1 · Content graph live',0,['BF-1'],'≥ 20,000 objects published; SHACL pass ≥ 98%; 0 PII leaks in red team; classification precision ≥ 0.90'],
+ ['C1-04','P1','C1','Develop','RDF structures and SHACL shapes for in-house content',3,['C1-02'],'Content objects, chunks and claims as RDF'],
+ ['C1-05','P1','C1','Develop','RDF structures for three external sources and two feeds',2,['C1-04'],'External content with usage policies'],
+ ['C2-03','P1','C2','Develop','Release EXT-009 and EXT-010 (mapping and publishing rules)',2,['C2-02'],'Mapping confidence and publish gates Released'],
+ ['C3-02','P1','C3','Develop','Web Crawl and Feed Listener agents; regulatory and firmographic feeds',3,['C3-01'],'Allow-listed crawl; normalized feed items'],
+ ['C3-03','P1','C3','Develop','Carrier lead-time and remote-worksite jurisdiction sources',2,['C3-02'],'Closes HR-J1.2 and HR-J1.6 source gaps','HR-J1.2 HR-J1.6'],
+ ['C4-01','P1','C4','Develop','Content-Type Classifier and Persona & Job-Step Tagger (EXT-002 floor)',3,['C1-03','C3-01'],'Typed, persona-tagged content'],
+ ['C4-02','P1','C4','Develop','Claim Extractor and Jurisdiction & Validity Miner',3,['C4-01','C1-04'],'Atomic claims with spans, jurisdictions and validity'],
+ ['C4-03','P1','C4','Develop','PII & Sensitivity Detector and Entitlement Enforcer, with red-team test',3,['C3-01','C2-02'],'Fail-closed access control (EXT-003, EXT-006)'],
+ ['C4-04','P1','C4','Develop','OCR for scanned handbooks above the EXT-002 confidence floor',2,['C4-01'],'Closes the HR-J1.4 gap','HR-J1.4'],
+ ['C5-01','P1','C5','Develop','Concept Mapping and Rule Binding agents (GOV-006, EXT-008, EXT-009)',3,['C2-03','C1-04'],'Typed correspondences; claims bound to SSOT rules'],
+ ['C5-02','P1','C5','Deliver','SHACL Publisher with KGCL records; Mapping Drift Sentinel',2,['C1-04','C2-03'],'Validated RDF publishing; drift flags'],
+ ['C5-03','P1','C5','Develop','Eligibility, quote and rate mappings (MAP-ELG-01, MAP-QTE-03, MAP-RTE-01)',2,['C5-01'],'Closes CA-J1.2 and CA-J1.3 mapping gaps','CA-J1.2 CA-J1.3'],
+ ['C6-01','P1','C6','Deliver','Read-only persona briefs for two BPA teams',2,['C5-02','C4-03','C4-02'],'First briefs in use; feedback loop'],
+ ['BF-1','P1','BUF','','Phase buffer (covers the year-end holidays)',2,['C1-05','C3-03','C4-04','C5-03','C6-01']],
+ ['M-1','P1','GATE','','G1 · Content graph live',0,['BF-1'],'Core content published; SHACL pass ≥ 98%; 0 PII leaks in red team; classification precision ≥ 0.90'],
 
- ['C2-04','P2','C2','Develop','Release EXT-011 to EXT-014; persona brief templates versioned in the SSOT',5,['M-1'],'Search, extraction, assembly and outcome rules Released'],
- ['C6-02','P2','C6','Design','Intent & RCB agent and Federated Query Planner over a virtual graph of CRM and quoting',7,['M-1'],'Context bundles; scoped queries with no data copies'],
- ['C6-03','P2','C6','Develop','Facet Navigator, Mapping Resolver and Precision Extractor',6,['C6-02','C2-04'],'Only the claims that answer the job step'],
- ['C6-04','P2','C6','Develop','Brief Assembler and Machine Package Agent; decision options and orchestrated events',6,['C6-03'],'Cited briefs; JSON-LD packages; isp-dec decisions'],
- ['C6-05','P2','C6','Develop','Grounding Guard and AI circuit breaker service (MTBH metrology, states, fallbacks)',5,['C6-02'],'Breakers on the decision path'],
- ['C7-02','P2','C7','Define','Decision-question baseline: golden answers for the 48 questions, SME sign-off',6,['M-1'],'Frozen baseline records for QbD'],
- ['C7-03','P2','C7','Develop','Outcome Binder: every decision bound to a metric card',4,['C6-04','C7-01'],'Decisions with bound outcomes'],
- ['C6-06','P2','C6','Deliver','Advisor live for both personas across all six pipeline stages',4,['C6-04','C6-05','C7-02','C7-03'],'Advisor in production; closes CA-J1.4, CA-J1.5, HR-J1.5 assembly gaps','CA-J1.4 CA-J1.5 HR-J1.5'],
- ['BF-2','P2','BUF','','Phase buffer',6,['C6-06']],
+ ['C2-04','P2','C2','Develop','Release EXT-011 to EXT-014; persona brief templates versioned in the SSOT',2,['C2-03'],'Search, extraction, assembly and outcome rules Released'],
+ ['C6-02','P2','C6','Design','Intent & RCB agent and Federated Query Planner over a virtual graph of CRM and quoting',3,['C1-02','C2-04'],'Context bundles; scoped queries with no data copies'],
+ ['C6-03','P2','C6','Develop','Facet Navigator, Mapping Resolver and Precision Extractor',3,['C6-02','C5-01'],'Only the claims that answer the job step'],
+ ['C6-04','P2','C6','Develop','Brief Assembler and Machine Package Agent; decision options and orchestrated events',3,['C6-03'],'Cited briefs; JSON-LD packages; isp-dec decisions'],
+ ['C6-05','P2','C6','Develop','Grounding Guard and AI circuit breaker service (MTBH metrology, states, fallbacks)',2,['C6-02'],'Breakers on the decision path'],
+ ['C7-02','P2','C7','Define','Decision-question baseline: golden answers for the 48 questions, SME sign-off',3,['C7-01'],'Frozen baseline records for QbD'],
+ ['C7-03','P2','C7','Develop','Outcome Binder: every decision bound to a metric card',2,['C6-02','C7-01'],'Built against the isp-dec decision contract'],
+ ['C6-06','P2','C6','Deliver','Advisor live for both personas across all six pipeline stages',2,['C6-04','C6-05','C7-02','C7-03','M-1'],'Advisor in production; closes CA-J1.4, CA-J1.5, HR-J1.5 assembly gaps','CA-J1.4 CA-J1.5 HR-J1.5'],
+ ['BF-2','P2','BUF','','Phase buffer',2,['C6-06']],
  ['M-2','P2','GATE','','G2 · Advisor live',0,['BF-2'],'Grounding ≥ 0.90; MTBH trip rate ≤ 2%; 100% of decisions bound; P95 answer ≤ 4 s'],
 
- ['C2-05','P3','C2','Develop','Release EXT-015 and EXT-016 (value-gap, causal and refresh rules)',3,['M-2'],'Measurement and refresh rules Released'],
- ['C7-04','P3','C7','Run','Job-Step Telemetry, Value-Gap Monitor, Decision Impact Tracker; outcome importance survey',7,['M-2'],'Measured gaps for all 84 outcomes'],
- ['C8-01','P3','C8','Develop','Content, Semantic and RDF Structure monitors',5,['M-2'],'Change events from every upstream layer'],
- ['C8-02','P3','C8','Develop','Impact Analyzer, Incremental Refresh and Cache Invalidation',6,['C8-01','C2-05'],'Only affected answers re-run; stale briefs withdrawn'],
- ['C8-03','P3','C8','Deliver','Circuit breakers extended to all 38 agents; nightly decision-question probes',4,['C8-02'],'Integrity monitored on every agent'],
- ['C8-04','P3','C8','Develop','Causal family: graph builder, effect estimator, risk ranker, counterfactual explainer, action proposer',8,['C7-04','C2-05'],'Risk and opportunity findings for owners'],
- ['C7-05','P3','C7','Run','Value-gap dashboard per persona job step',4,['C7-04'],'Desired versus delivered, every job step'],
- ['BF-3','P3','BUF','','Project buffer',4,['C8-03','C8-04','C7-05']],
- ['M-3','P3','GATE','','G3 · Learning loop running',0,['BF-3'],'Affected briefs withdrawn ≤ 1 h after a change; ≥ 80% of job steps meet their outcome; findings reviewed ≤ 10 days'],
+ ['C2-05','P3','C2','Develop','Release EXT-015 and EXT-016 (value-gap, causal and refresh rules)',2,['C2-04'],'Measurement and refresh rules Released'],
+ ['C7-04','P3','C7','Run','Job-Step Telemetry, Value-Gap Monitor, Decision Impact Tracker; outcome importance survey',3,['C7-03'],'Telemetry from the BPA pilot onward'],
+ ['C8-01','P3','C8','Develop','Content, Semantic and RDF Structure monitors',3,['C5-02','C3-02'],'Change events from every upstream layer'],
+ ['C8-02','P3','C8','Develop','Impact Analyzer, Incremental Refresh and Cache Invalidation',3,['C8-01','C2-05'],'Only affected answers re-run; stale briefs withdrawn'],
+ ['C8-03','P3','C8','Deliver','Circuit breakers extended to all 38 agents; nightly decision-question probes',2,['C8-02','C6-05','C7-02'],'Integrity monitored on every agent'],
+ ['C8-04','P3','C8','Develop','Causal family: graph builder, effect estimator, risk ranker, counterfactual explainer, action proposer',3,['C7-04','C2-05'],'First risk and opportunity findings (preliminary)'],
+ ['C7-05','P3','C7','Run','Value-gap dashboard per persona job step',2,['C7-04'],'Desired versus delivered for the 12 core steps'],
+ ['BF-3','P3','BUF','','Project buffer',1,['C8-03','C8-04','C7-05','M-2']],
+ ['M-3','P3','GATE','','G3 · Learning loop running',0,['BF-3'],'Monitors live; affected briefs withdrawn ≤ 1 h after a change; breakers on all 38 agents; first value-gap readings for all 12 core steps'],
 ].map(r=>({id:r[0],ph:r[1],ws:r[2],life:r[3],name:r[4],dur:r[5],deps:r[6],deliv:r[7]||'',closes:r[8]?r[8].split(' '):[]}));
+
+// Levers that make the end-of-Q1 date possible, and what moves to Q2 2027
+const LEVERS = [
+ ['Start on 19 October 2026','Two weeks to approve and staff instead of starting in November.'],
+ ['One squad per component set','Eight squads work in parallel, plus ontology stewards, rule owners and SMEs for golden answers.'],
+ ['Contract-first interfaces','C1-01 publishes the identity, content, claim and decision contracts in week 2, so downstream agents are built against them instead of waiting for the full upstream build.'],
+ ['Minimum-viable scope','The 12 core job steps, one SharePoint library family, three external sources and two feeds. Everything else is queued for Q2.'],
+ ['Advise before Act','Agents that can act on their own start in Advise mode with human approval; autonomy is raised after the circuit breakers prove MTBH.'],
+];
+const DEFERRED = [
+ 'Related jobs J2 and J3 for both personas: 48 of the 84 desired outcomes',
+ 'Remaining SharePoint libraries, websites and feeds beyond the first set',
+ 'Ontology extensions beyond the minimum-viable isp-sal and isp-cnt; isp-vg causal classes beyond the first findings',
+ 'Act-mode autonomy for advisory agents',
+ 'Causal effect sizes with confidence intervals (needs a quarter of telemetry)',
+ 'Outcome attainment target (≥ 80% of job steps meeting their outcome), reviewed at end of Q2 2027',
+];
 (function(){
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -473,7 +497,7 @@ const BY = {}; T.forEach(t=>BY[t.id]=t);
 const SUCC = {}; T.forEach(t=>SUCC[t.id]=[]); T.forEach(t=>t.deps.forEach(d=>SUCC[d].push(t.id)));
 const CBY = {}; COMPS.forEach(c=>CBY[c.id]=c);
 const SBY = {}; STEPS.forEach(s=>SBY[s.id]=s);
-const START = new Date(2026,10,2);
+const START = new Date(2026,9,19); // Mon 19 Oct 2026
 const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const wkDate = w => new Date(START.getTime() + Math.round(w*7)*86400000);
 const fmtD = w => { const d = wkDate(w); return d.getDate()+' '+MON[d.getMonth()]+' '+d.getFullYear(); };
@@ -517,7 +541,7 @@ function scores(){
     const raw = STEPS.reduce((a,s)=>a + DEP[c.id][s.id]*stepValue(s), 0);
     const I = Math.max(1, r1(5*raw/maxP));
     const ds = depScore(upstream(c.id).size);
-    const L = r1((c.nov + c.cx + c.ready + ds)/4);
+    const L = r1((c.nov + c.cx + c.ready + ds + c.press)/5);
     const R = r1(L*I);
     const top = STEPS.filter(s=>DEP[c.id][s.id]===3).sort((a,b)=>stepValue(b)-stepValue(a)).slice(0,3);
     return { c, raw: Math.round(raw), I, L, ds, R, band: R>=15?'hi':R>=8?'md':'lo', top };
@@ -545,18 +569,20 @@ function renderKPIs(){
 
 // ---------- overview ----------
 function renderPhaseStrip(){
-  const Wd = 1180, L = 16, R = 30, H = 140, sc = (Wd-L-R)/END0, x = w => L + w*sc;
-  let s = `<svg viewBox="0 0 ${Wd} ${H}" width="${Wd}" height="${H}" role="img" aria-label="Four phases with buffers and gates">
+  const Wd = 1180, L = 16, R = 30, H = 32 + PPH.length*34 + 34, sc = (Wd-L-R-150)/END0, x = w => L + w*sc;
+  let s = `<svg viewBox="0 0 ${Wd} ${H}" width="${Wd}" height="${H}" role="img" aria-label="Four overlapping phases with buffers and gates">
     <defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--buf-soft)"/><line x1="0" y1="0" x2="0" y2="6" stroke="var(--buf)" stroke-width="2"/></pattern></defs>`;
-  for(let w=0; w<=END0; w++){ const d = wkDate(w), dp = wkDate(w-1);
-    if(w===0 || d.getFullYear()!==dp.getFullYear()) s += `<line x1="${x(w)}" y1="18" x2="${x(w)}" y2="${H-26}" stroke="var(--line)" stroke-dasharray="2 3"/><text x="${x(w)+4}" y="14" font-size="11" fill="var(--muted)">${d.getFullYear()}</text>`; }
+  for(let w=0; w<=END0+1; w++){ const d = wkDate(w), dp = wkDate(w-1);
+    if(w===0 || d.getMonth()!==dp.getMonth()) s += `<line x1="${x(w)}" y1="18" x2="${x(w)}" y2="${H-30}" stroke="var(--line)" stroke-dasharray="2 3"/><text x="${x(w)+4}" y="14" font-size="11" fill="var(--muted)">${MON[d.getMonth()]}${d.getMonth()===0||w===0?' '+d.getFullYear():''}</text>`; }
+  const q1 = (new Date(2027,2,31) - START)/(7*86400000);
+  s += `<line x1="${x(q1)}" y1="18" x2="${x(q1)}" y2="${H-30}" stroke="var(--crit)" stroke-width="1.5"/><text x="${x(q1)+4}" y="${H-34}" font-size="10.5" fill="var(--crit)">31 Mar 2027</text>`;
   PPH.forEach((ph,i)=>{
     const ts = T.filter(t=>t.ph===ph.id), s0 = Math.min(...ts.map(t=>PLAN0[t.id].s)), e0 = Math.max(...ts.map(t=>PLAN0[t.id].e));
-    const buf = ts.find(t=>t.ws==='BUF'), gate = ts.find(t=>t.ws==='GATE'), bs = PLAN0[buf.id].s, y = 32;
-    s += `<rect x="${x(s0)}" y="${y}" width="${x(bs)-x(s0)}" height="26" fill="var(--accent-soft)" stroke="var(--accent)"/><rect x="${x(bs)}" y="${y}" width="${x(e0)-x(bs)}" height="26" fill="url(#hatch)" stroke="var(--buf)"/>`;
-    s += `<path d="M${x(e0)} ${y-4} l7 17 l-7 17 l-7 -17z" fill="var(--ink)"/>`;
-    s += `<text x="${x(s0)+6}" y="${y+17}" font-size="11.5" font-weight="600" fill="var(--ink)">${ph.id} ${esc(ph.name)}</text>`;
-    s += `<text x="${x(e0)}" y="${y+46}" text-anchor="${i===PPH.length-1?'end':'middle'}" font-size="10.5" fill="var(--muted)">${esc(gate.name.split(' · ')[0])} · ${fmtM(e0)}</text>`;
+    const buf = ts.find(t=>t.ws==='BUF'), gate = ts.find(t=>t.ws==='GATE'), bs = PLAN0[buf.id].s, y = 26 + i*34;
+    s += `<rect x="${x(s0)}" y="${y}" width="${x(bs)-x(s0)}" height="24" fill="var(--accent-soft)" stroke="var(--accent)"/><rect x="${x(bs)}" y="${y}" width="${x(e0)-x(bs)}" height="24" fill="url(#hatch)" stroke="var(--buf)"/>`;
+    s += `<path d="M${x(e0)} ${y-2} l7 14 l-7 14 l-7 -14z" fill="var(--ink)"/>`;
+    s += `<text x="${x(s0)+6}" y="${y+16}" font-size="11.5" font-weight="600" fill="var(--ink)">${ph.id} ${esc(ph.name)}</text>`;
+    s += `<text x="${x(e0)+12}" y="${y+16}" font-size="10.5" fill="var(--muted)">${esc(gate.name.split(' · ')[0])} · ${fmtD(e0)}</text>`;
   });
   s += `<g font-size="10.5" fill="var(--muted)"><rect x="${L}" y="${H-20}" width="14" height="10" fill="var(--accent-soft)" stroke="var(--accent)"/><text x="${L+20}" y="${H-11}">phase work</text><rect x="${L+110}" y="${H-20}" width="14" height="10" fill="url(#hatch)" stroke="var(--buf)"/><text x="${L+130}" y="${H-11}">buffer</text><path d="M${L+200} ${H-22} l5 7 l-5 7 l-5 -7z" fill="var(--ink)"/><text x="${L+212}" y="${H-11}">gate</text></g>`;
   $('phaseStrip').innerHTML = s + '</svg>';
@@ -582,7 +608,7 @@ function renderWsChips(){
 }
 function renderGantt(){
   const P = schedule(slip), endW = Math.max(P['M-3'].e, END0);
-  const LBL = 330, PX = 9, RH = 22, TOP = 34;
+  const LBL = 330, RH = 22, TOP = 34, PX = Math.max(9, Math.floor((($('gantt').clientWidth||900) - LBL - 150)/Math.max(P['M-3'].e, END0)));
   const vis = T.filter(t=>wsState.has(t.ws) && (!critOnly || t.crit));
   const rows = []; PPH.forEach(ph=>{ const ts = vis.filter(t=>t.ph===ph.id); if(ts.length){ rows.push({hdr:ph}); ts.forEach(t=>rows.push({t})); } });
   const Wd = LBL + Math.ceil(endW*PX) + 130, H = TOP + rows.length*RH + 10, x = w => LBL + w*PX, rowY = {};
@@ -590,9 +616,13 @@ function renderGantt(){
     <defs><pattern id="hatch2" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="var(--buf-soft)"/><line x1="0" y1="0" x2="0" y2="6" stroke="var(--buf)" stroke-width="2"/></pattern>
     <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--faint)"/></marker>
     <marker id="arrS" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--accent)"/></marker></defs>`;
-  for(let w=0; w<=endW; w++){ const d = wkDate(w), dp = wkDate(w-1);
-    if(w===0 || (d.getMonth()%3===0 && d.getMonth()!==dp.getMonth())){ const q = Math.floor(d.getMonth()/3)+1;
-      s += `<line x1="${x(w)}" y1="${TOP-12}" x2="${x(w)}" y2="${H}" stroke="var(--line)" ${q===1?'':'stroke-dasharray="2 3"'}/><text x="${x(w)+3}" y="${TOP-16}" font-size="10" fill="var(--muted)">${q===1||w===0?d.getFullYear()+' ':''}Q${q}</text>`; } }
+  let firstLbl = true;
+  for(let w=0; w<=endW+1; w++){ const d = wkDate(w), dp = wkDate(w-1);
+    if(w===0 || d.getMonth()!==dp.getMonth()){ const ny = d.getMonth()===0, lbl = !(w===0 && d.getDate()>10);
+      s += `<line x1="${x(w)}" y1="${TOP-12}" x2="${x(w)}" y2="${H}" stroke="var(--line)" ${ny?'':'stroke-dasharray="2 3"'}/>`;
+      if(lbl){ s += `<text x="${x(w)+3}" y="${TOP-16}" font-size="10" fill="var(--muted)">${MON[d.getMonth()]}${ny||firstLbl?' '+d.getFullYear():''}</text>`; firstLbl = false; } } }
+  const q1 = (new Date(2027,2,31) - START)/(7*86400000);
+  s += `<line x1="${x(q1)}" y1="${TOP-12}" x2="${x(q1)}" y2="${H}" stroke="var(--crit)" stroke-width="1.5"/><text x="${x(q1)+4}" y="${TOP-2}" font-size="10" fill="var(--crit)">31 Mar 2027</text>`;
   let y = TOP, lines = '', hi = '';
   rows.forEach(r=>{
     if(r.hdr){ s += `<rect x="0" y="${y}" width="${Wd}" height="${RH}" fill="var(--sunk)"/><text x="8" y="${y+15}" font-size="11.5" font-weight="600" fill="var(--ink)">${r.hdr.id} · ${esc(r.hdr.name)}</text>`; }
@@ -659,8 +689,8 @@ function renderRisk(){
     s += `<g><circle cx="${cx+off*14}" cy="${cy-off*6}" r="13" fill="var(${x.c.col})" stroke="var(--paper)" stroke-width="2"/><text x="${cx+off*14}" y="${cy-off*6+4}" text-anchor="middle" font-size="10.5" font-weight="600" fill="var(--paper)">${x.c.id}</text></g>`; });
   $('riskMatrix').innerHTML = s + '</svg>';
   const sorted = [...S].sort((a,b)=>b.R-a.R);
-  $('riskTbl').innerHTML = `<thead><tr><th>Component</th><th class="num">Novelty</th><th class="num">Complexity</th><th class="num">Readiness gap</th><th class="num">Dependency</th><th class="num">L</th><th class="num">Value pts</th><th class="num">I</th><th class="num">Risk</th><th>Most exposed job steps</th></tr></thead><tbody>`
-    + sorted.map(x=>`<tr><td style="border-left:4px solid var(${x.c.col});min-width:190px"><b>${x.c.id}</b> ${esc(x.c.name)}</td><td class="num">${x.c.nov}</td><td class="num">${x.c.cx}</td><td class="num">${x.c.ready}</td><td class="num">${x.ds}</td><td class="num"><b>${x.L}</b></td><td class="num">${x.raw}</td><td class="num"><b>${x.I}</b></td><td class="num"><span class="band ${x.band}">${x.R}</span></td><td style="font-size:12px;min-width:140px">${x.top.map(s=>s.id).join(', ')||'measures and sustains'}</td></tr>`).join('') + '</tbody>';
+  $('riskTbl').innerHTML = `<thead><tr><th>Component</th><th class="num">Novelty</th><th class="num">Complexity</th><th class="num">Readiness gap</th><th class="num">Dependency</th><th class="num">Schedule pressure</th><th class="num">L</th><th class="num">Value pts</th><th class="num">I</th><th class="num">Risk</th><th>Most exposed job steps</th></tr></thead><tbody>`
+    + sorted.map(x=>`<tr><td style="border-left:4px solid var(${x.c.col});min-width:190px"><b>${x.c.id}</b> ${esc(x.c.name)}</td><td class="num">${x.c.nov}</td><td class="num">${x.c.cx}</td><td class="num">${x.c.ready}</td><td class="num">${x.ds}</td><td class="num">${x.c.press}</td><td class="num"><b>${x.L}</b></td><td class="num">${x.raw}</td><td class="num"><b>${x.I}</b></td><td class="num"><span class="band ${x.band}">${x.R}</span></td><td style="font-size:12px;min-width:140px">${x.top.map(s=>s.id).join(', ')||'measures and sustains'}</td></tr>`).join('') + '</tbody>';
 }
 function renderImpact(){
   const cid = $('impComp').value, scn = $('impScn').value, c = CBY[cid], S = scores(), me = S.find(x=>x.c.id===cid);
@@ -755,13 +785,14 @@ function renderLifecycle(){
 
 // ---------- readiness ----------
 const ISSUES = [
- ['High','Only 13 of 84 desired outcomes have a measured baseline','Impact and risk scores rest on the 12 core job steps whose gaps the advisor design measured (synthetic values). The other 72 outcomes need metric cards and baseline time studies before value at stake is complete.',['C7-01','C7-04']],
+ ['High','Only 13 of 84 desired outcomes have a measured baseline','Impact and risk scores rest on the 12 core job steps whose gaps the advisor design measured (synthetic values). C7-01 writes metric cards for the 36 core-step outcomes; the other 48 move to Q2 with jobs J2 and J3.',['C7-01','C7-04']],
  ['High','Golden answers for the 48 decision questions are not written','The decision-question baseline is what the circuit breakers probe and what quality by design compares against. Without it the G2 grounding and MTBH criteria cannot be tested.',['C7-02']],
  ['High','The scorecard template has no targets for Knowledge Engineering','All six KE items (vocabulary, semantic extension, taxonomy, ontology, RDB-to-RDF mapping, integration at scale) have no baseline, yet C1 and C5 are knowledge-engineering components. 18 template items have no target in all.',['C1-02','C5-01']],
  ['High','Seven traceability items in the template are targeted at 0','Future-state planning, impact analysis, prioritization, capability maps, service maps, service gaps and requirements traceability are exactly the links from desired outcomes to components that this dashboard scores. Proposed target: 2 or higher.',['C1-01','C7-01']],
  ['High','The release Go/No-Go threshold is undefined','The template’s aggregate score reads TBD. The dashboard shows a proposed rule, extended with circuit-breaker and value-at-stake checks, for the steering group to confirm.',['C2-01']],
- ['Medium','The plan runs longer than the solution design’s 15 months','Sequencing the agents behind their rules and mappings, plus 16 weeks of buffer for an organization new to this work, gives about '+Math.round(END0/4.345)+' months. The design roadmap should be updated or scope trimmed.',['M-2']],
+ ['High','Compressing to end of Q1 2027 raises delivery risk','The plan fits 22 weeks only with eight parallel squads, contract-first interfaces and minimum-viable scope. Schedule pressure now adds to every component’s likelihood. The 6 weeks of buffer absorb about 10% slip on every task before the advisor launch (G2) moves and about 15% before G3 moves; at 20% G3 still lands before 31 March. Squad staffing is the first decision at G0.',['C1-01','M-0']],
  ['Medium','The template’s Run phase measures supply-chain operations','For the advisor, Run should measure service levels, value gaps per job step and agent integrity (MTBH), as the Lifecycle gates tab assumes.',['C7-05','C8-03']],
+ ['Medium','Value gaps will have only a few weeks of data at G3','The advisor goes live in early March, so the value-gap dashboard and causal findings at G3 rest on a short window. Outcome attainment is judged at the end of Q2, not at G3.',['C7-04','C8-04']],
  ['Medium','Value-driver weights and outcome importance are not yet set','Weights default to equal. The sponsor sets them at G0; the outcome importance survey in C7-04 then replaces the tier-H proxy.',['C7-04']],
  ['Low','The scorecard workbook holds a development sheet with errors and personal metadata','Remove it before the workbook is shared or used as a data source.',['C2-01']],
 ];
@@ -781,6 +812,7 @@ function show(v){
 }
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>show(b.dataset.v)));
 
+$('levers').innerHTML = LEVERS.map(([t,d])=>`<li><b>${esc(t)}.</b> ${esc(d)}</li>`).join(''); $('deferred').innerHTML = DEFERRED.map(d=>`<li>${esc(d)}</li>`).join('');
 renderKPIs(); renderPhaseStrip(); renderCards(); renderWsChips(); renderGantt(); renderDetail();
 renderWeights(); renderRisk(); renderImpact(); renderDep(); renderStep(); renderLifecycle(); renderIssues();
 let start = 'overview';
