@@ -1,0 +1,418 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Keel-to-PLM Operating Flow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a vessel read left to right — keel band on top feeding a component × lifecycle grid, PLM band underneath catching every measure, causal chain below. */
+:root{
+  --ground:#EEF2F5; --paper:#FFFFFF; --ink:#13202E; --muted:#566575; --rule:#D3DBE3;
+  --keel:#1B3550; --keel-fg:#F1F4F8; --brass:#9A6B1F; --brass-soft:#F4EAD7;
+  --comp:#1D7466; --comp-soft:#DDF0EC; --risk:#B0432C; --risk-soft:#F7E2DC; --impact:#3953A0; --impact-soft:#E1E7F7;
+  --dt:#F6F8FA; --rt:#F1F5F2;
+  --f-display:"Spectral", "Iowan Old Style", Georgia, serif;
+  --f-body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --ground:#0D141B; --paper:#151F29; --ink:#E3E9EF; --muted:#93A2B2; --rule:#2A3847;
+  --keel:#22415F; --keel-fg:#EAF0F6; --brass:#D6A757; --brass-soft:#3A2F1C;
+  --comp:#56C2B1; --comp-soft:#173B36; --risk:#E7826B; --risk-soft:#43231C; --impact:#93A9EE; --impact-soft:#1F2A4A;
+  --dt:#18232E; --rt:#17241F; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --ground:#0D141B; --paper:#151F29; --ink:#E3E9EF; --muted:#93A2B2; --rule:#2A3847;
+  --keel:#22415F; --keel-fg:#EAF0F6; --brass:#D6A757; --brass-soft:#3A2F1C;
+  --comp:#56C2B1; --comp-soft:#173B36; --risk:#E7826B; --risk-soft:#43231C; --impact:#93A9EE; --impact-soft:#1F2A4A;
+  --dt:#18232E; --rt:#17241F; color-scheme:dark;}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font:15px/1.55 var(--f-body);padding-inline:16px;padding-block:0 48px}
+.wrap{max-width:1240px;margin:0 auto}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;font-weight:600}
+h1{font-size:clamp(28px,4vw,40px);line-height:1.1}
+h2{font-size:24px;line-height:1.2}
+h3{font-size:17px}
+p{margin:0}
+.lede{max-width:70ch;color:var(--muted);font-size:16px}
+.eyebrow{font:500 11px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--brass)}
+header.top{padding-block:36px 20px;display:grid;gap:12px}
+nav.toc{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--ground);border-bottom:1px solid var(--rule);display:flex;gap:4px;flex-wrap:wrap;padding-block:8px}
+nav.toc a{font:500 13px var(--f-body);color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:6px}
+nav.toc a:hover,nav.toc a:focus-visible{background:var(--paper);color:var(--ink);outline:none}
+section{padding-block:36px 8px;display:grid;gap:16px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:10px;height:10px;border-radius:2px;display:inline-block}
+.dot.C{background:var(--comp)} .dot.R{background:var(--risk)} .dot.I{background:var(--impact)}
+
+/* Flow grid */
+.scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:10px}
+.flow{min-width:1060px;display:grid;grid-template-columns:150px repeat(5,minmax(0,1fr));gap:6px;background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:10px}
+.phase{font:600 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;text-align:center;padding:6px;border-radius:6px;color:var(--muted)}
+.phase.dt{background:var(--dt)} .phase.rel{background:var(--brass-soft);color:var(--brass)} .phase.rt{background:var(--rt)}
+.colh{font:600 13px var(--f-body);padding:4px 8px;color:var(--ink);border-bottom:2px solid var(--rule)}
+.colh small{display:block;font:400 11px var(--f-mono);color:var(--muted)}
+.keelband{grid-column:2 / -1;background:var(--keel);color:var(--keel-fg);border-radius:8px;padding:12px 14px;display:grid;gap:8px}
+.keelband .kt{font:600 15px var(--f-display)}
+.kchips{display:flex;flex-wrap:wrap;gap:6px}
+.kchip{font:500 11.5px var(--f-mono);border:1px solid color-mix(in srgb,var(--keel-fg) 35%,transparent);border-radius:4px;padding:3px 7px;color:var(--keel-fg);background:transparent;cursor:pointer}
+.kchip:hover,.kchip:focus-visible{background:color-mix(in srgb,var(--keel-fg) 14%,transparent);outline:none}
+.compile{grid-column:2 / -1;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.compile div{font:500 11px var(--f-mono);color:var(--brass);text-align:center;padding:2px}
+.compile .arrow::before{content:"▼ compiled by GOV-019 into native artifacts";}
+.rowh{display:flex;flex-direction:column;justify-content:center;gap:2px;padding:8px;border-left:3px solid var(--keel);background:var(--dt);border-radius:0 6px 6px 0}
+.rowh b{font:600 14px var(--f-body)}
+.rowh span{font-size:12px;color:var(--muted);line-height:1.35}
+.cell{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:6px;padding:9px 10px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);min-width:0}
+.cell.dtc{background:var(--dt)} .cell.relc{background:color-mix(in srgb,var(--brass-soft) 45%,var(--paper))} .cell.rtc{background:var(--rt)}
+.cell:hover{border-color:var(--brass)}
+.cell:focus-visible{outline:2px solid var(--brass);outline-offset:1px}
+.cell[aria-pressed="true"]{border-color:var(--brass);box-shadow:inset 0 0 0 1px var(--brass)}
+.cell .ct{font:600 13px var(--f-body);line-height:1.3}
+.cell .cs{font-size:12px;color:var(--muted);line-height:1.4}
+.pips{display:flex;flex-wrap:wrap;gap:4px;margin-top:auto}
+.pip{font:500 10.5px var(--f-mono);padding:1px 5px;border-radius:3px;border-left:3px solid}
+.pip.C{border-color:var(--comp);background:var(--comp-soft)} .pip.R{border-color:var(--risk);background:var(--risk-soft)} .pip.I{border-color:var(--impact);background:var(--impact-soft)}
+.plmband{grid-column:1 / -1;display:grid;grid-template-columns:150px repeat(5,minmax(0,1fr));gap:6px;margin-top:4px;padding-top:8px;border-top:2px dashed var(--rule)}
+.plmh{background:var(--brass);color:var(--paper);border-radius:6px;padding:8px;display:flex;flex-direction:column;justify-content:center}
+.plmh b{font:600 15px var(--f-display)} .plmh span{font-size:11.5px;opacity:.9;line-height:1.35}
+.gate{border:1px solid var(--brass);border-radius:6px;padding:8px;display:grid;gap:4px;background:var(--paper)}
+.gate .gid{font:600 11px var(--f-mono);color:var(--brass);letter-spacing:.06em}
+.gate .gn{font:600 13px var(--f-body)}
+.gate .gm{font:400 11px var(--f-mono);color:var(--muted);line-height:1.45}
+.gates2{display:grid;gap:6px}
+
+/* Detail panel */
+.detail{background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:18px;display:grid;gap:14px}
+.detail .dh{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline}
+.detail .dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.detail h4{margin:0 0 6px;font:600 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.detail ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.detail li{font-size:14px}
+.tag{font:500 11px var(--f-mono);padding:2px 6px;border-radius:4px;background:var(--dt);color:var(--muted)}
+.kin{display:grid;gap:6px}
+.kin div{display:grid;grid-template-columns:auto 1fr;gap:8px;font-size:13.5px;align-items:baseline}
+.kin code{font:500 11px var(--f-mono);color:var(--keel);background:var(--dt);padding:1px 5px;border-radius:3px;white-space:nowrap}
+:root[data-theme="dark"] .kin code{color:var(--keel-fg)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .kin code{color:var(--keel-fg)}}
+
+/* Tables */
+.tbl{border:1px solid var(--rule);border-radius:10px;background:var(--paper)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font:600 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--dt);position:sticky;top:0}
+td.k{font-weight:600;min-width:190px}
+td.k small{display:block;font:400 11px var(--f-mono);color:var(--muted);margin-top:2px}
+td.na{color:var(--rule)}
+td.mono{font:500 12px var(--f-mono);white-space:nowrap}
+tr.hl td{background:var(--brass-soft)}
+.matrix{min-width:900px}
+.reg{min-width:860px}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.filters label{font:500 12px var(--f-mono);color:var(--muted)}
+select{font:14px var(--f-body);padding:6px 8px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);color:var(--ink)}
+.score{display:inline-flex;gap:3px}
+.count{font:500 12px var(--f-mono);color:var(--muted)}
+
+/* Scores */
+.scores{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.sc{background:var(--paper);border:1px solid var(--rule);border-top:4px solid;border-radius:8px;padding:16px;display:grid;gap:8px}
+.sc.C{border-top-color:var(--comp)} .sc.R{border-top-color:var(--risk)} .sc.I{border-top-color:var(--impact)}
+.sc p{font-size:14px}
+.sc .from{font:400 12px var(--f-mono);color:var(--muted)}
+
+/* Causal chain */
+.chain{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;min-width:900px}
+.node{background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:12px;display:grid;gap:4px;position:relative;margin-right:22px}
+.node:not(:last-child)::after{content:"→";position:absolute;right:-19px;top:50%;transform:translateY(-50%);color:var(--brass);font:600 16px var(--f-mono)}
+.node:last-child{margin-right:0}
+.node .nt{font:600 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.node .nn{font:600 15px var(--f-display)}
+.node .ne{font-size:12.5px;color:var(--muted)}
+.node .ex{font:500 12px var(--f-mono);color:var(--impact);border-top:1px solid var(--rule);padding-top:6px;margin-top:4px}
+.agents{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.agent{background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:14px;display:grid;gap:6px}
+.agent .an{font:600 14px var(--f-body)}
+.agent p{font-size:13.5px;color:var(--muted)}
+.guard{background:var(--keel);color:var(--keel-fg);border-radius:10px;padding:18px;display:grid;gap:10px}
+.guard ul{margin:0;padding-left:18px;display:grid;gap:6px;font-size:14px}
+.guard h3{color:var(--keel-fg)}
+.note{font-size:12.5px;color:var(--muted)}
+@media (max-width:640px){h2{font-size:21px}}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+</style>
+
+<div class="wrap">
+<header class="top">
+  <span class="eyebrow">Keel &amp; North Star · operating model</span>
+  <h1>Keel-to-PLM Operating Flow</h1>
+  <p class="lede">How governed meaning leaves the keel as design-time inputs for Fivetran, dbt models, the dbt Semantic Layer and LangGraph agents, how each component is measured from design time through run time, and how those measures land in the PLM as compliance, risk and impact evidence traced up to products and services, operational services, the strategy map and corporate values.</p>
+</header>
+
+<nav class="toc" aria-label="Sections">
+  <a href="#flow">End-to-end flow</a>
+  <a href="#inputs">Keel inputs</a>
+  <a href="#measures">Measurement register</a>
+  <a href="#plm">PLM scoring</a>
+  <a href="#impact">Causal impact</a>
+</nav>
+
+<section id="flow">
+  <h2>End-to-end flow</h2>
+  <p class="lede">Read left to right. The keel compiles into each component's native artifacts at design time. Every cell emits measures, shown as tags, that the PLM band collects at the gate beneath it. Select a cell for its keel inputs, activities and measures.</p>
+  <div class="legend">
+    <span><i class="dot C"></i>Compliance measure</span>
+    <span><i class="dot R"></i>Risk measure</span>
+    <span><i class="dot I"></i>Impact measure</span>
+  </div>
+  <div class="scroll"><div class="flow" id="flowGrid" role="grid" aria-label="Component by lifecycle stage"></div></div>
+  <div class="detail" id="detail" aria-live="polite"></div>
+</section>
+
+<section id="inputs">
+  <h2>Keel inputs by component</h2>
+  <p class="lede">What each keel asset becomes when the GOV-019 pipeline compiles it for a component. Teams consume these as generated files and specs; none of them is hand-authored in the target tool. The last row is what ties every component to the impact chain.</p>
+  <div class="scroll tbl"><table class="matrix" id="inputTbl"></table></div>
+</section>
+
+<section id="measures">
+  <h2>Measurement register</h2>
+  <p class="lede">Every measure has one owner component, the stage where it is taken, the PLM gate it gives evidence to, and the scores it feeds. Thresholds live in the SSOT as constraints, so a change to a threshold goes through the same Draft → Candidate → Approved → Released workflow as any rule.</p>
+  <div class="filters">
+    <label for="fComp">Component</label>
+    <select id="fComp"><option value="">All</option></select>
+    <label for="fTime">When</label>
+    <select id="fTime"><option value="">Design and run time</option><option value="Design">Design time</option><option value="Release">Release</option><option value="Run">Run time</option></select>
+    <label for="fScore">Feeds</label>
+    <select id="fScore"><option value="">All scores</option><option value="C">Compliance</option><option value="R">Risk</option><option value="I">Impact</option></select>
+    <span class="count" id="regCount"></span>
+  </div>
+  <div class="scroll tbl"><table class="reg" id="regTbl"></table></div>
+</section>
+
+<section id="plm">
+  <h2>How measures become PLM scores</h2>
+  <p class="lede">Each component version is a PLM item. Measures attach to it as gate evidence. The three scores roll up along the same business-model graph that carries impact, so a strategy objective shows its projected value next to the compliance and risk of every component behind it.</p>
+  <div class="scores">
+    <div class="sc C"><h3>Compliance</h3><p>Share of conformance checks passed against keel rules, standards and contracts, weighted by rule severity in the SSOT. Computed per component version, then rolled up by holon.</p><span class="from">from F-01–03 · T-01–04 · S-01 · A-01 · A-03 · A-06 · A-07</span></div>
+    <div class="sc R"><h3>Risk</h3><p>Severity × likelihood of open findings: drift, escaped defects, shadow metrics, circuit-breaker trips, reviewer overrides. Open findings feed the PLM defect burndown and stay attached to the gate until closed.</p><span class="from">from F-02 · F-04–05 · T-03 · T-05 · S-02–03 · A-02 · A-04–05 · X-02</span></div>
+    <div class="sc I"><h3>Impact</h3><p>Projected and realized value propagated from the component through operational services and products to strategy objectives and values. Every figure carries its determinism ratio, so estimated paths are never reported as realized.</p><span class="from">from F-04 · S-04 · A-01 · A-08 · X-01 · causal engine</span></div>
+  </div>
+  <div class="scroll tbl"><table class="reg" id="gateTbl"></table></div>
+</section>
+
+<section id="impact">
+  <h2>Causal impact, summarized by agents</h2>
+  <p class="lede">The business model lives in the keel, so the graph that supplies governance inputs also carries the impact paths. When a component version changes or its measures move, the causal engine traces it upward and an agent writes the assessment for each audience.</p>
+  <div class="scroll"><div class="chain" id="chain"></div></div>
+  <p class="note">The example row follows one change through the chain. Its names are illustrative placeholders; real paths come from the client's business model in the keel.</p>
+  <div class="agents" id="agents"></div>
+  <div class="guard">
+    <h3>Guardrails on the summary</h3>
+    <ul>
+      <li>Each edge in a path is marked curated (asserted in the keel, approved) or estimated (inferred by an agent). The summary reports the determinism ratio of every path it cites.</li>
+      <li>A path with any estimated edge is reported as projected, never as realized. Deterministic propagation over ungated inference is blocked by rule.</li>
+      <li>The summarization agent runs behind the AI Circuit Breaker. Claims that don't cite a path ID and its measures fail validation and route to a reviewer.</li>
+      <li>Results move a PLM item through G5 only after human sign-off, with author and approver kept separate.</li>
+      <li>Values and strategy objectives also flow down as constraints: a component that improves a metric while breaching a value-linked norm shows positive impact and an open compliance finding side by side.</li>
+    </ul>
+  </div>
+</section>
+</div>
+
+<script>
+const STAGES=[
+ {k:"design",n:"Design",s:"author & generate",ph:"dt",gate:"G0 · G1"},
+ {k:"verify",n:"Verify",s:"CI gates",ph:"dt",gate:"G2"},
+ {k:"release",n:"Release",s:"DEV → STG → PRD",ph:"rel",gate:"G3"},
+ {k:"run",n:"Run",s:"execution",ph:"rt",gate:"G4"},
+ {k:"observe",n:"Observe",s:"waterline & outcomes",ph:"rt",gate:"G5"}
+];
+const KEEL=[
+ {id:"K1",n:"Vocabularies",s:"vocabulary-core-*, vocabulary-domain-*"},
+ {id:"K2",n:"Taxonomies",s:"taxonomy-core-*, taxonomy-domain-*"},
+ {id:"K3",n:"Ontologies",s:"ontology-core-*, ontology-domain-*"},
+ {id:"K4",n:"SHACL shapes",s:"constraints on data and outputs"},
+ {id:"K5",n:"RML mappings",s:"source registry, column → concept"},
+ {id:"K6",n:"Metric cards",s:"definition, grain, owner, SLO"},
+ {id:"K7",n:"SSOT rules",s:"rules, constraints, calculations"},
+ {id:"K8",n:"Sensitivity classes",s:"classification per concept"},
+ {id:"K9",n:"LKIF norms",s:"permissions and obligations"},
+ {id:"K10",n:"Circuit-breaker policy",s:"MTBH thresholds, HITL routes"},
+ {id:"K11",n:"Decision Question Baseline",s:"reference questions and answers"},
+ {id:"K12",n:"Business model",s:"values, strategy map, products, services"}
+];
+const COMPS=[
+ {id:"F",n:"Fivetran",r:"Ingestion. The sea into the hull."},
+ {id:"T",n:"dbt models",r:"Transformation. Engine A in the hull."},
+ {id:"S",n:"dbt Semantic Layer",r:"MetricFlow. Compile target for metric cards."},
+ {id:"A",n:"LangGraph agents",r:"The bridge. Agents reading governed meaning."}
+];
+// Keel asset -> what it becomes per component
+const FEEDS={
+ K1:{F:"",T:"Column descriptions and docs",S:"Metric and dimension labels, synonyms",A:"Grounding lexicon for the grounding node"},
+ K2:{F:"",T:"accepted_values tests",S:"Categorical dimension members",A:"Clarification options when a term is ambiguous"},
+ K3:{F:"Target concept for each governed table",T:"Entity keys and relationships tests",S:"Entities and join paths",A:"Typed graph state carrying keel URIs"},
+ K4:{F:"",T:"Model contracts: types, not_null, cardinality",S:"Measure type and aggregation constraints",A:"Output validation node"},
+ K5:{F:"Source registry and column selection",T:"Generated sources.yml with meta.keel_uri",S:"",A:""},
+ K6:{F:"Sync frequency from freshness SLO",T:"Grain and calculation reference",S:"semantic_models and metrics YAML, OSI-aligned",A:"Tool allowlist by metric name"},
+ K7:{F:"Schema-change policy: hold or block",T:"SSOT calculation parity tests, naming conventions",S:"Metric filters and business rules",A:"Rule lookups and policy conformance checks"},
+ K8:{F:"Column block and hash list",T:"Masking meta and access grants",S:"Dimension access restrictions",A:"Redaction rules on answers"},
+ K9:{F:"",T:"",S:"",A:"Permitted and obligated actions per tool call"},
+ K10:{F:"",T:"",S:"",A:"Circuit-breaker edge thresholds and review routes"},
+ K11:{F:"",T:"Reference datasets",S:"Golden-value tests",A:"Regression evaluation set"},
+ K12:{F:"PLM item bound to operational services",T:"PLM item bound to operational services",S:"Metric bound to strategy objectives",A:"Agent bound to services and decisions it supports"}
+};
+const CELLS={
+ F:{
+  design:{t:"Connector config as code",s:"Sources registered in the keel; columns, blocking and sync set from keel inputs.",k:["K5","K3","K8","K6","K7"],a:["Register each governed table with a keel URI and RML mapping","Select schemas and columns from the mapping","Apply block or hash to classified columns","Set schema-change handling to hold for governed tables","Set sync frequency from the metric card's freshness SLO"],m:["F-01"]},
+  verify:{t:"Pre-merge checks",s:"Config diff checked against the keel before it applies.",k:["K5","K8","K7"],a:["Every governed table resolves to a keel URI","Classified columns are blocked or hashed","Schema-change policy matches the SSOT rule","Data owner reviews the config diff"],m:["F-01","F-02","F-03"]},
+  release:{t:"Promote connector config",s:"Applied DEV → STG → PRD with a versioned PLM item.",k:["K7"],a:["Author and approver are different people","Connector version registered as a PLM item","Release notes cite the keel version used"],m:["X-01"]},
+  run:{t:"Sync and hold",s:"Data lands; schema changes on governed tables wait for review.",k:["K6"],a:["Scheduled syncs land source tables","Schema-change events held for governed tables","Anti-drift agent opens a mapping PR"],m:["F-04","F-05"]},
+  observe:{t:"Waterline",s:"Freshness, drift and time to remediate.",k:[],a:["Freshness against SLO by source","Drift events and mean time to remediate","Findings posted to the PLM item"],m:["F-04","F-05"]}
+ },
+ T:{
+  design:{t:"Generated scaffolding, team SQL",s:"Sources, contracts and tests generated; teams write the transformations.",k:["K5","K4","K2","K3","K7","K1"],a:["Generated sources.yml with keel_uri, holon and owner","Contracts generated from SHACL shapes","Tests generated from concept schemes and shapes","SSOT calculations referenced, not re-derived"],m:["T-01"]},
+  verify:{t:"CI gates",s:"Contracts, generated tests, traceability lint, calc parity.",k:["K4","K7","K11"],a:["Model contracts enforced","Generated tests pass","Every model and column traces to a keel URI","Generated files unchanged by hand","Output matches SSOT calculation reference"],m:["T-01","T-02","T-03","T-04"]},
+  release:{t:"Bot PRs and promotion",s:"GOV-019 opens PRs; teams review and promote.",k:["K7"],a:["Keel change produces PRs in the dbt repo","Promotion DEV → STG → PRD","Release notes link the keel version"],m:["X-01"]},
+  run:{t:"Scheduled builds",s:"Models build and test; failures route to owners.",k:[],a:["Builds and tests run on schedule","Failures route to the model owner","Lineage published against keel URIs"],m:["T-02","T-05"]},
+  observe:{t:"Defects and lineage",s:"Escaped defects feed the PLM burndown.",k:[],a:["Escaped defects by severity","Defect burndown per PLM item","Lineage to concepts for impact tracing"],m:["T-05"]}
+ },
+ S:{
+  design:{t:"Compiled metrics",s:"semantic_models and metrics YAML compiled from metric cards.",k:["K6","K3","K2","K1","K8"],a:["Metric cards compile to OSI-aligned YAML","The same card can also compile to warehouse semantic views","No hand-authored metrics"],m:["S-01"]},
+  verify:{t:"Definition checks",s:"Hash match, no unregistered metrics, golden values.",k:["K6","K11"],a:["Metric card and YAML hashes match","Lint fails on any metric without a keel URI","Golden-value tests on reference data","Version bump on any definition change"],m:["S-01","S-03"]},
+  release:{t:"Versioned metrics",s:"New metric version published with a deprecation window.",k:["K7"],a:["Metric version published","Old version kept through a deprecation window","Consumers notified"],m:["X-01"]},
+  run:{t:"Serve metrics",s:"BI tools and agents query by metric name.",k:[],a:["Served through the Semantic Layer API or MCP","Agents query metrics, not raw tables"],m:["S-03","S-04"]},
+  observe:{t:"Shadow metric scan",s:"Find definitions living outside the keel.",k:[],a:["Scan BI, notebooks and SQL for unregistered metrics","Share of queries through the semantic layer"],m:["S-02","S-04"]}
+ },
+ A:{
+  design:{t:"Agent spec",s:"Defined in the Agent Editor from keel inputs.",k:["K6","K3","K1","K9","K10","K4"],a:["Tool allowlist limited to metric names","Typed state carrying keel URIs","Grounding lexicon from vocabularies","LKIF norms per action","Circuit-breaker thresholds","PROV-O record required per answer"],m:["A-07"]},
+  verify:{t:"Evaluation gates",s:"Baseline regression, refusal and norm tests.",k:["K11","K9","K10"],a:["Decision Question Baseline regression","Refusal tests on ungrounded questions","Norm conformance tests","MTBH estimate on the eval set"],m:["A-01","A-02","A-07"]},
+  release:{t:"Graph version promotion",s:"Promoted with its eval report; canary first.",k:["K10"],a:["Eval report attached to the PLM item","Canary on a share of traffic","Rollback on circuit-breaker trip rate"],m:["X-01"]},
+  run:{t:"Governed graph",s:"Ground → plan → query → validate → circuit breaker → answer, refuse or review.",k:["K1","K4","K9","K10"],a:["Grounding node resolves terms to keel concepts","Tool calls go to the semantic layer","SHACL validation of the output","Circuit breaker routes to answer, refuse or interrupt()","Checkpointer keeps the audit trail"],m:["A-02","A-03","A-04","A-05","A-06"]},
+  observe:{t:"Trust and outcomes",s:"MTBH, escalations and decision outcomes.",k:[],a:["MTBH and circuit-breaker trips","Escalation and reviewer override rates","Decision outcomes against the baseline"],m:["A-04","A-05","A-08"]}
+ }
+};
+const REG=[
+ ["F-01","F","Mapping coverage","Share of governed source columns with a keel URI and RML mapping","Design","G1 · G2","C"],
+ ["F-02","F","Sensitive-column conformance","Share of classified columns blocked or hashed as the keel classifies them","Design","G2","CR"],
+ ["F-03","F","Schema-change policy conformance","Governed tables set to hold or block as the SSOT rule requires","Design","G2","C"],
+ ["F-04","F","Freshness against SLO","Sync latency compared with the metric card's freshness SLO","Run","G4","RI"],
+ ["F-05","F","Drift events and remediation time","Schema changes caught at the waterline and mean time to remediate","Run","G4","R"],
+ ["T-01","T","Traceability coverage","Share of models and columns carrying a keel URI","Design","G1 · G2","C"],
+ ["T-02","T","Contract and test pass rate","Generated contracts and tests passing in CI and in scheduled builds","Design","G2 · G4","C"],
+ ["T-03","T","Generated-file tampering","Hand edits found in generated YAML or contracts","Design","G2","CR"],
+ ["T-04","T","Calculation parity","Model output matches the SSOT calculation reference","Design","G2","C"],
+ ["T-05","T","Escaped defects","Data defects found in STG or PRD, by severity","Run","G4","R"],
+ ["S-01","S","Definition conformance","Metric card and compiled YAML hashes match","Design","G1 · G2","C"],
+ ["S-02","S","Shadow metrics","Metric definitions found outside the keel in BI, notebooks or SQL","Run","G4","R"],
+ ["S-03","S","Golden-value drift","Metric results on reference data compared with expected values","Design","G2 · G4","R"],
+ ["S-04","S","Semantic layer adoption","Share of metric queries served through the semantic layer","Run","G4 · G5","I"],
+ ["A-01","A","Baseline accuracy","Correct answers on the Decision Question Baseline","Design","G2","CI"],
+ ["A-02","A","Refusal precision","Refuses when ungrounded, answers when grounded","Design","G2 · G4","R"],
+ ["A-03","A","Grounding rate","Share of user terms resolved to keel concepts","Run","G4","C"],
+ ["A-04","A","MTBH and trips","Mean time between hallucinations and circuit-breaker trips","Run","G4","R"],
+ ["A-05","A","Escalations and overrides","Human review rate and how often reviewers override the agent","Run","G4","R"],
+ ["A-06","A","Provenance completeness","Answers carrying a complete PROV-O record","Run","G4","C"],
+ ["A-07","A","Norm conformance","Agent actions consistent with LKIF permissions and obligations","Design","G1 · G2","C"],
+ ["A-08","A","Decision outcomes","Recommendations adopted and the outcome change that followed","Run","G5","I"],
+ ["X-01","X","Keel release lead time","Time from an approved keel change to PRD across all compile targets","Release","G3","I"],
+ ["X-02","X","Determinism ratio","Share of curated edges on the impact paths cited for a PLM item","Run","G5","R"]
+];
+const COMPNAME={F:"Fivetran",T:"dbt models",S:"dbt Semantic Layer",A:"LangGraph agents",X:"Cross-cutting"};
+const GATES=[
+ ["G0","Concept approved","Keel concept or metric card reaches Approved in the SSOT Editor","Keel change record"],
+ ["G1","Design ready","Keel inputs generated and traceable for the component","F-01 · T-01 · S-01 · A-07"],
+ ["G2","Verified","All CI and evaluation gates pass","F-01–03 · T-01–04 · S-01 · S-03 · A-01 · A-02 · A-07"],
+ ["G3","Released","Promoted to PRD with author and approver separated","X-01"],
+ ["G4","Operating","Run-time measures within SSOT thresholds; findings tracked","F-04–05 · T-02 · T-05 · S-02–04 · A-02–06"],
+ ["G5","Value review","Impact assessed against strategy and values, signed off","S-04 · A-08 · X-02 · causal engine"]
+];
+const typeOf=id=>{const r=REG.find(x=>x[0]===id);return r?r[6][0]:"C"};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+// Build flow grid
+const g=document.getElementById("flowGrid");
+let h='<div></div><div class="phase dt" style="grid-column:span 2">Design time</div><div class="phase rel">Release</div><div class="phase rt" style="grid-column:span 2">Run time</div>';
+h+='<div></div><div class="keelband"><span class="kt">The keel · governed semantic foundation</span><div class="kchips">'+KEEL.map(k=>`<button class="kchip" data-k="${k.id}" title="${esc(k.s)}">${k.id} ${esc(k.n)}</button>`).join("")+'</div></div>';
+h+='<div></div><div class="compile"><div class="arrow" style="grid-column:span 2"></div><div></div><div></div><div></div></div>';
+h+='<div></div>'+STAGES.map(s=>`<div class="colh">${s.n}<small>${s.s}</small></div>`).join("");
+COMPS.forEach(c=>{
+ h+=`<div class="rowh"><b>${c.n}</b><span>${c.r}</span></div>`;
+ STAGES.forEach(s=>{
+  const x=CELLS[c.id][s.k];
+  const cls=s.ph==="dt"?"dtc":s.ph==="rel"?"relc":"rtc";
+  h+=`<button class="cell ${cls}" data-c="${c.id}" data-s="${s.k}" aria-pressed="false"><span class="ct">${esc(x.t)}</span><span class="cs">${esc(x.s)}</span><span class="pips">${x.m.map(m=>`<span class="pip ${typeOf(m)}">${m}</span>`).join("")}</span></button>`;
+ });
+});
+h+='<div class="plmband"><div class="plmh"><b>PLM</b><span>Gate evidence, compliance, risk and impact per component version</span></div>';
+const gateCols=[["G0","G1"],["G2"],["G3"],["G4"],["G5"]];
+gateCols.forEach(gs=>{
+ h+='<div class="gates2">'+gs.map(id=>{const gg=GATES.find(x=>x[0]===id);return `<div class="gate"><span class="gid">${gg[0]}</span><span class="gn">${gg[1]}</span><span class="gm">${gg[3]}</span></div>`}).join("")+'</div>';
+});
+h+='</div>';
+g.innerHTML=h;
+
+const detail=document.getElementById("detail");
+function showCell(c,s){
+ document.querySelectorAll(".cell").forEach(b=>b.setAttribute("aria-pressed",b.dataset.c===c&&b.dataset.s===s?"true":"false"));
+ const x=CELLS[c][s], st=STAGES.find(z=>z.k===s), comp=COMPS.find(z=>z.id===c);
+ const kin=x.k.length?x.k.map(k=>{const kk=KEEL.find(z=>z.id===k);const f=FEEDS[k][c];return `<div><code>${k}</code><span><b>${esc(kk.n)}</b>${f?" → "+esc(f):""}</span></div>`}).join(""):'<p class="note">No new keel inputs at this stage. Measures are compared with thresholds already set in the SSOT.</p>';
+ const ms=x.m.map(m=>{const r=REG.find(z=>z[0]===m);return `<li><span class="pip ${r[6][0]}">${m}</span> ${esc(r[2])}. <span class="note">${esc(r[3])}. Gate ${r[5]}.</span></li>`}).join("");
+ detail.innerHTML=`<div class="dh"><span class="eyebrow">${st.ph==="rt"?"Run time":st.ph==="rel"?"Release":"Design time"} · ${st.n} · gate ${st.gate}</span><h3>${esc(comp.n)}: ${esc(x.t)}</h3></div>
+ <div class="dgrid"><div><h4>Keel inputs</h4><div class="kin">${kin}</div></div>
+ <div><h4>Activities</h4><ul>${x.a.map(a=>`<li>${esc(a)}</li>`).join("")}</ul></div>
+ <div><h4>Measures to PLM</h4><ul style="list-style:none;padding-left:0">${ms}</ul></div></div>`;
+}
+function showKeel(k){
+ document.querySelectorAll(".cell").forEach(b=>b.setAttribute("aria-pressed","false"));
+ const kk=KEEL.find(z=>z.id===k);
+ const rows=COMPS.map(c=>`<li><b>${c.n}:</b> ${FEEDS[k][c.id]?esc(FEEDS[k][c.id]):'<span class="note">not used</span>'}</li>`).join("");
+ detail.innerHTML=`<div class="dh"><span class="eyebrow">Keel asset · ${k}</span><h3>${esc(kk.n)}</h3><span class="tag">${esc(kk.s)}</span></div><div><h4>Compiled into</h4><ul>${rows}</ul></div>`;
+}
+g.addEventListener("click",e=>{
+ const b=e.target.closest(".cell"); if(b){showCell(b.dataset.c,b.dataset.s);return}
+ const k=e.target.closest(".kchip"); if(k) showKeel(k.dataset.k);
+});
+showCell("A","run");
+
+// Inputs matrix
+document.getElementById("inputTbl").innerHTML='<thead><tr><th>Keel asset</th>'+COMPS.map(c=>`<th>${c.n}</th>`).join("")+'</tr></thead><tbody>'+
+ KEEL.map(k=>'<tr><td class="k">'+k.id+' '+esc(k.n)+'<small>'+esc(k.s)+'</small></td>'+COMPS.map(c=>FEEDS[k.id][c.id]?`<td>${esc(FEEDS[k.id][c.id])}</td>`:'<td class="na">—</td>').join("")+'</tr>').join("")+'</tbody>';
+
+// Register
+const fComp=document.getElementById("fComp");
+Object.entries(COMPNAME).forEach(([k,v])=>fComp.insertAdjacentHTML("beforeend",`<option value="${k}">${v}</option>`));
+const SN={C:"Compliance",R:"Risk",I:"Impact"};
+function renderReg(){
+ const c=fComp.value,t=document.getElementById("fTime").value,s=document.getElementById("fScore").value;
+ const rows=REG.filter(r=>(!c||r[1]===c)&&(!t||r[4]===t)&&(!s||r[6].includes(s)));
+ document.getElementById("regCount").textContent=rows.length+" of "+REG.length+" measures";
+ document.getElementById("regTbl").innerHTML='<thead><tr><th>ID</th><th>Measure</th><th>Component</th><th>When</th><th>Gate</th><th>Feeds</th></tr></thead><tbody>'+
+ rows.map(r=>`<tr id="m-${r[0]}"><td class="mono">${r[0]}</td><td><b>${esc(r[2])}</b><br><span class="note">${esc(r[3])}</span></td><td>${COMPNAME[r[1]]}</td><td>${r[4]==="Design"?"Design time":r[4]==="Run"?"Run time":"Release"}</td><td class="mono">${r[5]}</td><td><span class="score">${[...r[6]].map(x=>`<span class="pip ${x}">${SN[x]}</span>`).join("")}</span></td></tr>`).join("")+'</tbody>';
+}
+["fComp","fTime","fScore"].forEach(id=>document.getElementById(id).addEventListener("change",renderReg));
+renderReg();
+
+document.getElementById("gateTbl").innerHTML='<thead><tr><th>Gate</th><th>Name</th><th>Passes when</th><th>Evidence</th></tr></thead><tbody>'+
+ GATES.map(r=>`<tr><td class="mono">${r[0]}</td><td><b>${r[1]}</b></td><td>${esc(r[2])}</td><td class="mono" style="white-space:normal">${esc(r[3])}</td></tr>`).join("")+'</tbody>';
+
+// Causal chain
+const CHAIN=[
+ ["Component version","PLM item","The changed connector, model, metric or agent, with its gate evidence.","Example: retention metric v2"],
+ ["Operational services","Business model","Services the component enables or improves.","Example: client success reporting"],
+ ["Products & services","For customers","What customers receive from those services.","Example: customer health insights"],
+ ["Strategy map","Objectives","Objectives across the strategy map's perspectives.","Example: improve client retention"],
+ ["Corporate values","Values","The values the objectives serve, and the norms that encode them.","Example: client focus"]
+];
+document.getElementById("chain").innerHTML=CHAIN.map(c=>`<div class="node"><span class="nt">${c[1]}</span><span class="nn">${c[0]}</span><span class="ne">${c[2]}</span><span class="ex">${c[3]}</span></div>`).join("");
+const AG=[
+ ["Change & impact trigger","Fires on a PLM item release or when a measure crosses its SSOT threshold. Passes the item and its measures to the causal engine."],
+ ["Causal mapping agent","Traverses the business model from the item to services, products, objectives and values. Marks each edge curated or estimated."],
+ ["Impact estimation agent","Applies edge weights and the item's measures to project value per node. Computes the determinism ratio for each path."],
+ ["Impact summarization agent","Writes the assessment for executives, product owners and risk, each claim citing path IDs and measure IDs. Gated by the circuit breaker."],
+ ["Reviewer in the PLM","Signs off the assessment at G5. Overrides are recorded and count toward A-05 for the summarization agent."]
+];
+document.getElementById("agents").innerHTML=AG.map(a=>`<div class="agent"><span class="an">${a[0]}</span><p>${a[1]}</p></div>`).join("");
+</script>
+
+</body></html>
