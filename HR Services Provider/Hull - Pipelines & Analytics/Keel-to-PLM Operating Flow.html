@@ -3,10 +3,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: a vessel read left to right — keel band on top feeding a component × lifecycle grid, PLM band underneath catching every measure, causal chain below. */
+/* Layout: a vessel read left to right — keel band on top, governance workbench under it, then the component × lifecycle grid, PLM band catching every measure; below, the business operating model the impact tracer walks. */
 :root{
   --ground:#EEF2F5; --paper:#FFFFFF; --ink:#13202E; --muted:#566575; --rule:#D3DBE3;
   --keel:#1B3550; --keel-fg:#F1F4F8; --brass:#9A6B1F; --brass-soft:#F4EAD7;
+  --wb:#5B4B8A; --wb-soft:#ECE8F6;
   --comp:#1D7466; --comp-soft:#DDF0EC; --risk:#B0432C; --risk-soft:#F7E2DC; --impact:#3953A0; --impact-soft:#E1E7F7;
   --dt:#F6F8FA; --rt:#F1F5F2;
   --f-display:"Spectral", "Iowan Old Style", Georgia, serif;
@@ -16,14 +17,17 @@
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --ground:#0D141B; --paper:#151F29; --ink:#E3E9EF; --muted:#93A2B2; --rule:#2A3847;
   --keel:#22415F; --keel-fg:#EAF0F6; --brass:#D6A757; --brass-soft:#3A2F1C;
+  --wb:#B3A3E6; --wb-soft:#2A2440;
   --comp:#56C2B1; --comp-soft:#173B36; --risk:#E7826B; --risk-soft:#43231C; --impact:#93A9EE; --impact-soft:#1F2A4A;
   --dt:#18232E; --rt:#17241F; color-scheme:dark;}}
 :root[data-theme="dark"]{
   --ground:#0D141B; --paper:#151F29; --ink:#E3E9EF; --muted:#93A2B2; --rule:#2A3847;
   --keel:#22415F; --keel-fg:#EAF0F6; --brass:#D6A757; --brass-soft:#3A2F1C;
+  --wb:#B3A3E6; --wb-soft:#2A2440;
   --comp:#56C2B1; --comp-soft:#173B36; --risk:#E7826B; --risk-soft:#43231C; --impact:#93A9EE; --impact-soft:#1F2A4A;
   --dt:#18232E; --rt:#17241F; color-scheme:dark;}
 *{box-sizing:border-box}
+html{scroll-behavior:smooth}
 body{background:var(--ground);color:var(--ink);font:15px/1.55 var(--f-body);padding-inline:16px;padding-block:0 48px}
 .wrap{max-width:1240px;margin:0 auto}
 h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;font-weight:600}
@@ -31,9 +35,13 @@ h1{font-size:clamp(28px,4vw,40px);line-height:1.1}
 h2{font-size:24px;line-height:1.2}
 h3{font-size:17px}
 p{margin:0}
-.lede{max-width:70ch;color:var(--muted);font-size:16px}
+a{color:var(--impact)}
+.lede{max-width:72ch;color:var(--muted);font-size:16px}
 .eyebrow{font:500 11px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--brass)}
 header.top{padding-block:36px 20px;display:grid;gap:12px}
+.toollinks{display:flex;flex-wrap:wrap;gap:8px}
+.toollinks a{font:500 13px var(--f-body);text-decoration:none;color:var(--wb);border:1px solid var(--wb);border-radius:6px;padding:5px 10px;background:var(--wb-soft)}
+.toollinks a:hover,.toollinks a:focus-visible{outline:2px solid var(--wb);outline-offset:1px}
 nav.toc{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--ground);border-bottom:1px solid var(--rule);display:flex;gap:4px;flex-wrap:wrap;padding-block:8px}
 nav.toc a{font:500 13px var(--f-body);color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:6px}
 nav.toc a:hover,nav.toc a:focus-visible{background:var(--paper);color:var(--ink);outline:none}
@@ -41,11 +49,11 @@ section{padding-block:36px 8px;display:grid;gap:16px}
 .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted)}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .dot{width:10px;height:10px;border-radius:2px;display:inline-block}
-.dot.C{background:var(--comp)} .dot.R{background:var(--risk)} .dot.I{background:var(--impact)}
+.dot.C{background:var(--comp)} .dot.R{background:var(--risk)} .dot.I{background:var(--impact)} .dot.W{background:var(--wb)}
 
 /* Flow grid */
 .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:10px}
-.flow{min-width:1060px;display:grid;grid-template-columns:150px repeat(5,minmax(0,1fr));gap:6px;background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:10px}
+.flow{min-width:1060px;display:grid;grid-template-columns:160px repeat(5,minmax(0,1fr));gap:6px;background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:10px}
 .phase{font:600 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;text-align:center;padding:6px;border-radius:6px;color:var(--muted)}
 .phase.dt{background:var(--dt)} .phase.rel{background:var(--brass-soft);color:var(--brass)} .phase.rt{background:var(--rt)}
 .colh{font:600 13px var(--f-body);padding:4px 8px;color:var(--ink);border-bottom:2px solid var(--rule)}
@@ -55,23 +63,26 @@ section{padding-block:36px 8px;display:grid;gap:16px}
 .kchips{display:flex;flex-wrap:wrap;gap:6px}
 .kchip{font:500 11.5px var(--f-mono);border:1px solid color-mix(in srgb,var(--keel-fg) 35%,transparent);border-radius:4px;padding:3px 7px;color:var(--keel-fg);background:transparent;cursor:pointer}
 .kchip:hover,.kchip:focus-visible{background:color-mix(in srgb,var(--keel-fg) 14%,transparent);outline:none}
-.compile{grid-column:2 / -1;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
-.compile div{font:500 11px var(--f-mono);color:var(--brass);text-align:center;padding:2px}
-.compile .arrow::before{content:"▼ compiled by GOV-019 into native artifacts";}
+.grouph{grid-column:1 / -1;font:600 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:8px 2px 0;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.grouph span{font:400 12px var(--f-body);letter-spacing:0;text-transform:none}
+.compile{grid-column:2 / -1;font:500 11px var(--f-mono);color:var(--brass);text-align:center;padding:2px}
 .rowh{display:flex;flex-direction:column;justify-content:center;gap:2px;padding:8px;border-left:3px solid var(--keel);background:var(--dt);border-radius:0 6px 6px 0}
+.rowh.wbh{border-left-color:var(--wb);background:var(--wb-soft)}
 .rowh b{font:600 14px var(--f-body)}
 .rowh span{font-size:12px;color:var(--muted);line-height:1.35}
+.rowh a{font:500 11px var(--f-mono);text-decoration:none}
 .cell{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:6px;padding:9px 10px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);min-width:0}
 .cell.dtc{background:var(--dt)} .cell.relc{background:color-mix(in srgb,var(--brass-soft) 45%,var(--paper))} .cell.rtc{background:var(--rt)}
+.cell.wbc{background:color-mix(in srgb,var(--wb-soft) 55%,var(--paper))}
 .cell:hover{border-color:var(--brass)}
 .cell:focus-visible{outline:2px solid var(--brass);outline-offset:1px}
 .cell[aria-pressed="true"]{border-color:var(--brass);box-shadow:inset 0 0 0 1px var(--brass)}
 .cell .ct{font:600 13px var(--f-body);line-height:1.3}
 .cell .cs{font-size:12px;color:var(--muted);line-height:1.4}
 .pips{display:flex;flex-wrap:wrap;gap:4px;margin-top:auto}
-.pip{font:500 10.5px var(--f-mono);padding:1px 5px;border-radius:3px;border-left:3px solid}
+.pip{font:500 10.5px var(--f-mono);padding:1px 5px;border-radius:3px;border-left:3px solid;color:var(--ink)}
 .pip.C{border-color:var(--comp);background:var(--comp-soft)} .pip.R{border-color:var(--risk);background:var(--risk-soft)} .pip.I{border-color:var(--impact);background:var(--impact-soft)}
-.plmband{grid-column:1 / -1;display:grid;grid-template-columns:150px repeat(5,minmax(0,1fr));gap:6px;margin-top:4px;padding-top:8px;border-top:2px dashed var(--rule)}
+.plmband{grid-column:1 / -1;display:grid;grid-template-columns:160px repeat(5,minmax(0,1fr));gap:6px;margin-top:4px;padding-top:8px;border-top:2px dashed var(--rule)}
 .plmh{background:var(--brass);color:var(--paper);border-radius:6px;padding:8px;display:flex;flex-direction:column;justify-content:center}
 .plmh b{font:600 15px var(--f-display)} .plmh span{font-size:11.5px;opacity:.9;line-height:1.35}
 .gate{border:1px solid var(--brass);border-radius:6px;padding:8px;display:grid;gap:4px;background:var(--paper)}
@@ -79,20 +90,24 @@ section{padding-block:36px 8px;display:grid;gap:16px}
 .gate .gn{font:600 13px var(--f-body)}
 .gate .gm{font:400 11px var(--f-mono);color:var(--muted);line-height:1.45}
 .gates2{display:grid;gap:6px}
+.bomband{grid-column:1 / -1;display:grid;grid-template-columns:160px 1fr;gap:6px;margin-top:2px}
+.bomh{background:var(--impact);color:var(--paper);border-radius:6px;padding:8px;display:flex;flex-direction:column;justify-content:center}
+.bomh b{font:600 15px var(--f-display)} .bomh span{font-size:11.5px;opacity:.92;line-height:1.35}
+.bomstrip{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch}
+.bomstrip a{flex:1 1 150px;text-decoration:none;color:var(--ink);border:1px solid var(--impact);border-radius:6px;padding:8px;background:var(--impact-soft);display:grid;gap:2px}
+.bomstrip a b{font:600 13px var(--f-body)} .bomstrip a span{font:400 11px var(--f-mono);color:var(--muted)}
 
 /* Detail panel */
 .detail{background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:18px;display:grid;gap:14px}
 .detail .dh{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline}
-.detail .dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
-.detail h4{margin:0 0 6px;font:600 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.detail h4,.panel h4{margin:0 0 6px;font:600 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .detail ul{margin:0;padding-left:18px;display:grid;gap:4px}
 .detail li{font-size:14px}
 .tag{font:500 11px var(--f-mono);padding:2px 6px;border-radius:4px;background:var(--dt);color:var(--muted)}
 .kin{display:grid;gap:6px}
 .kin div{display:grid;grid-template-columns:auto 1fr;gap:8px;font-size:13.5px;align-items:baseline}
-.kin code{font:500 11px var(--f-mono);color:var(--keel);background:var(--dt);padding:1px 5px;border-radius:3px;white-space:nowrap}
-:root[data-theme="dark"] .kin code{color:var(--keel-fg)}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .kin code{color:var(--keel-fg)}}
+.kin code{font:500 11px var(--f-mono);color:var(--ink);background:var(--dt);padding:1px 5px;border-radius:3px;white-space:nowrap}
 
 /* Tables */
 .tbl{border:1px solid var(--rule);border-radius:10px;background:var(--paper)}
@@ -101,15 +116,15 @@ th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--rule);verti
 th{font:600 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--dt);position:sticky;top:0}
 td.k{font-weight:600;min-width:190px}
 td.k small{display:block;font:400 11px var(--f-mono);color:var(--muted);margin-top:2px}
-td.na{color:var(--rule)}
+td.na{color:var(--muted);opacity:.5}
 td.mono{font:500 12px var(--f-mono);white-space:nowrap}
-tr.hl td{background:var(--brass-soft)}
-.matrix{min-width:900px}
+.matrix{min-width:980px}
 .reg{min-width:860px}
 .filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .filters label{font:500 12px var(--f-mono);color:var(--muted)}
-select{font:14px var(--f-body);padding:6px 8px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);color:var(--ink)}
-.score{display:inline-flex;gap:3px}
+select,input[type=search]{font:14px var(--f-body);padding:6px 8px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);color:var(--ink);max-width:100%}
+select:focus-visible,input:focus-visible{outline:2px solid var(--brass);outline-offset:1px}
+.score{display:inline-flex;gap:3px;flex-wrap:wrap}
 .count{font:500 12px var(--f-mono);color:var(--muted)}
 
 /* Scores */
@@ -119,66 +134,165 @@ select{font:14px var(--f-body);padding:6px 8px;border:1px solid var(--rule);bord
 .sc p{font-size:14px}
 .sc .from{font:400 12px var(--f-mono);color:var(--muted)}
 
+/* Impact tracer */
+.tracer{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.tracer{grid-template-columns:1fr}}
+.panel{background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:16px;display:grid;gap:14px;min-width:0}
+.picker{display:grid;gap:8px}
+.picker .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.picker select#pItem{flex:1 1 260px;min-width:0}
+.quick{display:flex;flex-wrap:wrap;gap:6px}
+.quick button,.btn{font:500 12px var(--f-mono);border:1px solid var(--rule);border-radius:4px;padding:3px 8px;background:var(--dt);color:var(--ink);cursor:pointer}
+.quick button:hover,.quick button:focus-visible,.btn:hover,.btn:focus-visible{border-color:var(--brass);outline:none}
+.asset{display:grid;gap:4px;padding:10px 12px;border-radius:8px;background:var(--dt)}
+.asset .an{font:600 15px var(--f-display)}
+.asset .am{font:400 12px var(--f-mono);color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media (max-width:520px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.stat{border:1px solid var(--rule);border-radius:8px;padding:8px 10px;display:grid;gap:2px}
+.stat b{font:600 20px var(--f-display);font-variant-numeric:tabular-nums}
+.stat span{font:400 11px var(--f-mono);color:var(--muted)}
+.tree{display:grid;gap:10px}
+.tdom{border-left:3px solid var(--impact);padding-left:10px;display:grid;gap:6px}
+.tdom>b{font:600 14px var(--f-body)}
+.tsvc{display:grid;gap:4px;padding-left:4px}
+.tsvc>span{font:600 13px var(--f-body);color:var(--muted)}
+.tproc{display:flex;flex-wrap:wrap;gap:6px;align-items:baseline;font-size:13.5px;padding-left:10px}
+.tproc .pn{font-weight:500}
+.prov{font:500 10.5px var(--f-mono);padding:1px 5px;border-radius:3px;background:var(--dt);color:var(--muted);border:1px solid var(--rule)}
+.prov.d{color:var(--comp);border-color:var(--comp)}
+.prov.p{color:var(--risk);border-color:var(--risk)}
+.prov.c,.prov.e,.prov.r,.prov.u{color:var(--impact);border-color:var(--impact)}
+.summary{border-left:4px solid var(--impact);background:var(--impact-soft);border-radius:0 8px 8px 0;padding:12px 14px;display:grid;gap:8px;font-size:14.5px}
+.summary .sl{font:600 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--impact)}
+.gatesreq{display:grid;gap:4px;font-size:13.5px}
+.gatesreq li{margin-left:18px}
+.mlist{display:grid;gap:6px;font-size:13.5px}
+.mlist div{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:baseline}
+.gapbar{font:500 11px var(--f-mono);padding:1px 6px;border-radius:3px}
+.gapbar.bad{background:var(--risk-soft);color:var(--risk)} .gapbar.ok{background:var(--comp-soft);color:var(--comp)}
+
+/* BOM map */
+.bom{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.dcard{background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:12px;display:grid;gap:10px;align-content:start;min-width:0}
+.dcard .dn{font:600 16px var(--f-display)}
+.dcard .dh2{font:400 11px var(--f-mono);color:var(--muted)}
+.dsvc{display:grid;gap:4px}
+.dsvc .sn{font:600 12.5px var(--f-body);color:var(--muted)}
+.pbtn{all:unset;box-sizing:border-box;cursor:pointer;display:flex;justify-content:space-between;gap:8px;align-items:baseline;padding:5px 8px;border-radius:5px;border:1px solid var(--rule);font-size:13px;background:var(--paper)}
+.pbtn:hover{border-color:var(--brass)}
+.pbtn:focus-visible{outline:2px solid var(--brass);outline-offset:1px}
+.pbtn .pc{font:500 10.5px var(--f-mono);color:var(--muted);white-space:nowrap}
+.pbtn.h1{background:color-mix(in srgb,var(--impact-soft) 70%,var(--paper));border-color:var(--impact)}
+.pbtn.h2{background:var(--impact-soft);border-color:var(--impact);box-shadow:inset 3px 0 0 var(--impact)}
+.pbtn.sel{outline:2px solid var(--brass);outline-offset:1px}
+.svchit{font:500 10.5px var(--f-mono);color:var(--impact)}
+
 /* Causal chain */
-.chain{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;min-width:900px}
-.node{background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:12px;display:grid;gap:4px;position:relative;margin-right:22px}
+.chain{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:0;min-width:1100px}
+.node{background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:12px;display:grid;gap:4px;position:relative;margin-right:22px;align-content:start}
+.node.live{border-color:var(--impact)}
 .node:not(:last-child)::after{content:"→";position:absolute;right:-19px;top:50%;transform:translateY(-50%);color:var(--brass);font:600 16px var(--f-mono)}
 .node:last-child{margin-right:0}
 .node .nt{font:600 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .node .nn{font:600 15px var(--f-display)}
 .node .ne{font-size:12.5px;color:var(--muted)}
-.node .ex{font:500 12px var(--f-mono);color:var(--impact);border-top:1px solid var(--rule);padding-top:6px;margin-top:4px}
+.node .ex{font:500 11.5px var(--f-mono);border-top:1px solid var(--rule);padding-top:6px;margin-top:4px}
+.node.live .ex{color:var(--impact)}
 .agents{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
-.agent{background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:14px;display:grid;gap:6px}
+.agent{background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:14px;display:grid;gap:6px;align-content:start}
 .agent .an{font:600 14px var(--f-body)}
+.agent .aid{font:500 11px var(--f-mono);color:var(--muted)}
 .agent p{font-size:13.5px;color:var(--muted)}
 .guard{background:var(--keel);color:var(--keel-fg);border-radius:10px;padding:18px;display:grid;gap:10px}
 .guard ul{margin:0;padding-left:18px;display:grid;gap:6px;font-size:14px}
 .guard h3{color:var(--keel-fg)}
 .note{font-size:12.5px;color:var(--muted)}
 @media (max-width:640px){h2{font-size:21px}}
-@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
-html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 </style>
 
 <div class="wrap">
 <header class="top">
   <span class="eyebrow">Keel &amp; North Star · operating model</span>
   <h1>Keel-to-PLM Operating Flow</h1>
-  <p class="lede">How governed meaning leaves the keel as design-time inputs for Fivetran, dbt models, the dbt Semantic Layer and LangGraph agents, how each component is measured from design time through run time, and how those measures land in the PLM as compliance, risk and impact evidence traced up to products and services, operational services, the strategy map and corporate values.</p>
+  <p class="lede">How governed meaning is authored in the governance workbench, compiled from the keel into Fivetran, dbt models, the dbt Semantic Layer and LangGraph agents, measured from design time through run time, and recorded in the PLM. Every rule, constraint, calculation, agent and microservice is mapped onto Insperity's business operating model, so a change can be traced to the domains, business services and processes it affects.</p>
+  <div class="toollinks">
+    <a href="https://claude.ai/artifact/Fyf4a8jVGgBrLbkAuDVUFv" target="_blank" rel="noopener">Rules &amp; Standards Map ↗</a>
+    <a href="https://claude.ai/artifact/BzAWvkVadS2h1mmUAMqNHR" target="_blank" rel="noopener">SSOT Editor ↗</a>
+    <a href="https://claude.ai/artifact/XaWZRRxCDcC4gg7Y4s8nv6" target="_blank" rel="noopener">Agent &amp; Service Map ↗</a>
+  </div>
 </header>
 
 <nav class="toc" aria-label="Sections">
   <a href="#flow">End-to-end flow</a>
   <a href="#inputs">Keel inputs</a>
+  <a href="#impact">Business impact tracer</a>
   <a href="#measures">Measurement register</a>
   <a href="#plm">PLM scoring</a>
-  <a href="#impact">Causal impact</a>
+  <a href="#causal">Causal chain</a>
 </nav>
 
 <section id="flow">
   <h2>End-to-end flow</h2>
-  <p class="lede">Read left to right. The keel compiles into each component's native artifacts at design time. Every cell emits measures, shown as tags, that the PLM band collects at the gate beneath it. Select a cell for its keel inputs, activities and measures.</p>
+  <p class="lede">Read left to right. The three workbench tools author, approve and release keel assets. GOV-019 compiles released assets into each component's native artifacts. Every cell emits measures, shown as tags, that the PLM gate beneath it collects. The bottom band is the business operating model that every asset maps to. Select a cell for its keel inputs, activities and measures.</p>
   <div class="legend">
     <span><i class="dot C"></i>Compliance measure</span>
     <span><i class="dot R"></i>Risk measure</span>
     <span><i class="dot I"></i>Impact measure</span>
+    <span><i class="dot W"></i>Governance workbench</span>
   </div>
-  <div class="scroll"><div class="flow" id="flowGrid" role="grid" aria-label="Component by lifecycle stage"></div></div>
+  <div class="scroll"><div class="flow" id="flowGrid" aria-label="Lifecycle flow by tool and component"></div></div>
   <div class="detail" id="detail" aria-live="polite"></div>
 </section>
 
 <section id="inputs">
   <h2>Keel inputs by component</h2>
-  <p class="lede">What each keel asset becomes when the GOV-019 pipeline compiles it for a component. Teams consume these as generated files and specs; none of them is hand-authored in the target tool. The last row is what ties every component to the impact chain.</p>
+  <p class="lede">What each keel asset becomes for each tool and component. The workbench columns show where the asset is authored and governed. The component columns show what GOV-019 generates; teams don't hand-author these in the target tool. The last row ties every asset to the business operating model.</p>
   <div class="scroll tbl"><table class="matrix" id="inputTbl"></table></div>
+</section>
+
+<section id="impact">
+  <h2>Business impact tracer</h2>
+  <p class="lede">Pick a rule, constraint, calculation, agent or microservice from the SSOT and the Agent &amp; Service Map. The tracer follows the register's own links to the business domains, services and processes that consume it, lists the measures that will show the effect, and drafts the assessment the Impact summarization agent would put in front of a reviewer. Or select a process on the map to see everything that governs it.</p>
+  <div class="tracer">
+    <div class="panel" id="tracePanel">
+      <div class="picker">
+        <h4>Asset to trace</h4>
+        <div class="row">
+          <label class="count" for="pType">Type</label>
+          <select id="pType">
+            <option value="rule">Rule</option><option value="con">Constraint</option><option value="calc">Calculation</option><option value="Agent">Agent</option><option value="Microservice">Microservice</option>
+          </select>
+          <label class="count" for="pChange">Change class</label>
+          <select id="pChange"><option value="PATCH">Patch · benign</option><option value="MINOR" selected>Minor · material</option><option value="MAJOR">Major · breaking</option></select>
+        </div>
+        <div class="row">
+          <label class="count" for="pFilter">Find</label>
+          <input type="search" id="pFilter" placeholder="ID or name" style="flex:0 1 160px">
+          <select id="pItem" aria-label="Asset"></select>
+        </div>
+        <div class="quick" id="quick"></div>
+      </div>
+      <div id="traceOut" aria-live="polite"></div>
+    </div>
+    <div class="panel">
+      <h4>Business operating model</h4>
+      <div class="legend">
+        <span><span class="prov d">register</span> declared in the SSOT or agent registry</span>
+        <span><span class="prov c">via</span> carried by a consumer or referenced rule</span>
+        <span><span class="prov p">proposed</span> mapping to confirm</span>
+      </div>
+      <div class="bom" id="bomMap"></div>
+    </div>
+  </div>
 </section>
 
 <section id="measures">
   <h2>Measurement register</h2>
-  <p class="lede">Every measure has one owner component, the stage where it is taken, the PLM gate it gives evidence to, and the scores it feeds. Thresholds live in the SSOT as constraints, so a change to a threshold goes through the same Draft → Candidate → Approved → Released workflow as any rule.</p>
+  <p class="lede">Every measure has one owner, the stage where it is taken, the PLM gate it gives evidence to, and the scores it feeds. Thresholds live in the SSOT as constraints, so a threshold change goes through the same Draft → Candidate → Approved → Released workflow as any rule.</p>
   <div class="filters">
-    <label for="fComp">Component</label>
+    <label for="fComp">Owner</label>
     <select id="fComp"><option value="">All</option></select>
     <label for="fTime">When</label>
     <select id="fTime"><option value="">Design and run time</option><option value="Design">Design time</option><option value="Release">Release</option><option value="Run">Run time</option></select>
@@ -191,38 +305,39 @@ html{scroll-behavior:smooth}
 
 <section id="plm">
   <h2>How measures become PLM scores</h2>
-  <p class="lede">Each component version is a PLM item. Measures attach to it as gate evidence. The three scores roll up along the same business-model graph that carries impact, so a strategy objective shows its projected value next to the compliance and risk of every component behind it.</p>
+  <p class="lede">Each asset version and component version is a PLM item. Measures attach to it as gate evidence. All three scores roll up the business operating model, the same graph the impact tracer walks, so a business service shows its compliance, its risk and its projected impact side by side.</p>
   <div class="scores">
-    <div class="sc C"><h3>Compliance</h3><p>Share of conformance checks passed against keel rules, standards and contracts, weighted by rule severity in the SSOT. Computed per component version, then rolled up by holon.</p><span class="from">from F-01–03 · T-01–04 · S-01 · A-01 · A-03 · A-06 · A-07</span></div>
-    <div class="sc R"><h3>Risk</h3><p>Severity × likelihood of open findings: drift, escaped defects, shadow metrics, circuit-breaker trips, reviewer overrides. Open findings feed the PLM defect burndown and stay attached to the gate until closed.</p><span class="from">from F-02 · F-04–05 · T-03 · T-05 · S-02–03 · A-02 · A-04–05 · X-02</span></div>
-    <div class="sc I"><h3>Impact</h3><p>Projected and realized value propagated from the component through operational services and products to strategy objectives and values. Every figure carries its determinism ratio, so estimated paths are never reported as realized.</p><span class="from">from F-04 · S-04 · A-01 · A-08 · X-01 · causal engine</span></div>
+    <div class="sc C"><h3>Compliance</h3><p>Share of conformance checks passed against keel rules, standards, controls and contracts, weighted by rule severity in the SSOT. Computed per asset or component version, then rolled up by process, service and domain.</p><span class="from">from W-01 · W-03–05 · F-01–03 · T-01–04 · S-01 · A-01 · A-03 · A-06 · A-07</span></div>
+    <div class="sc R"><h3>Risk</h3><p>Severity × likelihood of open findings: drift, escaped defects, shadow metrics, integrity-signal failures, breaking tool changes and reviewer overrides. Open findings feed the PLM defect burndown and stay on the gate until closed.</p><span class="from">from W-06–07 · F-02 · F-04–05 · T-03 · T-05 · S-02–03 · A-02 · A-04–05 · X-02</span></div>
+    <div class="sc I"><h3>Impact</h3><p>Projected and realized value traced from the asset through processes, services and domains to products, strategy objectives and values. Every figure carries its determinism ratio, so projected paths are never reported as realized.</p><span class="from">from W-08 · F-04 · S-04 · A-01 · A-08 · X-01 · causal engine</span></div>
   </div>
   <div class="scroll tbl"><table class="reg" id="gateTbl"></table></div>
 </section>
 
-<section id="impact">
-  <h2>Causal impact, summarized by agents</h2>
-  <p class="lede">The business model lives in the keel, so the graph that supplies governance inputs also carries the impact paths. When a component version changes or its measures move, the causal engine traces it upward and an agent writes the assessment for each audience.</p>
+<section id="causal">
+  <h2>Causal chain, summarized by agents</h2>
+  <p class="lede">The business operating model lives in the keel, so the graph that supplies governance inputs also carries the impact paths. The first four links are populated from the SSOT and the agent registry today. The last three bind once Insperity's product catalog, strategy map and values are loaded as keel assets (K12).</p>
   <div class="scroll"><div class="chain" id="chain"></div></div>
-  <p class="note">The example row follows one change through the chain. Its names are illustrative placeholders; real paths come from the client's business model in the keel.</p>
   <div class="agents" id="agents"></div>
   <div class="guard">
     <h3>Guardrails on the summary</h3>
     <ul>
-      <li>Each edge in a path is marked curated (asserted in the keel, approved) or estimated (inferred by an agent). The summary reports the determinism ratio of every path it cites.</li>
-      <li>A path with any estimated edge is reported as projected, never as realized. Deterministic propagation over ungated inference is blocked by rule.</li>
-      <li>The summarization agent runs behind the AI Circuit Breaker. Claims that don't cite a path ID and its measures fail validation and route to a reviewer.</li>
-      <li>Results move a PLM item through G5 only after human sign-off, with author and approver kept separate.</li>
-      <li>Values and strategy objectives also flow down as constraints: a component that improves a metric while breaching a value-linked norm shows positive impact and an open compliance finding side by side.</li>
+      <li>Each link in a path is labelled: declared in the register, carried by a consumer or referenced rule, or a proposed mapping. The summary reports the determinism ratio of every path it cites.</li>
+      <li>A path that uses any proposed mapping is reported as projected, never as realized. Deterministic propagation over ungated inference is blocked by rule.</li>
+      <li>The summarization agent runs behind the AI Circuit Breaker. Claims that don't cite an asset ID, a path and a measure fail validation and route to a reviewer.</li>
+      <li>Results move a PLM item through G5 only after human sign-off, with author and approver kept separate (CTL-013).</li>
+      <li>Values and strategy objectives also flow down as constraints: an asset that improves a measure while breaching a value-linked norm shows positive impact and an open compliance finding side by side.</li>
     </ul>
   </div>
 </section>
 </div>
 
 <script>
+const BD={"BOM":[{"id":"CRS","name":"Client Relationship & Sales","holon":"Client Relationship Domain Holon (isp-sal)","services":[{"id":"CRS-ACQ","name":"Client acquisition","proc":[{"id":"ACQ-DIS","name":"Discover","stage":"Discover"},{"id":"ACQ-QUA","name":"Qualify","stage":"Qualify"},{"id":"ACQ-EVA","name":"Evaluate","stage":"Evaluate"},{"id":"ACQ-PRO","name":"Propose","stage":"Propose"},{"id":"ACQ-DEC","name":"Decide","stage":"Decide"},{"id":"ACQ-ONB","name":"Onboard","stage":"Onboard"}]},{"id":"CRS-KNW","name":"Sales enablement knowledge (Sales Advisor)","proc":[{"id":"KNW-C3","name":"Ingest & identify content","stage":"C3"},{"id":"KNW-C4","name":"Classify, control & enrich","stage":"C4"},{"id":"KNW-C5","name":"Map & publish to the graph","stage":"C5"},{"id":"KNW-C6","name":"Search & assemble briefs","stage":"C6"},{"id":"KNW-C7","name":"Monitor value gaps","stage":"C7"},{"id":"KNW-C8","name":"Track change & causal impact","stage":"C8"}]},{"id":"CRS-RET","name":"Client retention & experience","proc":[{"id":"RET-LOSS","name":"Retention & loss classification","stage":""},{"id":"RET-WSE","name":"Worksite employee counting","stage":""},{"id":"RET-SAT","name":"Satisfaction measurement","stage":""}]}]},{"id":"BEN","name":"Employee Benefits","holon":"Benefits Domain Holon (isp-ben)","services":[{"id":"BEN-PLN","name":"Plan design & fiduciary governance","proc":[{"id":"BEN-DIS","name":"ACA & ERISA scoping","stage":"Discover"},{"id":"BEN-DEF","name":"Plan & fiduciary structure","stage":"Define"},{"id":"BEN-DES","name":"Pricing & transparency modeling","stage":"Design"}]},{"id":"BEN-ENR","name":"Enrollment & carrier administration","proc":[{"id":"BEN-DEV","name":"Carrier feeds & pre-tax logic","stage":"Develop"},{"id":"BEN-DEL","name":"Disclosures & open enrollment","stage":"Deliver"}]},{"id":"BEN-RPT","name":"ACA, COBRA & benefits reporting","proc":[{"id":"BEN-RUN","name":"Filings, testing, QLEs & COBRA","stage":"Run"}]}]},{"id":"PAY","name":"Payroll & Tax Administration","holon":"Payroll & Tax Domain Holon (isp-pay)","services":[{"id":"PAY-SET","name":"Payroll tax setup","proc":[{"id":"PAY-DIS","name":"Tax nexus & SUTA audit","stage":"Discover"},{"id":"PAY-DEF","name":"CPEO allocation & wage baselines","stage":"Define"}]},{"id":"PAY-CAL","name":"Payroll calculation","proc":[{"id":"PAY-DES","name":"Gross-to-net & withholding rules","stage":"Design"},{"id":"PAY-DEV","name":"Overtime & garnishment engines","stage":"Develop"}]},{"id":"PAY-DLV","name":"Pay delivery & tax filing","proc":[{"id":"PAY-DEL","name":"Paystubs & wage notices","stage":"Deliver"},{"id":"PAY-RUN","name":"Remittance, filings & final pay","stage":"Run"}]}]},{"id":"CMP","name":"HR Compliance & Risk Management","holon":"Compliance & Risk Domain Holon (isp-comp)","services":[{"id":"CMP-RSK","name":"Risk assessment & safety programs","proc":[{"id":"CMP-DIS","name":"Workers' comp & safety risk audit","stage":"Discover"},{"id":"CMP-DEF","name":"Safety programs & leave accrual","stage":"Define"}]},{"id":"CMP-ACC","name":"Accommodation, leave & claims","proc":[{"id":"CMP-DES","name":"Accommodation & return-to-work design","stage":"Design"},{"id":"CMP-DEV","name":"Incident, claims & leave workflows","stage":"Develop"}]},{"id":"CMP-RPT","name":"Posting, reporting & loss control","proc":[{"id":"CMP-DEL","name":"Posters & safety guidance","stage":"Deliver"},{"id":"CMP-RUN","name":"OSHA logs, loss control & claims","stage":"Run"}]},{"id":"CMP-PEO","name":"PEO accreditation & licensing","proc":[{"id":"PEO-ACR","name":"CPEO & ESAC accreditation","stage":""},{"id":"PEO-LIC","name":"Licensing & statutory allocation","stage":""}]}]},{"id":"TAL","name":"Talent Management & Development","holon":"Talent Domain Holon (isp-tal)","services":[{"id":"TAL-JOB","name":"Job & hiring design","proc":[{"id":"TAL-DIS","name":"Hiring workflow assessment","stage":"Discover"},{"id":"TAL-DEF","name":"Job architecture & pay ranges","stage":"Define"}]},{"id":"TAL-SEL","name":"Selection & screening","proc":[{"id":"TAL-DES","name":"AEDT bias audit & appraisal criteria","stage":"Design"},{"id":"TAL-DEV","name":"Background checks & training tracks","stage":"Develop"}]},{"id":"TAL-VER","name":"Verification, training & workforce reporting","proc":[{"id":"TAL-DEL","name":"I-9, notices & compliance training","stage":"Deliver"},{"id":"TAL-RUN","name":"EEO-1 & pay data reporting","stage":"Run"}]}]},{"id":"TEC","name":"HR Technology","holon":"HR Technology Domain Holon (isp-tech)","services":[{"id":"TEC-GOV","name":"Client data & access governance","proc":[{"id":"TEC-DIS","name":"Client data flow inventory","stage":"Discover"},{"id":"TEC-DEF","name":"Classification & access baselines","stage":"Define"}]},{"id":"TEC-ENG","name":"Secure platform engineering","proc":[{"id":"TEC-DES","name":"Tenant isolation & audit design","stage":"Design"},{"id":"TEC-DEV","name":"Secure pipelines & masking","stage":"Develop"}]},{"id":"TEC-OPS","name":"Client portal & security operations","proc":[{"id":"TEC-DEL","name":"Portals, disclosures & onboarding","stage":"Deliver"},{"id":"TEC-RUN","name":"Access reviews, monitoring & retention","stage":"Run"}]}]},{"id":"ENT","name":"Enterprise Governance (shared)","holon":"Enterprise (L4) · L3 Gateway · Lateral Mediation","services":[{"id":"ENT-GOD","name":"Governance on demand","proc":[{"id":"GOD-DT","name":"Design-time governance","stage":"DT"},{"id":"GOD-RT","name":"Run-time enforcement","stage":"RT"}]},{"id":"ENT-CTL","name":"Control conformance","proc":[{"id":"CTL-DT","name":"Design-time governance","stage":"DT"},{"id":"CTL-RT","name":"Run-time enforcement","stage":"RT"}]},{"id":"ENT-DEC","name":"Decision governance","proc":[{"id":"DEC-DT","name":"Design-time governance","stage":"DT"},{"id":"DEC-RT","name":"Run-time enforcement","stage":"RT"}]},{"id":"ENT-AIG","name":"AI & agent governance","proc":[{"id":"AIG-DT","name":"Design-time governance","stage":"DT"},{"id":"AIG-RT","name":"Run-time enforcement","stage":"RT"}]},{"id":"ENT-EVT","name":"Event orchestration","proc":[{"id":"EVT-DT","name":"Design-time governance","stage":"DT"},{"id":"EVT-RT","name":"Run-time enforcement","stage":"RT"}]},{"id":"ENT-GOV","name":"Semantic & architecture governance","proc":[{"id":"GOV-DT","name":"Design-time governance","stage":"DT"},{"id":"GOV-RT","name":"Run-time enforcement","stage":"RT"}]}]}],"RULES":[["PAY-001","Federal FLSA Exemption Salary Threshold & Duties Test","Payroll & Tax","Run","Register",[["PAY-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-002","State Exemption Salary Thresholds Override Federal","Payroll & Tax","Run","Register",[["PAY-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-003","DOL Multi-Factor Economic Reality Test","Payroll & Tax","Run","Register",[["PAY-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-004","State 'ABC' Test for Contractor Status","Payroll & Tax","Run","Register",[["PAY-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-005","California Daily Overtime - Tier 1","Payroll & Tax","Run","Register",[["PAY-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-006","California Daily Overtime - Tier 2 (Double-Time)","Payroll & Tax","Run","Register",[["PAY-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-007","Alaska & Nevada Daily/24-Hour Overtime Rules","Payroll & Tax","Run","Register",[["PAY-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-008","Federal Weekly Overtime (FLSA 40-hour rule)","Payroll & Tax","Run","Register",[["PAY-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-009","Predictive Scheduling / Fair Workweek Laws","Payroll & Tax","Design/Develop","Register",[["PAY-DEV","d"],["PAY-DES","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-010","Meal & Rest Period Penalty Pay","Payroll & Tax","Run","Register",[["PAY-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-011","Multi-State Wage Base & Reciprocal Tax Agreement Logic","Payroll & Tax","Design","Register",[["PAY-DES","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-012","SUTA Experience Rating Transfer / Allocation","Payroll & Tax","Discover/Design","Register",[["PAY-DES","d"],["PAY-DIS","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-013","State Income Tax (SIT) Withholding by Jurisdiction","Payroll & Tax","Run","Register",[["PAY-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-014","Local/Municipal Withholding Tax Ordinances","Payroll & Tax","Run","Register",[["PAY-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-015","Local Business Registration Nexus Trigger","Payroll & Tax","Discover","Register",[["PAY-DIS","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-016","Tip Credit Accounting","Payroll & Tax","Develop","Register",[["PAY-DEV","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-017","Court-Ordered Garnishment Priority Engine","Payroll & Tax","Develop","Register",[["PAY-DEV","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-018","State Wage Theft Prevention Act - Paystub Itemization","Payroll & Tax","Deliver","Register",[["PAY-DEL","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-019","Direct Deposit Mandate Compliance","Payroll & Tax","Deliver","Register",[["PAY-DEL","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-020","Wage Notice Distribution","Payroll & Tax","Deliver","Register",[["PAY-DEL","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-021","Federal Form 941 Quarterly Filing","Payroll & Tax","Run","Register",[["PAY-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-022","Annual W-2 / 1099-MISC / 1099-NEC Generation","Payroll & Tax","Run","Register",[["PAY-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-023","Quarterly CPEO Tax Attestations","Payroll & Tax","Run","Register",[["PAY-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-024","Surety Bond Maintenance","Payroll & Tax","Run","Register",[["PAY-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-025","Final Pay Upon Separation - State Timing Rules","Payroll & Tax","Run","Register",[["PAY-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-026","State/Local Minimum Wage Baseline","Payroll & Tax","Define/Run","Register",[["PAY-RUN","d"],["PAY-DEF","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-027","SUTA/FUTA Annual Wage Base Ceiling","Payroll & Tax","Run","Register",[["PAY-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-028","Simplex Action Gate - High-Value Batch Tax Remittance","Payroll & Tax","Run","Register",[["PAY-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["PAY-029","Unsafe Control Action (UCA) Verification on Gross-to-Net","Payroll & Tax","Run","Register",[["PAY-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["BEN-001","Applicable Large Employer (ALE) Determination","Benefits","Discover","Register",[["BEN-DIS","d"],["KNW-C5","u"],["KNW-C6","u"]]],["BEN-002","Look-Back Measurement Method for Variable-Hour Employees","Benefits","Design","Register",[["BEN-DES","d"],["KNW-C5","u"],["KNW-C6","u"]]],["BEN-003","Affordability Safe Harbor Calculation","Benefits","Design","Register",[["BEN-DES","d"],["KNW-C5","u"],["KNW-C6","u"]]],["BEN-004","Annual IRS Form 1094-C/1095-C Generation","Benefits","Run","Register",[["BEN-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["BEN-005","Master Plan Document / MEP-PEP Fiduciary Structure","Benefits","Define","Register",[["BEN-DEF","d"],["KNW-C5","u"],["KNW-C6","u"]]],["BEN-006","Form 5500 Annual Filing","Benefits","Run","Register",[["BEN-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["BEN-007","SPD & SMM Disclosure","Benefits","Deliver","Register",[["BEN-DEL","d"],["KNW-C5","u"],["KNW-C6","u"]]],["BEN-008","Annual Non-Discrimination Testing (NDT)","Benefits","Run","Register",[["BEN-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["BEN-009","Mandatory Automatic Enrollment/Escalation","Benefits","Define","Register",[["BEN-DEF","d"],["KNW-C5","u"],["KNW-C6","u"]]],["BEN-010","Long-Term Part-Time (LTPT) Employee Eligibility Tracking","Benefits","Define","Register",[["BEN-DEF","d"],["KNW-C5","u"],["KNW-C6","u"]]],["BEN-011","Emergency Savings Account Integration","Benefits","Define","Register",[["BEN-DEF","d"],["KNW-C5","u"],["KNW-C6","u"]]],["BEN-012","Machine-Readable File (MRF) Disclosure","Benefits","Design","Register",[["BEN-DES","d"],["KNW-C5","u"],["KNW-C6","u"]]],["BEN-013","Pharmacy Benefit Reporting (RxDC)","Benefits","Run","Register",[["BEN-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["BEN-014","MHPAEA Comparative Analysis","Benefits","Design","Register",[["BEN-DES","d"],["KNW-C5","u"],["KNW-C6","u"]]],["BEN-015","Qualifying Event Notification & Premium Billing","Benefits","Deliver/Run","Register",[["BEN-RUN","d"],["BEN-DEL","d"],["KNW-C5","u"],["KNW-C6","u"]]],["BEN-016","HIPAA Privacy/Security Rules for Self-Funded Plans","Benefits","Run","Register",[["BEN-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["BEN-017","Cafeteria Plan Pretax Elections","Benefits","Define","Register",[["BEN-DEF","d"],["KNW-C5","u"],["KNW-C6","u"]]],["BEN-018","FSA/HSA Contribution Limit Validation","Benefits","Develop","Register",[["BEN-DEV","d"],["KNW-C5","u"],["KNW-C6","u"]]],["BEN-019","Carrier EDI 834 Enrollment Feed Integration","Benefits","Develop","Register",[["BEN-DEV","d"],["KNW-C5","u"],["KNW-C6","u"]]],["BEN-020","Summary of Benefits and Coverage (SBC) Distribution","Benefits","Deliver","Register",[["BEN-DEL","d"],["KNW-C5","u"],["KNW-C6","u"]]],["BEN-021","Open Enrollment Self-Service Workflow","Benefits","Deliver","Register",[["BEN-DEL","d"],["KNW-C5","u"],["KNW-C6","u"]]],["BEN-022","Qualifying Life Event (QLE) Processing","Benefits","Run","Register",[["BEN-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["CMP-001","OSHA Form 300/300A/301 Electronic Submission","Compliance & Risk","Run","Register",[["CMP-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["CMP-002","High-Hazard Industry / Covered Size Determination","Compliance & Risk","Discover","Register",[["CMP-DIS","d"],["KNW-C5","u"],["KNW-C6","u"]]],["CMP-003","CA SB 553 Workplace Violence Prevention Plan","Compliance & Risk","Define","Register",[["CMP-DEF","d"],["KNW-C5","u"],["KNW-C6","u"]]],["CMP-004","Violent Incident Log Maintenance","Compliance & Risk","Run","Register",[["CMP-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["CMP-005","Annual Workplace Violence Prevention Training","Compliance & Risk","Deliver","Register",[["CMP-DEL","d"],["KNW-C5","u"],["KNW-C6","u"]]],["CMP-006","State Heat Illness Prevention Procedures","Compliance & Risk","Run","Register",[["CMP-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["CMP-007","Master-Policy Underwriting & Multi-State Risk Pooling","Compliance & Risk","Run","Register",[["CMP-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["CMP-008","Drug-Free Workplace Policy Administration","Compliance & Risk","Define","Register",[["CMP-DEF","d"],["KNW-C5","u"],["KNW-C6","u"]]],["CMP-009","Light-Duty / Return-to-Work Accommodation Tracking","Compliance & Risk","Run","Register",[["CMP-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["CMP-010","Workers' Comp Class Codes / NCCI Mapping","Compliance & Risk","Discover","Register",[["CMP-DIS","d"],["KNW-C5","u"],["KNW-C6","u"]]],["CMP-011","ADA Interactive Accommodation Process","Compliance & Risk","Design","Register",[["CMP-DES","d"],["KNW-C5","u"],["KNW-C6","u"]]],["CMP-012","Pregnant Workers Fairness Act (PWFA) Accommodation Workflow","Compliance & Risk","Design","Register",[["CMP-DES","d"],["KNW-C5","u"],["KNW-C6","u"]]],["CMP-013","PUMP Act Lactation Accommodation Policy","Compliance & Risk","Design","Register",[["CMP-DES","d"],["KNW-C5","u"],["KNW-C6","u"]]],["CMP-014","State Religious/Disability Interactive Process Variants","Compliance & Risk","Design","Register",[["CMP-DES","d"],["KNW-C5","u"],["KNW-C6","u"]]],["CMP-015","Digital First Notice of Loss (FNOL) / Claims Intake","Compliance & Risk","Develop","Register",[["CMP-DEV","d"],["KNW-C5","u"],["KNW-C6","u"]]],["CMP-016","FMLA + State PFML Leave Coordination Logic","Compliance & Risk","Develop","Register",[["CMP-DEV","d"],["KNW-C5","u"],["KNW-C6","u"]]],["CMP-017","Mandatory Labor Law E-Posting Compliance","Compliance & Risk","Deliver","Register",[["CMP-DEL","d"],["KNW-C5","u"],["KNW-C6","u"]]],["CMP-018","State PFML Withholding, Reporting & Claims Administration","Compliance & Risk","Run","Register",[["CMP-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["CMP-019","Statutory Paid Sick Leave (PSL) Accrual/Carryover/Front-Loading","Compliance & Risk","Define","Register",[["CMP-DEF","d"],["KNW-C5","u"],["KNW-C6","u"]]],["CMP-020","Statutory Bereavement Leave Tracking","Compliance & Risk","Define","Register",[["CMP-DEF","d"],["KNW-C5","u"],["KNW-C6","u"]]],["CMP-021","Annual OSHA Log Certification & Submission","Compliance & Risk","Run","Register",[["CMP-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["CMP-022","Client Loss-Control Safety Audits","Compliance & Risk","Run","Register",[["CMP-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["TAL-001","Title VII / ADEA / GINA Hiring Screen","Talent Management","Discover","Register",[["TAL-DIS","d"],["KNW-C5","u"],["KNW-C6","u"]]],["TAL-002","EEOC Uniform Guidelines on Employee Selection Procedures","Talent Management","Discover","Register",[["TAL-DIS","d"],["KNW-C5","u"],["KNW-C6","u"]]],["TAL-003","Automated Employment Decision Tool (AEDT) Bias Audit","Talent Management","Design","Register",[["TAL-DES","d"],["KNW-C5","u"],["KNW-C6","u"]]],["TAL-004","AEDT Candidate Disclosure Notice","Talent Management","Design","Register",[["TAL-DES","d"],["KNW-C5","u"],["KNW-C6","u"]]],["TAL-005","State Salary Range Disclosure on Job Postings","Talent Management","Define","Register",[["TAL-DEF","d"],["KNW-C5","u"],["KNW-C6","u"]]],["TAL-006","Wage History Ban Enforcement","Talent Management","Deliver","Register",[["TAL-DEL","d"],["KNW-C5","u"],["KNW-C6","u"]]],["TAL-007","Standardized Job Description with FLSA Duties Test","Talent Management","Define","Register",[["TAL-DEF","d"],["KNW-C5","u"],["KNW-C6","u"]]],["TAL-008","Non-Discriminatory Hiring Rubric Standardization","Talent Management","Define","Register",[["TAL-DEF","d"],["KNW-C5","u"],["KNW-C6","u"]]],["TAL-009","Standardized Performance Appraisal Criteria","Talent Management","Design","Register",[["TAL-DES","d"],["KNW-C5","u"],["KNW-C6","u"]]],["TAL-010","FCRA-Compliant Background Check Consent Workflow","Talent Management","Develop","Register",[["TAL-DEV","d"],["KNW-C5","u"],["KNW-C6","u"]]],["TAL-011","Pre-Adverse / Adverse Action Notice Sequencing","Talent Management","Develop","Register",[["TAL-DEV","d"],["KNW-C5","u"],["KNW-C6","u"]]],["TAL-012","Statutory Sexual Harassment Prevention Training Cadence","Talent Management","Develop/Deliver","Register",[["TAL-DEV","d"],["TAL-DEL","d"],["KNW-C5","u"],["KNW-C6","u"]]],["TAL-013","Supervisor vs. Non-Supervisor Differentiated Training Tracks","Talent Management","Develop","Register",[["TAL-DEV","d"],["KNW-C5","u"],["KNW-C6","u"]]],["TAL-014","Form I-9 / E-Verify Digital Employment Verification","Talent Management","Deliver","Register",[["TAL-DEL","d"],["KNW-C5","u"],["KNW-C6","u"]]],["TAL-015","EEO-1 Component 1 Federal Reporting","Talent Management","Run","Register",[["TAL-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["TAL-016","State Pay Data Reporting","Talent Management","Run","Register",[["TAL-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["TAL-017","Mandatory Training Completion Tracking","Talent Management","Run","Register",[["TAL-RUN","d"],["KNW-C5","u"],["KNW-C6","u"]]],["TEC-001","Multi-Tenant Data Isolation Model","HR Technology","Discover/Design","Register",[["TEC-DES","d"],["TEC-DIS","d"],["KNW-C6","u"]]],["TEC-002","SOC 1 (SSAE 18) Financial Controls Attestation","HR Technology","Define/Run","Register",[["TEC-RUN","d"],["TEC-DEF","d"],["KNW-C6","u"]]],["TEC-003","SOC 2 Security/Confidentiality/Availability Attestation","HR Technology","Define/Run","Register",[["TEC-RUN","d"],["TEC-DEF","d"],["KNW-C6","u"]]],["TEC-004","HIPAA Security Rule Compliance","HR Technology","Define","Register",[["TEC-DEF","d"],["KNW-C6","u"]]],["TEC-005","Data Classification Rules (PII / PHI / Financial)","HR Technology","Define","Register",[["TEC-DEF","d"],["KNW-C6","u"]]],["TEC-006","State Data Privacy Statute Compliance (CCPA/CPRA and equivalents)","HR Technology","Design","Register",[["TEC-DES","d"],["KNW-C6","u"]]],["TEC-007","Role-Based Access Control (RBAC) Governance Baseline","HR Technology","Design","Register",[["TEC-DES","d"],["KNW-C6","u"]]],["TEC-008","Immutable Audit Log Structure","HR Technology","Design","Register",[["TEC-DES","d"],["KNW-C6","u"]]],["TEC-009","Automated Encryption Schema","HR Technology","Design","Register",[["TEC-DES","d"],["KNW-C6","u"]]],["TEC-010","Consent Tracking Module","HR Technology","Design","Register",[["TEC-DES","d"],["KNW-C6","u"]]],["TEC-011","Data Minimization Algorithm","HR Technology","Develop","Register",[["TEC-DEV","d"],["KNW-C6","u"]]],["TEC-012","Automated Masking/Tokenization","HR Technology","Develop","Register",[["TEC-DEV","d"],["KNW-C6","u"]]],["TEC-013","SSO/MFA Secure Endpoint Enforcement","HR Technology","Develop","Register",[["TEC-DEV","d"],["KNW-C6","u"]]],["TEC-014","NIST 800-53 Security Control Baseline","HR Technology","Deliver","Register",[["TEC-DEL","d"],["KNW-C6","u"]]],["TEC-015","Self-Service Portal Access & Admin Role Assignment","HR Technology","Deliver","Register",[["TEC-DEL","d"],["KNW-C6","u"]]],["TEC-016","Continuous SOC 1/SOC 2 Type II Attestation Cycle","HR Technology","Run","Register",[["TEC-RUN","d"],["KNW-C6","u"]]],["TEC-017","Vulnerability & Penetration Testing Cadence","HR Technology","Run","Register",[["TEC-RUN","d"],["KNW-C6","u"]]],["TEC-018","Periodic Access Review","HR Technology","Run","Register",[["TEC-RUN","d"],["KNW-C6","u"]]],["TEC-019","Data Retention & Destruction Schedule","HR Technology","Run","Register",[["TEC-RUN","d"],["KNW-C6","u"]]],["TEC-020","Disaster Recovery / Business Continuity (DR/BCP) Audit","HR Technology","Run","Register",[["TEC-RUN","d"],["KNW-C6","u"]]],["TEC-021","Compiled Runtime Access Policy - HIPAA PHI Read Rule","HR Technology","Run","Register",[["TEC-RUN","d"],["KNW-C6","u"]]],["PEO-001","IRS Certified PEO (CPEO) Status","PEO Operational Standards","Define/Run","Register",[["PEO-ACR","d"],["KNW-C6","u"]]],["PEO-002","CPEO Annual Independent CPA Audit","PEO Operational Standards","Run","Register",[["PEO-ACR","d"],["KNW-C6","u"]]],["PEO-003","CPEO Federal Bonding Requirement","PEO Operational Standards","Run","Register",[["PEO-ACR","d"],["KNW-C6","u"]]],["PEO-004","ESAC Accreditation - Continuous Financial Monitoring","PEO Operational Standards","Run","Register",[["PEO-ACR","d"],["KNW-C6","u"]]],["PEO-005","ESAC Client Protection Bond Maintenance","PEO Operational Standards","Run","Register",[["PEO-ACR","d"],["KNW-C6","u"]]],["PEO-006","Client Allocation Matrix - Statutory Responsibility & Liability Division","PEO Operational Standards","Define","Register",[["PEO-LIC","d"],["KNW-C6","u"]]],["PEO-007","State PEO Licensing Board Registration Compliance","PEO Operational Standards","Run","Register",[["PEO-LIC","d"],["KNW-C6","u"]]],["GOV-001","Definition-Time vs Run-Time Separation","Governance & Architecture","Design-Time/Run-Time","Register",[["GOV-DT","d"],["GOV-RT","d"]]],["GOV-002","Enterprise Semantic Governance Council & CoE Oversight","Governance & Architecture","Design-Time","Register",[["GOV-DT","d"]]],["GOV-003","DEV/STG/PRD Ontology Lifecycle Gate","Governance & Architecture","Design-Time","Register",[["GOV-DT","d"]]],["GOV-004","Core Entity Model Definition","Governance & Architecture","Design-Time","Register",[["GOV-DT","d"]]],["GOV-005","Domain Ontology Federation via owl:imports","Governance & Architecture","Design-Time","Register",[["GOV-DT","d"]]],["GOV-006","Persistent Mapping Graph - Correspondence & Anti-Drift Lineage","Governance & Architecture","Design-Time","Register",[["GOV-DT","d"],["KNW-C5","u"]]],["GOV-007","Identity & URI Resolution Registry","Governance & Architecture","Design-Time","Register",[["GOV-DT","d"]]],["GOV-008","Rule Harmonization Engine - Cross-Jurisdiction Conflict Detection","Governance & Architecture","Design-Time","Register",[["GOV-DT","d"],["KNW-C5","u"]]],["GOV-009","Most-Stringent-Rule / Highest-Employee-Protection Precedence Principle","Governance & Architecture","Design-Time","Register",[["GOV-DT","d"],["KNW-C6","u"]]],["GOV-010","RAG Anchor Index - Vector Embedding Grounding","Governance & Architecture","Design-Time","Register",[["GOV-DT","d"]]],["GOV-011","Requirement Context Bundle (RCB) - 5D Request Decomposition","Governance & Architecture","Run-Time","Register",[["GOV-RT","d"],["KNW-C6","u"]]],["GOV-012","Policy Enforcement Points (PEPs)","Governance & Architecture","Run-Time","Register",[["GOV-RT","d"],["KNW-C6","u"]]],["GOV-013","STPA/STAMP Unsafe Control Action (UCA) Verification","Governance & Architecture","Run-Time","Register",[["GOV-RT","d"],["KNW-C6","u"]]],["GOV-014","Circuit Breaker & MTBH Monitoring","Governance & Architecture","Run-Time","Register",[["GOV-RT","d"],["KNW-C6","u"]]],["GOV-015","Simplex Action Gate - Irreversible/Destructive Action Interception","Governance & Architecture","Run-Time","Register",[["GOV-RT","d"],["KNW-C6","u"]]],["GOV-016","Simplex Action Gate Threshold - Batch Tax Remittance Example","Governance & Architecture","Run-Time","Register",[["GOV-RT","d"],["KNW-C6","u"]]],["GOV-017","LKIF Deontic Norm + SHACL Shape Dual Representation","Governance & Architecture","Design-Time","Register",[["GOV-DT","d"]]],["GOV-018","Provenance & Change Management - ORSD + KGCL Metadata","Governance & Architecture","Design-Time","Register",[["GOV-DT","d"],["KNW-C5","u"]]],["GOV-019","6-Stage SHACL-to-Policy Compilation Pipeline","Governance & Architecture","Design-Time to Run-Time","Register",[["GOV-DT","d"],["GOV-RT","d"]]],["GOV-020","Dual Runtime Target Compilation","Governance & Architecture","Run-Time","Register",[["GOV-RT","d"]]],["GOV-021","AI Agent Guardrails - Compiled JSON Schema Constraints","Governance & Architecture","Run-Time","Register",[["GOV-RT","d"],["KNW-C6","u"]]],["GOV-022","Complete Audit Traceability via Immutable URI","Governance & Architecture","Run-Time","Register",[["GOV-RT","d"],["KNW-C6","u"]]],["GOV-023","Single Source of Truth (SSOT) Propagation","Governance & Architecture","Design-Time to Run-Time","Register",[["GOV-DT","d"],["GOV-RT","d"]]],["GOV-024","Zero Graph Latency Runtime Principle","Governance & Architecture","Run-Time","Register",[["GOV-RT","d"]]],["MET-001","Client Loss Dated at Last Payroll Processed","Analytics & Measurement","Define","Proposed (demo)",[["RET-LOSS","d"]]],["MET-002","Transfers Between Client Holons Are Not Losses","Analytics & Measurement","Define","Proposed (demo)",[["RET-LOSS","d"]]],["MET-003","First-90-Day Exits Classified as Onboarding Fallout","Analytics & Measurement","Define","Proposed (demo)",[["RET-LOSS","d"]]],["MET-004","HR360 to HRScale Migrations Are Product Moves","Analytics & Measurement","Define","Proposed (demo)",[["RET-LOSS","d"]]],["MET-005","Retention Roll-Up Uses Ratio of Sums","Analytics & Measurement","Design-Time","Proposed (demo)",[["RET-LOSS","d"]]],["MET-006","Paid Worksite Employee Definition","Analytics & Measurement","Define","Proposed (demo)",[["RET-WSE","d"]]],["MET-007","Period WSE Value Is the Average of Monthly Counts","Analytics & Measurement","Define","Proposed (demo)",[["RET-WSE","d"]]],["MET-008","COBRA-Only Participants and 1099 Contractors Excluded from WSE Counts","Analytics & Measurement","Define","Proposed (demo)",[["RET-WSE","d"]]],["MET-009","Survey Response Window: 7 Days From Case Close","Analytics & Measurement","Define","Proposed (demo)",[["RET-SAT","d"]]],["MET-010","One Response per Case, Latest Wins","Analytics & Measurement","Design-Time","Proposed (demo)",[["RET-SAT","d"]]],["MET-011","Satisfied Means Top-Two Box (4 or 5)","Analytics & Measurement","Define","Proposed (demo)",[["RET-SAT","d"]]],["MET-012","Satisfaction Roll-Up Weighted by Responses","Analytics & Measurement","Design-Time","Proposed (demo)",[["RET-SAT","d"]]],["MET-013","Small-Cut Suppression (k >= 5)","Analytics & Measurement","Run-Time","Proposed (demo)",[["CRS-RET","d"]]],["MET-014","Decisions Must Bind Outcomes to Released Metric Cards","Analytics & Measurement","Run","Proposed (demo)",[["CRS-RET","d"],["KNW-C6","u"]]],["EXT-001","Canonical Content Identity","Sales Advisor Content","Design-Time/Run-Time","Proposed (Sales Advisor)",[["KNW-C3","d"]]],["EXT-002","Classification Confidence Floor","Sales Advisor Content","Run","Proposed (Sales Advisor)",[["KNW-C4","d"]]],["EXT-003","PII and Consent Gate","Sales Advisor Content","Run","Proposed (Sales Advisor)",[["KNW-C4","d"]]],["EXT-004","Third-Party Content Use","Sales Advisor Content","Run","Proposed (Sales Advisor)",[["KNW-C3","d"],["KNW-C4","d"]]],["EXT-005","Freshness and Expiry by Content Type","Sales Advisor Content","Run","Proposed (Sales Advisor)",[["KNW-C4","d"],["KNW-C8","d"]]],["EXT-006","Persona Entitlements","Sales Advisor Content","Run","Proposed (Sales Advisor)",[["KNW-C4","d"],["KNW-C6","d"]]],["EXT-007","Claim Span Traceability","Sales Advisor Content","Run","Proposed (Sales Advisor)",[["KNW-C4","d"]]],["EXT-008","Regulatory Claims Bind to SSOT Rules","Sales Advisor Content","Run","Proposed (Sales Advisor)",[["KNW-C5","d"]]],["EXT-009","Mapping Correspondence Minimum","Sales Advisor Content","Run","Proposed (Sales Advisor)",[["KNW-C5","d"]]],["EXT-010","RDF Shape Conformance","Sales Advisor Content","Design-Time/Run-Time","Proposed (Sales Advisor)",[["KNW-C5","d"]]],["EXT-011","Federated Query Scope","Sales Advisor Content","Run","Proposed (Sales Advisor)",[["KNW-C6","d"]]],["EXT-012","Grounding Threshold for Briefs","Sales Advisor Content","Run","Proposed (Sales Advisor)",[["KNW-C6","d"]]],["EXT-013","Brief Composition","Sales Advisor Content","Run","Proposed (Sales Advisor)",[["KNW-C6","d"]]],["EXT-014","Decisions Bind Desired Outcomes","Sales Advisor Content","Run","Proposed (Sales Advisor)",[["KNW-C6","d"],["KNW-C7","d"]]],["EXT-015","Value-Gap and Causal Method","Sales Advisor Content","Run","Proposed (Sales Advisor)",[["KNW-C7","d"],["KNW-C8","d"]]],["EXT-016","Incremental Refresh Scope","Sales Advisor Content","Run","Proposed (Sales Advisor)",[["KNW-C8","d"]]],["GOD-001","Policy Decision Request Contract","Governance on Demand","Run","Proposed (Sales Advisor)",[["GOD-RT","d"],["KNW-C6","u"]]],["GOD-002","Rule Version Pinning","Governance on Demand","Run","Proposed (Sales Advisor)",[["GOD-RT","d"]]],["GOD-003","Bitemporal Effective Dating","Governance on Demand","Run","Proposed (Sales Advisor)",[["GOD-RT","d"]]],["GOD-004","Explanation Obligation","Governance on Demand","Run","Proposed (Sales Advisor)",[["GOD-RT","d"],["KNW-C6","u"]]],["GOD-005","Time-Boxed Policy Waivers","Governance on Demand","Run","Proposed (Sales Advisor)",[["GOD-RT","d"]]],["GOD-006","Compiled Policy Test Gate","Governance on Demand","Design-Time","Proposed (Sales Advisor)",[["GOD-DT","d"]]],["GOD-007","Rule Ownership and Review Cadence","Governance on Demand","Run","Proposed (Sales Advisor)",[["GOD-RT","d"]]],["GOD-008","Pre-Release Impact Check","Governance on Demand","Design-Time","Proposed (Sales Advisor)",[["GOD-DT","d"]]],["GOD-009","Policy Decision Latency and Fail-Closed","Governance on Demand","Run","Proposed (Sales Advisor)",[["GOD-RT","d"],["KNW-C6","u"]]],["GOD-010","Jurisdiction Resolution for Requests","Governance on Demand","Run","Proposed (Sales Advisor)",[["GOD-RT","d"],["KNW-C6","u"]]],["CTL-001","Obligation-to-Control Mapping","Control Conformance","Define","Proposed (Sales Advisor)",[["CTL-DT","d"]]],["CTL-002","Automated Control Tests and Findings","Control Conformance","Run","Proposed (Sales Advisor)",[["CTL-RT","d"]]],["CTL-003","Control Evidence Retention","Control Conformance","Run","Proposed (Sales Advisor)",[["CTL-RT","d"]]],["CTL-004","Statement of Applicability for the Advisor","Control Conformance","Define","Proposed (Sales Advisor)",[["CTL-DT","d"]]],["CTL-005","Third-Party Source and Model Provider Due Diligence","Control Conformance","Define","Proposed (Sales Advisor)",[["CTL-DT","d"],["KNW-C6","u"]]],["CTL-006","Secure Agent Development Lifecycle","Control Conformance","Develop","Proposed (Sales Advisor)",[["CTL-DT","d"],["KNW-C5","u"],["KNW-C6","u"]]],["CTL-007","Agent Action Logging","Control Conformance","Run","Proposed (Sales Advisor)",[["CTL-RT","d"],["KNW-C6","u"]]],["CTL-008","Untrusted Content Boundary","Control Conformance","Run","Proposed (Sales Advisor)",[["CTL-RT","d"],["KNW-C6","u"]]],["CTL-009","Record of Processing for Prospect Data","Control Conformance","Define","Proposed (Sales Advisor)",[["CTL-DT","d"]]],["CTL-010","No Model Training on Tenant Data","Control Conformance","Run","Proposed (Sales Advisor)",[["CTL-RT","d"],["KNW-C6","u"]]],["CTL-011","AI and Data Incident Handling","Control Conformance","Run","Proposed (Sales Advisor)",[["CTL-RT","d"]]],["CTL-012","Advisor Role Recertification","Control Conformance","Run","Proposed (Sales Advisor)",[["CTL-RT","d"],["KNW-C6","u"]]],["CTL-013","Segregation of Duties for Rules and Agents","Control Conformance","Design-Time","Proposed (Sales Advisor)",[["CTL-DT","d"],["KNW-C5","u"]]],["CTL-014","Model and Prompt Change Control","Control Conformance","Develop","Proposed (Sales Advisor)",[["CTL-DT","d"],["KNW-C6","u"]]],["CTL-015","Census Data Encryption and Masking","Control Conformance","Run","Proposed (Sales Advisor)",[["CTL-RT","d"],["KNW-C6","u"]]],["DEC-001","Decision Rights Matrix","Decision Governance","Define","Proposed (Sales Advisor)",[["DEC-DT","d"],["KNW-C6","u"]]],["DEC-002","Option Completeness","Decision Governance","Run","Proposed (Sales Advisor)",[["DEC-RT","d"],["KNW-C6","u"]]],["DEC-003","Option Evidence Sufficiency","Decision Governance","Run","Proposed (Sales Advisor)",[["DEC-RT","d"],["KNW-C6","u"]]],["DEC-004","No Automated Binding Commitments","Decision Governance","Run","Proposed (Sales Advisor)",[["DEC-RT","d"],["KNW-C6","u"]]],["DEC-005","Recommendation Neutrality and Disclosure","Decision Governance","Run","Proposed (Sales Advisor)",[["DEC-RT","d"],["KNW-C6","u"]]],["DEC-006","Immutable Decision Record","Decision Governance","Run","Proposed (Sales Advisor)",[["DEC-RT","d"],["KNW-C6","u"]]],["DEC-007","Reversibility Classification","Decision Governance","Define","Proposed (Sales Advisor)",[["DEC-DT","d"],["KNW-C6","u"]]],["DEC-008","Override With Reason","Decision Governance","Run","Proposed (Sales Advisor)",[["DEC-RT","d"],["KNW-C6","u"]]],["DEC-009","Tier-H Decision Confirmation","Decision Governance","Run","Proposed (Sales Advisor)",[["DEC-RT","d"],["KNW-C6","u"]]],["DEC-010","AI Disclosure to Personas","Decision Governance","Run","Proposed (Sales Advisor)",[["DEC-RT","d"],["KNW-C6","u"]]],["DEC-011","Adverse Outcome Explanation","Decision Governance","Run","Proposed (Sales Advisor)",[["DEC-RT","d"],["KNW-C6","u"]]],["DEC-012","Eligibility Decided by Rules Only","Decision Governance","Run","Proposed (Sales Advisor)",[["DEC-RT","d"],["KNW-C6","u"]]],["EVT-001","CloudEvents Envelope","Event Orchestration","Design-Time","Proposed (Sales Advisor)",[["EVT-DT","d"],["KNW-C6","u"]]],["EVT-002","Event Type Registry","Event Orchestration","Design-Time","Proposed (Sales Advisor)",[["EVT-DT","d"]]],["EVT-003","Idempotent Consumers","Event Orchestration","Run","Proposed (Sales Advisor)",[["EVT-RT","d"],["KNW-C6","u"]]],["EVT-004","Ordering and Causation","Event Orchestration","Run","Proposed (Sales Advisor)",[["EVT-RT","d"]]],["EVT-005","Transactional Outbox","Event Orchestration","Run","Proposed (Sales Advisor)",[["EVT-RT","d"],["KNW-C6","u"]]],["EVT-006","Saga With Compensation","Event Orchestration","Run","Proposed (Sales Advisor)",[["EVT-RT","d"],["KNW-C6","u"]]],["EVT-007","Retry and Dead-Letter","Event Orchestration","Run","Proposed (Sales Advisor)",[["EVT-RT","d"]]],["EVT-008","Deadline Events From SSOT Rules","Event Orchestration","Run","Proposed (Sales Advisor)",[["EVT-RT","d"],["KNW-C6","u"]]],["EVT-009","Event Authorization","Event Orchestration","Run","Proposed (Sales Advisor)",[["EVT-RT","d"]]],["EVT-010","References, Not Payloads","Event Orchestration","Run","Proposed (Sales Advisor)",[["EVT-RT","d"],["KNW-C6","u"]]],["EVT-011","Event Retention and Replay","Event Orchestration","Run","Proposed (Sales Advisor)",[["EVT-RT","d"]]],["EVT-012","Knowledge-Layer Change Events","Event Orchestration","Run","Proposed (Sales Advisor)",[["EVT-RT","d"]]],["EVT-013","SLA Timers and Escalation","Event Orchestration","Run","Proposed (Sales Advisor)",[["EVT-RT","d"],["KNW-C6","u"]]],["EVT-014","Rule Triggers as Event Patterns","Event Orchestration","Design-Time","Proposed (Sales Advisor)",[["EVT-DT","d"]]],["AIG-001","Agent Registry","AI Governance","Design-Time","Proposed (Sales Advisor)",[["AIG-DT","d"]]],["AIG-002","Per-Agent MTBH Circuit Breaker","AI Governance","Run","Proposed (Sales Advisor)",[["AIG-RT","d"],["KNW-C6","u"]]],["AIG-003","Hard-Trip Signals","AI Governance","Run","Proposed (Sales Advisor)",[["AIG-RT","d"],["KNW-C5","u"],["KNW-C6","u"]]],["AIG-004","Decision-Question Probes","AI Governance","Run","Proposed (Sales Advisor)",[["AIG-RT","d"]]],["AIG-005","AI System Impact Assessment","AI Governance","Define","Proposed (Sales Advisor)",[["AIG-DT","d"],["KNW-C6","u"]]],["AIG-006","Autonomy Promotion Criteria","AI Governance","Run","Proposed (Sales Advisor)",[["AIG-RT","d"],["KNW-C5","u"],["KNW-C6","u"]]],["AIG-007","Tool Allow-List and Least Privilege","AI Governance","Run","Proposed (Sales Advisor)",[["AIG-RT","d"],["KNW-C6","u"]]],["AIG-008","Integrity Fault Definition (MTBH)","AI Governance","Run","Proposed (Sales Advisor)",[["AIG-RT","d"]]],["AIG-009","Named Owner and Kill Switch","AI Governance","Run","Proposed (Sales Advisor)",[["AIG-RT","d"]]],["AIG-010","Bias Testing of Recommendations","AI Governance","Run","Proposed (Sales Advisor)",[["AIG-RT","d"],["KNW-C6","u"]]],["AIG-011","Model and Agent Cards","AI Governance","Run","Proposed (Sales Advisor)",[["AIG-RT","d"]]],["QBD-001","Decision-Question Baseline Record","Quality by Design","Define","Proposed (Sales Advisor)",[["CTL-DT","d"]]],["QBD-002","Change Severity Classification","Quality by Design","Run","Proposed (Sales Advisor)",[["CTL-RT","d"]]],["QBD-003","Risk Score and Routing","Quality by Design","Run","Proposed (Sales Advisor)",[["CTL-RT","d"]]],["QBD-004","Critical Quality Attribute Criteria","Quality by Design","Run","Proposed (Sales Advisor)",[["CTL-RT","d"],["KNW-C5","u"]]],["QBD-005","Re-baseline Approval","Quality by Design","Run","Proposed (Sales Advisor)",[["CTL-RT","d"]]],["SAL-001","Licensed Producer for Benefits Quotes","Sales Conduct","Run","Proposed (Sales Advisor)",[["ACQ-EVA","p"],["KNW-C6","u"]]],["SAL-002","Savings Claim Substantiation","Sales Conduct","Run","Proposed (Sales Advisor)",[["ACQ-EVA","p"],["ACQ-PRO","p"],["KNW-C6","u"]]],["SAL-003","Comparative Claims About Competitors","Sales Conduct","Run","Proposed (Sales Advisor)",[["ACQ-DIS","p"],["ACQ-EVA","p"],["KNW-C6","u"]]],["SAL-004","Outreach Consent and Opt-Out","Sales Conduct","Run","Proposed (Sales Advisor)",[["ACQ-DIS","p"],["KNW-C6","u"]]],["SAL-005","Indicative vs Binding Quote Authority","Sales Conduct","Run","Proposed (Sales Advisor)",[["ACQ-EVA","p"],["KNW-C6","u"]]],["SAL-006","PEO License Disclosure in Proposals","Sales Conduct","Run","Proposed (Sales Advisor)",[["ACQ-PRO","p"],["KNW-C6","u"]]],["SAL-007","Statutory Allocation Disclosure","Sales Conduct","Run","Proposed (Sales Advisor)",[["ACQ-PRO","p"],["KNW-C6","u"]]],["SAL-008","Electronic Signature Consent","Sales Conduct","Run","Proposed (Sales Advisor)",[["ACQ-DEC","p"],["KNW-C6","u"]]],["SAL-009","Census Data Minimum for Quoting","Sales Conduct","Run","Proposed (Sales Advisor)",[["ACQ-EVA","p"],["KNW-C6","u"]]],["SAL-010","Prospect Data Retention","Sales Conduct","Run","Proposed (Sales Advisor)",[["ACQ-DEC","p"],["KNW-C6","u"]]],["SAL-011","Accessible Persona Experience","Sales Conduct","Deliver","Proposed (Sales Advisor)",[["ACQ-DIS","p"],["ACQ-QUA","p"],["ACQ-EVA","p"],["ACQ-PRO","p"],["ACQ-DEC","p"],["ACQ-ONB","p"],["KNW-C6","u"]]]],"CONS":[["CON-001","Unique canonical identity","isp-cnt:ContentObject","Block publish",["EXT-001","GOV-007"]],["CON-002","Version lineage","isp-cnt:ContentObject (version > 1)","Block publish",["EXT-001","GOV-018"]],["CON-003","Claim has a source span","isp-cnt:Claim","Discard claim",["EXT-007"]],["CON-004","Classification confidence floor","Content type, persona and job-step assignments","Hold as Candidate",["EXT-002"]],["CON-005","Validity window","isp-cnt:ContentObject","Block from assembly",["EXT-005"]],["CON-006","Access label required","isp-cnt:Chunk","Block publish",["EXT-006","TEC-005"]],["CON-007","No PII without consent","isp-cnt:Chunk","Quarantine and notify owner",["EXT-003","TEC-006"]],["CON-008","Third-party text limit","Chunks from third-party sources","Block assembly",["EXT-004"]],["CON-009","Crawl allow-list and robots","Web and feed fetches","Skip fetch",["EXT-004","CTL-005"]],["CON-010","Mapping strength for assembly","skos mapping used in assembly","Exclude from assembly",["EXT-009"]],["CON-011","Released mappings only","Mappings read at run time","Fall back to baseline-pinned mapping",["GOV-006"]],["CON-012","Regulatory claims are bound","isp-cnt:Claim with claimType ∈ {duty, threshold, deadline}","Hold as Candidate; route to rule owner",["EXT-008"]],["CON-013","KGCL stamp on every write","Graph write batches","Block publish",["EXT-010","GOV-018"]],["CON-014","Ontology import closure","isp-sal, isp-cnt, isp-dec, isp-ext, isp-vg","Block release",["GOV-004","GOV-005"]],["CON-015","Dual representation of Released rules","SSOT rule","Block promotion",["GOV-017","GOD-006"]],["CON-016","Rule lifecycle transitions","SSOT rule status","Block transition",["GOV-003","CTL-013"]],["CON-017","No overlapping effective dates","SSOT rule versions","Block release",["GOD-003"]],["CON-018","Tenant isolation","Queries, results and events","Block (hard trip)",["TEC-001","EXT-011","EVT-009"]],["CON-019","Persona entitlement","Assembled content parts","Redact or deny (hard trip)",["EXT-006","TEC-021"]],["CON-020","Census field allow-list","Census upload","Reject upload",["SAL-009","TEC-011"]],["CON-021","No personal data in events","Event data payload","Reject event",["EVT-010"]],["CON-022","Small-cut suppression","Any published aggregate","Suppress cell",["MET-013"]],["CON-023","Prospect data retention","Prospect personal data","Delete or de-identify",["SAL-010","TEC-019"]],["CON-024","No census data in logs","Logs and traces","Block and alert",["CTL-015"]],["CON-025","Complete decision record","isp-dec:Decision","Reject record",["DEC-006","EXT-014","MET-014"]],["CON-026","Option completeness","Options in a brief","Hold brief",["DEC-002"]],["CON-027","Option evidence","Each option shown","Label option incomplete",["DEC-003"]],["CON-028","Human confirmation for binding actions","Actions with binding = true","Block action",["DEC-004","GOV-015"]],["CON-029","Decision rights and limits","Decision attempts","Block decision",["DEC-001","SAL-005"]],["CON-030","Grounding floor","Brief","Hold for BPA; breaker trips",["EXT-012","DEC-009"]],["CON-031","Brief composition","Brief","Reject brief",["EXT-013"]],["CON-032","Eligibility inputs","Eligibility and underwriting evaluations","Block evaluation",["DEC-012"]],["CON-033","Ranking neutrality","Option ranking","Block ranking",["DEC-005"]],["CON-034","Savings claims substantiated","Statements typed SavingsClaim","Remove statement",["SAL-002"]],["CON-035","Competitor claims sourced and current","Statements typed CompetitorClaim","Remove statement",["SAL-003","EXT-005"]],["CON-036","Licensed producer for benefits quotes","Benefits or workers’ comp quote output","Hold output",["SAL-001"]],["CON-037","PEO licence disclosed","Proposal for a licensing state","Block proposal",["SAL-006","PEO-007"]],["CON-038","CloudEvents envelope","Every event","Reject event",["EVT-001"]],["CON-039","Registered event type","Every event","Reject event",["EVT-002"]],["CON-040","Event authorization","Publish and subscribe","Reject",["EVT-009"]],["CON-041","Idempotency","Event consumers","Drop duplicate",["EVT-003"]],["CON-042","Deadline lead time","Deadline events","Escalate",["EVT-008"]],["CON-043","Retry ceiling","Failed event processing","Dead-letter",["EVT-007"]],["CON-044","Registered agents only","Agent processes","Refuse to start",["AIG-001"]],["CON-045","Tool allow-list","Agent tool calls","Block call; count fault",["AIG-007"]],["CON-046","Breaker state gate","Agent outputs and actions","Route to fallback",["AIG-002","AIG-003"]],["CON-047","Autonomy promotion preconditions","Advise → Act change","Block promotion",["AIG-006"]],["CON-048","Model and prompt change gate","Model, prompt or tool definition version","Block deployment",["CTL-014"]],["CON-049","No training on tenant data","AI provider configuration","Block provider use",["CTL-010"]],["CON-050","Complete baseline record","QbD baseline","Reject baseline",["QBD-001"]],["CON-051","Waiver bounds","Policy waivers","Reject waiver",["GOD-005"]]],"CALCS":[["CALC-001","Time to useful answer","Persona job-step measure","minutes",["EXT-015","MET-013"],"MS-15","Value-gap dashboard; Sales operations BI"],["CALC-002","Steps to confirm eligibility","Persona job-step measure","steps",["EXT-015"],"MS-15","Value-gap Monitor"],["CALC-003","Sales cycle time to binding quote","Persona job-step measure","days",["EXT-015","SAL-005"],"MS-15","Value-gap dashboard; Sales operations BI; Executive scorecard"],["CALC-004","Census first-pass validation rate","Persona job-step measure","%",["SAL-009","PAY-026","PAY-027"],"MS-18","Sales operations BI; Value-gap dashboard"],["CALC-005","Re-quote rate after signature","Persona job-step measure","%",["SAL-005"],"MS-15","Sales operations BI; Executive scorecard"],["CALC-006","Follow-up-free proposal sessions","Persona job-step measure","%",["EXT-015"],"MS-15","Value-gap dashboard"],["CALC-007","First-draft owner approval rate","Persona job-step measure","%",["EXT-014","MET-014"],"MS-15","Value-gap dashboard; Executive scorecard"],["CALC-008","Cut-over errors per 100 employees","Persona job-step measure","per 100",["EXT-015"],"MS-15","Value-gap dashboard; Onboarding operations"],["CALC-009","Hiring states assessed","Persona job-step measure","%",["GOD-010","GOV-007"],"MS-15","Value-gap dashboard"],["CALC-010","Time to compare plans","Persona job-step measure","minutes",["EXT-015"],"MS-15","Value-gap dashboard"],["CALC-011","Handbook policies unmapped","Persona job-step measure","%",["EXT-009","GOV-006"],"MS-15","Value-gap dashboard"],["CALC-012","Decisions with a risk brief","Persona job-step measure","%",["DEC-006"],"MS-15","Value-gap dashboard; Governance council pack"],["CALC-013","Coverage gap per 1,000","Persona job-step measure","per 1,000",["BEN-019","EVT-008"],"MS-15","Value-gap dashboard; Onboarding operations"],["CALC-014","Outcome gap ratio","Value gap and opportunity","ratio",["EXT-015"],"AG-26","Value-gap dashboard; Causal analysis"],["CALC-015","Outcome gap status","Value gap and opportunity","category",["EXT-015"],"AG-26","Value-gap dashboard"],["CALC-016","Opportunity score","Value gap and opportunity","score 0–20",["EXT-015","MET-013"],"MS-15","Value-gap dashboard; Product backlog"],["CALC-017","Value at stake per job step","Value gap and opportunity","points",["EXT-015","QBD-001"],"MS-15","PLM dashboard; Executive scorecard"],["CALC-018","Component impact score","Value gap and opportunity","1–5",["QBD-003"],"MS-15","PLM dashboard"],["CALC-019","Component likelihood score","Value gap and opportunity","1–5",["QBD-003"],"MS-15","PLM dashboard"],["CALC-020","Component risk score","Value gap and opportunity","1–25",["QBD-003"],"MS-15","PLM dashboard; Governance council pack"],["CALC-021","Decision outcome attainment","Value gap and opportunity","%",["MET-014","EXT-014"],"AG-27","Value-gap dashboard; Executive scorecard"],["CALC-022","Causal effect estimate","Value gap and opportunity","effect + interval",["EXT-015"],"AG-35","Governance council pack; Risk & Opportunity Ranker"],["CALC-023","Brief grounding score","Answer quality and AI integrity","ratio",["EXT-012","GOV-014"],"AG-23","Value-gap dashboard; Governance council pack"],["CALC-024","Citation precision","Answer quality and AI integrity","ratio",["QBD-004"],"AG-23","QbD Baseline Service"],["CALC-025","Answer equivalence rate","Answer quality and AI integrity","%",["QBD-001","AIG-004"],"MS-13","Governance council pack; Breaker Service"],["CALC-026","Option integrity","Answer quality and AI integrity","ratio; τ",["DEC-002","QBD-004"],"MS-13","QbD Baseline Service"],["CALC-027","MTBH (mean time between hallucinations)","Answer quality and AI integrity","outputs per fault",["AIG-008","GOV-014"],"MS-12","Governance council pack; PLM dashboard"],["CALC-028","Breaker state","Answer quality and AI integrity","state",["AIG-002","AIG-003"],"MS-12","Agent Runtime"],["CALC-029","Breaker trip rate","Answer quality and AI integrity","%",["AIG-002","EXT-012"],"MS-12","Governance council pack; PLM dashboard (G2 ≤ 2%)"],["CALC-030","Change risk score","Answer quality and AI integrity","1–9",["QBD-002","QBD-003"],"MS-14","Impact Analyzer; Risk & Opportunity Ranker"],["CALC-031","Brief withdrawal latency","Answer quality and AI integrity","minutes",["EXT-016"],"MS-15","PLM dashboard (G3 ≤ 60 min)"],["CALC-032","SHACL conformance rate","Knowledge pipeline quality","%",["EXT-010"],"AG-14","PLM dashboard (G1 ≥ 98%)"],["CALC-033","Classification precision","Knowledge pipeline quality","ratio",["EXT-002"],"MS-15","PLM dashboard (G1 ≥ 0.90)"],["CALC-034","Mapping precision","Knowledge pipeline quality","ratio",["EXT-009","QBD-004"],"MS-15","PLM dashboard"],["CALC-035","Content freshness","Knowledge pipeline quality","hours; %",["EXT-005"],"MS-15","Content Change Monitor"],["CALC-036","Required-field completeness","Knowledge pipeline quality","%",["QBD-004"],"MS-15","Identity Resolver; Format Extractor"],["CALC-037","Regulatory claim binding rate","Knowledge pipeline quality","%",["EXT-008"],"MS-15","Governance council pack"],["CALC-038","PII leak count","Knowledge pipeline quality","count",["EXT-003"],"AG-10","Incident handling"],["CALC-039","Control pass rate","Governance and control conformance","%",["CTL-002"],"MS-17","Compliance and audit reporting; Governance council pack"],["CALC-040","Finding age and overdue count","Governance and control conformance","days; count",["CTL-002"],"MS-17","Compliance and audit reporting"],["CALC-041","Rule currency","Governance and control conformance","%",["GOD-007"],"MS-03","Governance council pack"],["CALC-042","Policy decision latency","Governance and control conformance","ms; count",["GOD-009"],"MS-01","Platform operations"],["CALC-043","Waiver exposure","Governance and control conformance","waiver-days; count",["GOD-005"],"MS-01","Governance council pack"],["CALC-044","Event dead-letter rate","Governance and control conformance","%; hours",["EVT-007"],"MS-07","Platform operations"],["CALC-045","Deadline lead-time compliance","Governance and control conformance","%",["EVT-008"],"MS-08","Compliance and audit reporting"],["CALC-046","Buffer consumption","Program delivery","%",["GOV-003"],"MS-24","PLM dashboard; Governance council pack"],["CALC-047","Lifecycle phase score","Program delivery","%",["GOV-003"],"MS-24","PLM dashboard"],["CALC-048","Client retention","Existing metric card","%",["MET-001","MET-002","MET-003","MET-004","MET-005"],"MS-15","Executive scorecard; Value-gap dashboard"],["CALC-049","Worksite employee growth","Existing metric card","%",["MET-006","MET-007","MET-008"],"MS-15","Executive scorecard"],["CALC-050","Service satisfaction","Existing metric card","%",["MET-009","MET-010","MET-011","MET-012","MET-013"],"MS-15","Executive scorecard; Value-gap dashboard"]],"CONSUMERS":[["FD-01","PEO Sales Advisor","Agent","Front door",["EXT-006","EXT-012","EXT-013","DEC-002","DEC-003","DEC-005","DEC-010","DEC-011","SAL-001","SAL-002","SAL-003","SAL-004","SAL-005","SAL-006","SAL-011","GOV-015"],["CON-019","CON-026","CON-027","CON-028","CON-030","CON-031","CON-036","CON-044","CON-045","CON-046"],["CALC-001","CALC-003","CALC-023"],["ACQ-DIS","ACQ-QUA","ACQ-EVA","ACQ-PRO","ACQ-DEC","ACQ-ONB"],"Advise","T1","declarative"],["AG-01","SharePoint Delta Agent","Agent","Ingestion & identity",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-001","GOV-007","EVT-012","EVT-005"],["CON-044","CON-045","CON-046","CON-001","CON-002"],["CALC-035"],["KNW-C3"],"Act","T2","foundry"],["AG-02","Web Crawl Agent","Agent","Ingestion & identity",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-004","EXT-005","CTL-005","CTL-008"],["CON-044","CON-045","CON-046","CON-008","CON-009"],["CALC-035"],["KNW-C3"],"Act","T2","foundry"],["AG-03","Feed Listener Agent","Agent","Ingestion & identity",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-005","EXT-008","CTL-005","CTL-008"],["CON-044","CON-045","CON-046","CON-009","CON-038"],["CALC-035"],["KNW-C3"],"Act","T2","foundry"],["AG-04","Identity Resolver","Agent","Ingestion & identity",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-001","GOV-007","GOD-010"],["CON-044","CON-045","CON-046","CON-001","CON-002"],["CALC-036"],["KNW-C3"],"Act","T1","foundry"],["AG-05","Format Extractor","Agent","Ingestion & identity",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-004","EXT-007","CTL-008"],["CON-044","CON-045","CON-046","CON-003","CON-008"],["CALC-036"],["KNW-C3"],"Act","T2","foundry"],["AG-06","Content-Type Classifier","Agent","AI fabric enrichment",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-002","CTL-008"],["CON-044","CON-045","CON-046","CON-004"],["CALC-033"],["KNW-C4"],"Advise","T2","foundry"],["AG-07","Persona & Job-Step Tagger","Agent","AI fabric enrichment",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-002"],["CON-044","CON-045","CON-046","CON-004"],["CALC-033"],["KNW-C4"],"Advise","T1","foundry"],["AG-08","Claim Extractor","Agent","AI fabric enrichment",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-007","EXT-008"],["CON-044","CON-045","CON-046","CON-003","CON-012"],["CALC-037"],["KNW-C4"],"Advise","T1","foundry"],["AG-09","Jurisdiction & Validity Miner","Agent","AI fabric enrichment",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-005","GOD-010","GOV-007"],["CON-044","CON-045","CON-046","CON-005"],["CALC-035"],["KNW-C4"],"Advise","T1","foundry"],["AG-10","PII & Sensitivity Detector","Agent","AI fabric enrichment",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-003","TEC-005","TEC-006","AIG-003"],["CON-044","CON-045","CON-046","CON-006","CON-007","CON-024"],["CALC-038"],["KNW-C4"],"Act (block only)","T1","foundry"],["AG-11","Entitlement Enforcer","Agent","AI fabric enrichment",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-006","TEC-001","TEC-021","AIG-003"],["CON-044","CON-045","CON-046","CON-018","CON-019"],["CALC-038"],["KNW-C4"],"Act","T1","foundry"],["AG-12","Concept Mapping Agent","Agent","Mapping & publishing",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-009","GOV-006"],["CON-044","CON-045","CON-046","CON-010"],["CALC-034"],["KNW-C5"],"Advise","T2","both"],["AG-13","Rule Binding Agent","Agent","Mapping & publishing",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-008","GOV-008","GOV-009"],["CON-044","CON-045","CON-046","CON-012"],["CALC-037"],["KNW-C5"],"Advise","T1","foundry"],["AG-14","SHACL Publisher","Agent","Mapping & publishing",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-010","GOV-017","GOV-018","EVT-012","AIG-003"],["CON-044","CON-045","CON-046","CON-001","CON-002","CON-003","CON-005","CON-006","CON-007","CON-013"],["CALC-032"],["KNW-C5"],"Act","T2","foundry"],["AG-15","Mapping Drift Sentinel","Agent","Mapping & publishing",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","GOV-006","EXT-009","EVT-012"],["CON-044","CON-045","CON-046","CON-011"],["CALC-034"],["KNW-C5"],"Act (flag)","T3","foundry"],["AG-16","Intent & RCB Agent","Agent","Faceted search & assembly",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","GOV-011","EXT-011","GOD-010"],["CON-044","CON-045","CON-046","CON-018"],["CALC-001"],["KNW-C6"],"Act","T1","foundry"],["AG-17","Federated Query Planner","Agent","Faceted search & assembly",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-011","GOV-024","TEC-001","GOD-001"],["CON-044","CON-045","CON-046","CON-011","CON-018"],[],["KNW-C6"],"Act","T1","foundry"],["AG-18","Facet Navigator","Agent","Faceted search & assembly",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-011"],["CON-044","CON-045","CON-046","CON-018"],[],["KNW-C6"],"Act","T2","foundry"],["AG-19","Mapping Resolver","Agent","Faceted search & assembly",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","GOV-006","EXT-009"],["CON-044","CON-045","CON-046","CON-010","CON-011"],["CALC-034"],["KNW-C6"],"Act","T1","foundry"],["AG-20","Precision Extractor","Agent","Faceted search & assembly",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-007","EXT-008","EXT-012"],["CON-044","CON-045","CON-046","CON-003","CON-005","CON-012"],["CALC-023"],["KNW-C6"],"Act","T1","foundry"],["AG-21","Brief Assembler","Agent","Faceted search & assembly",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-006","EXT-012","EXT-013","DEC-002","DEC-003","DEC-005","DEC-010","DEC-011","SAL-001","SAL-002","SAL-003","SAL-006","SAL-007"],["CON-044","CON-045","CON-046","CON-008","CON-019","CON-026","CON-027","CON-031","CON-033","CON-034","CON-035","CON-036","CON-037"],["CALC-023","CALC-026"],["KNW-C6"],"Advise","T1","foundry"],["AG-22","Machine Package Agent","Agent","Faceted search & assembly",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-013","GOV-021","EVT-010"],["CON-044","CON-045","CON-046","CON-021","CON-038"],[],["KNW-C6"],"Act","T1","foundry"],["AG-23","Grounding Guard (MTBH)","Agent","Faceted search & assembly",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-012","GOV-014","DEC-009"],["CON-044","CON-045","CON-046","CON-030"],["CALC-023","CALC-024","CALC-029"],["KNW-C6"],"Act (block)","T1","foundry"],["AG-24","Outcome Binder","Agent","Value-gap monitoring",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-014","MET-014","DEC-006"],["CON-044","CON-045","CON-046","CON-025"],["CALC-021"],["KNW-C7"],"Act","T2","foundry"],["AG-25","Job-Step Telemetry Agent","Agent","Value-gap monitoring",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-015","MET-013"],["CON-044","CON-045","CON-046","CON-022"],["CALC-001","CALC-002","CALC-006","CALC-010"],["KNW-C7"],"Act","T3","foundry"],["AG-26","Value-Gap Monitor","Agent","Value-gap monitoring",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-015"],["CON-044","CON-045","CON-046","CON-022"],["CALC-014","CALC-015","CALC-016","CALC-017"],["KNW-C7"],"Advise","T2","both"],["AG-27","Decision Impact Tracker","Agent","Value-gap monitoring",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-014","EXT-015","DEC-006"],["CON-044","CON-045","CON-046","CON-025"],["CALC-021"],["KNW-C7"],"Advise","T2","both"],["AG-28","Content Change Monitor","Agent","Change & impact",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-016","EVT-012"],["CON-044","CON-045","CON-046","CON-038"],["CALC-035"],["KNW-C8"],"Act","T2","foundry"],["AG-29","Semantic Change Monitor","Agent","Change & impact",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","GOV-003","GOV-018","EVT-012"],["CON-044","CON-045","CON-046","CON-014","CON-015","CON-016"],[],["KNW-C8"],"Act","T2","foundry"],["AG-30","RDF Structure Monitor","Agent","Change & impact",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-010","EVT-012"],["CON-044","CON-045","CON-046","CON-013","CON-014"],["CALC-032"],["KNW-C8"],"Act","T2","foundry"],["AG-31","Impact Analyzer","Agent","Change & impact",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-016","GOD-008","QBD-002"],["CON-044","CON-045","CON-046","CON-050"],["CALC-030"],["KNW-C8"],"Advise","T1","both"],["AG-32","Incremental Refresh Service","Agent","Change & impact",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-016","GOV-023","EVT-003"],["CON-044","CON-045","CON-046","CON-041"],["CALC-031"],["KNW-C8"],"Act","T2","foundry"],["AG-33","Cache Invalidation Agent","Agent","Change & impact",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-005","EXT-016"],["CON-044","CON-045","CON-046","CON-005"],["CALC-031"],["KNW-C8"],"Act","T1","foundry"],["AG-34","Causal Graph Builder","Agent","Causal analysis",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-015"],["CON-044","CON-045","CON-046"],["CALC-022"],["KNW-C8"],"Advise","T3","foundry"],["AG-35","Effect Estimator","Agent","Causal analysis",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-015"],["CON-044","CON-045","CON-046","CON-022"],["CALC-022"],["KNW-C8"],"Advise","T2","foundry"],["AG-36","Risk & Opportunity Ranker","Agent","Causal analysis",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-015","QBD-003"],["CON-044","CON-045","CON-046"],["CALC-020","CALC-030"],["KNW-C8"],"Advise","T2","both"],["AG-37","Counterfactual Explainer","Agent","Causal analysis",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","EXT-015","GOD-004"],["CON-044","CON-045","CON-046"],["CALC-022"],["KNW-C8"],"Advise","T2","both"],["AG-38","Action Proposer","Agent","Causal analysis",["AIG-001","AIG-002","AIG-007","AIG-008","CTL-007","EVT-001","GOV-015","DEC-002","DEC-004","AIG-006"],["CON-044","CON-045","CON-046","CON-026","CON-028"],[],["KNW-C8"],"Advise (human gate)","T1","both"],["MS-01","Policy Decision Service (PDP)","Microservice","Platform",["GOD-001","GOD-002","GOD-003","GOD-004","GOD-005","GOD-009","GOD-010","GOV-009","GOV-012","DEC-001","DEC-012","SAL-005"],["CON-018","CON-019","CON-028","CON-029","CON-032","CON-051"],["CALC-042","CALC-043"],["GOD-RT"],"","",""],["MS-02","Policy Enforcement Gateway (PEPs)","Microservice","Platform",["GOV-012","GOD-001","GOD-009","EXT-006","TEC-007","TEC-013","SAL-001"],["CON-018","CON-019","CON-028","CON-036"],[],["GOD-RT"],"","",""],["MS-03","SSOT Register & Rule Compiler","Microservice","Platform",["GOV-001","GOV-003","GOV-017","GOV-019","GOV-020","GOD-002","GOD-006","GOD-007","CTL-013","EVT-014"],["CON-015","CON-016","CON-017"],["CALC-041"],["GOD-DT"],"","",""],["MS-04","Identity & URI Registry","Microservice","Platform",["GOV-007","EXT-001","GOD-010"],["CON-001"],["CALC-036"],["GOV-RT"],"","",""],["MS-05","Virtual Graph / Federated Query Service","Microservice","Platform",["EXT-011","GOV-024","TEC-001"],["CON-018","CON-011"],[],["GOV-RT"],"","",""],["MS-06","Content Graph Store & SHACL Validation","Microservice","Platform",["EXT-010","GOV-017","GOV-018"],["CON-001","CON-002","CON-003","CON-005","CON-006","CON-007","CON-012","CON-013","CON-014"],["CALC-032"],["KNW-C5"],"","",""],["MS-07","Event Broker & Schema Registry","Microservice","Platform",["EVT-001","EVT-002","EVT-004","EVT-007","EVT-009","EVT-010","EVT-011"],["CON-018","CON-021","CON-038","CON-039","CON-040","CON-043"],["CALC-044"],["EVT-RT"],"","",""],["MS-08","Scheduler & Deadline Service","Microservice","Platform",["EVT-008","EVT-013","PAY-021","BEN-004","BEN-019"],["CON-042"],["CALC-045"],["EVT-RT"],"","",""],["MS-09","Saga Orchestrator","Microservice","Platform",["EVT-003","EVT-005","EVT-006"],["CON-041"],["CALC-044"],["EVT-RT"],"","",""],["MS-10","Decision Record Service","Microservice","Platform",["DEC-006","DEC-008","EXT-014","MET-014","GOV-022"],["CON-025"],["CALC-021"],["DEC-RT"],"","",""],["MS-11","Simplex Action Gate","Microservice","Platform",["GOV-013","GOV-015","GOV-016","DEC-004","DEC-007","PAY-028"],["CON-028"],[],["DEC-RT"],"","",""],["MS-12","Circuit Breaker & MTBH Service","Microservice","Platform",["AIG-002","AIG-003","AIG-008","AIG-009","GOV-014","CTL-011"],["CON-046"],["CALC-027","CALC-028","CALC-029"],["AIG-RT"],"","",""],["MS-13","Probe Runner","Microservice","Platform",["AIG-004","AIG-010","QBD-001","CTL-014"],["CON-048","CON-050"],["CALC-025","CALC-026"],["AIG-RT"],"","",""],["MS-14","QbD Baseline Service","Microservice","Platform",["QBD-001","QBD-002","QBD-003","QBD-004","QBD-005","GOD-008"],["CON-050"],["CALC-024","CALC-030"],["CTL-RT"],"","",""],["MS-15","Metrics Service (semantic layer)","Microservice","Platform",["MET-001","MET-002","MET-003","MET-004","MET-005","MET-006","MET-007","MET-008","MET-009","MET-010","MET-011","MET-012","MET-013","EXT-015","QBD-004"],["CON-022"],["CALC-001","CALC-002","CALC-003","CALC-005","CALC-006","CALC-007","CALC-008","CALC-009","CALC-010","CALC-011","CALC-012","CALC-013","CALC-016","CALC-017","CALC-018","CALC-019","CALC-020","CALC-031","CALC-033","CALC-034","CALC-035","CALC-036","CALC-037","CALC-048","CALC-049","CALC-050"],["CRS-RET","KNW-C7"],"","",""],["MS-16","Audit Log & Evidence Store","Microservice","Platform",["GOV-022","TEC-008","CTL-003","CTL-007","EVT-011"],["CON-024"],[],["CTL-RT"],"","",""],["MS-17","Control Test Runner","Microservice","Platform",["CTL-001","CTL-002","CTL-004","CTL-009","CTL-012","TEC-016","TEC-017","TEC-018"],["CON-049"],["CALC-039","CALC-040"],["CTL-RT"],"","",""],["MS-18","Census Intake & Validation Service","Microservice","Platform",["SAL-009","CTL-015","PAY-026","PAY-027","EXT-003"],["CON-020","CON-024"],["CALC-004"],["ACQ-EVA"],"","",""],["MS-19","Quoting Service Adapter","Microservice","Platform",["SAL-001","SAL-005","DEC-001","BEN-001","CMP-010","PAY-012"],["CON-029","CON-032","CON-036"],["CALC-003","CALC-005"],["ACQ-EVA"],"","",""],["MS-20","Outreach & Consent Service","Microservice","Platform",["SAL-004","TEC-010"],[],[],["ACQ-DIS"],"","",""],["MS-21","Proposal, Contract & E-Signature Service","Microservice","Platform",["SAL-006","SAL-007","SAL-008","DEC-004","PEO-006","PEO-007"],["CON-028","CON-037"],[],["ACQ-PRO","ACQ-DEC"],"","",""],["MS-22","Retention & Deletion Job","Microservice","Platform",["SAL-010","TEC-019","EVT-011"],["CON-023"],[],["TEC-RUN"],"","",""],["MS-23","Agent Runtime & Registry","Microservice","Platform",["AIG-001","AIG-005","AIG-006","AIG-007","AIG-011","CTL-006","CTL-010","CTL-014"],["CON-044","CON-045","CON-046","CON-047","CON-048","CON-049"],[],["AIG-RT"],"","",""],["MS-24","Analytics Publishing (BI and dashboards)","Microservice","Platform",["MET-005","MET-012","MET-013","MET-014"],["CON-022"],["CALC-046","CALC-047"],["CRS-RET"],"","",""],["MS-25","Advisor Persona Experience (UI)","Microservice","Platform",["SAL-011","DEC-008","DEC-010","DEC-011","EXT-006"],["CON-019","CON-046"],["CALC-023"],["ACQ-DIS","ACQ-QUA","ACQ-EVA","ACQ-PRO","ACQ-DEC","ACQ-ONB"],"","",""]],"VGO":{"ACQ-DIS":[["Client Admin","Minimize time to understand what a PEO covers","min to useful answer",10,7.5,"lower",""],["HR Specialist","Minimize time to see where we carry risk","min to useful answer",15,12,"lower",""]],"ACQ-QUA":[["Client Admin","Minimize steps to confirm fit","steps",3,4,"lower","Fit rules (size, industry, states) answered in 4 steps because industry exclusions sit in an unmapped SharePoint list."],["HR Specialist","Maximize states assessed","% of hiring states covered",100,88,"higher","Remote employees with no registered worksite are not resolved to a jurisdiction (GOV-007 gap)."]],"ACQ-EVA":[["Client Admin","Minimize time from first cost question to binding quote","days",10,16,"lower","Census uploads fail validation 38% of the time; the quote waits on a manual fix. Assemblies are fine; the gap is downstream in quoting."],["HR Specialist","Minimize time to compare plans employees will see","min",20,34,"lower","Plan comparison v14 has 2 claims held as Candidate; briefs fall back to the older deck, which forces manual lookups."]],"ACQ-PRO":[["Client Admin","Maximize clarity of who does what","% sessions with no follow-up question",85,81,"higher","Allocation briefs omit state-specific items for multi-state prospects."],["HR Specialist","Minimize handbook policies left unmapped","% unmapped",5,18,"lower","Prospect handbooks arrive as scanned PDFs; OCR claims fall below the EXT-002 confidence floor."]],"ACQ-DEC":[["Client Admin","Maximize owner approval of the first draft","% approved first time",80,64,"higher","Briefs shared with owners lack a risk line; the HR Specialist’s compliance brief is not linked into the Admin’s package."],["HR Specialist","Maximize leadership awareness of risk removed","% decisions with risk brief attached",90,71,"higher",""]],"ACQ-ONB":[["Client Admin","Minimize payroll cut-over errors","errors per 100 employees",0.5,0.4,"lower",""],["HR Specialist","Minimize employees with a coverage gap","employees with gap per 1,000",0,1.2,"lower","Late carrier 834 confirmations in 2 of 31 onboardings; carrier lead times are not in the content graph."]]}};
+const LINKS={WR:"https://claude.ai/artifact/Fyf4a8jVGgBrLbkAuDVUFv",WE:"https://claude.ai/artifact/BzAWvkVadS2h1mmUAMqNHR",WA:"https://claude.ai/artifact/XaWZRRxCDcC4gg7Y4s8nv6"};
 const STAGES=[
  {k:"design",n:"Design",s:"author & generate",ph:"dt",gate:"G0 · G1"},
- {k:"verify",n:"Verify",s:"CI gates",ph:"dt",gate:"G2"},
+ {k:"verify",n:"Verify",s:"CI and review gates",ph:"dt",gate:"G2"},
  {k:"release",n:"Release",s:"DEV → STG → PRD",ph:"rel",gate:"G3"},
  {k:"run",n:"Run",s:"execution",ph:"rt",gate:"G4"},
  {k:"observe",n:"Observe",s:"waterline & outcomes",ph:"rt",gate:"G5"}
@@ -237,9 +352,14 @@ const KEEL=[
  {id:"K7",n:"SSOT rules",s:"rules, constraints, calculations"},
  {id:"K8",n:"Sensitivity classes",s:"classification per concept"},
  {id:"K9",n:"LKIF norms",s:"permissions and obligations"},
- {id:"K10",n:"Circuit-breaker policy",s:"MTBH thresholds, HITL routes"},
+ {id:"K10",n:"Circuit-breaker policy",s:"MTBH tiers, integrity signals"},
  {id:"K11",n:"Decision Question Baseline",s:"reference questions and answers"},
- {id:"K12",n:"Business model",s:"values, strategy map, products, services"}
+ {id:"K12",n:"Business operating model",s:"domains, services, processes, strategy, values"}
+];
+const WB=[
+ {id:"WR",n:"Rules & Standards Map",r:"Obligations → standards → rules → controls, and who consumes each."},
+ {id:"WE",n:"SSOT Editor",r:"Authors and releases rules, constraints and calcs in the 14-field register."},
+ {id:"WA",n:"Agent & Service Map",r:"Registers agents and microservices, generates Copilot and Foundry code."}
 ];
 const COMPS=[
  {id:"F",n:"Fivetran",r:"Ingestion. The sea into the hull."},
@@ -247,22 +367,43 @@ const COMPS=[
  {id:"S",n:"dbt Semantic Layer",r:"MetricFlow. Compile target for metric cards."},
  {id:"A",n:"LangGraph agents",r:"The bridge. Agents reading governed meaning."}
 ];
-// Keel asset -> what it becomes per component
+const ALLROWS=[...WB,...COMPS];
 const FEEDS={
- K1:{F:"",T:"Column descriptions and docs",S:"Metric and dimension labels, synonyms",A:"Grounding lexicon for the grounding node"},
- K2:{F:"",T:"accepted_values tests",S:"Categorical dimension members",A:"Clarification options when a term is ambiguous"},
- K3:{F:"Target concept for each governed table",T:"Entity keys and relationships tests",S:"Entities and join paths",A:"Typed graph state carrying keel URIs"},
- K4:{F:"",T:"Model contracts: types, not_null, cardinality",S:"Measure type and aggregation constraints",A:"Output validation node"},
- K5:{F:"Source registry and column selection",T:"Generated sources.yml with meta.keel_uri",S:"",A:""},
- K6:{F:"Sync frequency from freshness SLO",T:"Grain and calculation reference",S:"semantic_models and metrics YAML, OSI-aligned",A:"Tool allowlist by metric name"},
- K7:{F:"Schema-change policy: hold or block",T:"SSOT calculation parity tests, naming conventions",S:"Metric filters and business rules",A:"Rule lookups and policy conformance checks"},
- K8:{F:"Column block and hash list",T:"Masking meta and access grants",S:"Dimension access restrictions",A:"Redaction rules on answers"},
- K9:{F:"",T:"",S:"",A:"Permitted and obligated actions per tool call"},
- K10:{F:"",T:"",S:"",A:"Circuit-breaker edge thresholds and review routes"},
- K11:{F:"",T:"Reference datasets",S:"Golden-value tests",A:"Regression evaluation set"},
- K12:{F:"PLM item bound to operational services",T:"PLM item bound to operational services",S:"Metric bound to strategy objectives",A:"Agent bound to services and decisions it supports"}
+ K1:{WR:"",WE:"SKOS vocabulary tab; labels on every register field",WA:"Persona starters and tool descriptions",F:"",T:"Column descriptions and docs",S:"Metric and dimension labels, synonyms",A:"Grounding lexicon for the grounding node"},
+ K2:{WR:"Rule domains and standard families",WE:"Domain, sub-category and jurisdiction pick-lists",WA:"Agent families and tiers",F:"",T:"accepted_values tests",S:"Categorical dimension members",A:"Clarification options when a term is ambiguous"},
+ K3:{WR:"",WE:"Explorer: concepts and relations each rule is built from",WA:"Typed reads and writes per agent",F:"Target concept for each governed table",T:"Entity keys and relationships tests",S:"Entities and join paths",A:"Typed graph state carrying keel URIs"},
+ K4:{WR:"Constraints tab (51 executable constraints)",WE:"Constraint items; compiled-policy scenario tests",WA:"Signal IS-4 rule conformance on every output",F:"",T:"Model contracts: types, not_null, cardinality",S:"Measure type and aggregation constraints",A:"Output validation node"},
+ K5:{WR:"",WE:"Diff & Mapping tab",WA:"",F:"Source registry and column selection",T:"Generated sources.yml with meta.keel_uri",S:"",A:""},
+ K6:{WR:"Calculations tab (50 calcs) and published calcs",WE:"Calc items; Testing & Measures tab",WA:"Calcs each agent reports",F:"Sync frequency from freshness SLO",T:"Grain and calculation reference",S:"semantic_models and metrics YAML, OSI-aligned",A:"Tool allowlist by metric name"},
+ K7:{WR:"250 rules mapped to 64 standards and ISO/IEC 27001 Annex A",WE:"14-field register; Draft → Candidate → Approved → Released; KGCL change records",WA:"Rules, constraints and calcs bound to each agent and service",F:"Schema-change policy: hold or block",T:"SSOT calculation parity tests, naming conventions",S:"Metric filters and business rules",A:"Rule lookups through the Keel Gateway"},
+ K8:{WR:"Privacy and entitlement rules (EXT-003, EXT-006)",WE:"Sensitivity on concepts and fields",WA:"Signal IS-5 entitlement & privacy, hard trip",F:"Column block and hash list",T:"Masking meta and access grants",S:"Dimension access restrictions",A:"Redaction rules on answers"},
+ K9:{WR:"GOD, CTL and DEC rule families",WE:"Rule type and precedence fields",WA:"Autonomy level and simplex approval per agent",F:"",T:"",S:"",A:"Permitted and obligated actions per tool call"},
+ K10:{WR:"AIG rules: 38 agents, each with a breaker and owner",WE:"",WA:"Tier T1–T3, integrity signals IS-1–9, hard trips, fallback",F:"",T:"",S:"",A:"Circuit-breaker edge thresholds and review routes"},
+ K11:{WR:"",WE:"Scenario test cases",WA:"evals/prompts.json per Copilot package",F:"",T:"Reference datasets",S:"Golden-value tests",A:"Regression evaluation set"},
+ K12:{WR:"Rule domain and holon → business domain",WE:"Service Domains tab: five domains × Discover → Run",WA:"Agent family → business service it supports",F:"PLM item bound to services and processes",T:"PLM item bound to services and processes",S:"Metric bound to services and strategy objectives",A:"Agent bound to services and decisions it supports"}
 };
 const CELLS={
+ WR:{
+  design:{t:"Map obligations to rules",s:"Standard → obligation → rule → control; gaps become proposed rules.",k:["K7","K9","K12","K2"],a:["Crosswalk each standard, law and internal policy to the rules that implement it","Map every obligation to an ISO/IEC 27001 Annex A, SOC 2 or NIST 800-53 control","Flag gaps and draft proposed rules in the 14-field format","Assign each rule to a domain holon, which places it in the business operating model"],m:["W-01","W-08"]},
+  verify:{t:"Coverage review",s:"Every obligation has a rule, a control and a test.",k:["K7","K4"],a:["Obligation and control coverage checked before release","Statement of Applicability updated (CTL-004)","Consumers listed for every rule, constraint and calc"],m:["W-01"]},
+  release:{t:"Publish the map",s:"Released crosswalk and consumer map.",k:["K7"],a:["Crosswalk versioned with the register release","Published calcs listed for downstream BI"],m:["X-01"]},
+  run:{t:"Consumer map in use",s:"Which agents and services apply which rules.",k:["K7"],a:["856 consumer links resolve rule → agent or microservice","Feeds the impact tracer's carried-by paths"],m:["W-08"]},
+  observe:{t:"Control evidence",s:"Controls produce evidence on every step.",k:[],a:["Control test results by Annex A control","Unmapped obligations reported as findings"],m:["W-01","W-06"]}
+ },
+ WE:{
+  design:{t:"Author in the register",s:"Rules, constraints and calcs, each with a KGCL change record.",k:["K7","K4","K6","K1","K2","K3"],a:["Create or edit an item in the 14-field register","Every edit becomes a change request with a KGCL record","Field-level change class: Patch, Minor or Major"],m:["W-02"]},
+  verify:{t:"Lint, dependency and scenario tests",s:"Releasing requires compiled-policy tests to pass (GOD-006).",k:["K4","K11"],a:["Lint and dependency map show what an item touches","Compiled-policy scenario tests must pass","Diff & Mapping checks the change against bound concepts"],m:["W-04"]},
+  release:{t:"Draft → Candidate → Approved → Released",s:"Author and approver are different people (CTL-013).",k:["K7"],a:["Approver releases; only released changes alter the register","Rule compiler (MS-03) emits to every compile target","Released KGCL downloaded as the change record"],m:["W-02","W-03","X-01"]},
+  run:{t:"Rules as a service",s:"GOD rules make each released rule callable at run time.",k:["K7","K9"],a:["Policy Decision Service (MS-01) answers with rule version, effective date and explanation","Waivers are time-boxed and recorded"],m:["W-06"]},
+  observe:{t:"Testing & measures",s:"Test results, open changes and deprecations.",k:[],a:["Scenario test history per rule","Open change requests by domain","Deprecated and retired items tracked to consumers"],m:["W-04"]}
+ },
+ WA:{
+  design:{t:"Agent and service spec",s:"Decision, options, autonomy, tier, rules, tools.",k:["K7","K9","K10","K3","K2"],a:["Agent spec: decision, options, reads, writes, autonomy, tier","Bind rules, constraints and calcs from the SSOT","Pick integrity signals and hard trips","Family places the agent in a business service"],m:["W-05"]},
+  verify:{t:"SSOT check and evals",s:"Bindings checked against released SSOT items.",k:["K11","K10"],a:["Every bound rule must be Released","Tool parameter changes list every Copilot package affected","Evaluations run from evals/prompts.json"],m:["W-05","W-07","A-01"]},
+  release:{t:"Generate Copilot packages",s:"Downloads build only from released versions.",k:["K10"],a:["Declarative agent (schema v1.8) per persona-facing agent","Keel Gateway as remote MCP server, pinned to the agent's tools","Hosted agents deployed on Agent Framework with Foundry models"],m:["W-07","X-01"]},
+  run:{t:"Keel Gateway",s:"Every Copilot and agent call is checked against the SSOT.",k:["K9","K10"],a:["MCP gateway enforces tool pins and Entra ID roles","CloudEvents trigger hosted agent chains","Simplex approval gates binding actions"],m:["W-06","A-04"]},
+  observe:{t:"Integrity signals",s:"IS-1 to IS-9 and breaker trips per agent.",k:[],a:["Grounding, option completeness, replay, conformance, privacy","Calibration, baseline drift, contradiction, freshness","Trips feed MTBH per agent and per family"],m:["W-06","A-04","A-05"]}
+ },
  F:{
   design:{t:"Connector config as code",s:"Sources registered in the keel; columns, blocking and sync set from keel inputs.",k:["K5","K3","K8","K6","K7"],a:["Register each governed table with a keel URI and RML mapping","Select schemas and columns from the mapping","Apply block or hash to classified columns","Set schema-change handling to hold for governed tables","Set sync frequency from the metric card's freshness SLO"],m:["F-01"]},
   verify:{t:"Pre-merge checks",s:"Config diff checked against the keel before it applies.",k:["K5","K8","K7"],a:["Every governed table resolves to a keel URI","Classified columns are blocked or hashed","Schema-change policy matches the SSOT rule","Data owner reviews the config diff"],m:["F-01","F-02","F-03"]},
@@ -285,14 +426,22 @@ const CELLS={
   observe:{t:"Shadow metric scan",s:"Find definitions living outside the keel.",k:[],a:["Scan BI, notebooks and SQL for unregistered metrics","Share of queries through the semantic layer"],m:["S-02","S-04"]}
  },
  A:{
-  design:{t:"Agent spec",s:"Defined in the Agent Editor from keel inputs.",k:["K6","K3","K1","K9","K10","K4"],a:["Tool allowlist limited to metric names","Typed state carrying keel URIs","Grounding lexicon from vocabularies","LKIF norms per action","Circuit-breaker thresholds","PROV-O record required per answer"],m:["A-07"]},
+  design:{t:"Agent graph from the spec",s:"Built from the Agent & Service Map spec.",k:["K6","K3","K1","K9","K10","K4"],a:["Tool allowlist limited to Keel Gateway tools","Typed state carrying keel URIs","Grounding lexicon from vocabularies","LKIF norms per action","Circuit-breaker thresholds","PROV-O record required per answer"],m:["A-07"]},
   verify:{t:"Evaluation gates",s:"Baseline regression, refusal and norm tests.",k:["K11","K9","K10"],a:["Decision Question Baseline regression","Refusal tests on ungrounded questions","Norm conformance tests","MTBH estimate on the eval set"],m:["A-01","A-02","A-07"]},
   release:{t:"Graph version promotion",s:"Promoted with its eval report; canary first.",k:["K10"],a:["Eval report attached to the PLM item","Canary on a share of traffic","Rollback on circuit-breaker trip rate"],m:["X-01"]},
-  run:{t:"Governed graph",s:"Ground → plan → query → validate → circuit breaker → answer, refuse or review.",k:["K1","K4","K9","K10"],a:["Grounding node resolves terms to keel concepts","Tool calls go to the semantic layer","SHACL validation of the output","Circuit breaker routes to answer, refuse or interrupt()","Checkpointer keeps the audit trail"],m:["A-02","A-03","A-04","A-05","A-06"]},
+  run:{t:"Governed graph",s:"Ground → plan → query → validate → circuit breaker → answer, refuse or review.",k:["K1","K4","K9","K10"],a:["Grounding node resolves terms to keel concepts","Tool calls go through the Keel Gateway","SHACL validation of the output","Circuit breaker routes to answer, refuse or interrupt()","Checkpointer keeps the audit trail"],m:["A-02","A-03","A-04","A-05","A-06"]},
   observe:{t:"Trust and outcomes",s:"MTBH, escalations and decision outcomes.",k:[],a:["MTBH and circuit-breaker trips","Escalation and reviewer override rates","Decision outcomes against the baseline"],m:["A-04","A-05","A-08"]}
  }
 };
 const REG=[
+ ["W-01","W","Obligation coverage","Share of obligations in the Rules & Standards Map with a released rule, a mapped control and a test","Design","G1 · G2","C"],
+ ["W-02","W","Register change lead time","Time from Draft to Released in the SSOT Editor, by change class","Release","G0 · G3","I"],
+ ["W-03","W","Separation of duties","Released changes where author and approver differ (CTL-013)","Release","G3","C"],
+ ["W-04","W","Scenario test pass rate","Compiled-policy scenario tests passing before release (GOD-006)","Design","G2","C"],
+ ["W-05","W","Agent binding conformance","Agents and services bound only to Released SSOT items","Design","G1 · G2","C"],
+ ["W-06","W","Integrity signal pass rate","Agent outputs passing IS-1 to IS-9, with hard trips counted separately","Run","G4","R"],
+ ["W-07","W","Breaking tool changes","Keel Gateway tool changes that break a pinned Copilot package","Design","G2 · G3","R"],
+ ["W-08","W","Impact mapping coverage","Share of rules, constraints, calcs and agents mapped to at least one business process","Design","G1 · G5","I"],
  ["F-01","F","Mapping coverage","Share of governed source columns with a keel URI and RML mapping","Design","G1 · G2","C"],
  ["F-02","F","Sensitive-column conformance","Share of classified columns blocked or hashed as the keel classifies them","Design","G2","CR"],
  ["F-03","F","Schema-change policy conformance","Governed tables set to hold or block as the SSOT rule requires","Design","G2","C"],
@@ -316,49 +465,82 @@ const REG=[
  ["A-07","A","Norm conformance","Agent actions consistent with LKIF permissions and obligations","Design","G1 · G2","C"],
  ["A-08","A","Decision outcomes","Recommendations adopted and the outcome change that followed","Run","G5","I"],
  ["X-01","X","Keel release lead time","Time from an approved keel change to PRD across all compile targets","Release","G3","I"],
- ["X-02","X","Determinism ratio","Share of curated edges on the impact paths cited for a PLM item","Run","G5","R"]
+ ["X-02","X","Determinism ratio","Share of register-declared links on the impact paths cited for a PLM item","Run","G5","R"]
 ];
-const COMPNAME={F:"Fivetran",T:"dbt models",S:"dbt Semantic Layer",A:"LangGraph agents",X:"Cross-cutting"};
+const COMPNAME={W:"Governance workbench",F:"Fivetran",T:"dbt models",S:"dbt Semantic Layer",A:"LangGraph agents",X:"Cross-cutting"};
 const GATES=[
- ["G0","Concept approved","Keel concept or metric card reaches Approved in the SSOT Editor","Keel change record"],
- ["G1","Design ready","Keel inputs generated and traceable for the component","F-01 · T-01 · S-01 · A-07"],
- ["G2","Verified","All CI and evaluation gates pass","F-01–03 · T-01–04 · S-01 · S-03 · A-01 · A-02 · A-07"],
- ["G3","Released","Promoted to PRD with author and approver separated","X-01"],
- ["G4","Operating","Run-time measures within SSOT thresholds; findings tracked","F-04–05 · T-02 · T-05 · S-02–04 · A-02–06"],
- ["G5","Value review","Impact assessed against strategy and values, signed off","S-04 · A-08 · X-02 · causal engine"]
+ ["G0","Change approved","Rule, constraint, calc or agent change reaches Approved in the SSOT Editor or Agent & Service Map","W-02 · KGCL change record"],
+ ["G1","Design ready","Keel inputs generated, traceable and mapped to business processes","W-01 · W-05 · W-08 · F-01 · T-01 · S-01 · A-07"],
+ ["G2","Verified","All CI, scenario and evaluation gates pass","W-04 · W-07 · F-01–03 · T-01–04 · S-01 · S-03 · A-01 · A-02 · A-07"],
+ ["G3","Released","Promoted to PRD with author and approver separated","W-02 · W-03 · X-01"],
+ ["G4","Operating","Run-time measures within SSOT thresholds; findings tracked","W-06 · F-04–05 · T-02 · T-05 · S-02–04 · A-02–06"],
+ ["G5","Value review","Impact on domains, services and processes assessed and signed off","W-08 · S-04 · A-08 · X-02 · causal engine"]
 ];
 const typeOf=id=>{const r=REG.find(x=>x[0]===id);return r?r[6][0]:"C"};
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
-// Build flow grid
+/* ---------- business operating model index ---------- */
+const PROC={},SVC={},DOM={};
+BD.BOM.forEach(d=>{DOM[d.id]=d;d.services.forEach(s=>{SVC[s.id]={...s,dom:d.id};s.proc.forEach(p=>{PROC[p.id]={...p,svc:s.id,dom:d.id}})})});
+const RULE={},CON={},CALC={},CNS={};
+BD.RULES.forEach(r=>RULE[r[0]]={id:r[0],name:r[1],dom:r[2],life:r[3],st:r[4],t:r[5]});
+BD.CONS.forEach(c=>CON[c[0]]={id:c[0],name:c[1],dom:c[2],action:c[3],refs:c[4]});
+BD.CALCS.forEach(c=>CALC[c[0]]={id:c[0],name:c[1],grp:c[2],unit:c[3],refs:c[4],owner:c[5],out:c[6]});
+BD.CONSUMERS.forEach(c=>CNS[c[0]]={id:c[0],name:c[1],kind:c[2],fam:c[3],rules:c[4],cons:c[5],calcs:c[6],home:c[7],aut:c[8],tier:c[9],surf:c[10]});
+const USERS={};
+Object.values(CNS).forEach(c=>[...c.rules,...c.cons,...c.calcs].forEach(x=>(USERS[x]=USERS[x]||[]).push(c.id)));
+const assetName=id=>(RULE[id]||CON[id]||CALC[id]||CNS[id]||{}).name||id;
+const PROVTXT={d:"register",u:"used in answers",c:"carried by",e:"enforces",r:"via rule",p:"proposed"};
+// processes measured by each calc (through the rules it references)
+const CALC_BY_TGT={};
+Object.values(CALC).forEach(c=>{const ts=new Set();c.refs.forEach(r=>RULE[r]&&RULE[r].t.forEach(([t])=>ts.add(t)));const o=CNS[c.owner];if(o)o.home.forEach(t=>ts.add(t));ts.forEach(t=>(CALC_BY_TGT[t]=CALC_BY_TGT[t]||[]).push(c.id))});
+
+function trace(type,id){
+ const paths=[];const add=(t,prov,via)=>paths.push({t,prov,via});
+ const ruleT=(rid,prov,via)=>{const r=RULE[rid];if(!r)return;r.t.forEach(([t,p])=>add(t,(prov&&p!=="p")?prov:p,via||(p==="u"?"Sales Advisor answers (EXT-008)":"register")))};
+ const carriers=aid=>(USERS[aid]||[]).forEach(cid=>CNS[cid].home.forEach(t=>add(t,"c",cid)));
+ if(type==="rule"){ruleT(id);carriers(id)}
+ else if(type==="con"||type==="calc"){const a=type==="con"?CON[id]:CALC[id];a.refs.forEach(r=>ruleT(r,"r",r));carriers(id);if(type==="calc"&&CNS[a.owner])CNS[a.owner].home.forEach(t=>add(t,"c",a.owner))}
+ else{const c=CNS[id];c.home.forEach(t=>add(t,"d","registry"));c.rules.forEach(r=>ruleT(r,"e",r))}
+ return paths;
+}
+function resolve(t){if(PROC[t])return{dom:PROC[t].dom,svc:PROC[t].svc,proc:t};if(SVC[t])return{dom:SVC[t].dom,svc:t,proc:null};return null}
+function aggregate(paths){
+ const tree={};const hit={};
+ paths.forEach(p=>{const r=resolve(p.t);if(!r)return;const key=r.proc||r.svc;
+  tree[r.dom]=tree[r.dom]||{};tree[r.dom][r.svc]=tree[r.dom][r.svc]||{};
+  const n=tree[r.dom][r.svc][key]=tree[r.dom][r.svc][key]||{key,proc:r.proc,prov:new Set(),via:new Set(),n:0};
+  n.prov.add(p.prov);if(p.via)n.via.add(p.via);n.n++;hit[key]=(hit[key]||0)+1});
+ return{tree,hit};
+}
+
+/* ---------- flow grid ---------- */
 const g=document.getElementById("flowGrid");
 let h='<div></div><div class="phase dt" style="grid-column:span 2">Design time</div><div class="phase rel">Release</div><div class="phase rt" style="grid-column:span 2">Run time</div>';
 h+='<div></div><div class="keelband"><span class="kt">The keel · governed semantic foundation</span><div class="kchips">'+KEEL.map(k=>`<button class="kchip" data-k="${k.id}" title="${esc(k.s)}">${k.id} ${esc(k.n)}</button>`).join("")+'</div></div>';
-h+='<div></div><div class="compile"><div class="arrow" style="grid-column:span 2"></div><div></div><div></div><div></div></div>';
 h+='<div></div>'+STAGES.map(s=>`<div class="colh">${s.n}<small>${s.s}</small></div>`).join("");
-COMPS.forEach(c=>{
- h+=`<div class="rowh"><b>${c.n}</b><span>${c.r}</span></div>`;
- STAGES.forEach(s=>{
-  const x=CELLS[c.id][s.k];
-  const cls=s.ph==="dt"?"dtc":s.ph==="rel"?"relc":"rtc";
-  h+=`<button class="cell ${cls}" data-c="${c.id}" data-s="${s.k}" aria-pressed="false"><span class="ct">${esc(x.t)}</span><span class="cs">${esc(x.s)}</span><span class="pips">${x.m.map(m=>`<span class="pip ${typeOf(m)}">${m}</span>`).join("")}</span></button>`;
- });
-});
-h+='<div class="plmband"><div class="plmh"><b>PLM</b><span>Gate evidence, compliance, risk and impact per component version</span></div>';
-const gateCols=[["G0","G1"],["G2"],["G3"],["G4"],["G5"]];
-gateCols.forEach(gs=>{
- h+='<div class="gates2">'+gs.map(id=>{const gg=GATES.find(x=>x[0]===id);return `<div class="gate"><span class="gid">${gg[0]}</span><span class="gn">${gg[1]}</span><span class="gm">${gg[3]}</span></div>`}).join("")+'</div>';
-});
+const rowHtml=(c,wb)=>{let x=`<div class="rowh${wb?" wbh":""}"><b>${esc(c.n)}</b><span>${esc(c.r)}</span>${wb?`<a href="${LINKS[c.id]}" target="_blank" rel="noopener">Open ↗</a>`:""}</div>`;
+ STAGES.forEach(s=>{const y=CELLS[c.id][s.k];const cls=wb?"wbc":s.ph==="dt"?"dtc":s.ph==="rel"?"relc":"rtc";
+  x+=`<button class="cell ${cls}" data-c="${c.id}" data-s="${s.k}" aria-pressed="false"><span class="ct">${esc(y.t)}</span><span class="cs">${esc(y.s)}</span><span class="pips">${y.m.map(m=>`<span class="pip ${typeOf(m)}">${m}</span>`).join("")}</span></button>`});return x};
+h+='<div class="grouph">Governance workbench <span>authors, approves and releases what the keel holds</span></div>';
+WB.forEach(c=>h+=rowHtml(c,true));
+h+='<div></div><div class="compile">▼ released assets compiled by GOV-019 into native artifacts</div>';
+h+='<div class="grouph">Delivery components <span>consume generated artifacts; never hand-author meaning</span></div>';
+COMPS.forEach(c=>h+=rowHtml(c,false));
+h+='<div class="plmband"><div class="plmh"><b>PLM</b><span>Gate evidence, compliance, risk and impact per asset and component version</span></div>';
+[["G0","G1"],["G2"],["G3"],["G4"],["G5"]].forEach(gs=>{h+='<div class="gates2">'+gs.map(id=>{const q=GATES.find(x=>x[0]===id);return `<div class="gate"><span class="gid">${q[0]}</span><span class="gn">${q[1]}</span><span class="gm">${esc(q[3])}</span></div>`}).join("")+'</div>'});
 h+='</div>';
+h+='<div class="bomband"><div class="bomh"><b>Business operating model</b><span>Where impact lands: domain → service → process</span></div><div class="bomstrip">'+
+ BD.BOM.map(d=>{const np=d.services.reduce((a,s)=>a+s.proc.length,0);return `<a href="#impact" data-dom="${d.id}"><b>${esc(d.name)}</b><span>${d.services.length} services · ${np} processes</span></a>`}).join("")+'</div></div>';
 g.innerHTML=h;
 
 const detail=document.getElementById("detail");
 function showCell(c,s){
  document.querySelectorAll(".cell").forEach(b=>b.setAttribute("aria-pressed",b.dataset.c===c&&b.dataset.s===s?"true":"false"));
- const x=CELLS[c][s], st=STAGES.find(z=>z.k===s), comp=COMPS.find(z=>z.id===c);
+ const x=CELLS[c][s],st=STAGES.find(z=>z.k===s),row=ALLROWS.find(z=>z.id===c);
  const kin=x.k.length?x.k.map(k=>{const kk=KEEL.find(z=>z.id===k);const f=FEEDS[k][c];return `<div><code>${k}</code><span><b>${esc(kk.n)}</b>${f?" → "+esc(f):""}</span></div>`}).join(""):'<p class="note">No new keel inputs at this stage. Measures are compared with thresholds already set in the SSOT.</p>';
  const ms=x.m.map(m=>{const r=REG.find(z=>z[0]===m);return `<li><span class="pip ${r[6][0]}">${m}</span> ${esc(r[2])}. <span class="note">${esc(r[3])}. Gate ${r[5]}.</span></li>`}).join("");
- detail.innerHTML=`<div class="dh"><span class="eyebrow">${st.ph==="rt"?"Run time":st.ph==="rel"?"Release":"Design time"} · ${st.n} · gate ${st.gate}</span><h3>${esc(comp.n)}: ${esc(x.t)}</h3></div>
+ detail.innerHTML=`<div class="dh"><span class="eyebrow">${st.ph==="rt"?"Run time":st.ph==="rel"?"Release":"Design time"} · ${st.n} · gate ${st.gate}</span><h3>${esc(row.n)}: ${esc(x.t)}</h3>${LINKS[c]?`<a class="tag" href="${LINKS[c]}" target="_blank" rel="noopener">Open ${esc(row.n)} ↗</a>`:""}</div>
  <div class="dgrid"><div><h4>Keel inputs</h4><div class="kin">${kin}</div></div>
  <div><h4>Activities</h4><ul>${x.a.map(a=>`<li>${esc(a)}</li>`).join("")}</ul></div>
  <div><h4>Measures to PLM</h4><ul style="list-style:none;padding-left:0">${ms}</ul></div></div>`;
@@ -366,53 +548,157 @@ function showCell(c,s){
 function showKeel(k){
  document.querySelectorAll(".cell").forEach(b=>b.setAttribute("aria-pressed","false"));
  const kk=KEEL.find(z=>z.id===k);
- const rows=COMPS.map(c=>`<li><b>${c.n}:</b> ${FEEDS[k][c.id]?esc(FEEDS[k][c.id]):'<span class="note">not used</span>'}</li>`).join("");
- detail.innerHTML=`<div class="dh"><span class="eyebrow">Keel asset · ${k}</span><h3>${esc(kk.n)}</h3><span class="tag">${esc(kk.s)}</span></div><div><h4>Compiled into</h4><ul>${rows}</ul></div>`;
+ detail.innerHTML=`<div class="dh"><span class="eyebrow">Keel asset · ${k}</span><h3>${esc(kk.n)}</h3><span class="tag">${esc(kk.s)}</span></div><div class="dgrid"><div><h4>Governed in the workbench</h4><ul>${WB.map(c=>`<li><b>${c.n}:</b> ${FEEDS[k][c.id]?esc(FEEDS[k][c.id]):'<span class="note">not used</span>'}</li>`).join("")}</ul></div><div><h4>Compiled into</h4><ul>${COMPS.map(c=>`<li><b>${c.n}:</b> ${FEEDS[k][c.id]?esc(FEEDS[k][c.id]):'<span class="note">not used</span>'}</li>`).join("")}</ul></div></div>`;
 }
 g.addEventListener("click",e=>{
- const b=e.target.closest(".cell"); if(b){showCell(b.dataset.c,b.dataset.s);return}
- const k=e.target.closest(".kchip"); if(k) showKeel(k.dataset.k);
+ const b=e.target.closest(".cell");if(b){showCell(b.dataset.c,b.dataset.s);return}
+ const k=e.target.closest(".kchip");if(k){showKeel(k.dataset.k);return}
+ const d=e.target.closest("[data-dom]");if(d){const el=document.querySelector(`.dcard[data-d="${d.dataset.dom}"]`);if(el){e.preventDefault();el.scrollIntoView({block:"start"});el.querySelector(".pbtn")?.focus({preventScroll:true})}}
 });
-showCell("A","run");
+showCell("WE","release");
 
-// Inputs matrix
-document.getElementById("inputTbl").innerHTML='<thead><tr><th>Keel asset</th>'+COMPS.map(c=>`<th>${c.n}</th>`).join("")+'</tr></thead><tbody>'+
- KEEL.map(k=>'<tr><td class="k">'+k.id+' '+esc(k.n)+'<small>'+esc(k.s)+'</small></td>'+COMPS.map(c=>FEEDS[k.id][c.id]?`<td>${esc(FEEDS[k.id][c.id])}</td>`:'<td class="na">—</td>').join("")+'</tr>').join("")+'</tbody>';
+/* ---------- inputs matrix ---------- */
+document.getElementById("inputTbl").innerHTML='<thead><tr><th>Keel asset</th>'+ALLROWS.map(c=>`<th>${c.n}</th>`).join("")+'</tr></thead><tbody>'+
+ KEEL.map(k=>'<tr><td class="k">'+k.id+' '+esc(k.n)+'<small>'+esc(k.s)+'</small></td>'+ALLROWS.map(c=>FEEDS[k.id][c.id]?`<td>${esc(FEEDS[k.id][c.id])}</td>`:'<td class="na">—</td>').join("")+'</tr>').join("")+'</tbody>';
 
-// Register
+/* ---------- BOM map ---------- */
+const GOVBY={};
+BD.RULES.forEach(r=>r[5].forEach(([t])=>{(GOVBY[t]=GOVBY[t]||{r:new Set(),c:new Set()}).r.add(r[0])}));
+Object.values(CNS).forEach(c=>c.home.forEach(t=>{(GOVBY[t]=GOVBY[t]||{r:new Set(),c:new Set()}).c.add(c.id)}));
+const bom=document.getElementById("bomMap");
+bom.innerHTML=BD.BOM.map(d=>`<div class="dcard" data-d="${d.id}"><div><div class="dn">${esc(d.name)}</div><div class="dh2">${esc(d.holon)}</div></div>`+
+ d.services.map(s=>{const sg=GOVBY[s.id];return `<div class="dsvc" data-s="${s.id}"><span class="sn">${esc(s.name)} <span class="svchit" data-sh="${s.id}">${sg?`+${sg.r.size+sg.c.size} at service level`:""}</span></span>`+
+  s.proc.map(p=>{const gv=GOVBY[p.id]||{r:new Set(),c:new Set()};return `<button class="pbtn" data-p="${p.id}"><span>${esc(p.name)}</span><span class="pc">${gv.r.size} rules · ${gv.c.size} consumers</span></button>`}).join("")+'</div>'}).join("")+'</div>').join("");
+
+/* ---------- tracer ---------- */
+const pType=document.getElementById("pType"),pItem=document.getElementById("pItem"),pFilter=document.getElementById("pFilter"),pChange=document.getElementById("pChange"),out=document.getElementById("traceOut");
+const LIST={rule:()=>Object.values(RULE),con:()=>Object.values(CON),calc:()=>Object.values(CALC),Agent:()=>Object.values(CNS).filter(c=>c.kind==="Agent"),Microservice:()=>Object.values(CNS).filter(c=>c.kind==="Microservice")};
+function fillItems(sel){const f=pFilter.value.trim().toLowerCase();const xs=LIST[pType.value]().filter(x=>!f||(x.id+" "+x.name).toLowerCase().includes(f));
+ pItem.innerHTML=xs.map(x=>`<option value="${x.id}">${x.id} · ${esc(x.name)}</option>`).join("")||'<option value="">No match</option>';if(sel&&xs.some(x=>x.id===sel))pItem.value=sel}
+const QUICK=[["rule","PAY-002"],["rule","SAL-009"],["con","CON-001"],["calc","CALC-001"],["Agent","AG-21"],["Agent","FD-01"],["Microservice","MS-19"]];
+document.getElementById("quick").innerHTML=QUICK.map(([t,i])=>`<button data-t="${t}" data-i="${i}">${i}</button>`).join("");
+document.getElementById("quick").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;pType.value=b.dataset.t;pFilter.value="";fillItems(b.dataset.i);run()});
+pType.addEventListener("change",()=>{pFilter.value="";fillItems();run()});
+pFilter.addEventListener("input",()=>{fillItems(pItem.value);run()});
+pItem.addEventListener("change",run);pChange.addEventListener("change",run);
+
+const GATEREQ={
+ PATCH:["G2: rerun the generated tests and scenario tests for every consumer listed","No consumer notification; PLM item version bumped as a patch"],
+ MINOR:["G2: rerun tests and Decision Question Baseline slices for every consumer listed","Owners of each affected business service notified","One PLM finding opened per affected process until G4 evidence is green"],
+ MAJOR:["G0: re-approval as a new major version, author and approver separated (CTL-013)","Old version kept through a deprecation window; every consumer re-pinned","G2: full Decision Question Baseline regression for every consumer","G5: value review for each affected business service before the old version retires"]};
+
+function measuresFor(keys){const outM=[];const seen=new Set();
+ keys.forEach(k=>(BD.VGO[k]||[]).forEach(v=>{const key=k+v[0]+v[1];if(seen.has(key))return;seen.add(key);outM.push({k,vg:v})}));
+ keys.forEach(k=>(CALC_BY_TGT[k]||[]).forEach(c=>{if(seen.has(c))return;seen.add(c);outM.push({k,calc:c})}));return outM}
+
+function renderTree(agg){
+ return '<div class="tree">'+Object.entries(agg.tree).map(([d,svcs])=>`<div class="tdom"><b>${esc(DOM[d].name)}</b>`+
+  Object.entries(svcs).map(([s,nodes])=>`<div class="tsvc"><span>${esc(SVC[s].name)}</span>`+
+   Object.values(nodes).map(n=>{const vias=[...n.via].filter(v=>v!=="register"&&v!=="registry");const pv=[...n.prov];
+    return `<div class="tproc"><span class="pn">${n.proc?esc(PROC[n.proc].name):"Service level"}</span>${pv.map(p=>`<span class="prov ${p}">${PROVTXT[p]}</span>`).join("")}${vias.length?`<span class="note">${vias.slice(0,4).map(v=>esc(v)).join(", ")}${vias.length>4?` +${vias.length-4}`:""}</span>`:""}</div>`}).join("")+'</div>').join("")+'</div>').join("")+'</div>';
+}
+function highlight(hit,selP){
+ const max=Math.max(1,...Object.values(hit));
+ document.querySelectorAll(".pbtn").forEach(b=>{const v=hit[b.dataset.p]||0;b.classList.toggle("h1",v>0&&v<max/2+.5);b.classList.toggle("h2",v>=max/2+.5&&v>0);b.classList.toggle("sel",b.dataset.p===selP)});
+ document.querySelectorAll("[data-sh]").forEach(sp=>{const v=hit[sp.dataset.sh];sp.style.fontWeight=v?"600":"";});
+}
+function run(){
+ const id=pItem.value;if(!id){out.innerHTML="";highlight({});return}
+ const type=pType.value;const paths=trace(type==="Agent"||type==="Microservice"?"cns":type,id);const agg=aggregate(paths);
+ const procs=new Set(),svcs=new Set(),doms=new Set();
+ Object.entries(agg.tree).forEach(([d,ss])=>{doms.add(d);Object.entries(ss).forEach(([s,ns])=>{svcs.add(s);Object.values(ns).forEach(n=>n.proc&&procs.add(n.proc))})});
+ const declared=paths.filter(p=>p.prov!=="p").length;const ratio=paths.length?Math.round(100*declared/paths.length):100;
+ const users=USERS[id]||[];
+ let meta="";
+ if(RULE[id]){const r=RULE[id];meta=`${esc(r.dom)} · lifecycle ${esc(r.life)} · ${esc(r.st)}`}
+ else if(CON[id]){const c=CON[id];meta=`${esc(c.dom)} · on violation: ${esc(c.action)} · implements ${c.refs.join(", ")||"—"}`}
+ else if(CALC[id]){const c=CALC[id];meta=`${esc(c.grp)} · unit ${esc(c.unit)} · owner ${esc(c.owner)} · published to ${esc(c.out||"—")}`}
+ else{const c=CNS[id];meta=`${esc(c.kind)} · ${esc(c.fam)}${c.tier?" · "+c.tier:""}${c.aut?" · autonomy "+esc(c.aut):""} · ${c.rules.length} rules, ${c.cons.length} constraints, ${c.calcs.length} calcs`}
+ const ms=measuresFor([...procs,...svcs]).slice(0,8);
+ const mHtml=ms.length?ms.map(m=>{if(m.vg){const v=m.vg;const bad=v[5]==="lower"?v[4]>v[3]:v[4]<v[3];return `<div><span class="gapbar ${bad?"bad":"ok"}">${esc(v[0])}</span><span><b>${esc(v[1])}</b> · ${esc(PROC[m.k].name)}: target ${v[3]} ${esc(v[2])}, now ${v[4]}${v[6]?`<br><span class="note">${esc(v[6])}</span>`:""}</span></div>`}
+  const c=CALC[m.calc];return `<div><span class="tag">${c.id}</span><span><b>${esc(c.name)}</b> <span class="note">${esc(c.grp)} · ${esc(c.unit)}</span></span></div>`}).join(""):'<p class="note">No registered measure covers these processes yet. That gap is itself a W-08 finding.</p>';
+ const domNames=[...doms].map(d=>DOM[d].name);const procNames=[...procs].map(p=>PROC[p].name);
+ const ch=pChange.value;const chWord={PATCH:"A patch",MINOR:"A material (minor)",MAJOR:"A breaking (major)"}[ch];
+ const prop=paths.some(p=>p.prov==="p");
+ const sum=`${chWord} change to <b>${id} ${esc(assetName(id))}</b> reaches ${procs.size} process${procs.size===1?"":"es"} in ${svcs.size} business service${svcs.size===1?"":"s"} across ${doms.size} domain${doms.size===1?"":"s"}: ${esc(domNames.join(", "))}.`+
+  (procNames.length?` The processes are ${esc(procNames.slice(0,6).join(", "))}${procNames.length>6?` and ${procNames.length-6} more`:""}.`:"")+
+  (users.length?` ${users.length} consumer${users.length===1?"":"s"} appl${users.length===1?"ies":"y"} it at run time (${users.slice(0,5).join(", ")}${users.length>5?", …":""}).`:"")+
+  ` ${declared} of ${paths.length} paths are declared in the registers (determinism ${ratio}%)${prop?", so the result is reported as projected until the proposed mappings are confirmed":""}.`;
+ out.innerHTML=`<div class="asset"><span class="am">${esc(id)}</span><span class="an">${esc(assetName(id))}</span><span class="am">${meta}</span></div>
+ <div class="stats"><div class="stat"><b>${doms.size}</b><span>domains</span></div><div class="stat"><b>${svcs.size}</b><span>services</span></div><div class="stat"><b>${procs.size}</b><span>processes</span></div><div class="stat"><b>${ratio}%</b><span>determinism</span></div></div>
+ <div class="summary"><span class="sl">Draft assessment · Impact summarization agent</span><p>${sum}</p></div>
+ <div><h4>Gates this change must clear</h4><ul class="gatesreq">${GATEREQ[ch].map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+ <div><h4>Where it lands</h4>${paths.length?renderTree(agg):'<p class="note">No mapping to the business operating model. Add a domain holon or consumer binding in the SSOT Editor.</p>'}</div>
+ <div><h4>Measures that will show the effect</h4><div class="mlist">${mHtml}</div></div>`;
+ highlight(agg.hit,null);
+ chainLive(domNames,[...svcs].map(s=>SVC[s].name),procNames,id);
+}
+function showProcess(pid){
+ const p=PROC[pid];const gv=GOVBY[pid]||{r:new Set(),c:new Set()};const sg=GOVBY[p.svc]||{r:new Set(),c:new Set()};
+ const rules=[...gv.r],cons=[...gv.c];
+ const conAll=Object.values(CON).filter(c=>c.refs.some(r=>gv.r.has(r))).map(c=>c.id);
+ const ms=measuresFor([pid]);
+ const list=(ids,max)=>ids.slice(0,max).map(i=>`<button class="btn" data-go="${i}">${i}</button>`).join(" ")+(ids.length>max?` <span class="note">+${ids.length-max} more</span>`:"");
+ out.innerHTML=`<div class="asset"><span class="am">${esc(DOM[p.dom].name)} · ${esc(SVC[p.svc].name)}</span><span class="an">${esc(p.name)}</span><span class="am">Process ${pid}${p.stage?` · stage ${esc(p.stage)}`:""}</span></div>
+ <div class="stats"><div class="stat"><b>${rules.length}</b><span>rules</span></div><div class="stat"><b>${conAll.length}</b><span>constraints</span></div><div class="stat"><b>${cons.length}</b><span>consumers</span></div><div class="stat"><b>${ms.length}</b><span>measures</span></div></div>
+ <div class="summary"><span class="sl">What governs this process</span><p>${rules.length} rules are declared against <b>${esc(p.name)}</b>${conAll.length?`, enforced through ${conAll.length} constraints`:""}${cons.length?`, and ${cons.length} agents or microservices run in it`:""}. ${sg.r.size+sg.c.size?`Another ${sg.r.size+sg.c.size} assets apply to ${esc(SVC[p.svc].name)} as a whole. `:""}Select any ID to trace its full impact.</p></div>
+ <div><h4>Rules</h4><div class="quick">${list(rules,24)||'<span class="note">None declared</span>'}</div></div>
+ <div><h4>Constraints</h4><div class="quick">${list(conAll,16)||'<span class="note">None</span>'}</div></div>
+ <div><h4>Agents and microservices</h4><div class="quick">${list(cons,16)||'<span class="note">None homed here</span>'}</div></div>
+ <div><h4>Measures</h4><div class="mlist">${ms.length?ms.slice(0,8).map(m=>m.vg?`<div><span class="gapbar ${(m.vg[5]==="lower"?m.vg[4]>m.vg[3]:m.vg[4]<m.vg[3])?"bad":"ok"}">${esc(m.vg[0])}</span><span><b>${esc(m.vg[1])}</b>: target ${m.vg[3]} ${esc(m.vg[2])}, now ${m.vg[4]}</span></div>`:`<div><span class="tag">${m.calc}</span><span>${esc(CALC[m.calc].name)}</span></div>`).join(""):'<p class="note">No registered measure yet.</p>'}</div></div>`;
+ const hit={};hit[pid]=1;highlight(hit,pid);
+ chainLive([DOM[p.dom].name],[SVC[p.svc].name],[p.name],null);
+}
+bom.addEventListener("click",e=>{const b=e.target.closest(".pbtn");if(b)showProcess(b.dataset.p)});
+out.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(!b)return;const i=b.dataset.go;
+ pType.value=RULE[i]?"rule":CON[i]?"con":CALC[i]?"calc":CNS[i].kind;pFilter.value="";fillItems(i);run();document.getElementById("tracePanel").scrollIntoView({block:"start"})});
+
+/* ---------- register ---------- */
 const fComp=document.getElementById("fComp");
 Object.entries(COMPNAME).forEach(([k,v])=>fComp.insertAdjacentHTML("beforeend",`<option value="${k}">${v}</option>`));
 const SN={C:"Compliance",R:"Risk",I:"Impact"};
+// live value for W-08
+const mappedRules=BD.RULES.filter(r=>r[5].length).length;
+const mappedCons=Object.values(CON).filter(c=>c.refs.some(r=>RULE[r]&&RULE[r].t.length)).length;
+const mappedCalcs=Object.values(CALC).filter(c=>(c.refs.some(r=>RULE[r]&&RULE[r].t.length))||CNS[c.owner]?.home.length).length;
+const mappedCns=Object.values(CNS).filter(c=>c.home.length).length;
+const W08=`Today: rules ${mappedRules}/${BD.RULES.length}, constraints ${mappedCons}/${BD.CONS.length}, calcs ${mappedCalcs}/${BD.CALCS.length}, agents and services ${mappedCns}/${BD.CONSUMERS.length}`;
 function renderReg(){
  const c=fComp.value,t=document.getElementById("fTime").value,s=document.getElementById("fScore").value;
  const rows=REG.filter(r=>(!c||r[1]===c)&&(!t||r[4]===t)&&(!s||r[6].includes(s)));
  document.getElementById("regCount").textContent=rows.length+" of "+REG.length+" measures";
- document.getElementById("regTbl").innerHTML='<thead><tr><th>ID</th><th>Measure</th><th>Component</th><th>When</th><th>Gate</th><th>Feeds</th></tr></thead><tbody>'+
- rows.map(r=>`<tr id="m-${r[0]}"><td class="mono">${r[0]}</td><td><b>${esc(r[2])}</b><br><span class="note">${esc(r[3])}</span></td><td>${COMPNAME[r[1]]}</td><td>${r[4]==="Design"?"Design time":r[4]==="Run"?"Run time":"Release"}</td><td class="mono">${r[5]}</td><td><span class="score">${[...r[6]].map(x=>`<span class="pip ${x}">${SN[x]}</span>`).join("")}</span></td></tr>`).join("")+'</tbody>';
+ document.getElementById("regTbl").innerHTML='<thead><tr><th>ID</th><th>Measure</th><th>Owner</th><th>When</th><th>Gate</th><th>Feeds</th></tr></thead><tbody>'+
+ rows.map(r=>`<tr><td class="mono">${r[0]}</td><td><b>${esc(r[2])}</b><br><span class="note">${esc(r[3])}${r[0]==="W-08"?". "+W08:""}</span></td><td>${COMPNAME[r[1]]}</td><td>${r[4]==="Design"?"Design time":r[4]==="Run"?"Run time":"Release"}</td><td class="mono">${r[5]}</td><td><span class="score">${[...r[6]].map(x=>`<span class="pip ${x}">${SN[x]}</span>`).join("")}</span></td></tr>`).join("")+'</tbody>';
 }
 ["fComp","fTime","fScore"].forEach(id=>document.getElementById(id).addEventListener("change",renderReg));
 renderReg();
-
 document.getElementById("gateTbl").innerHTML='<thead><tr><th>Gate</th><th>Name</th><th>Passes when</th><th>Evidence</th></tr></thead><tbody>'+
  GATES.map(r=>`<tr><td class="mono">${r[0]}</td><td><b>${r[1]}</b></td><td>${esc(r[2])}</td><td class="mono" style="white-space:normal">${esc(r[3])}</td></tr>`).join("")+'</tbody>';
 
-// Causal chain
+/* ---------- causal chain ---------- */
 const CHAIN=[
- ["Component version","PLM item","The changed connector, model, metric or agent, with its gate evidence.","Example: retention metric v2"],
- ["Operational services","Business model","Services the component enables or improves.","Example: client success reporting"],
- ["Products & services","For customers","What customers receive from those services.","Example: customer health insights"],
- ["Strategy map","Objectives","Objectives across the strategy map's perspectives.","Example: improve client retention"],
- ["Corporate values","Values","The values the objectives serve, and the norms that encode them.","Example: client focus"]
+ ["Asset version","PLM item","The rule, constraint, calc, agent or microservice that changed, with its gate evidence.",true],
+ ["Processes","Operating model","Lifecycle processes that apply or depend on the asset.",true],
+ ["Business services","Operating model","Services those processes deliver.",true],
+ ["Domains","Operating model","Insperity's service domains and the shared governance domain.",true],
+ ["Products & services","For customers","What clients and worksite employees receive. Binds when the product catalog is in the keel.",false],
+ ["Strategy map","Objectives","Objectives across the strategy map's perspectives. Binds when the strategy map is in the keel.",false],
+ ["Corporate values","Values","The values the objectives serve, and the norms that encode them.",false]
 ];
-document.getElementById("chain").innerHTML=CHAIN.map(c=>`<div class="node"><span class="nt">${c[1]}</span><span class="nn">${c[0]}</span><span class="ne">${c[2]}</span><span class="ex">${c[3]}</span></div>`).join("");
+function chainLive(doms,svcs,procs,id){
+ const vals=[id?`${id}`:"Select an asset",procs.length?`${procs.length}: ${procs.slice(0,2).join(", ")}${procs.length>2?" …":""}`:"—",svcs.length?`${svcs.length}: ${svcs.slice(0,2).join(", ")}${svcs.length>2?" …":""}`:"—",doms.length?`${doms.length}: ${doms.slice(0,2).join(", ")}${doms.length>2?" …":""}`:"—","Pending K12 load","Pending K12 load","Pending K12 load"];
+ document.getElementById("chain").innerHTML=CHAIN.map((c,i)=>`<div class="node${c[3]?" live":""}"><span class="nt">${c[1]}</span><span class="nn">${c[0]}</span><span class="ne">${c[2]}</span><span class="ex">${esc(vals[i])}</span></div>`).join("");
+}
 const AG=[
- ["Change & impact trigger","Fires on a PLM item release or when a measure crosses its SSOT threshold. Passes the item and its measures to the causal engine."],
- ["Causal mapping agent","Traverses the business model from the item to services, products, objectives and values. Marks each edge curated or estimated."],
- ["Impact estimation agent","Applies edge weights and the item's measures to project value per node. Computes the determinism ratio for each path."],
- ["Impact summarization agent","Writes the assessment for executives, product owners and risk, each claim citing path IDs and measure IDs. Gated by the circuit breaker."],
- ["Reviewer in the PLM","Signs off the assessment at G5. Overrides are recorded and count toward A-05 for the summarization agent."]
+ ["AG-31","Impact Analyzer","Fires when a change is released in the SSOT Editor or the Agent & Service Map, or when a measure crosses its SSOT threshold. Resolves the asset's consumers and processes, as the tracer above does."],
+ ["AG-34","Causal Graph Builder","Extends the paths from processes and services to products, strategy objectives and values. Marks each link declared or proposed."],
+ ["AG-35","Effect Estimator","Applies the asset's measures and the value-gap outcomes to estimate the effect per process and service, with the determinism ratio per path."],
+ ["AG-36 · AG-37","Risk & Opportunity Ranker, Counterfactual Explainer","Ranks affected services by risk and value at stake, and explains what would have happened without the change."],
+ ["AG-38 + reviewer","Action Proposer and PLM sign-off","Drafts the assessment and next actions for each audience, citing asset, path and measure IDs. A reviewer signs off at G5; overrides count toward A-05."]
 ];
-document.getElementById("agents").innerHTML=AG.map(a=>`<div class="agent"><span class="an">${a[0]}</span><p>${a[1]}</p></div>`).join("");
+document.getElementById("agents").innerHTML=AG.map(a=>`<div class="agent"><span class="aid">${a[0]}</span><span class="an">${a[1]}</span><p>${a[2]}</p></div>`).join("");
+
+fillItems("PAY-002");run();
 </script>
 
 </body></html>
