@@ -3,7 +3,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: a vessel read left to right — keel band on top, governance workbench under it, then the component × lifecycle grid, PLM band catching every measure; below, the business operating model the impact tracer walks. */
+/* Layout: an explorer. Home is the vessel grid (keel → workbench → components → PLM → operating model); every tile opens its own page with breadcrumbs, a back control and links onward. */
 :root{
   --ground:#EEF2F5; --paper:#FFFFFF; --ink:#13202E; --muted:#566575; --rule:#D3DBE3;
   --keel:#1B3550; --keel-fg:#F1F4F8; --brass:#9A6B1F; --brass-soft:#F4EAD7;
@@ -27,169 +27,166 @@
   --comp:#56C2B1; --comp-soft:#173B36; --risk:#E7826B; --risk-soft:#43231C; --impact:#93A9EE; --impact-soft:#1F2A4A;
   --dt:#18232E; --rt:#17241F; color-scheme:dark;}
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{background:var(--ground);color:var(--ink);font:15px/1.55 var(--f-body);padding-inline:16px;padding-block:0 48px}
+body{background:var(--ground);color:var(--ink);font:15px/1.55 var(--f-body);padding-inline:16px;padding-block:0 56px}
 .wrap{max-width:1240px;margin:0 auto}
 h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;font-weight:600}
-h1{font-size:clamp(28px,4vw,40px);line-height:1.1}
-h2{font-size:24px;line-height:1.2}
+h1{font-size:clamp(26px,3.6vw,38px);line-height:1.12}
+h2{font-size:22px;line-height:1.2}
 h3{font-size:17px}
 p{margin:0}
 a{color:var(--impact)}
 .lede{max-width:72ch;color:var(--muted);font-size:16px}
+.note{font-size:12.5px;color:var(--muted)}
 .eyebrow{font:500 11px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--brass)}
-header.top{padding-block:36px 20px;display:grid;gap:12px}
-.toollinks{display:flex;flex-wrap:wrap;gap:8px}
-.toollinks a{font:500 13px var(--f-body);text-decoration:none;color:var(--wb);border:1px solid var(--wb);border-radius:6px;padding:5px 10px;background:var(--wb-soft)}
-.toollinks a:hover,.toollinks a:focus-visible{outline:2px solid var(--wb);outline-offset:1px}
-nav.toc{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--ground);border-bottom:1px solid var(--rule);display:flex;gap:4px;flex-wrap:wrap;padding-block:8px}
-nav.toc a{font:500 13px var(--f-body);color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:6px}
-nav.toc a:hover,nav.toc a:focus-visible{background:var(--paper);color:var(--ink);outline:none}
-section{padding-block:36px 8px;display:grid;gap:16px}
+
+/* App bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--ground);border-bottom:1px solid var(--rule)}
+.bar .in{max-width:1240px;margin:0 auto;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;padding-block:10px}
+.brand{font:600 16px var(--f-display);color:var(--ink);text-decoration:none;margin-right:6px}
+.nav{display:flex;flex-wrap:wrap;gap:2px}
+.nav a{font:500 13px var(--f-body);color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:6px}
+.nav a:hover,.nav a:focus-visible{background:var(--paper);color:var(--ink);outline:none}
+.nav a[aria-current="page"]{background:var(--paper);color:var(--ink);box-shadow:inset 0 -2px 0 var(--brass)}
+.crumbs{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding-block:14px 0;font:500 12.5px var(--f-body);color:var(--muted)}
+.crumbs a{color:var(--muted);text-decoration:none}
+.crumbs a:hover{color:var(--ink);text-decoration:underline}
+.crumbs .sep{opacity:.5}
+.back{all:unset;cursor:pointer;font:500 12.5px var(--f-mono);border:1px solid var(--rule);border-radius:5px;padding:2px 8px;background:var(--paper);color:var(--ink);margin-right:6px}
+.back:hover,.back:focus-visible{border-color:var(--brass)}
+main{display:grid;gap:22px;padding-block:14px 0}
+.phead{display:grid;gap:8px}
+.kicker{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.section{display:grid;gap:12px}
+.section>h2{font-size:19px}
+
+/* Generic blocks */
+.card{background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:16px;display:grid;gap:10px;min-width:0;align-content:start}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.tile{display:grid;gap:4px;text-decoration:none;color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:12px;align-content:start;min-width:0}
+.tile:hover,.tile:focus-visible{border-color:var(--brass);outline:none}
+.tile b{font:600 14.5px var(--f-body)}
+.tile span{font-size:12.5px;color:var(--muted)}
+.tile .id{font:500 11px var(--f-mono);color:var(--muted)}
+.tile .go{font:500 11px var(--f-mono);color:var(--brass);margin-top:4px}
+.chip{display:inline-flex;align-items:center;gap:4px;font:500 11.5px var(--f-mono);text-decoration:none;color:var(--ink);background:var(--dt);border:1px solid var(--rule);border-radius:4px;padding:2px 7px}
+a.chip:hover,a.chip:focus-visible{border-color:var(--brass);outline:none}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font:500 11px var(--f-mono);padding:2px 6px;border-radius:4px;background:var(--dt);color:var(--muted)}
+.extlink{font:500 13px var(--f-body);text-decoration:none;color:var(--wb);border:1px solid var(--wb);border-radius:6px;padding:5px 10px;background:var(--wb-soft);display:inline-block}
+.pip{font:500 10.5px var(--f-mono);padding:1px 5px;border-radius:3px;border-left:3px solid;color:var(--ink);text-decoration:none}
+.pip.C{border-color:var(--comp);background:var(--comp-soft)} .pip.R{border-color:var(--risk);background:var(--risk-soft)} .pip.I{border-color:var(--impact);background:var(--impact-soft)}
+a.pip:hover{outline:1px solid var(--brass)}
+ul.clean{margin:0;padding-left:18px;display:grid;gap:5px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:14px;align-items:baseline}
+.kv dt{font:500 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.kv dd{margin:0}
+h4{margin:0;font:600 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted)}
 .legend span{display:inline-flex;align-items:center;gap:6px}
 .dot{width:10px;height:10px;border-radius:2px;display:inline-block}
 .dot.C{background:var(--comp)} .dot.R{background:var(--risk)} .dot.I{background:var(--impact)} .dot.W{background:var(--wb)}
+.howto{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.howto div{background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:10px 12px;font-size:13.5px;display:grid;gap:2px}
+.howto b{font:600 11px var(--f-mono);color:var(--brass);letter-spacing:.06em}
 
 /* Flow grid */
 .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:10px}
-.flow{min-width:1060px;display:grid;grid-template-columns:160px repeat(5,minmax(0,1fr));gap:6px;background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:10px}
+.flow{min-width:1060px;display:grid;grid-template-columns:170px repeat(5,minmax(0,1fr));gap:6px;background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:10px}
 .phase{font:600 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;text-align:center;padding:6px;border-radius:6px;color:var(--muted)}
 .phase.dt{background:var(--dt)} .phase.rel{background:var(--brass-soft);color:var(--brass)} .phase.rt{background:var(--rt)}
 .colh{font:600 13px var(--f-body);padding:4px 8px;color:var(--ink);border-bottom:2px solid var(--rule)}
 .colh small{display:block;font:400 11px var(--f-mono);color:var(--muted)}
 .keelband{grid-column:2 / -1;background:var(--keel);color:var(--keel-fg);border-radius:8px;padding:12px 14px;display:grid;gap:8px}
 .keelband .kt{font:600 15px var(--f-display)}
-.kchips{display:flex;flex-wrap:wrap;gap:6px}
-.kchip{font:500 11.5px var(--f-mono);border:1px solid color-mix(in srgb,var(--keel-fg) 35%,transparent);border-radius:4px;padding:3px 7px;color:var(--keel-fg);background:transparent;cursor:pointer}
+.kchip{font:500 11.5px var(--f-mono);border:1px solid color-mix(in srgb,var(--keel-fg) 35%,transparent);border-radius:4px;padding:3px 7px;color:var(--keel-fg);text-decoration:none}
 .kchip:hover,.kchip:focus-visible{background:color-mix(in srgb,var(--keel-fg) 14%,transparent);outline:none}
 .grouph{grid-column:1 / -1;font:600 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:8px 2px 0;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
 .grouph span{font:400 12px var(--f-body);letter-spacing:0;text-transform:none}
 .compile{grid-column:2 / -1;font:500 11px var(--f-mono);color:var(--brass);text-align:center;padding:2px}
-.rowh{display:flex;flex-direction:column;justify-content:center;gap:2px;padding:8px;border-left:3px solid var(--keel);background:var(--dt);border-radius:0 6px 6px 0}
+.rowh{display:flex;flex-direction:column;justify-content:center;gap:2px;padding:8px;border-left:3px solid var(--keel);background:var(--dt);border-radius:0 6px 6px 0;text-decoration:none;color:var(--ink)}
 .rowh.wbh{border-left-color:var(--wb);background:var(--wb-soft)}
+.rowh:hover,.rowh:focus-visible{outline:2px solid var(--brass);outline-offset:-1px}
 .rowh b{font:600 14px var(--f-body)}
 .rowh span{font-size:12px;color:var(--muted);line-height:1.35}
-.rowh a{font:500 11px var(--f-mono);text-decoration:none}
-.cell{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:6px;padding:9px 10px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);min-width:0}
+.cell{display:flex;flex-direction:column;gap:6px;padding:9px 10px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);min-width:0;text-decoration:none;color:var(--ink)}
 .cell.dtc{background:var(--dt)} .cell.relc{background:color-mix(in srgb,var(--brass-soft) 45%,var(--paper))} .cell.rtc{background:var(--rt)}
 .cell.wbc{background:color-mix(in srgb,var(--wb-soft) 55%,var(--paper))}
-.cell:hover{border-color:var(--brass)}
-.cell:focus-visible{outline:2px solid var(--brass);outline-offset:1px}
-.cell[aria-pressed="true"]{border-color:var(--brass);box-shadow:inset 0 0 0 1px var(--brass)}
+.cell:hover,.cell:focus-visible{border-color:var(--brass);box-shadow:inset 0 0 0 1px var(--brass);outline:none}
 .cell .ct{font:600 13px var(--f-body);line-height:1.3}
 .cell .cs{font-size:12px;color:var(--muted);line-height:1.4}
 .pips{display:flex;flex-wrap:wrap;gap:4px;margin-top:auto}
-.pip{font:500 10.5px var(--f-mono);padding:1px 5px;border-radius:3px;border-left:3px solid;color:var(--ink)}
-.pip.C{border-color:var(--comp);background:var(--comp-soft)} .pip.R{border-color:var(--risk);background:var(--risk-soft)} .pip.I{border-color:var(--impact);background:var(--impact-soft)}
-.plmband{grid-column:1 / -1;display:grid;grid-template-columns:160px repeat(5,minmax(0,1fr));gap:6px;margin-top:4px;padding-top:8px;border-top:2px dashed var(--rule)}
-.plmh{background:var(--brass);color:var(--paper);border-radius:6px;padding:8px;display:flex;flex-direction:column;justify-content:center}
+.plmband{grid-column:1 / -1;display:grid;grid-template-columns:170px repeat(5,minmax(0,1fr));gap:6px;margin-top:4px;padding-top:8px;border-top:2px dashed var(--rule)}
+.plmh{background:var(--brass);color:var(--paper);border-radius:6px;padding:8px;display:flex;flex-direction:column;justify-content:center;text-decoration:none}
 .plmh b{font:600 15px var(--f-display)} .plmh span{font-size:11.5px;opacity:.9;line-height:1.35}
-.gate{border:1px solid var(--brass);border-radius:6px;padding:8px;display:grid;gap:4px;background:var(--paper)}
+.gate{border:1px solid var(--brass);border-radius:6px;padding:8px;display:grid;gap:3px;background:var(--paper);text-decoration:none;color:var(--ink)}
+.gate:hover,.gate:focus-visible{box-shadow:inset 0 0 0 1px var(--brass);outline:none}
 .gate .gid{font:600 11px var(--f-mono);color:var(--brass);letter-spacing:.06em}
 .gate .gn{font:600 13px var(--f-body)}
-.gate .gm{font:400 11px var(--f-mono);color:var(--muted);line-height:1.45}
 .gates2{display:grid;gap:6px}
-.bomband{grid-column:1 / -1;display:grid;grid-template-columns:160px 1fr;gap:6px;margin-top:2px}
-.bomh{background:var(--impact);color:var(--paper);border-radius:6px;padding:8px;display:flex;flex-direction:column;justify-content:center}
+.bomband{grid-column:1 / -1;display:grid;grid-template-columns:170px 1fr;gap:6px;margin-top:2px}
+.bomh{background:var(--impact);color:var(--paper);border-radius:6px;padding:8px;display:flex;flex-direction:column;justify-content:center;text-decoration:none}
 .bomh b{font:600 15px var(--f-display)} .bomh span{font-size:11.5px;opacity:.92;line-height:1.35}
-.bomstrip{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch}
+.bomstrip{display:flex;flex-wrap:wrap;gap:6px}
 .bomstrip a{flex:1 1 150px;text-decoration:none;color:var(--ink);border:1px solid var(--impact);border-radius:6px;padding:8px;background:var(--impact-soft);display:grid;gap:2px}
+.bomstrip a:hover,.bomstrip a:focus-visible{box-shadow:inset 0 0 0 1px var(--impact);outline:none}
 .bomstrip a b{font:600 13px var(--f-body)} .bomstrip a span{font:400 11px var(--f-mono);color:var(--muted)}
 
-/* Detail panel */
-.detail{background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:18px;display:grid;gap:14px}
-.detail .dh{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline}
-.dgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
-.detail h4,.panel h4{margin:0 0 6px;font:600 11px var(--f-mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-.detail ul{margin:0;padding-left:18px;display:grid;gap:4px}
-.detail li{font-size:14px}
-.tag{font:500 11px var(--f-mono);padding:2px 6px;border-radius:4px;background:var(--dt);color:var(--muted)}
-.kin{display:grid;gap:6px}
-.kin div{display:grid;grid-template-columns:auto 1fr;gap:8px;font-size:13.5px;align-items:baseline}
-.kin code{font:500 11px var(--f-mono);color:var(--ink);background:var(--dt);padding:1px 5px;border-radius:3px;white-space:nowrap}
+/* Lifecycle strip on tool pages */
+.strip{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;min-width:760px}
+.stepnav{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between}
+.stepnav a{font:500 13px var(--f-body);text-decoration:none;border:1px solid var(--rule);border-radius:6px;padding:6px 10px;background:var(--paper);color:var(--ink)}
+.stepnav a:hover,.stepnav a:focus-visible{border-color:var(--brass);outline:none}
 
 /* Tables */
 .tbl{border:1px solid var(--rule);border-radius:10px;background:var(--paper)}
 table{border-collapse:collapse;width:100%;font-size:13.5px}
 th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--rule);vertical-align:top}
-th{font:600 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--dt);position:sticky;top:0}
-td.k{font-weight:600;min-width:190px}
-td.k small{display:block;font:400 11px var(--f-mono);color:var(--muted);margin-top:2px}
-td.na{color:var(--muted);opacity:.5}
+th{font:600 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--dt)}
 td.mono{font:500 12px var(--f-mono);white-space:nowrap}
-.matrix{min-width:980px}
-.reg{min-width:860px}
+td.na{color:var(--muted);opacity:.5}
+td a{text-decoration:none}
+td a:hover{text-decoration:underline}
+.wide{min-width:820px}
 .filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .filters label{font:500 12px var(--f-mono);color:var(--muted)}
 select,input[type=search]{font:14px var(--f-body);padding:6px 8px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);color:var(--ink);max-width:100%}
 select:focus-visible,input:focus-visible{outline:2px solid var(--brass);outline-offset:1px}
-.score{display:inline-flex;gap:3px;flex-wrap:wrap}
-.count{font:500 12px var(--f-mono);color:var(--muted)}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:6px;overflow:hidden;flex-wrap:wrap}
+.seg button{all:unset;cursor:pointer;font:500 12.5px var(--f-body);padding:5px 10px;background:var(--paper);color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.seg button:focus-visible{outline:2px solid var(--brass);outline-offset:-2px}
 
-/* Scores */
-.scores{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
-.sc{background:var(--paper);border:1px solid var(--rule);border-top:4px solid;border-radius:8px;padding:16px;display:grid;gap:8px}
-.sc.C{border-top-color:var(--comp)} .sc.R{border-top-color:var(--risk)} .sc.I{border-top-color:var(--impact)}
-.sc p{font-size:14px}
-.sc .from{font:400 12px var(--f-mono);color:var(--muted)}
-
-/* Impact tracer */
-.tracer{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:16px;align-items:start}
-@media (max-width:900px){.tracer{grid-template-columns:1fr}}
-.panel{background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:16px;display:grid;gap:14px;min-width:0}
-.picker{display:grid;gap:8px}
-.picker .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.picker select#pItem{flex:1 1 260px;min-width:0}
-.quick{display:flex;flex-wrap:wrap;gap:6px}
-.quick button,.btn{font:500 12px var(--f-mono);border:1px solid var(--rule);border-radius:4px;padding:3px 8px;background:var(--dt);color:var(--ink);cursor:pointer}
-.quick button:hover,.quick button:focus-visible,.btn:hover,.btn:focus-visible{border-color:var(--brass);outline:none}
-.asset{display:grid;gap:4px;padding:10px 12px;border-radius:8px;background:var(--dt)}
-.asset .an{font:600 15px var(--f-display)}
-.asset .am{font:400 12px var(--f-mono);color:var(--muted)}
+/* Impact */
 .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 @media (max-width:520px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
-.stat{border:1px solid var(--rule);border-radius:8px;padding:8px 10px;display:grid;gap:2px}
-.stat b{font:600 20px var(--f-display);font-variant-numeric:tabular-nums}
+.stat{border:1px solid var(--rule);border-radius:8px;padding:8px 10px;display:grid;gap:2px;background:var(--paper)}
+.stat b{font:600 22px var(--f-display);font-variant-numeric:tabular-nums}
 .stat span{font:400 11px var(--f-mono);color:var(--muted)}
-.tree{display:grid;gap:10px}
+.summary{border-left:4px solid var(--impact);background:var(--impact-soft);border-radius:0 8px 8px 0;padding:12px 14px;display:grid;gap:8px;font-size:14.5px}
+.summary .sl{font:600 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--impact)}
+.tree{display:grid;gap:12px}
 .tdom{border-left:3px solid var(--impact);padding-left:10px;display:grid;gap:6px}
-.tdom>b{font:600 14px var(--f-body)}
+.tdom>a{font:600 14.5px var(--f-body);color:var(--ink);text-decoration:none}
 .tsvc{display:grid;gap:4px;padding-left:4px}
-.tsvc>span{font:600 13px var(--f-body);color:var(--muted)}
+.tsvc>a{font:600 13px var(--f-body);color:var(--muted);text-decoration:none}
+.tdom>a:hover,.tsvc>a:hover,.tproc a:hover{text-decoration:underline}
 .tproc{display:flex;flex-wrap:wrap;gap:6px;align-items:baseline;font-size:13.5px;padding-left:10px}
-.tproc .pn{font-weight:500}
+.tproc a{font-weight:500;color:var(--ink);text-decoration:none}
 .prov{font:500 10.5px var(--f-mono);padding:1px 5px;border-radius:3px;background:var(--dt);color:var(--muted);border:1px solid var(--rule)}
 .prov.d{color:var(--comp);border-color:var(--comp)}
 .prov.p{color:var(--risk);border-color:var(--risk)}
 .prov.c,.prov.e,.prov.r,.prov.u{color:var(--impact);border-color:var(--impact)}
-.summary{border-left:4px solid var(--impact);background:var(--impact-soft);border-radius:0 8px 8px 0;padding:12px 14px;display:grid;gap:8px;font-size:14.5px}
-.summary .sl{font:600 11px var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--impact)}
-.gatesreq{display:grid;gap:4px;font-size:13.5px}
-.gatesreq li{margin-left:18px}
-.mlist{display:grid;gap:6px;font-size:13.5px}
-.mlist div{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:baseline}
-.gapbar{font:500 11px var(--f-mono);padding:1px 6px;border-radius:3px}
+.mlist{display:grid;gap:8px;font-size:13.5px}
+.mlist>div{display:grid;grid-template-columns:auto 1fr;gap:8px;align-items:baseline}
+.gapbar{font:500 11px var(--f-mono);padding:1px 6px;border-radius:3px;white-space:nowrap}
 .gapbar.bad{background:var(--risk-soft);color:var(--risk)} .gapbar.ok{background:var(--comp-soft);color:var(--comp)}
-
-/* BOM map */
-.bom{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
-.dcard{background:var(--paper);border:1px solid var(--rule);border-radius:10px;padding:12px;display:grid;gap:10px;align-content:start;min-width:0}
-.dcard .dn{font:600 16px var(--f-display)}
-.dcard .dh2{font:400 11px var(--f-mono);color:var(--muted)}
-.dsvc{display:grid;gap:4px}
-.dsvc .sn{font:600 12.5px var(--f-body);color:var(--muted)}
-.pbtn{all:unset;box-sizing:border-box;cursor:pointer;display:flex;justify-content:space-between;gap:8px;align-items:baseline;padding:5px 8px;border-radius:5px;border:1px solid var(--rule);font-size:13px;background:var(--paper)}
-.pbtn:hover{border-color:var(--brass)}
-.pbtn:focus-visible{outline:2px solid var(--brass);outline-offset:1px}
-.pbtn .pc{font:500 10.5px var(--f-mono);color:var(--muted);white-space:nowrap}
-.pbtn.h1{background:color-mix(in srgb,var(--impact-soft) 70%,var(--paper));border-color:var(--impact)}
-.pbtn.h2{background:var(--impact-soft);border-color:var(--impact);box-shadow:inset 3px 0 0 var(--impact)}
-.pbtn.sel{outline:2px solid var(--brass);outline-offset:1px}
-.svchit{font:500 10.5px var(--f-mono);color:var(--impact)}
+.proc{display:flex;justify-content:space-between;gap:8px;align-items:baseline;padding:6px 9px;border-radius:5px;border:1px solid var(--rule);font-size:13.5px;text-decoration:none;color:var(--ink);background:var(--paper)}
+.proc:hover,.proc:focus-visible{border-color:var(--brass);outline:none}
+.proc .pc{font:500 10.5px var(--f-mono);color:var(--muted);white-space:nowrap}
 
 /* Causal chain */
-.chain{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:0;min-width:1100px}
+.chain{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));min-width:1100px}
 .node{background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:12px;display:grid;gap:4px;position:relative;margin-right:22px;align-content:start}
 .node.live{border-color:var(--impact)}
 .node:not(:last-child)::after{content:"→";position:absolute;right:-19px;top:50%;transform:translateY(-50%);color:var(--brass);font:600 16px var(--f-mono)}
@@ -199,137 +196,31 @@ select:focus-visible,input:focus-visible{outline:2px solid var(--brass);outline-
 .node .ne{font-size:12.5px;color:var(--muted)}
 .node .ex{font:500 11.5px var(--f-mono);border-top:1px solid var(--rule);padding-top:6px;margin-top:4px}
 .node.live .ex{color:var(--impact)}
-.agents{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
-.agent{background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:14px;display:grid;gap:6px;align-content:start}
-.agent .an{font:600 14px var(--f-body)}
-.agent .aid{font:500 11px var(--f-mono);color:var(--muted)}
-.agent p{font-size:13.5px;color:var(--muted)}
 .guard{background:var(--keel);color:var(--keel-fg);border-radius:10px;padding:18px;display:grid;gap:10px}
 .guard ul{margin:0;padding-left:18px;display:grid;gap:6px;font-size:14px}
 .guard h3{color:var(--keel-fg)}
-.note{font-size:12.5px;color:var(--muted)}
-@media (max-width:640px){h2{font-size:21px}}
-@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+.sc{border-top:4px solid}
+.sc.C{border-top-color:var(--comp)} .sc.R{border-top-color:var(--risk)} .sc.I{border-top-color:var(--impact)}
+.sc .from{font:400 12px var(--f-mono);color:var(--muted)}
+.empty{color:var(--muted);font-size:13.5px}
+@media (max-width:640px){h2{font-size:20px}}
 </style>
 
+<div class="bar"><div class="in">
+  <a class="brand" href="#home">Keel-to-PLM</a>
+  <nav class="nav" aria-label="Pages" id="nav">
+    <a href="#home" data-n="home">Flow</a>
+    <a href="#bom" data-n="bom">Business model</a>
+    <a href="#assets" data-n="assets">Rules &amp; agents</a>
+    <a href="#measures" data-n="measures">Measures</a>
+    <a href="#plm" data-n="plm">PLM gates</a>
+    <a href="#keel" data-n="keel">Keel</a>
+    <a href="#causal" data-n="causal">Causal chain</a>
+  </nav>
+</div></div>
 <div class="wrap">
-<header class="top">
-  <span class="eyebrow">Keel &amp; North Star · operating model</span>
-  <h1>Keel-to-PLM Operating Flow</h1>
-  <p class="lede">How governed meaning is authored in the governance workbench, compiled from the keel into Fivetran, dbt models, the dbt Semantic Layer and LangGraph agents, measured from design time through run time, and recorded in the PLM. Every rule, constraint, calculation, agent and microservice is mapped onto Insperity's business operating model, so a change can be traced to the domains, business services and processes it affects.</p>
-  <div class="toollinks">
-    <a href="https://claude.ai/artifact/Fyf4a8jVGgBrLbkAuDVUFv" target="_blank" rel="noopener">Rules &amp; Standards Map ↗</a>
-    <a href="https://claude.ai/artifact/BzAWvkVadS2h1mmUAMqNHR" target="_blank" rel="noopener">SSOT Editor ↗</a>
-    <a href="https://claude.ai/artifact/XaWZRRxCDcC4gg7Y4s8nv6" target="_blank" rel="noopener">Agent &amp; Service Map ↗</a>
-  </div>
-</header>
-
-<nav class="toc" aria-label="Sections">
-  <a href="#flow">End-to-end flow</a>
-  <a href="#inputs">Keel inputs</a>
-  <a href="#impact">Business impact tracer</a>
-  <a href="#measures">Measurement register</a>
-  <a href="#plm">PLM scoring</a>
-  <a href="#causal">Causal chain</a>
-</nav>
-
-<section id="flow">
-  <h2>End-to-end flow</h2>
-  <p class="lede">Read left to right. The three workbench tools author, approve and release keel assets. GOV-019 compiles released assets into each component's native artifacts. Every cell emits measures, shown as tags, that the PLM gate beneath it collects. The bottom band is the business operating model that every asset maps to. Select a cell for its keel inputs, activities and measures.</p>
-  <div class="legend">
-    <span><i class="dot C"></i>Compliance measure</span>
-    <span><i class="dot R"></i>Risk measure</span>
-    <span><i class="dot I"></i>Impact measure</span>
-    <span><i class="dot W"></i>Governance workbench</span>
-  </div>
-  <div class="scroll"><div class="flow" id="flowGrid" aria-label="Lifecycle flow by tool and component"></div></div>
-  <div class="detail" id="detail" aria-live="polite"></div>
-</section>
-
-<section id="inputs">
-  <h2>Keel inputs by component</h2>
-  <p class="lede">What each keel asset becomes for each tool and component. The workbench columns show where the asset is authored and governed. The component columns show what GOV-019 generates; teams don't hand-author these in the target tool. The last row ties every asset to the business operating model.</p>
-  <div class="scroll tbl"><table class="matrix" id="inputTbl"></table></div>
-</section>
-
-<section id="impact">
-  <h2>Business impact tracer</h2>
-  <p class="lede">Pick a rule, constraint, calculation, agent or microservice from the SSOT and the Agent &amp; Service Map. The tracer follows the register's own links to the business domains, services and processes that consume it, lists the measures that will show the effect, and drafts the assessment the Impact summarization agent would put in front of a reviewer. Or select a process on the map to see everything that governs it.</p>
-  <div class="tracer">
-    <div class="panel" id="tracePanel">
-      <div class="picker">
-        <h4>Asset to trace</h4>
-        <div class="row">
-          <label class="count" for="pType">Type</label>
-          <select id="pType">
-            <option value="rule">Rule</option><option value="con">Constraint</option><option value="calc">Calculation</option><option value="Agent">Agent</option><option value="Microservice">Microservice</option>
-          </select>
-          <label class="count" for="pChange">Change class</label>
-          <select id="pChange"><option value="PATCH">Patch · benign</option><option value="MINOR" selected>Minor · material</option><option value="MAJOR">Major · breaking</option></select>
-        </div>
-        <div class="row">
-          <label class="count" for="pFilter">Find</label>
-          <input type="search" id="pFilter" placeholder="ID or name" style="flex:0 1 160px">
-          <select id="pItem" aria-label="Asset"></select>
-        </div>
-        <div class="quick" id="quick"></div>
-      </div>
-      <div id="traceOut" aria-live="polite"></div>
-    </div>
-    <div class="panel">
-      <h4>Business operating model</h4>
-      <div class="legend">
-        <span><span class="prov d">register</span> declared in the SSOT or agent registry</span>
-        <span><span class="prov c">via</span> carried by a consumer or referenced rule</span>
-        <span><span class="prov p">proposed</span> mapping to confirm</span>
-      </div>
-      <div class="bom" id="bomMap"></div>
-    </div>
-  </div>
-</section>
-
-<section id="measures">
-  <h2>Measurement register</h2>
-  <p class="lede">Every measure has one owner, the stage where it is taken, the PLM gate it gives evidence to, and the scores it feeds. Thresholds live in the SSOT as constraints, so a threshold change goes through the same Draft → Candidate → Approved → Released workflow as any rule.</p>
-  <div class="filters">
-    <label for="fComp">Owner</label>
-    <select id="fComp"><option value="">All</option></select>
-    <label for="fTime">When</label>
-    <select id="fTime"><option value="">Design and run time</option><option value="Design">Design time</option><option value="Release">Release</option><option value="Run">Run time</option></select>
-    <label for="fScore">Feeds</label>
-    <select id="fScore"><option value="">All scores</option><option value="C">Compliance</option><option value="R">Risk</option><option value="I">Impact</option></select>
-    <span class="count" id="regCount"></span>
-  </div>
-  <div class="scroll tbl"><table class="reg" id="regTbl"></table></div>
-</section>
-
-<section id="plm">
-  <h2>How measures become PLM scores</h2>
-  <p class="lede">Each asset version and component version is a PLM item. Measures attach to it as gate evidence. All three scores roll up the business operating model, the same graph the impact tracer walks, so a business service shows its compliance, its risk and its projected impact side by side.</p>
-  <div class="scores">
-    <div class="sc C"><h3>Compliance</h3><p>Share of conformance checks passed against keel rules, standards, controls and contracts, weighted by rule severity in the SSOT. Computed per asset or component version, then rolled up by process, service and domain.</p><span class="from">from W-01 · W-03–05 · F-01–03 · T-01–04 · S-01 · A-01 · A-03 · A-06 · A-07</span></div>
-    <div class="sc R"><h3>Risk</h3><p>Severity × likelihood of open findings: drift, escaped defects, shadow metrics, integrity-signal failures, breaking tool changes and reviewer overrides. Open findings feed the PLM defect burndown and stay on the gate until closed.</p><span class="from">from W-06–07 · F-02 · F-04–05 · T-03 · T-05 · S-02–03 · A-02 · A-04–05 · X-02</span></div>
-    <div class="sc I"><h3>Impact</h3><p>Projected and realized value traced from the asset through processes, services and domains to products, strategy objectives and values. Every figure carries its determinism ratio, so projected paths are never reported as realized.</p><span class="from">from W-08 · F-04 · S-04 · A-01 · A-08 · X-01 · causal engine</span></div>
-  </div>
-  <div class="scroll tbl"><table class="reg" id="gateTbl"></table></div>
-</section>
-
-<section id="causal">
-  <h2>Causal chain, summarized by agents</h2>
-  <p class="lede">The business operating model lives in the keel, so the graph that supplies governance inputs also carries the impact paths. The first four links are populated from the SSOT and the agent registry today. The last three bind once Insperity's product catalog, strategy map and values are loaded as keel assets (K12).</p>
-  <div class="scroll"><div class="chain" id="chain"></div></div>
-  <div class="agents" id="agents"></div>
-  <div class="guard">
-    <h3>Guardrails on the summary</h3>
-    <ul>
-      <li>Each link in a path is labelled: declared in the register, carried by a consumer or referenced rule, or a proposed mapping. The summary reports the determinism ratio of every path it cites.</li>
-      <li>A path that uses any proposed mapping is reported as projected, never as realized. Deterministic propagation over ungated inference is blocked by rule.</li>
-      <li>The summarization agent runs behind the AI Circuit Breaker. Claims that don't cite an asset ID, a path and a measure fail validation and route to a reviewer.</li>
-      <li>Results move a PLM item through G5 only after human sign-off, with author and approver kept separate (CTL-013).</li>
-      <li>Values and strategy objectives also flow down as constraints: an asset that improves a measure while breaching a value-linked norm shows positive impact and an open compliance finding side by side.</li>
-    </ul>
-  </div>
-</section>
+  <div class="crumbs" id="crumbs"></div>
+  <main id="app" aria-live="polite"></main>
 </div>
 
 <script>
@@ -476,10 +367,20 @@ const GATES=[
  ["G4","Operating","Run-time measures within SSOT thresholds; findings tracked","W-06 · F-04–05 · T-02 · T-05 · S-02–04 · A-02–06"],
  ["G5","Value review","Impact on domains, services and processes assessed and signed off","W-08 · S-04 · A-08 · X-02 · causal engine"]
 ];
+
 const typeOf=id=>{const r=REG.find(x=>x[0]===id);return r?r[6][0]:"C"};
 const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const STAGE_GATES={design:["G0","G1"],verify:["G2"],release:["G3"],run:["G4"],observe:["G5"]};
+const SN={C:"Compliance",R:"Risk",I:"Impact"};
+const ROWBY=Object.fromEntries(ALLROWS.map(r=>[r.id,r]));
+const isWB=id=>WB.some(w=>w.id===id);
+const TOOLFACTS={
+ WR:[["Rules mapped","250 across 16 rule domains"],["Standards and policies","64, including the ISO/IEC 27000 family"],["ISO/IEC 27001 Annex A","32 controls the advisor exercises"],["Consumer links","856 rule, constraint and calc bindings to agents and services"]],
+ WE:[["Register","250 rules, 51 constraints, 50 calcs in one 14-field format"],["Workflow","Draft → Candidate → Approved → Released"],["Change record","KGCL per change, with field-level Patch, Minor or Major class"],["Release gate","Compiled-policy scenario tests must pass (GOD-006)"]],
+ WA:[["Agents","38 Sales Advisor agents plus the PEO Sales Advisor front door"],["Microservices","25 behind the Keel Gateway"],["Runtime","Copilot declarative agents and hosted agents on Agent Framework with Foundry models"],["Trust","Tiers T1–T3, integrity signals IS-1–9, MTBH breaker per agent"]]
+};
 
-/* ---------- business operating model index ---------- */
+/* ---------- operating model index ---------- */
 const PROC={},SVC={},DOM={};
 BD.BOM.forEach(d=>{DOM[d.id]=d;d.services.forEach(s=>{SVC[s.id]={...s,dom:d.id};s.proc.forEach(p=>{PROC[p.id]={...p,svc:s.id,dom:d.id}})})});
 const RULE={},CON={},CALC={},CNS={};
@@ -489,216 +390,281 @@ BD.CALCS.forEach(c=>CALC[c[0]]={id:c[0],name:c[1],grp:c[2],unit:c[3],refs:c[4],o
 BD.CONSUMERS.forEach(c=>CNS[c[0]]={id:c[0],name:c[1],kind:c[2],fam:c[3],rules:c[4],cons:c[5],calcs:c[6],home:c[7],aut:c[8],tier:c[9],surf:c[10]});
 const USERS={};
 Object.values(CNS).forEach(c=>[...c.rules,...c.cons,...c.calcs].forEach(x=>(USERS[x]=USERS[x]||[]).push(c.id)));
+const kindOf=id=>RULE[id]?"Rule":CON[id]?"Constraint":CALC[id]?"Calculation":CNS[id]?CNS[id].kind:"";
 const assetName=id=>(RULE[id]||CON[id]||CALC[id]||CNS[id]||{}).name||id;
 const PROVTXT={d:"register",u:"used in answers",c:"carried by",e:"enforces",r:"via rule",p:"proposed"};
-// processes measured by each calc (through the rules it references)
 const CALC_BY_TGT={};
 Object.values(CALC).forEach(c=>{const ts=new Set();c.refs.forEach(r=>RULE[r]&&RULE[r].t.forEach(([t])=>ts.add(t)));const o=CNS[c.owner];if(o)o.home.forEach(t=>ts.add(t));ts.forEach(t=>(CALC_BY_TGT[t]=CALC_BY_TGT[t]||[]).push(c.id))});
+const GOVBY={};const gv=t=>GOVBY[t]=GOVBY[t]||{r:new Set(),c:new Set()};
+BD.RULES.forEach(r=>r[5].forEach(([t])=>gv(t).r.add(r[0])));
+Object.values(CNS).forEach(c=>c.home.forEach(t=>gv(t).c.add(c.id)));
+const procCount=d=>d.services.reduce((a,s)=>a+s.proc.length,0);
 
-function trace(type,id){
+function trace(id){
  const paths=[];const add=(t,prov,via)=>paths.push({t,prov,via});
- const ruleT=(rid,prov,via)=>{const r=RULE[rid];if(!r)return;r.t.forEach(([t,p])=>add(t,(prov&&p!=="p")?prov:p,via||(p==="u"?"Sales Advisor answers (EXT-008)":"register")))};
+ const ruleT=(rid,prov,via)=>{const r=RULE[rid];if(!r)return;r.t.forEach(([t,p])=>add(t,(prov&&p!=="p")?prov:p,via||(p==="u"?"Sales Advisor answers":"register")))};
  const carriers=aid=>(USERS[aid]||[]).forEach(cid=>CNS[cid].home.forEach(t=>add(t,"c",cid)));
- if(type==="rule"){ruleT(id);carriers(id)}
- else if(type==="con"||type==="calc"){const a=type==="con"?CON[id]:CALC[id];a.refs.forEach(r=>ruleT(r,"r",r));carriers(id);if(type==="calc"&&CNS[a.owner])CNS[a.owner].home.forEach(t=>add(t,"c",a.owner))}
- else{const c=CNS[id];c.home.forEach(t=>add(t,"d","registry"));c.rules.forEach(r=>ruleT(r,"e",r))}
+ if(RULE[id]){ruleT(id);carriers(id)}
+ else if(CON[id]||CALC[id]){const a=CON[id]||CALC[id];a.refs.forEach(r=>ruleT(r,"r",r));carriers(id);if(CALC[id]&&CNS[a.owner])CNS[a.owner].home.forEach(t=>add(t,"c",a.owner))}
+ else if(CNS[id]){const c=CNS[id];c.home.forEach(t=>add(t,"d","registry"));c.rules.forEach(r=>ruleT(r,"e",r))}
  return paths;
 }
 function resolve(t){if(PROC[t])return{dom:PROC[t].dom,svc:PROC[t].svc,proc:t};if(SVC[t])return{dom:SVC[t].dom,svc:t,proc:null};return null}
 function aggregate(paths){
- const tree={};const hit={};
+ const tree={};
  paths.forEach(p=>{const r=resolve(p.t);if(!r)return;const key=r.proc||r.svc;
   tree[r.dom]=tree[r.dom]||{};tree[r.dom][r.svc]=tree[r.dom][r.svc]||{};
-  const n=tree[r.dom][r.svc][key]=tree[r.dom][r.svc][key]||{key,proc:r.proc,prov:new Set(),via:new Set(),n:0};
-  n.prov.add(p.prov);if(p.via)n.via.add(p.via);n.n++;hit[key]=(hit[key]||0)+1});
- return{tree,hit};
+  const n=tree[r.dom][r.svc][key]=tree[r.dom][r.svc][key]||{proc:r.proc,prov:new Set(),via:new Set()};
+  n.prov.add(p.prov);if(p.via)n.via.add(p.via)});
+ return tree;
 }
+function measuresFor(keys){const out=[];const seen=new Set();
+ keys.forEach(k=>(BD.VGO[k]||[]).forEach(v=>{const key=k+v[0]+v[1];if(seen.has(key))return;seen.add(key);out.push({k,vg:v})}));
+ keys.forEach(k=>(CALC_BY_TGT[k]||[]).forEach(c=>{if(seen.has(c))return;seen.add(c);out.push({k,calc:c})}));return out}
 
-/* ---------- flow grid ---------- */
-const g=document.getElementById("flowGrid");
-let h='<div></div><div class="phase dt" style="grid-column:span 2">Design time</div><div class="phase rel">Release</div><div class="phase rt" style="grid-column:span 2">Run time</div>';
-h+='<div></div><div class="keelband"><span class="kt">The keel · governed semantic foundation</span><div class="kchips">'+KEEL.map(k=>`<button class="kchip" data-k="${k.id}" title="${esc(k.s)}">${k.id} ${esc(k.n)}</button>`).join("")+'</div></div>';
-h+='<div></div>'+STAGES.map(s=>`<div class="colh">${s.n}<small>${s.s}</small></div>`).join("");
-const rowHtml=(c,wb)=>{let x=`<div class="rowh${wb?" wbh":""}"><b>${esc(c.n)}</b><span>${esc(c.r)}</span>${wb?`<a href="${LINKS[c.id]}" target="_blank" rel="noopener">Open ↗</a>`:""}</div>`;
- STAGES.forEach(s=>{const y=CELLS[c.id][s.k];const cls=wb?"wbc":s.ph==="dt"?"dtc":s.ph==="rel"?"relc":"rtc";
-  x+=`<button class="cell ${cls}" data-c="${c.id}" data-s="${s.k}" aria-pressed="false"><span class="ct">${esc(y.t)}</span><span class="cs">${esc(y.s)}</span><span class="pips">${y.m.map(m=>`<span class="pip ${typeOf(m)}">${m}</span>`).join("")}</span></button>`});return x};
-h+='<div class="grouph">Governance workbench <span>authors, approves and releases what the keel holds</span></div>';
-WB.forEach(c=>h+=rowHtml(c,true));
-h+='<div></div><div class="compile">▼ released assets compiled by GOV-019 into native artifacts</div>';
-h+='<div class="grouph">Delivery components <span>consume generated artifacts; never hand-author meaning</span></div>';
-COMPS.forEach(c=>h+=rowHtml(c,false));
-h+='<div class="plmband"><div class="plmh"><b>PLM</b><span>Gate evidence, compliance, risk and impact per asset and component version</span></div>';
-[["G0","G1"],["G2"],["G3"],["G4"],["G5"]].forEach(gs=>{h+='<div class="gates2">'+gs.map(id=>{const q=GATES.find(x=>x[0]===id);return `<div class="gate"><span class="gid">${q[0]}</span><span class="gn">${q[1]}</span><span class="gm">${esc(q[3])}</span></div>`}).join("")+'</div>'});
-h+='</div>';
-h+='<div class="bomband"><div class="bomh"><b>Business operating model</b><span>Where impact lands: domain → service → process</span></div><div class="bomstrip">'+
- BD.BOM.map(d=>{const np=d.services.reduce((a,s)=>a+s.proc.length,0);return `<a href="#impact" data-dom="${d.id}"><b>${esc(d.name)}</b><span>${d.services.length} services · ${np} processes</span></a>`}).join("")+'</div></div>';
-g.innerHTML=h;
+/* ---------- link helpers ---------- */
+const L={
+ cell:(r,s)=>`#cell~${r}~${s}`,row:r=>`#row~${r}`,keel:k=>`#keel~${k}`,gate:g=>`#gate~${g}`,measure:m=>`#measure~${m}`,
+ dom:d=>`#dom~${d}`,svc:s=>`#svc~${s}`,proc:p=>`#proc~${p}`,asset:a=>`#asset~${a}`
+};
+const chipA=(id,label)=>`<a class="chip" href="${L.asset(id)}" title="${esc(assetName(id))}">${esc(label||id)}</a>`;
+const chipsA=(ids,max=40)=>ids.length?`<div class="chips">${ids.slice(0,max).map(i=>chipA(i)).join("")}${ids.length>max?`<span class="note">+${ids.length-max} more</span>`:""}</div>`:`<p class="empty">None.</p>`;
+const pipM=m=>`<a class="pip ${typeOf(m)}" href="${L.measure(m)}">${m}</a>`;
+const gateA=g=>`<a class="chip" href="${L.gate(g)}">${g}</a>`;
+function outcomeRow(k,v){const bad=v[5]==="lower"?v[4]>v[3]:v[4]<v[3];return `<div><span class="gapbar ${bad?"bad":"ok"}">${esc(v[0])}</span><span><b>${esc(v[1])}</b> · <a href="${L.proc(k)}">${esc(PROC[k].name)}</a>: target ${v[3]} ${esc(v[2])}, now ${v[4]}${v[6]?`<br><span class="note">${esc(v[6])}</span>`:""}</span></div>`}
+function measureList(ms,max=10){return ms.length?`<div class="mlist">${ms.slice(0,max).map(m=>m.vg?outcomeRow(m.k,m.vg):`<div>${chipA(m.calc)}<span><b>${esc(CALC[m.calc].name)}</b> <span class="note">${esc(CALC[m.calc].grp)} · ${esc(CALC[m.calc].unit)}</span></span></div>`).join("")}${ms.length>max?`<p class="note">+${ms.length-max} more</p>`:""}</div>`:`<p class="empty">No registered measure covers this yet. That gap is a W-08 finding.</p>`}
 
-const detail=document.getElementById("detail");
-function showCell(c,s){
- document.querySelectorAll(".cell").forEach(b=>b.setAttribute("aria-pressed",b.dataset.c===c&&b.dataset.s===s?"true":"false"));
- const x=CELLS[c][s],st=STAGES.find(z=>z.k===s),row=ALLROWS.find(z=>z.id===c);
- const kin=x.k.length?x.k.map(k=>{const kk=KEEL.find(z=>z.id===k);const f=FEEDS[k][c];return `<div><code>${k}</code><span><b>${esc(kk.n)}</b>${f?" → "+esc(f):""}</span></div>`}).join(""):'<p class="note">No new keel inputs at this stage. Measures are compared with thresholds already set in the SSOT.</p>';
- const ms=x.m.map(m=>{const r=REG.find(z=>z[0]===m);return `<li><span class="pip ${r[6][0]}">${m}</span> ${esc(r[2])}. <span class="note">${esc(r[3])}. Gate ${r[5]}.</span></li>`}).join("");
- detail.innerHTML=`<div class="dh"><span class="eyebrow">${st.ph==="rt"?"Run time":st.ph==="rel"?"Release":"Design time"} · ${st.n} · gate ${st.gate}</span><h3>${esc(row.n)}: ${esc(x.t)}</h3>${LINKS[c]?`<a class="tag" href="${LINKS[c]}" target="_blank" rel="noopener">Open ${esc(row.n)} ↗</a>`:""}</div>
- <div class="dgrid"><div><h4>Keel inputs</h4><div class="kin">${kin}</div></div>
- <div><h4>Activities</h4><ul>${x.a.map(a=>`<li>${esc(a)}</li>`).join("")}</ul></div>
- <div><h4>Measures to PLM</h4><ul style="list-style:none;padding-left:0">${ms}</ul></div></div>`;
-}
-function showKeel(k){
- document.querySelectorAll(".cell").forEach(b=>b.setAttribute("aria-pressed","false"));
+/* ---------- pages ---------- */
+const P={};
+P.home=()=>{
+ let h='<div></div><div class="phase dt" style="grid-column:span 2">Design time</div><div class="phase rel">Release</div><div class="phase rt" style="grid-column:span 2">Run time</div>';
+ h+='<div></div><div class="keelband"><span class="kt">The keel · governed semantic foundation</span><div class="chips">'+KEEL.map(k=>`<a class="kchip" href="${L.keel(k.id)}">${k.id} ${esc(k.n)}</a>`).join("")+'</div></div>';
+ h+='<div></div>'+STAGES.map(s=>`<div class="colh">${s.n}<small>${s.s}</small></div>`).join("");
+ const row=(c,wb)=>{let x=`<a class="rowh${wb?" wbh":""}" href="${L.row(c.id)}"><b>${esc(c.n)}</b><span>${esc(c.r)}</span></a>`;
+  STAGES.forEach(s=>{const y=CELLS[c.id][s.k];const cls=wb?"wbc":s.ph==="dt"?"dtc":s.ph==="rel"?"relc":"rtc";
+   x+=`<a class="cell ${cls}" href="${L.cell(c.id,s.k)}"><span class="ct">${esc(y.t)}</span><span class="cs">${esc(y.s)}</span><span class="pips">${y.m.map(m=>`<span class="pip ${typeOf(m)}">${m}</span>`).join("")}</span></a>`});return x};
+ h+='<div class="grouph">Governance workbench <span>authors, approves and releases what the keel holds</span></div>';
+ WB.forEach(c=>h+=row(c,true));
+ h+='<div></div><div class="compile">▼ released assets compiled by GOV-019 into native artifacts</div>';
+ h+='<div class="grouph">Delivery components <span>consume generated artifacts; never hand-author meaning</span></div>';
+ COMPS.forEach(c=>h+=row(c,false));
+ h+=`<div class="plmband"><a class="plmh" href="#plm"><b>PLM</b><span>Gate evidence, compliance, risk and impact per version</span></a>`;
+ [["G0","G1"],["G2"],["G3"],["G4"],["G5"]].forEach(gs=>{h+='<div class="gates2">'+gs.map(id=>{const q=GATES.find(x=>x[0]===id);return `<a class="gate" href="${L.gate(id)}"><span class="gid">${q[0]}</span><span class="gn">${q[1]}</span></a>`}).join("")+'</div>'});
+ h+='</div>';
+ h+=`<div class="bomband"><a class="bomh" href="#bom"><b>Business operating model</b><span>Where impact lands: domain → service → process</span></a><div class="bomstrip">`+
+  BD.BOM.map(d=>`<a href="${L.dom(d.id)}"><b>${esc(d.name)}</b><span>${d.services.length} services · ${procCount(d)} processes</span></a>`).join("")+'</div></div>';
+ return `<div class="phead"><span class="eyebrow">Keel &amp; North Star · operating model</span><h1>Keel-to-PLM Operating Flow</h1>
+ <p class="lede">How governed meaning is authored, compiled from the keel into Fivetran, dbt and LangGraph, measured from design time through run time, recorded in the PLM, and traced to the business services and processes it affects.</p></div>
+ <div class="howto"><div><b>CELL</b>Open any cell for its keel inputs, activities, measures and the gate it feeds.</div><div><b>ROW</b>Open a tool or component name to see its whole lifecycle on one page.</div><div><b>DOMAIN</b>Open a domain in the bottom band to walk services and processes, and see what governs each.</div><div><b>ASSET</b>Open any rule or agent to trace its impact on domains, services and processes.</div></div>
+ <div class="legend"><span><i class="dot C"></i>Compliance measure</span><span><i class="dot R"></i>Risk measure</span><span><i class="dot I"></i>Impact measure</span><span><i class="dot W"></i>Governance workbench</span></div>
+ <div class="scroll"><div class="flow">${h}</div></div>`;
+};
+P.cell=(r,s)=>{
+ const row=ROWBY[r],st=STAGES.find(z=>z.k===s),x=CELLS[r][s];const i=STAGES.indexOf(st);
+ const prev=STAGES[i-1],next=STAGES[i+1];
+ const kin=x.k.length?`<div class="mlist">${x.k.map(k=>{const kk=KEEL.find(z=>z.id===k);const f=FEEDS[k][r];return `<div><a class="chip" href="${L.keel(k)}">${k}</a><span><b>${esc(kk.n)}</b>${f?" → "+esc(f):""}</span></div>`}).join("")}</div>`:'<p class="empty">No new keel inputs at this stage. Measures are compared with thresholds already set in the SSOT.</p>';
+ const ms=`<div class="mlist">${x.m.map(m=>{const q=REG.find(z=>z[0]===m);return `<div>${pipM(m)}<span><a href="${L.measure(m)}"><b>${esc(q[2])}</b></a><br><span class="note">${esc(q[3])}</span></span></div>`}).join("")}</div>`;
+ const others=ALLROWS.filter(o=>o.id!==r).map(o=>`<a class="chip" href="${L.cell(o.id,s)}">${esc(o.n)}</a>`).join("");
+ return {crumbs:[["Flow","#home"],[row.n,L.row(r)],[st.n]],html:`<div class="phead"><div class="kicker"><span class="eyebrow">${st.ph==="rt"?"Run time":st.ph==="rel"?"Release":"Design time"} · ${st.n}</span>${STAGE_GATES[s].map(gateA).join("")}</div>
+ <h1>${esc(row.n)}: ${esc(x.t)}</h1><p class="lede">${esc(x.s)}</p>${LINKS[r]?`<div><a class="extlink" href="${LINKS[r]}" target="_blank" rel="noopener">Open ${esc(row.n)} ↗</a></div>`:""}</div>
+ <div class="grid2"><div class="card"><h4>Keel inputs</h4>${kin}</div><div class="card"><h4>Activities</h4><ul class="clean">${x.a.map(a=>`<li>${esc(a)}</li>`).join("")}</ul></div></div>
+ <div class="card"><h4>Measures sent to the PLM</h4>${ms}</div>
+ <div class="card"><h4>Same stage, other tools and components</h4><div class="chips">${others}</div></div>
+ <div class="stepnav"><span>${prev?`<a href="${L.cell(r,prev.k)}">← ${prev.n}</a>`:""}</span><a href="${L.row(r)}">Whole ${esc(row.n)} lifecycle</a><span>${next?`<a href="${L.cell(r,next.k)}">${next.n} →</a>`:""}</span></div>`};
+};
+P.row=r=>{
+ const row=ROWBY[r];const wb=isWB(r);
+ const strip=STAGES.map(s=>{const y=CELLS[r][s.k];const cls=wb?"wbc":s.ph==="dt"?"dtc":s.ph==="rel"?"relc":"rtc";return `<a class="cell ${cls}" href="${L.cell(r,s.k)}"><span class="note">${s.n} · ${STAGE_GATES[s.k].join(" · ")}</span><span class="ct">${esc(y.t)}</span><span class="cs">${esc(y.s)}</span><span class="pips">${y.m.map(m=>`<span class="pip ${typeOf(m)}">${m}</span>`).join("")}</span></a>`}).join("");
+ const feeds=KEEL.filter(k=>FEEDS[k.id][r]).map(k=>`<div><a class="chip" href="${L.keel(k.id)}">${k.id}</a><span><b>${esc(k.n)}</b> → ${esc(FEEDS[k.id][r])}</span></div>`).join("");
+ const ms=[...new Set(STAGES.flatMap(s=>CELLS[r][s.k].m))];
+ let extra="";
+ if(TOOLFACTS[r])extra=`<div class="card"><h4>What it holds</h4><dl class="kv">${TOOLFACTS[r].map(([a,b])=>`<dt>${esc(a)}</dt><dd>${esc(b)}</dd>`).join("")}</dl></div>`;
+ if(r==="A"||r==="WA"){const fams={};Object.values(CNS).forEach(c=>(fams[c.fam]=fams[c.fam]||[]).push(c.id));extra+=`<div class="card"><h4>Agents and microservices in the registry</h4>${Object.entries(fams).map(([f,ids])=>`<div><b style="font-size:13.5px">${esc(f)}</b>${chipsA(ids)}</div>`).join("")}</div>`}
+ if(r==="WE"||r==="WR"){extra+=`<div class="card"><h4>Browse the register</h4><div class="chips"><a class="chip" href="#assets~rule">250 rules</a><a class="chip" href="#assets~con">51 constraints</a><a class="chip" href="#assets~calc">50 calculations</a></div></div>`}
+ if(r==="S"){extra+=`<div class="card"><h4>Calculations it serves</h4>${chipsA(Object.keys(CALC),60)}</div>`}
+ return {crumbs:[["Flow","#home"],[row.n]],html:`<div class="phead"><span class="eyebrow">${wb?"Governance workbench":"Delivery component"}</span><h1>${esc(row.n)}</h1><p class="lede">${esc(row.r)}</p>${LINKS[r]?`<div><a class="extlink" href="${LINKS[r]}" target="_blank" rel="noopener">Open ${esc(row.n)} ↗</a></div>`:""}</div>
+ <div class="section"><h2>Lifecycle</h2><div class="scroll"><div class="strip">${strip}</div></div></div>
+ <div class="grid2"><div class="card"><h4>Keel inputs it uses</h4><div class="mlist">${feeds||'<p class="empty">None.</p>'}</div></div><div class="card"><h4>Measures it emits</h4><div class="chips">${ms.map(pipM).join("")}</div></div></div>${extra}`};
+};
+P.keel=k=>{
+ if(!k){return {crumbs:[["Keel"]],html:`<div class="phead"><span class="eyebrow">The keel</span><h1>Keel assets</h1><p class="lede">The governed semantic foundation. Each asset is authored in the workbench and compiled into every component.</p></div><div class="grid3">${KEEL.map(x=>`<a class="tile" href="${L.keel(x.id)}"><span class="id">${x.id}</span><b>${esc(x.n)}</b><span>${esc(x.s)}</span><span class="go">Open →</span></a>`).join("")}</div>
+ <div class="section"><h2>Keel inputs by tool and component</h2><div class="scroll tbl"><table class="wide" style="min-width:1000px"><thead><tr><th>Keel asset</th>${ALLROWS.map(c=>`<th><a href="${L.row(c.id)}">${esc(c.n)}</a></th>`).join("")}</tr></thead><tbody>${KEEL.map(x=>`<tr><td><a href="${L.keel(x.id)}"><b>${x.id} ${esc(x.n)}</b></a></td>${ALLROWS.map(c=>FEEDS[x.id][c.id]?`<td>${esc(FEEDS[x.id][c.id])}</td>`:'<td class="na">—</td>').join("")}</tr>`).join("")}</tbody></table></div></div>`}}
  const kk=KEEL.find(z=>z.id===k);
- detail.innerHTML=`<div class="dh"><span class="eyebrow">Keel asset · ${k}</span><h3>${esc(kk.n)}</h3><span class="tag">${esc(kk.s)}</span></div><div class="dgrid"><div><h4>Governed in the workbench</h4><ul>${WB.map(c=>`<li><b>${c.n}:</b> ${FEEDS[k][c.id]?esc(FEEDS[k][c.id]):'<span class="note">not used</span>'}</li>`).join("")}</ul></div><div><h4>Compiled into</h4><ul>${COMPS.map(c=>`<li><b>${c.n}:</b> ${FEEDS[k][c.id]?esc(FEEDS[k][c.id]):'<span class="note">not used</span>'}</li>`).join("")}</ul></div></div>`;
-}
-g.addEventListener("click",e=>{
- const b=e.target.closest(".cell");if(b){showCell(b.dataset.c,b.dataset.s);return}
- const k=e.target.closest(".kchip");if(k){showKeel(k.dataset.k);return}
- const d=e.target.closest("[data-dom]");if(d){const el=document.querySelector(`.dcard[data-d="${d.dataset.dom}"]`);if(el){e.preventDefault();el.scrollIntoView({block:"start"});el.querySelector(".pbtn")?.focus({preventScroll:true})}}
-});
-showCell("WE","release");
-
-/* ---------- inputs matrix ---------- */
-document.getElementById("inputTbl").innerHTML='<thead><tr><th>Keel asset</th>'+ALLROWS.map(c=>`<th>${c.n}</th>`).join("")+'</tr></thead><tbody>'+
- KEEL.map(k=>'<tr><td class="k">'+k.id+' '+esc(k.n)+'<small>'+esc(k.s)+'</small></td>'+ALLROWS.map(c=>FEEDS[k.id][c.id]?`<td>${esc(FEEDS[k.id][c.id])}</td>`:'<td class="na">—</td>').join("")+'</tr>').join("")+'</tbody>';
-
-/* ---------- BOM map ---------- */
-const GOVBY={};
-BD.RULES.forEach(r=>r[5].forEach(([t])=>{(GOVBY[t]=GOVBY[t]||{r:new Set(),c:new Set()}).r.add(r[0])}));
-Object.values(CNS).forEach(c=>c.home.forEach(t=>{(GOVBY[t]=GOVBY[t]||{r:new Set(),c:new Set()}).c.add(c.id)}));
-const bom=document.getElementById("bomMap");
-bom.innerHTML=BD.BOM.map(d=>`<div class="dcard" data-d="${d.id}"><div><div class="dn">${esc(d.name)}</div><div class="dh2">${esc(d.holon)}</div></div>`+
- d.services.map(s=>{const sg=GOVBY[s.id];return `<div class="dsvc" data-s="${s.id}"><span class="sn">${esc(s.name)} <span class="svchit" data-sh="${s.id}">${sg?`+${sg.r.size+sg.c.size} at service level`:""}</span></span>`+
-  s.proc.map(p=>{const gv=GOVBY[p.id]||{r:new Set(),c:new Set()};return `<button class="pbtn" data-p="${p.id}"><span>${esc(p.name)}</span><span class="pc">${gv.r.size} rules · ${gv.c.size} consumers</span></button>`}).join("")+'</div>'}).join("")+'</div>').join("");
-
-/* ---------- tracer ---------- */
-const pType=document.getElementById("pType"),pItem=document.getElementById("pItem"),pFilter=document.getElementById("pFilter"),pChange=document.getElementById("pChange"),out=document.getElementById("traceOut");
-const LIST={rule:()=>Object.values(RULE),con:()=>Object.values(CON),calc:()=>Object.values(CALC),Agent:()=>Object.values(CNS).filter(c=>c.kind==="Agent"),Microservice:()=>Object.values(CNS).filter(c=>c.kind==="Microservice")};
-function fillItems(sel){const f=pFilter.value.trim().toLowerCase();const xs=LIST[pType.value]().filter(x=>!f||(x.id+" "+x.name).toLowerCase().includes(f));
- pItem.innerHTML=xs.map(x=>`<option value="${x.id}">${x.id} · ${esc(x.name)}</option>`).join("")||'<option value="">No match</option>';if(sel&&xs.some(x=>x.id===sel))pItem.value=sel}
-const QUICK=[["rule","PAY-002"],["rule","SAL-009"],["con","CON-001"],["calc","CALC-001"],["Agent","AG-21"],["Agent","FD-01"],["Microservice","MS-19"]];
-document.getElementById("quick").innerHTML=QUICK.map(([t,i])=>`<button data-t="${t}" data-i="${i}">${i}</button>`).join("");
-document.getElementById("quick").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;pType.value=b.dataset.t;pFilter.value="";fillItems(b.dataset.i);run()});
-pType.addEventListener("change",()=>{pFilter.value="";fillItems();run()});
-pFilter.addEventListener("input",()=>{fillItems(pItem.value);run()});
-pItem.addEventListener("change",run);pChange.addEventListener("change",run);
-
+ const cells=[];ALLROWS.forEach(r=>STAGES.forEach(s=>{if(CELLS[r.id][s.k].k.includes(k))cells.push(`<a class="chip" href="${L.cell(r.id,s.k)}">${esc(r.n)} · ${s.n}</a>`)}));
+ const tbl=rows=>`<div class="mlist">${rows.map(c=>`<div><a class="chip" href="${L.row(c.id)}">${esc(c.n)}</a><span>${FEEDS[k][c.id]?esc(FEEDS[k][c.id]):'<span class="note">Not used</span>'}</span></div>`).join("")}</div>`;
+ return {crumbs:[["Keel","#keel"],[k+" "+kk.n]],html:`<div class="phead"><span class="eyebrow">Keel asset · ${k}</span><h1>${esc(kk.n)}</h1><p class="lede">${esc(kk.s)}</p></div>
+ <div class="grid2"><div class="card"><h4>Governed in the workbench</h4>${tbl(WB)}</div><div class="card"><h4>Compiled into</h4>${tbl(COMPS)}</div></div>
+ <div class="card"><h4>Lifecycle cells that consume it</h4><div class="chips">${cells.join("")||'<span class="empty">None.</span>'}</div></div>
+ ${k==="K12"?`<div class="card"><h4>The business operating model</h4><div class="chips">${BD.BOM.map(d=>`<a class="chip" href="${L.dom(d.id)}">${esc(d.name)}</a>`).join("")}</div></div>`:""}`};
+};
+P.gate=g=>{
+ const q=GATES.find(x=>x[0]===g);const stage=Object.entries(STAGE_GATES).find(([,gs])=>gs.includes(g))[0];
+ const ev=REG.filter(r=>r[5].includes(g));
+ return {crumbs:[["PLM gates","#plm"],[g+" "+q[1]]],html:`<div class="phead"><span class="eyebrow">PLM gate · ${g}</span><h1>${esc(q[1])}</h1><p class="lede">Passes when: ${esc(q[2])}.</p></div>
+ <div class="card"><h4>Evidence measures</h4><div class="mlist">${ev.map(r=>`<div>${pipM(r[0])}<span><a href="${L.measure(r[0])}"><b>${esc(r[2])}</b></a> <span class="note">${COMPNAME[r[1]]}</span></span></div>`).join("")}</div></div>
+ <div class="card"><h4>Cells that feed this gate</h4><div class="chips">${ALLROWS.map(r=>`<a class="chip" href="${L.cell(r.id,stage)}">${esc(r.n)}</a>`).join("")}</div></div>
+ <div class="stepnav"><span>${GATES.findIndex(x=>x[0]===g)>0?`<a href="${L.gate(GATES[GATES.findIndex(x=>x[0]===g)-1][0])}">← ${GATES[GATES.findIndex(x=>x[0]===g)-1][0]}</a>`:""}</span><a href="#plm">All gates</a><span>${GATES.findIndex(x=>x[0]===g)<GATES.length-1?`<a href="${L.gate(GATES[GATES.findIndex(x=>x[0]===g)+1][0])}">${GATES[GATES.findIndex(x=>x[0]===g)+1][0]} →</a>`:""}</span></div>`};
+};
+P.measure=m=>{
+ const r=REG.find(z=>z[0]===m);const cells=[];ALLROWS.forEach(c=>STAGES.forEach(s=>{if(CELLS[c.id][s.k].m.includes(m))cells.push(`<a class="chip" href="${L.cell(c.id,s.k)}">${esc(c.n)} · ${s.n}</a>`)}));
+ const gates=r[5].split(" · ").map(x=>x.trim()).filter(x=>/^G\d$/.test(x));
+ return {crumbs:[["Measures","#measures"],[m+" "+r[2]]],html:`<div class="phead"><span class="eyebrow">Measure · ${m}</span><h1>${esc(r[2])}</h1><p class="lede">${esc(r[3])}.${m==="W-08"?" "+W08():""}</p></div>
+ <div class="card"><dl class="kv"><dt>Owner</dt><dd>${r[1]==="X"?"Cross-cutting":`<a href="${L.row(r[1]==="W"?"WE":r[1])}">${COMPNAME[r[1]]}</a>`}</dd><dt>Taken at</dt><dd>${r[4]==="Design"?"Design time":r[4]==="Run"?"Run time":"Release"}</dd><dt>Evidence for</dt><dd>${gates.map(gateA).join(" ")}</dd><dt>Feeds</dt><dd>${[...r[6]].map(x=>`<span class="pip ${x}">${SN[x]}</span>`).join(" ")}</dd><dt>Threshold</dt><dd>Held in the SSOT as a constraint; changed through the SSOT Editor</dd></dl></div>
+ <div class="card"><h4>Emitted by</h4><div class="chips">${cells.join("")||'<span class="empty">Cross-cutting; computed from the gate records.</span>'}</div></div>`};
+};
+P.measures=()=>{
+ const owners=Object.entries(COMPNAME);
+ return {crumbs:[["Measures"]],html:`<div class="phead"><span class="eyebrow">Measurement register</span><h1>Measures</h1><p class="lede">Every measure has one owner, the stage where it is taken, the PLM gate it gives evidence to, and the scores it feeds. Open any row for its page.</p></div>
+ <div class="filters"><label for="fComp">Owner</label><select id="fComp"><option value="">All</option>${owners.map(([k,v])=>`<option value="${k}">${v}</option>`).join("")}</select>
+ <label for="fScore">Feeds</label><select id="fScore"><option value="">All scores</option><option value="C">Compliance</option><option value="R">Risk</option><option value="I">Impact</option></select><span class="note" id="regCount"></span></div>
+ <div class="scroll tbl"><table class="wide" id="regTbl"></table></div>`,after:()=>{
+  const draw=()=>{const c=document.getElementById("fComp").value,s=document.getElementById("fScore").value;const rows=REG.filter(r=>(!c||r[1]===c)&&(!s||r[6].includes(s)));
+   document.getElementById("regCount").textContent=rows.length+" of "+REG.length;
+   document.getElementById("regTbl").innerHTML='<thead><tr><th>ID</th><th>Measure</th><th>Owner</th><th>When</th><th>Gate</th><th>Feeds</th></tr></thead><tbody>'+rows.map(r=>`<tr><td class="mono"><a href="${L.measure(r[0])}">${r[0]}</a></td><td><a href="${L.measure(r[0])}"><b>${esc(r[2])}</b></a><br><span class="note">${esc(r[3])}</span></td><td>${COMPNAME[r[1]]}</td><td>${r[4]==="Design"?"Design time":r[4]==="Run"?"Run time":"Release"}</td><td class="mono">${r[5]}</td><td>${[...r[6]].map(x=>`<span class="pip ${x}">${SN[x]}</span>`).join(" ")}</td></tr>`).join("")+'</tbody>'};
+  ["fComp","fScore"].forEach(i=>document.getElementById(i).addEventListener("change",draw));draw()}};
+};
+P.plm=()=>({crumbs:[["PLM gates"]],html:`<div class="phead"><span class="eyebrow">PLM</span><h1>Gates and scores</h1><p class="lede">Each asset version and component version is a PLM item. Measures attach to it as gate evidence, and the three scores roll up the business operating model, so a business service shows compliance, risk and projected impact side by side.</p></div>
+ <div class="grid3">${GATES.map(g=>`<a class="tile" href="${L.gate(g[0])}"><span class="id">${g[0]}</span><b>${esc(g[1])}</b><span>${esc(g[2])}</span><span class="go">Open →</span></a>`).join("")}</div>
+ <div class="grid3">
+  <div class="card sc C"><h3>Compliance</h3><p>Share of conformance checks passed against keel rules, standards, controls and contracts, weighted by rule severity, rolled up by process, service and domain.</p><div class="chips">${REG.filter(r=>r[6].includes("C")).map(r=>pipM(r[0])).join("")}</div></div>
+  <div class="card sc R"><h3>Risk</h3><p>Severity × likelihood of open findings: drift, defects, shadow metrics, integrity-signal failures, breaking tool changes and overrides. Findings stay on the gate until closed.</p><div class="chips">${REG.filter(r=>r[6].includes("R")).map(r=>pipM(r[0])).join("")}</div></div>
+  <div class="card sc I"><h3>Impact</h3><p>Projected and realized value traced from the asset through processes, services and domains. Every figure carries its determinism ratio.</p><div class="chips">${REG.filter(r=>r[6].includes("I")).map(r=>pipM(r[0])).join("")}</div></div>
+ </div>`});
+P.bom=()=>({crumbs:[["Business model"]],html:`<div class="phead"><span class="eyebrow">Business operating model</span><h1>Domains, services and processes</h1><p class="lede">Where impact lands. The five PEO service domains and their Discover → Run processes come from the SSOT Editor; Client Relationship &amp; Sales holds the buyer stages and the Sales Advisor pipeline; Enterprise Governance holds the shared rule families. Open a domain, service or process to see what governs it.</p></div>
+ <div class="grid2">${BD.BOM.map(d=>`<div class="card"><a href="${L.dom(d.id)}" style="text-decoration:none;color:var(--ink)"><h3>${esc(d.name)}</h3></a><span class="note">${esc(d.holon)}</span>${d.services.map(s=>`<div style="display:grid;gap:4px"><a href="${L.svc(s.id)}" style="font:600 13px var(--f-body);color:var(--muted);text-decoration:none">${esc(s.name)}</a>${s.proc.map(p=>{const g=GOVBY[p.id]||{r:new Set(),c:new Set()};return `<a class="proc" href="${L.proc(p.id)}"><span>${esc(p.name)}</span><span class="pc">${g.r.size} rules · ${g.c.size} consumers</span></a>`}).join("")}</div>`).join("")}</div>`).join("")}</div>`});
+P.dom=d=>{const D=DOM[d];
+ const rules=new Set(),cons=new Set();D.services.forEach(s=>[s.id,...s.proc.map(p=>p.id)].forEach(t=>{const g=GOVBY[t];if(g){g.r.forEach(x=>rules.add(x));g.c.forEach(x=>cons.add(x))}}));
+ return {crumbs:[["Business model","#bom"],[D.name]],html:`<div class="phead"><span class="eyebrow">Business domain</span><h1>${esc(D.name)}</h1><p class="lede">${esc(D.holon)}</p></div>
+ <div class="stats"><div class="stat"><b>${D.services.length}</b><span>services</span></div><div class="stat"><b>${procCount(D)}</b><span>processes</span></div><div class="stat"><b>${rules.size}</b><span>rules</span></div><div class="stat"><b>${cons.size}</b><span>agents and services</span></div></div>
+ <div class="grid2">${D.services.map(s=>`<div class="card"><a href="${L.svc(s.id)}" style="text-decoration:none;color:var(--ink)"><h3>${esc(s.name)}</h3></a>${s.proc.map(p=>{const g=GOVBY[p.id]||{r:new Set(),c:new Set()};return `<a class="proc" href="${L.proc(p.id)}"><span>${esc(p.name)}</span><span class="pc">${g.r.size} rules · ${g.c.size} consumers</span></a>`}).join("")}</div>`).join("")}</div>`};
+};
+P.svc=s=>{const S=SVC[s],D=DOM[S.dom];const g=GOVBY[s]||{r:new Set(),c:new Set()};
+ const ms=measuresFor([s,...S.proc.map(p=>p.id)]);
+ return {crumbs:[["Business model","#bom"],[D.name,L.dom(D.id)],[S.name]],html:`<div class="phead"><span class="eyebrow">Business service</span><h1>${esc(S.name)}</h1><p class="lede">${esc(D.name)}</p></div>
+ <div class="card"><h4>Processes</h4>${S.proc.map(p=>{const q=GOVBY[p.id]||{r:new Set(),c:new Set()};return `<a class="proc" href="${L.proc(p.id)}"><span>${esc(p.name)}</span><span class="pc">${q.r.size} rules · ${q.c.size} consumers</span></a>`}).join("")}</div>
+ ${g.r.size||g.c.size?`<div class="card"><h4>Applies to the whole service</h4>${chipsA([...g.r,...g.c])}</div>`:""}
+ <div class="card"><h4>Measures</h4>${measureList(ms,12)}</div>`};
+};
+P.proc=p=>{const Pp=PROC[p],S=SVC[Pp.svc],D=DOM[Pp.dom];const g=GOVBY[p]||{r:new Set(),c:new Set()};
+ const rules=[...g.r],cns=[...g.c];const cons=Object.values(CON).filter(c=>c.refs.some(r=>g.r.has(r))).map(c=>c.id);
+ const ms=measuresFor([p]);const i=S.proc.findIndex(x=>x.id===p);const prev=S.proc[i-1],next=S.proc[i+1];
+ const direct=rules.filter(r=>RULE[r].t.some(([t,pv])=>t===p&&pv!=="u")),used=rules.filter(r=>!direct.includes(r));
+ return {crumbs:[["Business model","#bom"],[D.name,L.dom(D.id)],[S.name,L.svc(S.id)],[Pp.name]],html:`<div class="phead"><span class="eyebrow">Process${Pp.stage?" · "+esc(Pp.stage):""}</span><h1>${esc(Pp.name)}</h1><p class="lede">${esc(S.name)} · ${esc(D.name)}</p></div>
+ <div class="stats"><div class="stat"><b>${rules.length}</b><span>rules</span></div><div class="stat"><b>${cons.length}</b><span>constraints</span></div><div class="stat"><b>${cns.length}</b><span>agents and services</span></div><div class="stat"><b>${ms.length}</b><span>measures</span></div></div>
+ <div class="summary"><span class="sl">What governs this process</span><p>${direct.length} rules are declared against it${used.length?`, and ${used.length} more reach it because the Sales Advisor cites them in answers`:""}. ${cons.length?`${cons.length} constraints enforce those rules. `:""}${cns.length?`${cns.length} agents or microservices run here. `:""}Open any ID to trace its full impact.</p></div>
+ <div class="grid2"><div class="card"><h4>Rules declared here</h4>${chipsA(direct)}</div><div class="card"><h4>Agents and microservices</h4>${chipsA(cns)}</div></div>
+ ${used.length?`<div class="card"><h4>Rules cited by the Sales Advisor here</h4>${chipsA(used,60)}</div>`:""}
+ <div class="card"><h4>Constraints</h4>${chipsA(cons)}</div>
+ <div class="card"><h4>Measures</h4>${measureList(ms,12)}</div>
+ <div class="stepnav"><span>${prev?`<a href="${L.proc(prev.id)}">← ${esc(prev.name)}</a>`:""}</span><a href="${L.svc(S.id)}">All ${esc(S.name)} processes</a><span>${next?`<a href="${L.proc(next.id)}">${esc(next.name)} →</a>`:""}</span></div>`};
+};
+let ASSET_TAB="rule",ASSET_Q="",CHANGE="MINOR",LAST_ASSET="PAY-002";
+P.assets=tab=>{if(tab)ASSET_TAB=tab;
+ const tabs=[["rule","Rules",Object.keys(RULE).length],["con","Constraints",Object.keys(CON).length],["calc","Calculations",Object.keys(CALC).length],["Agent","Agents",Object.values(CNS).filter(c=>c.kind==="Agent").length],["Microservice","Microservices",Object.values(CNS).filter(c=>c.kind==="Microservice").length]];
+ return {crumbs:[["Rules & agents"]],html:`<div class="phead"><span class="eyebrow">SSOT register and agent registry</span><h1>Rules, constraints, calculations and agents</h1><p class="lede">Open any item to trace its impact on domains, services and processes. Data comes from the SSOT Rules &amp; Standards Map and the Agent &amp; Service Map.</p></div>
+ <div class="filters"><div class="seg" role="group" aria-label="Type">${tabs.map(([k,n,c])=>`<button data-tab="${k}" aria-pressed="${k===ASSET_TAB}">${n} · ${c}</button>`).join("")}</div><label for="aq">Find</label><input type="search" id="aq" placeholder="ID or name" value="${esc(ASSET_Q)}"><span class="note" id="acount"></span></div>
+ <div class="scroll tbl"><table class="wide" id="atbl"></table></div>`,after:()=>{
+  const draw=()=>{const q=ASSET_Q.toLowerCase();let rows;
+   if(ASSET_TAB==="rule")rows=Object.values(RULE).map(r=>[r.id,r.name,r.dom,r.life,r.st]);
+   else if(ASSET_TAB==="con")rows=Object.values(CON).map(c=>[c.id,c.name,c.dom,c.action,c.refs.join(", ")]);
+   else if(ASSET_TAB==="calc")rows=Object.values(CALC).map(c=>[c.id,c.name,c.grp,c.unit,c.owner]);
+   else rows=Object.values(CNS).filter(c=>c.kind===ASSET_TAB).map(c=>[c.id,c.name,c.fam,c.tier||c.kind,`${c.rules.length} rules · ${c.cons.length} constraints · ${c.calcs.length} calcs`]);
+   rows=rows.filter(r=>!q||(r[0]+" "+r[1]+" "+r[2]).toLowerCase().includes(q));
+   const H={rule:["ID","Rule","Domain","Lifecycle","Status"],con:["ID","Constraint","Domain","On violation","Implements"],calc:["ID","Calculation","Group","Unit","Owner"],Agent:["ID","Agent","Family","Tier","Bindings"],Microservice:["ID","Microservice","Group","Kind","Bindings"]}[ASSET_TAB];
+   document.getElementById("acount").textContent=rows.length+" shown";
+   document.getElementById("atbl").innerHTML=`<thead><tr>${H.map(x=>`<th>${x}</th>`).join("")}</tr></thead><tbody>`+rows.map(r=>`<tr><td class="mono"><a href="${L.asset(r[0])}">${r[0]}</a></td><td><a href="${L.asset(r[0])}">${esc(r[1])}</a></td><td>${esc(r[2])}</td><td>${esc(r[3])}</td><td class="note">${esc(r[4])}</td></tr>`).join("")+"</tbody>"};
+  document.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",()=>{ASSET_TAB=b.dataset.tab;document.querySelectorAll("[data-tab]").forEach(x=>x.setAttribute("aria-pressed",x===b));draw()}));
+  document.getElementById("aq").addEventListener("input",e=>{ASSET_Q=e.target.value;draw()});draw()}};
+};
 const GATEREQ={
  PATCH:["G2: rerun the generated tests and scenario tests for every consumer listed","No consumer notification; PLM item version bumped as a patch"],
  MINOR:["G2: rerun tests and Decision Question Baseline slices for every consumer listed","Owners of each affected business service notified","One PLM finding opened per affected process until G4 evidence is green"],
  MAJOR:["G0: re-approval as a new major version, author and approver separated (CTL-013)","Old version kept through a deprecation window; every consumer re-pinned","G2: full Decision Question Baseline regression for every consumer","G5: value review for each affected business service before the old version retires"]};
-
-function measuresFor(keys){const outM=[];const seen=new Set();
- keys.forEach(k=>(BD.VGO[k]||[]).forEach(v=>{const key=k+v[0]+v[1];if(seen.has(key))return;seen.add(key);outM.push({k,vg:v})}));
- keys.forEach(k=>(CALC_BY_TGT[k]||[]).forEach(c=>{if(seen.has(c))return;seen.add(c);outM.push({k,calc:c})}));return outM}
-
-function renderTree(agg){
- return '<div class="tree">'+Object.entries(agg.tree).map(([d,svcs])=>`<div class="tdom"><b>${esc(DOM[d].name)}</b>`+
-  Object.entries(svcs).map(([s,nodes])=>`<div class="tsvc"><span>${esc(SVC[s].name)}</span>`+
-   Object.values(nodes).map(n=>{const vias=[...n.via].filter(v=>v!=="register"&&v!=="registry");const pv=[...n.prov];
-    return `<div class="tproc"><span class="pn">${n.proc?esc(PROC[n.proc].name):"Service level"}</span>${pv.map(p=>`<span class="prov ${p}">${PROVTXT[p]}</span>`).join("")}${vias.length?`<span class="note">${vias.slice(0,4).map(v=>esc(v)).join(", ")}${vias.length>4?` +${vias.length-4}`:""}</span>`:""}</div>`}).join("")+'</div>').join("")+'</div>').join("")+'</div>';
-}
-function highlight(hit,selP){
- const max=Math.max(1,...Object.values(hit));
- document.querySelectorAll(".pbtn").forEach(b=>{const v=hit[b.dataset.p]||0;b.classList.toggle("h1",v>0&&v<max/2+.5);b.classList.toggle("h2",v>=max/2+.5&&v>0);b.classList.toggle("sel",b.dataset.p===selP)});
- document.querySelectorAll("[data-sh]").forEach(sp=>{const v=hit[sp.dataset.sh];sp.style.fontWeight=v?"600":"";});
-}
-function run(){
- const id=pItem.value;if(!id){out.innerHTML="";highlight({});return}
- const type=pType.value;const paths=trace(type==="Agent"||type==="Microservice"?"cns":type,id);const agg=aggregate(paths);
- const procs=new Set(),svcs=new Set(),doms=new Set();
- Object.entries(agg.tree).forEach(([d,ss])=>{doms.add(d);Object.entries(ss).forEach(([s,ns])=>{svcs.add(s);Object.values(ns).forEach(n=>n.proc&&procs.add(n.proc))})});
+function impactOf(id){
+ const paths=trace(id);const tree=aggregate(paths);const procs=new Set(),svcs=new Set(),doms=new Set();
+ Object.entries(tree).forEach(([d,ss])=>{doms.add(d);Object.entries(ss).forEach(([s,ns])=>{svcs.add(s);Object.values(ns).forEach(n=>n.proc&&procs.add(n.proc))})});
  const declared=paths.filter(p=>p.prov!=="p").length;const ratio=paths.length?Math.round(100*declared/paths.length):100;
- const users=USERS[id]||[];
- let meta="";
- if(RULE[id]){const r=RULE[id];meta=`${esc(r.dom)} · lifecycle ${esc(r.life)} · ${esc(r.st)}`}
- else if(CON[id]){const c=CON[id];meta=`${esc(c.dom)} · on violation: ${esc(c.action)} · implements ${c.refs.join(", ")||"—"}`}
- else if(CALC[id]){const c=CALC[id];meta=`${esc(c.grp)} · unit ${esc(c.unit)} · owner ${esc(c.owner)} · published to ${esc(c.out||"—")}`}
- else{const c=CNS[id];meta=`${esc(c.kind)} · ${esc(c.fam)}${c.tier?" · "+c.tier:""}${c.aut?" · autonomy "+esc(c.aut):""} · ${c.rules.length} rules, ${c.cons.length} constraints, ${c.calcs.length} calcs`}
- const ms=measuresFor([...procs,...svcs]).slice(0,8);
- const mHtml=ms.length?ms.map(m=>{if(m.vg){const v=m.vg;const bad=v[5]==="lower"?v[4]>v[3]:v[4]<v[3];return `<div><span class="gapbar ${bad?"bad":"ok"}">${esc(v[0])}</span><span><b>${esc(v[1])}</b> · ${esc(PROC[m.k].name)}: target ${v[3]} ${esc(v[2])}, now ${v[4]}${v[6]?`<br><span class="note">${esc(v[6])}</span>`:""}</span></div>`}
-  const c=CALC[m.calc];return `<div><span class="tag">${c.id}</span><span><b>${esc(c.name)}</b> <span class="note">${esc(c.grp)} · ${esc(c.unit)}</span></span></div>`}).join(""):'<p class="note">No registered measure covers these processes yet. That gap is itself a W-08 finding.</p>';
- const domNames=[...doms].map(d=>DOM[d].name);const procNames=[...procs].map(p=>PROC[p].name);
- const ch=pChange.value;const chWord={PATCH:"A patch",MINOR:"A material (minor)",MAJOR:"A breaking (major)"}[ch];
- const prop=paths.some(p=>p.prov==="p");
- const sum=`${chWord} change to <b>${id} ${esc(assetName(id))}</b> reaches ${procs.size} process${procs.size===1?"":"es"} in ${svcs.size} business service${svcs.size===1?"":"s"} across ${doms.size} domain${doms.size===1?"":"s"}: ${esc(domNames.join(", "))}.`+
+ return {paths,tree,procs,svcs,doms,declared,ratio};
+}
+P.asset=id=>{
+ if(!kindOf(id))return P.notfound();
+ LAST_ASSET=id;const k=kindOf(id);const I=impactOf(id);const users=USERS[id]||[];
+ let meta=[],related="";
+ if(RULE[id]){const r=RULE[id];meta=[["Domain",r.dom],["Lifecycle",r.life],["Status",r.st]];
+  const cs=Object.values(CON).filter(c=>c.refs.includes(id)).map(c=>c.id),ks=Object.values(CALC).filter(c=>c.refs.includes(id)).map(c=>c.id);
+  related=`<div class="grid2"><div class="card"><h4>Constraints that implement it</h4>${chipsA(cs)}</div><div class="card"><h4>Calculations that reference it</h4>${chipsA(ks)}</div></div>`}
+ else if(CON[id]){const c=CON[id];meta=[["Domain",c.dom],["On violation",c.action]];related=`<div class="card"><h4>Rules it implements</h4>${chipsA(c.refs)}</div>`}
+ else if(CALC[id]){const c=CALC[id];meta=[["Group",c.grp],["Unit",c.unit],["Published to",c.out||"—"]];related=`<div class="grid2"><div class="card"><h4>Rules it references</h4>${chipsA(c.refs)}</div><div class="card"><h4>Owner</h4>${c.owner?chipsA([c.owner]):'<p class="empty">—</p>'}</div></div>`}
+ else{const c=CNS[id];meta=[["Kind",c.kind],["Family",c.fam]];if(c.tier)meta.push(["Tier",c.tier]);if(c.aut)meta.push(["Autonomy",c.aut]);if(c.surf)meta.push(["Runs as",{foundry:"Hosted",both:"Hosted + Copilot",declarative:"Copilot"}[c.surf]||c.surf]);
+  related=`<div class="grid3"><div class="card"><h4>Rules it applies · ${c.rules.length}</h4>${chipsA(c.rules)}</div><div class="card"><h4>Constraints · ${c.cons.length}</h4>${chipsA(c.cons)}</div><div class="card"><h4>Calculations · ${c.calcs.length}</h4>${chipsA(c.calcs)}</div></div>`}
+ const domNames=[...I.doms].map(d=>DOM[d].name),procNames=[...I.procs].map(p=>PROC[p].name);
+ const chWord={PATCH:"A patch",MINOR:"A material (minor)",MAJOR:"A breaking (major)"}[CHANGE];const prop=I.paths.some(p=>p.prov==="p");
+ const sum=`${chWord} change to <b>${id} ${esc(assetName(id))}</b> reaches ${I.procs.size} process${I.procs.size===1?"":"es"} in ${I.svcs.size} business service${I.svcs.size===1?"":"s"} across ${I.doms.size} domain${I.doms.size===1?"":"s"}${domNames.length?": "+esc(domNames.join(", ")):""}.`+
   (procNames.length?` The processes are ${esc(procNames.slice(0,6).join(", "))}${procNames.length>6?` and ${procNames.length-6} more`:""}.`:"")+
-  (users.length?` ${users.length} consumer${users.length===1?"":"s"} appl${users.length===1?"ies":"y"} it at run time (${users.slice(0,5).join(", ")}${users.length>5?", …":""}).`:"")+
-  ` ${declared} of ${paths.length} paths are declared in the registers (determinism ${ratio}%)${prop?", so the result is reported as projected until the proposed mappings are confirmed":""}.`;
- out.innerHTML=`<div class="asset"><span class="am">${esc(id)}</span><span class="an">${esc(assetName(id))}</span><span class="am">${meta}</span></div>
- <div class="stats"><div class="stat"><b>${doms.size}</b><span>domains</span></div><div class="stat"><b>${svcs.size}</b><span>services</span></div><div class="stat"><b>${procs.size}</b><span>processes</span></div><div class="stat"><b>${ratio}%</b><span>determinism</span></div></div>
+  (users.length?` ${users.length} consumer${users.length===1?"":"s"} appl${users.length===1?"ies":"y"} it at run time.`:"")+
+  ` ${I.declared} of ${I.paths.length} paths are declared in the registers (determinism ${I.ratio}%)${prop?", so the result is reported as projected until the proposed mappings are confirmed":""}.`;
+ const tree=I.paths.length?'<div class="tree">'+Object.entries(I.tree).map(([d,svcs])=>`<div class="tdom"><a href="${L.dom(d)}">${esc(DOM[d].name)}</a>`+Object.entries(svcs).map(([s,nodes])=>`<div class="tsvc"><a href="${L.svc(s)}">${esc(SVC[s].name)}</a>`+Object.values(nodes).map(n=>{const vias=[...n.via].filter(v=>v!=="register"&&v!=="registry"&&v!=="Sales Advisor answers");
+   return `<div class="tproc">${n.proc?`<a href="${L.proc(n.proc)}">${esc(PROC[n.proc].name)}</a>`:'<span>Service level</span>'}${[...n.prov].map(p=>`<span class="prov ${p}">${PROVTXT[p]}</span>`).join("")}${vias.slice(0,5).map(v=>chipA(v)).join("")}${vias.length>5?`<span class="note">+${vias.length-5}</span>`:""}</div>`}).join("")+'</div>').join("")+'</div>').join("")+'</div>':'<p class="empty">Not mapped to the business operating model yet. Add a domain holon or consumer binding in the SSOT Editor.</p>';
+ const crumbType={Rule:"rule",Constraint:"con",Calculation:"calc",Agent:"Agent",Microservice:"Microservice"}[k];
+ return {crumbs:[["Rules & agents","#assets"],[k+"s","#assets~"+crumbType],[id]],html:`<div class="phead"><span class="eyebrow">${k} · ${id}</span><h1>${esc(assetName(id))}</h1>
+ <dl class="kv">${meta.map(([a,b])=>`<dt>${esc(a)}</dt><dd>${esc(b)}</dd>`).join("")}</dl>
+ <div class="kicker"><span class="note">Change class</span><div class="seg" role="group" aria-label="Change class">${["PATCH","MINOR","MAJOR"].map(c=>`<button data-ch="${c}" aria-pressed="${c===CHANGE}">${{PATCH:"Patch",MINOR:"Minor",MAJOR:"Major"}[c]}</button>`).join("")}</div>
+ <a class="extlink" href="${CNS[id]?LINKS.WA:LINKS.WE}" target="_blank" rel="noopener">Edit in ${CNS[id]?"Agent &amp; Service Map":"SSOT Editor"} ↗</a></div></div>
+ <div class="stats"><div class="stat"><b>${I.doms.size}</b><span>domains</span></div><div class="stat"><b>${I.svcs.size}</b><span>services</span></div><div class="stat"><b>${I.procs.size}</b><span>processes</span></div><div class="stat"><b>${I.ratio}%</b><span>determinism</span></div></div>
  <div class="summary"><span class="sl">Draft assessment · Impact summarization agent</span><p>${sum}</p></div>
- <div><h4>Gates this change must clear</h4><ul class="gatesreq">${GATEREQ[ch].map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
- <div><h4>Where it lands</h4>${paths.length?renderTree(agg):'<p class="note">No mapping to the business operating model. Add a domain holon or consumer binding in the SSOT Editor.</p>'}</div>
- <div><h4>Measures that will show the effect</h4><div class="mlist">${mHtml}</div></div>`;
- highlight(agg.hit,null);
- chainLive(domNames,[...svcs].map(s=>SVC[s].name),procNames,id);
-}
-function showProcess(pid){
- const p=PROC[pid];const gv=GOVBY[pid]||{r:new Set(),c:new Set()};const sg=GOVBY[p.svc]||{r:new Set(),c:new Set()};
- const rules=[...gv.r],cons=[...gv.c];
- const conAll=Object.values(CON).filter(c=>c.refs.some(r=>gv.r.has(r))).map(c=>c.id);
- const ms=measuresFor([pid]);
- const list=(ids,max)=>ids.slice(0,max).map(i=>`<button class="btn" data-go="${i}">${i}</button>`).join(" ")+(ids.length>max?` <span class="note">+${ids.length-max} more</span>`:"");
- out.innerHTML=`<div class="asset"><span class="am">${esc(DOM[p.dom].name)} · ${esc(SVC[p.svc].name)}</span><span class="an">${esc(p.name)}</span><span class="am">Process ${pid}${p.stage?` · stage ${esc(p.stage)}`:""}</span></div>
- <div class="stats"><div class="stat"><b>${rules.length}</b><span>rules</span></div><div class="stat"><b>${conAll.length}</b><span>constraints</span></div><div class="stat"><b>${cons.length}</b><span>consumers</span></div><div class="stat"><b>${ms.length}</b><span>measures</span></div></div>
- <div class="summary"><span class="sl">What governs this process</span><p>${rules.length} rules are declared against <b>${esc(p.name)}</b>${conAll.length?`, enforced through ${conAll.length} constraints`:""}${cons.length?`, and ${cons.length} agents or microservices run in it`:""}. ${sg.r.size+sg.c.size?`Another ${sg.r.size+sg.c.size} assets apply to ${esc(SVC[p.svc].name)} as a whole. `:""}Select any ID to trace its full impact.</p></div>
- <div><h4>Rules</h4><div class="quick">${list(rules,24)||'<span class="note">None declared</span>'}</div></div>
- <div><h4>Constraints</h4><div class="quick">${list(conAll,16)||'<span class="note">None</span>'}</div></div>
- <div><h4>Agents and microservices</h4><div class="quick">${list(cons,16)||'<span class="note">None homed here</span>'}</div></div>
- <div><h4>Measures</h4><div class="mlist">${ms.length?ms.slice(0,8).map(m=>m.vg?`<div><span class="gapbar ${(m.vg[5]==="lower"?m.vg[4]>m.vg[3]:m.vg[4]<m.vg[3])?"bad":"ok"}">${esc(m.vg[0])}</span><span><b>${esc(m.vg[1])}</b>: target ${m.vg[3]} ${esc(m.vg[2])}, now ${m.vg[4]}</span></div>`:`<div><span class="tag">${m.calc}</span><span>${esc(CALC[m.calc].name)}</span></div>`).join(""):'<p class="note">No registered measure yet.</p>'}</div></div>`;
- const hit={};hit[pid]=1;highlight(hit,pid);
- chainLive([DOM[p.dom].name],[SVC[p.svc].name],[p.name],null);
-}
-bom.addEventListener("click",e=>{const b=e.target.closest(".pbtn");if(b)showProcess(b.dataset.p)});
-out.addEventListener("click",e=>{const b=e.target.closest("[data-go]");if(!b)return;const i=b.dataset.go;
- pType.value=RULE[i]?"rule":CON[i]?"con":CALC[i]?"calc":CNS[i].kind;pFilter.value="";fillItems(i);run();document.getElementById("tracePanel").scrollIntoView({block:"start"})});
+ <div class="grid2"><div class="card"><h4>Where it lands</h4><div class="legend"><span><span class="prov d">register</span> declared</span><span><span class="prov c">carried by</span> consumer or rule</span><span><span class="prov p">proposed</span> to confirm</span></div>${tree}</div>
+ <div style="display:grid;gap:14px;align-content:start"><div class="card"><h4>Gates this change must clear</h4><ul class="clean">${GATEREQ[CHANGE].map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+ <div class="card"><h4>Measures that will show the effect</h4>${measureList(measuresFor([...I.procs,...I.svcs]),8)}</div>
+ ${users.length?`<div class="card"><h4>Applied at run time by</h4>${chipsA(users)}</div>`:""}</div></div>
+ ${related}
+ <div class="stepnav"><span></span><a href="#causal">See it on the causal chain →</a></div>`,after:()=>document.querySelectorAll("[data-ch]").forEach(b=>b.addEventListener("click",()=>{CHANGE=b.dataset.ch;render(true)}))};
+};
+P.causal=()=>{const id=LAST_ASSET;const I=impactOf(id);
+ const fmt=(arr)=>arr.length?`${arr.length}: ${arr.slice(0,2).join(", ")}${arr.length>2?" …":""}`:"—";
+ const CH=[["Asset version","PLM item","The rule, constraint, calc, agent or microservice that changed, with its gate evidence.",true,`${id}`],
+  ["Processes","Operating model","Lifecycle processes that apply or depend on the asset.",true,fmt([...I.procs].map(p=>PROC[p].name))],
+  ["Business services","Operating model","Services those processes deliver.",true,fmt([...I.svcs].map(s=>SVC[s].name))],
+  ["Domains","Operating model","Insperity's service domains and the shared governance domain.",true,fmt([...I.doms].map(d=>DOM[d].name))],
+  ["Products & services","For customers","What clients and worksite employees receive.",false,"Pending K12 load"],
+  ["Strategy map","Objectives","Objectives across the strategy map's perspectives.",false,"Pending K12 load"],
+  ["Corporate values","Values","The values the objectives serve, and the norms that encode them.",false,"Pending K12 load"]];
+ const AG=[["AG-31","Fires when a change is released in the SSOT Editor or the Agent & Service Map, or a measure crosses its threshold. Resolves consumers and processes."],["AG-34","Extends paths from processes and services to products, strategy objectives and values, marking each link declared or proposed."],["AG-35","Estimates the effect per process and service from the asset's measures and value-gap outcomes, with the determinism ratio per path."],["AG-36","Ranks affected services by risk and value at stake."],["AG-37","Explains what would have happened without the change."],["AG-38","Drafts the assessment and next actions, citing asset, path and measure IDs. A reviewer signs off at G5."]];
+ return {crumbs:[["Causal chain"]],html:`<div class="phead"><span class="eyebrow">Causal impact</span><h1>Causal chain</h1><p class="lede">Showing <a href="${L.asset(id)}">${id} ${esc(assetName(id))}</a>, the last asset you opened. The first four links come from the SSOT and the agent registry today. The last three bind once Insperity's product catalog, strategy map and values are loaded into the keel (<a href="${L.keel("K12")}">K12</a>).</p></div>
+ <div class="scroll"><div class="chain">${CH.map(c=>`<div class="node${c[3]?" live":""}"><span class="nt">${c[1]}</span><span class="nn">${c[0]}</span><span class="ne">${c[2]}</span><span class="ex">${esc(c[4])}</span></div>`).join("")}</div></div>
+ <div class="section"><h2>Agents that run the assessment</h2><div class="grid3">${AG.map(([a,t])=>`<a class="tile" href="${L.asset(a)}"><span class="id">${a}</span><b>${esc(assetName(a))}</b><span>${esc(t)}</span><span class="go">Open →</span></a>`).join("")}</div></div>
+ <div class="guard"><h3>Guardrails on the summary</h3><ul>
+  <li>Each link in a path is labelled declared, carried by a consumer or referenced rule, or proposed. The summary reports the determinism ratio of every path it cites.</li>
+  <li>A path that uses any proposed mapping is reported as projected, never as realized.</li>
+  <li>The summarization agent runs behind the AI Circuit Breaker. Claims that don't cite an asset, a path and a measure route to a reviewer.</li>
+  <li>Results move a PLM item through G5 only after human sign-off, with author and approver kept separate (CTL-013).</li>
+  <li>An asset that improves a measure while breaching a value-linked norm shows positive impact and an open compliance finding side by side.</li></ul></div>`};
+};
+P.notfound=()=>({crumbs:[["Not found"]],html:`<div class="phead"><h1>That page doesn't exist</h1><p class="lede">The link may point to an item that was renamed. <a href="#home">Go to the flow</a>.</p></div>`});
+function W08(){const r=BD.RULES.filter(x=>x[5].length).length,c=Object.values(CNS).filter(x=>x.home.length).length;return `Today: ${r} of ${BD.RULES.length} rules and ${c} of ${BD.CONSUMERS.length} agents and services map to at least one process.`}
 
-/* ---------- register ---------- */
-const fComp=document.getElementById("fComp");
-Object.entries(COMPNAME).forEach(([k,v])=>fComp.insertAdjacentHTML("beforeend",`<option value="${k}">${v}</option>`));
-const SN={C:"Compliance",R:"Risk",I:"Impact"};
-// live value for W-08
-const mappedRules=BD.RULES.filter(r=>r[5].length).length;
-const mappedCons=Object.values(CON).filter(c=>c.refs.some(r=>RULE[r]&&RULE[r].t.length)).length;
-const mappedCalcs=Object.values(CALC).filter(c=>(c.refs.some(r=>RULE[r]&&RULE[r].t.length))||CNS[c.owner]?.home.length).length;
-const mappedCns=Object.values(CNS).filter(c=>c.home.length).length;
-const W08=`Today: rules ${mappedRules}/${BD.RULES.length}, constraints ${mappedCons}/${BD.CONS.length}, calcs ${mappedCalcs}/${BD.CALCS.length}, agents and services ${mappedCns}/${BD.CONSUMERS.length}`;
-function renderReg(){
- const c=fComp.value,t=document.getElementById("fTime").value,s=document.getElementById("fScore").value;
- const rows=REG.filter(r=>(!c||r[1]===c)&&(!t||r[4]===t)&&(!s||r[6].includes(s)));
- document.getElementById("regCount").textContent=rows.length+" of "+REG.length+" measures";
- document.getElementById("regTbl").innerHTML='<thead><tr><th>ID</th><th>Measure</th><th>Owner</th><th>When</th><th>Gate</th><th>Feeds</th></tr></thead><tbody>'+
- rows.map(r=>`<tr><td class="mono">${r[0]}</td><td><b>${esc(r[2])}</b><br><span class="note">${esc(r[3])}${r[0]==="W-08"?". "+W08:""}</span></td><td>${COMPNAME[r[1]]}</td><td>${r[4]==="Design"?"Design time":r[4]==="Run"?"Run time":"Release"}</td><td class="mono">${r[5]}</td><td><span class="score">${[...r[6]].map(x=>`<span class="pip ${x}">${SN[x]}</span>`).join("")}</span></td></tr>`).join("")+'</tbody>';
+/* ---------- router ---------- */
+const NAVOF={home:"home",cell:"home",row:"home",bom:"bom",dom:"bom",svc:"bom",proc:"bom",assets:"assets",asset:"assets",measures:"measures",measure:"measures",plm:"plm",gate:"plm",keel:"keel",causal:"causal"};
+let CUR="",HIST=[];
+function parse(h){const parts=(h||"").replace(/^#/,"").split("~").filter(Boolean);return parts.length?parts:["home"]}
+function render(keep){
+ const [pg,...args]=parse(CUR);const fn=P[pg]||P.notfound;let r;
+ try{r=fn(...args)}catch(e){console.error(e);r=P.notfound()}
+ if(typeof r==="string")r={crumbs:null,html:r};
+ const app=document.getElementById("app");app.innerHTML=r.html;
+ const cr=document.getElementById("crumbs");
+ cr.innerHTML=(HIST.length?`<button class="back" id="backBtn">← Back</button>`:"")+(r.crumbs?[["Flow","#home"],...r.crumbs].filter((c,i,a)=>!(i>0&&c[1]==="#home")).map((c,i,a)=>i<a.length-1&&c[1]?`<a href="${c[1]}">${esc(c[0])}</a><span class="sep">/</span>`:`<span>${esc(c[0])}</span>`).join(""):"");
+ document.getElementById("backBtn")?.addEventListener("click",()=>{const prev=HIST.pop();if(prev!=null){CUR=prev;setHash(prev);render()}});
+ document.querySelectorAll("#nav a").forEach(a=>a.toggleAttribute("aria-current",a.dataset.n===NAVOF[pg]));
+ document.querySelectorAll("#nav a[aria-current]").forEach(a=>a.setAttribute("aria-current","page"));
+ if(r.after)r.after();
+ if(!keep)window.scrollTo(0,0);
 }
-["fComp","fTime","fScore"].forEach(id=>document.getElementById(id).addEventListener("change",renderReg));
-renderReg();
-document.getElementById("gateTbl").innerHTML='<thead><tr><th>Gate</th><th>Name</th><th>Passes when</th><th>Evidence</th></tr></thead><tbody>'+
- GATES.map(r=>`<tr><td class="mono">${r[0]}</td><td><b>${r[1]}</b></td><td>${esc(r[2])}</td><td class="mono" style="white-space:normal">${esc(r[3])}</td></tr>`).join("")+'</tbody>';
-
-/* ---------- causal chain ---------- */
-const CHAIN=[
- ["Asset version","PLM item","The rule, constraint, calc, agent or microservice that changed, with its gate evidence.",true],
- ["Processes","Operating model","Lifecycle processes that apply or depend on the asset.",true],
- ["Business services","Operating model","Services those processes deliver.",true],
- ["Domains","Operating model","Insperity's service domains and the shared governance domain.",true],
- ["Products & services","For customers","What clients and worksite employees receive. Binds when the product catalog is in the keel.",false],
- ["Strategy map","Objectives","Objectives across the strategy map's perspectives. Binds when the strategy map is in the keel.",false],
- ["Corporate values","Values","The values the objectives serve, and the norms that encode them.",false]
-];
-function chainLive(doms,svcs,procs,id){
- const vals=[id?`${id}`:"Select an asset",procs.length?`${procs.length}: ${procs.slice(0,2).join(", ")}${procs.length>2?" …":""}`:"—",svcs.length?`${svcs.length}: ${svcs.slice(0,2).join(", ")}${svcs.length>2?" …":""}`:"—",doms.length?`${doms.length}: ${doms.slice(0,2).join(", ")}${doms.length>2?" …":""}`:"—","Pending K12 load","Pending K12 load","Pending K12 load"];
- document.getElementById("chain").innerHTML=CHAIN.map((c,i)=>`<div class="node${c[3]?" live":""}"><span class="nt">${c[1]}</span><span class="nn">${c[0]}</span><span class="ne">${c[2]}</span><span class="ex">${esc(vals[i])}</span></div>`).join("");
-}
-const AG=[
- ["AG-31","Impact Analyzer","Fires when a change is released in the SSOT Editor or the Agent & Service Map, or when a measure crosses its SSOT threshold. Resolves the asset's consumers and processes, as the tracer above does."],
- ["AG-34","Causal Graph Builder","Extends the paths from processes and services to products, strategy objectives and values. Marks each link declared or proposed."],
- ["AG-35","Effect Estimator","Applies the asset's measures and the value-gap outcomes to estimate the effect per process and service, with the determinism ratio per path."],
- ["AG-36 · AG-37","Risk & Opportunity Ranker, Counterfactual Explainer","Ranks affected services by risk and value at stake, and explains what would have happened without the change."],
- ["AG-38 + reviewer","Action Proposer and PLM sign-off","Drafts the assessment and next actions for each audience, citing asset, path and measure IDs. A reviewer signs off at G5; overrides count toward A-05."]
-];
-document.getElementById("agents").innerHTML=AG.map(a=>`<div class="agent"><span class="aid">${a[0]}</span><span class="an">${a[1]}</span><p>${a[2]}</p></div>`).join("");
-
-fillItems("PAY-002");run();
+function setHash(h){try{if(location.hash!==h)history.replaceState(null,"",h)}catch(e){}}
+function go(h){if(h===CUR)return;HIST.push(CUR);if(HIST.length>60)HIST.shift();CUR=h;setHash(h);render()}
+document.addEventListener("click",e=>{const a=e.target.closest('a[href^="#"]');if(!a||e.metaKey||e.ctrlKey)return;e.preventDefault();go(a.getAttribute("href"))});
+window.addEventListener("hashchange",()=>{const h=location.hash||"#home";if(h!==CUR){HIST.push(CUR);CUR=h;render()}});
+CUR=location.hash&&location.hash.length>1?location.hash:"#home";
+render();
 </script>
 
 </body></html>
