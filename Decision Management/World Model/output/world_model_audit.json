@@ -1,0 +1,236 @@
+{
+  "summary": {
+    "domain": "world_model",
+    "n_events": 8,
+    "chain_hash": "39ee8712f9be3ac7",
+    "events_by_component": {
+      "CausalGraph": 1,
+      "Assembly": 3,
+      "DecisionLibrary": 1,
+      "GraphPropagationEngine": 3
+    }
+  },
+  "events": [
+    {
+      "seq": 0,
+      "component": "CausalGraph",
+      "event": "built",
+      "inputs": {
+        "n_mechanisms": 20,
+        "n_countries": 7,
+        "n_trade_links": 15
+      },
+      "outputs": {
+        "n_within_country_edges": 140,
+        "n_cross_country_edges": 15,
+        "n_total_edges": 155
+      },
+      "meta": {},
+      "inputs_hash": "934a8a16a7bfae2c",
+      "outputs_hash": "4e0346821f7c11b7",
+      "id": "ed214d8245cf7e8a"
+    },
+    {
+      "seq": 1,
+      "component": "Assembly",
+      "event": "constructed",
+      "inputs": {
+        "name": "Nigeria: HYPOTHETICAL crude-export levy",
+        "primitive_ids": [
+          "NGA-P1",
+          "NGA-P2",
+          "NGA-P3"
+        ],
+        "reused_subassemblies": 0
+      },
+      "outputs": {
+        "assembly_index": 2,
+        "total_cost": 12.0,
+        "critical_path_lead_time": 3
+      },
+      "meta": {},
+      "inputs_hash": "042f7c9c56f52c23",
+      "outputs_hash": "e9b4a50fe97aa284",
+      "id": "156bc005ad92a391"
+    },
+    {
+      "seq": 2,
+      "component": "Assembly",
+      "event": "constructed",
+      "inputs": {
+        "name": "Helion Semiconductors: HYPOTHETICAL fab relocation",
+        "primitive_ids": [
+          "HEL-P1",
+          "HEL-P2",
+          "HEL-P3"
+        ],
+        "reused_subassemblies": 0
+      },
+      "outputs": {
+        "assembly_index": 2,
+        "total_cost": 545.0,
+        "critical_path_lead_time": 9
+      },
+      "meta": {},
+      "inputs_hash": "30825bceb18cc2a9",
+      "outputs_hash": "047ca5f8f5fff0dc",
+      "id": "480c08883ceb3169"
+    },
+    {
+      "seq": 3,
+      "component": "Assembly",
+      "event": "constructed",
+      "inputs": {
+        "name": "Germany: HYPOTHETICAL accelerated renewable mandate",
+        "primitive_ids": [
+          "DEU-P1",
+          "DEU-P2",
+          "DEU-P3"
+        ],
+        "reused_subassemblies": 0
+      },
+      "outputs": {
+        "assembly_index": 2,
+        "total_cost": 275.0,
+        "critical_path_lead_time": 10
+      },
+      "meta": {},
+      "inputs_hash": "ff81d1056b68b1e1",
+      "outputs_hash": "3abd224994010a9e",
+      "id": "f5bfdbc171ec5c0a"
+    },
+    {
+      "seq": 4,
+      "component": "DecisionLibrary",
+      "event": "built",
+      "inputs": {
+        "n_decisions": 3
+      },
+      "outputs": {
+        "decision_ids": [
+          "dec:nigeria_export_levy",
+          "dec:helion_fab_relocation",
+          "dec:germany_renewable_mandate"
+        ]
+      },
+      "meta": {},
+      "inputs_hash": "63125904099c59ff",
+      "outputs_hash": "6eb5781e7c934369",
+      "id": "31159a3598d3cace"
+    },
+    {
+      "seq": 5,
+      "component": "GraphPropagationEngine",
+      "event": "complete",
+      "inputs": {
+        "decision": "dec:nigeria_export_levy"
+      },
+      "outputs": {
+        "n_nodes_reached": 46,
+        "n_edge_firings": 46,
+        "top_impacts": [
+          {
+            "actor": "nigeria",
+            "var": "energy.price_index",
+            "mean_normalized_moves": 1.75
+          },
+          {
+            "actor": "nigeria",
+            "var": "economic.inflation_pct",
+            "mean_normalized_moves": 0.3947
+          },
+          {
+            "actor": "nigeria",
+            "var": "transportation.logistics_cost_pct_gdp",
+            "mean_normalized_moves": 0.3442
+          },
+          {
+            "actor": "nigeria",
+            "var": "industrial.industrial_output_growth_pct",
+            "mean_normalized_moves": -0.2847
+          },
+          {
+            "actor": "nigeria",
+            "var": "agriculture.output_growth_pct",
+            "mean_normalized_moves": -0.1699
+          }
+        ]
+      },
+      "meta": {},
+      "inputs_hash": "dde86515b2347174",
+      "outputs_hash": "fbeae8ccd426b550",
+      "id": "a607d632bdd6703d"
+    },
+    {
+      "seq": 6,
+      "component": "GraphPropagationEngine",
+      "event": "complete",
+      "inputs": {
+        "decision": "dec:helion_fab_relocation"
+      },
+      "outputs": {
+        "n_nodes_reached": 12,
+        "n_edge_firings": 10,
+        "top_impacts": [
+          {
+            "actor": "helion_semi",
+            "var": "industrial.industrial_output_growth_pct",
+            "mean_normalized_moves": -4.5
+          },
+          {
+            "actor": "china",
+            "var": "industrial.industrial_output_growth_pct",
+            "mean_normalized_moves": -0.135
+          },
+          {
+            "actor": "nigeria",
+            "var": "industrial.supply_chain_resilience_index",
+            "mean_normalized_moves": -0.0147
+          },
+          {
+            "actor": "germany",
+            "var": "industrial.supply_chain_resilience_index",
+            "mean_normalized_moves": -0.0134
+          },
+          {
+            "actor": "japan",
+            "var": "industrial.supply_chain_resilience_index",
+            "mean_normalized_moves": -0.0116
+          }
+        ]
+      },
+      "meta": {},
+      "inputs_hash": "8c56da9ebc0b07eb",
+      "outputs_hash": "33e952e13e19d22b",
+      "id": "e79ef7fb30812f0a"
+    },
+    {
+      "seq": 7,
+      "component": "GraphPropagationEngine",
+      "event": "complete",
+      "inputs": {
+        "decision": "dec:germany_renewable_mandate"
+      },
+      "outputs": {
+        "n_nodes_reached": 2,
+        "n_edge_firings": 1,
+        "top_impacts": [
+          {
+            "actor": "germany",
+            "var": "energy.renewable_share_pct",
+            "mean_normalized_moves": 10.0
+          },
+          {
+            "actor": "germany",
+            "var": "transportation.emissions_index",
+            "mean_normalized_moves": -1.6169
+          }
+        ]
+      },
+      "meta": {},
+      "inputs_hash": "86059a066126eedf",
+      "outputs_hash": "f255beaeffe210f1",
+      "id": "39ee8712f9be3ac7"
+    }
+  ]
+}

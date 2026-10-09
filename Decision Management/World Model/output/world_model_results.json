@@ -1,0 +1,2079 @@
+{
+  "disclaimer": "EVERYTHING IN THIS FILE IS AN ILLUSTRATIVE MODEL OUTPUT. Baseline statistics are placeholders, causal edges are expert-elicited hypotheses with explicit uncertainty, decisions are fictional/hypothetical scenarios, and propagation uses an explicit, documented damping/hop-limit convention. None of this is a real-world forecast, and none of it was sent to, or acted on by, any real institution or person.",
+  "ontology": {
+    "sectors": {
+      "social": {
+        "label": "Social",
+        "color": "#c97bb0"
+      },
+      "economic": {
+        "label": "Economic",
+        "color": "#e0a458"
+      },
+      "political": {
+        "label": "Political",
+        "color": "#6fa8d6"
+      },
+      "industrial": {
+        "label": "Industrial",
+        "color": "#5c6c7d"
+      },
+      "healthcare": {
+        "label": "Healthcare",
+        "color": "#5cb87a"
+      },
+      "education": {
+        "label": "Education",
+        "color": "#a690e0"
+      },
+      "transportation": {
+        "label": "Transportation",
+        "color": "#4bb3a3"
+      },
+      "agriculture": {
+        "label": "Agriculture",
+        "color": "#9dbf5c"
+      },
+      "energy": {
+        "label": "Energy",
+        "color": "#e2685f"
+      }
+    },
+    "state_variables": [
+      {
+        "key": "social.inequality_gini",
+        "sector": "social",
+        "label": "Income inequality (Gini)",
+        "unit": "index 0-1",
+        "description": "Standard Gini coefficient of income distribution.",
+        "higher_is_better": false,
+        "typical_move": 0.02
+      },
+      {
+        "key": "social.social_trust_index",
+        "sector": "social",
+        "label": "Social trust",
+        "unit": "index 0-100",
+        "description": "Composite survey-based measure of interpersonal and institutional trust.",
+        "higher_is_better": true,
+        "typical_move": 5
+      },
+      {
+        "key": "social.migration_net_rate",
+        "sector": "social",
+        "label": "Net migration rate",
+        "unit": "per 1,000 pop.",
+        "description": "Net migrants per 1,000 population per year (positive = net inflow).",
+        "higher_is_better": null,
+        "typical_move": 1.0
+      },
+      {
+        "key": "social.unrest_index",
+        "sector": "social",
+        "label": "Civil unrest index",
+        "unit": "index 0-100",
+        "description": "Composite frequency/intensity measure of protest and civil disorder events.",
+        "higher_is_better": false,
+        "typical_move": 10
+      },
+      {
+        "key": "economic.gdp_growth_pct",
+        "sector": "economic",
+        "label": "GDP growth",
+        "unit": "% / year",
+        "description": "Real GDP growth rate, year over year.",
+        "higher_is_better": true,
+        "typical_move": 1.5
+      },
+      {
+        "key": "economic.inflation_pct",
+        "sector": "economic",
+        "label": "Inflation",
+        "unit": "% / year",
+        "description": "Headline consumer price inflation, year over year.",
+        "higher_is_better": false,
+        "typical_move": 2.0
+      },
+      {
+        "key": "economic.unemployment_pct",
+        "sector": "economic",
+        "label": "Unemployment",
+        "unit": "% of labor force",
+        "description": "Unemployment rate, standardized definition.",
+        "higher_is_better": false,
+        "typical_move": 1.0
+      },
+      {
+        "key": "economic.trade_balance_pct_gdp",
+        "sector": "economic",
+        "label": "Trade balance",
+        "unit": "% of GDP",
+        "description": "Net exports as a share of GDP (positive = surplus).",
+        "higher_is_better": true,
+        "typical_move": 1.5
+      },
+      {
+        "key": "political.institutional_stability_index",
+        "sector": "political",
+        "label": "Institutional stability",
+        "unit": "index 0-100",
+        "description": "Composite measure of government/institutional continuity and rule-of-law strength.",
+        "higher_is_better": true,
+        "typical_move": 5
+      },
+      {
+        "key": "political.policy_uncertainty_index",
+        "sector": "political",
+        "label": "Policy uncertainty",
+        "unit": "index 0-100",
+        "description": "News/market-based measure of uncertainty about future government policy.",
+        "higher_is_better": false,
+        "typical_move": 15
+      },
+      {
+        "key": "political.corruption_perception_index",
+        "sector": "political",
+        "label": "Corruption perception",
+        "unit": "index 0-100",
+        "description": "Higher = perceived cleaner (Transparency-International-style scaling).",
+        "higher_is_better": true,
+        "typical_move": 3
+      },
+      {
+        "key": "political.approval_rating_pct",
+        "sector": "political",
+        "label": "Executive approval",
+        "unit": "% approving",
+        "description": "Public approval rating of the sitting national executive.",
+        "higher_is_better": null,
+        "typical_move": 5
+      },
+      {
+        "key": "industrial.industrial_output_growth_pct",
+        "sector": "industrial",
+        "label": "Industrial output growth",
+        "unit": "% / year",
+        "description": "Growth in industrial production index, year over year.",
+        "higher_is_better": true,
+        "typical_move": 2.0
+      },
+      {
+        "key": "industrial.capacity_utilization_pct",
+        "sector": "industrial",
+        "label": "Capacity utilization",
+        "unit": "% of capacity",
+        "description": "Share of installed industrial capacity actually in use.",
+        "higher_is_better": true,
+        "typical_move": 3
+      },
+      {
+        "key": "industrial.supply_chain_resilience_index",
+        "sector": "industrial",
+        "label": "Supply-chain resilience",
+        "unit": "index 0-100",
+        "description": "Composite measure of input-source diversification and buffer capacity.",
+        "higher_is_better": true,
+        "typical_move": 6
+      },
+      {
+        "key": "industrial.industrial_employment_pct",
+        "sector": "industrial",
+        "label": "Industrial employment share",
+        "unit": "% of labor force",
+        "description": "Share of total employment in industrial/manufacturing sectors.",
+        "higher_is_better": null,
+        "typical_move": 1.0
+      },
+      {
+        "key": "healthcare.access_index",
+        "sector": "healthcare",
+        "label": "Healthcare access",
+        "unit": "index 0-100",
+        "description": "Composite measure of coverage and physical/financial access to care.",
+        "higher_is_better": true,
+        "typical_move": 4
+      },
+      {
+        "key": "healthcare.outcomes_index",
+        "sector": "healthcare",
+        "label": "Health outcomes",
+        "unit": "index 0-100",
+        "description": "Composite measure of life expectancy, mortality, and morbidity outcomes.",
+        "higher_is_better": true,
+        "typical_move": 3
+      },
+      {
+        "key": "healthcare.cost_burden_pct_gdp",
+        "sector": "healthcare",
+        "label": "Healthcare cost burden",
+        "unit": "% of GDP",
+        "description": "Total health expenditure as a share of GDP.",
+        "higher_is_better": false,
+        "typical_move": 0.8
+      },
+      {
+        "key": "healthcare.pandemic_preparedness_index",
+        "sector": "healthcare",
+        "label": "Pandemic preparedness",
+        "unit": "index 0-100",
+        "description": "Composite surge-capacity and early-warning-system measure.",
+        "higher_is_better": true,
+        "typical_move": 5
+      },
+      {
+        "key": "education.attainment_index",
+        "sector": "education",
+        "label": "Education attainment",
+        "unit": "index 0-100",
+        "description": "Composite measure of average educational attainment of the adult population.",
+        "higher_is_better": true,
+        "typical_move": 3
+      },
+      {
+        "key": "education.stem_graduate_rate",
+        "sector": "education",
+        "label": "STEM graduate rate",
+        "unit": "per 100k pop./year",
+        "description": "New STEM graduates per 100,000 population per year.",
+        "higher_is_better": true,
+        "typical_move": 15
+      },
+      {
+        "key": "education.spending_pct_gdp",
+        "sector": "education",
+        "label": "Education spending",
+        "unit": "% of GDP",
+        "description": "Public education expenditure as a share of GDP.",
+        "higher_is_better": null,
+        "typical_move": 0.4
+      },
+      {
+        "key": "education.digital_literacy_index",
+        "sector": "education",
+        "label": "Digital literacy",
+        "unit": "index 0-100",
+        "description": "Composite measure of population digital/technology skill levels.",
+        "higher_is_better": true,
+        "typical_move": 4
+      },
+      {
+        "key": "transportation.infrastructure_quality_index",
+        "sector": "transportation",
+        "label": "Infrastructure quality",
+        "unit": "index 0-100",
+        "description": "Composite measure of road/rail/port/airport physical infrastructure quality.",
+        "higher_is_better": true,
+        "typical_move": 4
+      },
+      {
+        "key": "transportation.logistics_cost_pct_gdp",
+        "sector": "transportation",
+        "label": "Logistics cost",
+        "unit": "% of GDP",
+        "description": "Total freight/logistics cost as a share of GDP.",
+        "higher_is_better": false,
+        "typical_move": 0.5
+      },
+      {
+        "key": "transportation.emissions_index",
+        "sector": "transportation",
+        "label": "Transport emissions",
+        "unit": "index 0-100",
+        "description": "Composite transport-sector greenhouse-gas emissions intensity.",
+        "higher_is_better": false,
+        "typical_move": 5
+      },
+      {
+        "key": "transportation.mobility_access_index",
+        "sector": "transportation",
+        "label": "Mobility access",
+        "unit": "index 0-100",
+        "description": "Composite measure of population access to affordable transit/mobility options.",
+        "higher_is_better": true,
+        "typical_move": 4
+      },
+      {
+        "key": "agriculture.food_security_index",
+        "sector": "agriculture",
+        "label": "Food security",
+        "unit": "index 0-100",
+        "description": "Composite measure of food availability, access, and stability.",
+        "higher_is_better": true,
+        "typical_move": 4
+      },
+      {
+        "key": "agriculture.output_growth_pct",
+        "sector": "agriculture",
+        "label": "Agricultural output growth",
+        "unit": "% / year",
+        "description": "Growth in agricultural production index, year over year.",
+        "higher_is_better": true,
+        "typical_move": 2.5
+      },
+      {
+        "key": "agriculture.farmland_sustainability_index",
+        "sector": "agriculture",
+        "label": "Farmland sustainability",
+        "unit": "index 0-100",
+        "description": "Composite soil-health / water-stress / sustainable-practice measure.",
+        "higher_is_better": true,
+        "typical_move": 4
+      },
+      {
+        "key": "agriculture.export_dependence_pct",
+        "sector": "agriculture",
+        "label": "Agricultural export dependence",
+        "unit": "% of ag. output",
+        "description": "Share of agricultural output destined for export (higher = more exposed to trade shocks).",
+        "higher_is_better": null,
+        "typical_move": 3
+      },
+      {
+        "key": "energy.price_index",
+        "sector": "energy",
+        "label": "Energy price index",
+        "unit": "index (100=baseline)",
+        "description": "Composite domestic energy price level, indexed to a baseline year.",
+        "higher_is_better": false,
+        "typical_move": 8
+      },
+      {
+        "key": "energy.grid_reliability_index",
+        "sector": "energy",
+        "label": "Grid reliability",
+        "unit": "index 0-100",
+        "description": "Composite measure of electricity supply reliability (inverse of outage frequency/duration).",
+        "higher_is_better": true,
+        "typical_move": 3
+      },
+      {
+        "key": "energy.import_dependence_pct",
+        "sector": "energy",
+        "label": "Energy import dependence",
+        "unit": "% of consumption",
+        "description": "Share of total energy consumption met by imports.",
+        "higher_is_better": null,
+        "typical_move": 3
+      },
+      {
+        "key": "energy.renewable_share_pct",
+        "sector": "energy",
+        "label": "Renewable energy share",
+        "unit": "% of generation",
+        "description": "Share of electricity generation from renewable sources.",
+        "higher_is_better": true,
+        "typical_move": 2
+      }
+    ]
+  },
+  "registry": {
+    "countries": {
+      "usa": {
+        "id": "usa",
+        "name": "United States",
+        "kind": "country",
+        "region": "North America",
+        "description": "Large diversified service/tech-heavy economy; dollar reserve-currency role.",
+        "baseline": {
+          "social.inequality_gini": 0.41,
+          "social.social_trust_index": 62,
+          "social.migration_net_rate": 3.0,
+          "social.unrest_index": 28,
+          "economic.gdp_growth_pct": 2.1,
+          "economic.inflation_pct": 3.2,
+          "economic.unemployment_pct": 3.9,
+          "economic.trade_balance_pct_gdp": -3.5,
+          "political.institutional_stability_index": 72,
+          "political.policy_uncertainty_index": 38,
+          "political.corruption_perception_index": 62,
+          "political.approval_rating_pct": 48,
+          "industrial.industrial_output_growth_pct": 1.8,
+          "industrial.capacity_utilization_pct": 76,
+          "industrial.supply_chain_resilience_index": 58,
+          "industrial.industrial_employment_pct": 8.0,
+          "healthcare.access_index": 68,
+          "healthcare.outcomes_index": 74,
+          "healthcare.cost_burden_pct_gdp": 17.0,
+          "healthcare.pandemic_preparedness_index": 61,
+          "education.attainment_index": 70,
+          "education.stem_graduate_rate": 310,
+          "education.spending_pct_gdp": 5.0,
+          "education.digital_literacy_index": 66,
+          "transportation.infrastructure_quality_index": 66,
+          "transportation.logistics_cost_pct_gdp": 10.5,
+          "transportation.emissions_index": 22,
+          "transportation.mobility_access_index": 58,
+          "agriculture.food_security_index": 72,
+          "agriculture.output_growth_pct": 1.1,
+          "agriculture.farmland_sustainability_index": 70,
+          "agriculture.export_dependence_pct": 11,
+          "energy.price_index": 103,
+          "energy.grid_reliability_index": 82,
+          "energy.import_dependence_pct": 15,
+          "energy.renewable_share_pct": 23
+        }
+      },
+      "china": {
+        "id": "china",
+        "name": "China",
+        "kind": "country",
+        "region": "East Asia",
+        "description": "Large industrial-export-heavy economy in services transition.",
+        "baseline": {
+          "social.inequality_gini": 0.47,
+          "social.social_trust_index": 54,
+          "social.migration_net_rate": -0.3,
+          "social.unrest_index": 22,
+          "economic.gdp_growth_pct": 4.6,
+          "economic.inflation_pct": 1.8,
+          "economic.unemployment_pct": 5.1,
+          "economic.trade_balance_pct_gdp": 1.8,
+          "political.institutional_stability_index": 58,
+          "political.policy_uncertainty_index": 46,
+          "political.corruption_perception_index": 50,
+          "political.approval_rating_pct": 46,
+          "industrial.industrial_output_growth_pct": 5.2,
+          "industrial.capacity_utilization_pct": 79,
+          "industrial.supply_chain_resilience_index": 55,
+          "industrial.industrial_employment_pct": 18.0,
+          "healthcare.access_index": 60,
+          "healthcare.outcomes_index": 68,
+          "healthcare.cost_burden_pct_gdp": 5.0,
+          "healthcare.pandemic_preparedness_index": 55,
+          "education.attainment_index": 64,
+          "education.stem_graduate_rate": 190,
+          "education.spending_pct_gdp": 4.0,
+          "education.digital_literacy_index": 72,
+          "transportation.infrastructure_quality_index": 60,
+          "transportation.logistics_cost_pct_gdp": 7.0,
+          "transportation.emissions_index": 32,
+          "transportation.mobility_access_index": 42,
+          "agriculture.food_security_index": 62,
+          "agriculture.output_growth_pct": 2.6,
+          "agriculture.farmland_sustainability_index": 46,
+          "agriculture.export_dependence_pct": 2,
+          "energy.price_index": 98,
+          "energy.grid_reliability_index": 78,
+          "energy.import_dependence_pct": 21,
+          "energy.renewable_share_pct": 31
+        }
+      },
+      "germany": {
+        "id": "germany",
+        "name": "Germany",
+        "kind": "country",
+        "region": "Europe",
+        "description": "Export/industrial-heavy economy, high energy-import dependence post-2022.",
+        "baseline": {
+          "social.inequality_gini": 0.31,
+          "social.social_trust_index": 68,
+          "social.migration_net_rate": 4.2,
+          "social.unrest_index": 14,
+          "economic.gdp_growth_pct": 0.6,
+          "economic.inflation_pct": 2.6,
+          "economic.unemployment_pct": 3.1,
+          "economic.trade_balance_pct_gdp": 6.8,
+          "political.institutional_stability_index": 80,
+          "political.policy_uncertainty_index": 31,
+          "political.corruption_perception_index": 76,
+          "political.approval_rating_pct": 55,
+          "industrial.industrial_output_growth_pct": 0.3,
+          "industrial.capacity_utilization_pct": 81,
+          "industrial.supply_chain_resilience_index": 68,
+          "industrial.industrial_employment_pct": 5.5,
+          "healthcare.access_index": 76,
+          "healthcare.outcomes_index": 80,
+          "healthcare.cost_burden_pct_gdp": 11.8,
+          "healthcare.pandemic_preparedness_index": 70,
+          "education.attainment_index": 74,
+          "education.stem_graduate_rate": 240,
+          "education.spending_pct_gdp": 6.5,
+          "education.digital_literacy_index": 74,
+          "transportation.infrastructure_quality_index": 68,
+          "transportation.logistics_cost_pct_gdp": 11.0,
+          "transportation.emissions_index": 15,
+          "transportation.mobility_access_index": 62,
+          "agriculture.food_security_index": 70,
+          "agriculture.output_growth_pct": 0.5,
+          "agriculture.farmland_sustainability_index": 78,
+          "agriculture.export_dependence_pct": 4,
+          "energy.price_index": 118,
+          "energy.grid_reliability_index": 90,
+          "energy.import_dependence_pct": 64,
+          "energy.renewable_share_pct": 48
+        }
+      },
+      "india": {
+        "id": "india",
+        "name": "India",
+        "kind": "country",
+        "region": "South Asia",
+        "description": "Large, fast-growing, services-and-agriculture-heavy economy.",
+        "baseline": {
+          "social.inequality_gini": 0.36,
+          "social.social_trust_index": 48,
+          "social.migration_net_rate": -0.4,
+          "social.unrest_index": 36,
+          "economic.gdp_growth_pct": 6.3,
+          "economic.inflation_pct": 4.8,
+          "economic.unemployment_pct": 7.2,
+          "economic.trade_balance_pct_gdp": -2.1,
+          "political.institutional_stability_index": 54,
+          "political.policy_uncertainty_index": 58,
+          "political.corruption_perception_index": 42,
+          "political.approval_rating_pct": 40,
+          "industrial.industrial_output_growth_pct": 5.8,
+          "industrial.capacity_utilization_pct": 68,
+          "industrial.supply_chain_resilience_index": 42,
+          "industrial.industrial_employment_pct": 14.0,
+          "healthcare.access_index": 44,
+          "healthcare.outcomes_index": 46,
+          "healthcare.cost_burden_pct_gdp": 3.3,
+          "healthcare.pandemic_preparedness_index": 38,
+          "education.attainment_index": 52,
+          "education.stem_graduate_rate": 95,
+          "education.spending_pct_gdp": 4.2,
+          "education.digital_literacy_index": 44,
+          "transportation.infrastructure_quality_index": 52,
+          "transportation.logistics_cost_pct_gdp": 14.0,
+          "transportation.emissions_index": 24,
+          "transportation.mobility_access_index": 36,
+          "agriculture.food_security_index": 54,
+          "agriculture.output_growth_pct": 3.4,
+          "agriculture.farmland_sustainability_index": 40,
+          "agriculture.export_dependence_pct": 16,
+          "energy.price_index": 106,
+          "energy.grid_reliability_index": 58,
+          "energy.import_dependence_pct": 35,
+          "energy.renewable_share_pct": 22
+        }
+      },
+      "brazil": {
+        "id": "brazil",
+        "name": "Brazil",
+        "kind": "country",
+        "region": "South America",
+        "description": "Commodity/agriculture-export-heavy economy.",
+        "baseline": {
+          "social.inequality_gini": 0.52,
+          "social.social_trust_index": 44,
+          "social.migration_net_rate": -0.5,
+          "social.unrest_index": 40,
+          "economic.gdp_growth_pct": 2.2,
+          "economic.inflation_pct": 4.5,
+          "economic.unemployment_pct": 8.0,
+          "economic.trade_balance_pct_gdp": 1.2,
+          "political.institutional_stability_index": 48,
+          "political.policy_uncertainty_index": 62,
+          "political.corruption_perception_index": 48,
+          "political.approval_rating_pct": 36,
+          "industrial.industrial_output_growth_pct": 1.0,
+          "industrial.capacity_utilization_pct": 72,
+          "industrial.supply_chain_resilience_index": 48,
+          "industrial.industrial_employment_pct": 10.5,
+          "healthcare.access_index": 56,
+          "healthcare.outcomes_index": 60,
+          "healthcare.cost_burden_pct_gdp": 4.0,
+          "healthcare.pandemic_preparedness_index": 48,
+          "education.attainment_index": 50,
+          "education.stem_graduate_rate": 60,
+          "education.spending_pct_gdp": 5.5,
+          "education.digital_literacy_index": 46,
+          "transportation.infrastructure_quality_index": 46,
+          "transportation.logistics_cost_pct_gdp": 12.5,
+          "transportation.emissions_index": 30,
+          "transportation.mobility_access_index": 42,
+          "agriculture.food_security_index": 70,
+          "agriculture.output_growth_pct": 2.8,
+          "agriculture.farmland_sustainability_index": 56,
+          "agriculture.export_dependence_pct": 38,
+          "energy.price_index": 101,
+          "energy.grid_reliability_index": 68,
+          "energy.import_dependence_pct": 10,
+          "energy.renewable_share_pct": 46
+        }
+      },
+      "nigeria": {
+        "id": "nigeria",
+        "name": "Nigeria",
+        "kind": "country",
+        "region": "West Africa",
+        "description": "Energy(oil)-export-dependent economy, young and fast-urbanizing population.",
+        "baseline": {
+          "social.inequality_gini": 0.35,
+          "social.social_trust_index": 40,
+          "social.migration_net_rate": 1.8,
+          "social.unrest_index": 48,
+          "economic.gdp_growth_pct": 2.8,
+          "economic.inflation_pct": 19.5,
+          "economic.unemployment_pct": 4.2,
+          "economic.trade_balance_pct_gdp": 3.0,
+          "political.institutional_stability_index": 34,
+          "political.policy_uncertainty_index": 80,
+          "political.corruption_perception_index": 28,
+          "political.approval_rating_pct": 32,
+          "industrial.industrial_output_growth_pct": 0.2,
+          "industrial.capacity_utilization_pct": 74,
+          "industrial.supply_chain_resilience_index": 32,
+          "industrial.industrial_employment_pct": 3.5,
+          "healthcare.access_index": 36,
+          "healthcare.outcomes_index": 38,
+          "healthcare.cost_burden_pct_gdp": 3.5,
+          "healthcare.pandemic_preparedness_index": 28,
+          "education.attainment_index": 38,
+          "education.stem_graduate_rate": 20,
+          "education.spending_pct_gdp": 6.0,
+          "education.digital_literacy_index": 30,
+          "transportation.infrastructure_quality_index": 36,
+          "transportation.logistics_cost_pct_gdp": 22.0,
+          "transportation.emissions_index": 48,
+          "transportation.mobility_access_index": 20,
+          "agriculture.food_security_index": 44,
+          "agriculture.output_growth_pct": 3.2,
+          "agriculture.farmland_sustainability_index": 44,
+          "agriculture.export_dependence_pct": 72,
+          "energy.price_index": 108,
+          "energy.grid_reliability_index": 42,
+          "energy.import_dependence_pct": -35,
+          "energy.renewable_share_pct": 24
+        }
+      },
+      "japan": {
+        "id": "japan",
+        "name": "Japan",
+        "kind": "country",
+        "region": "East Asia",
+        "description": "Aging, high-income, industrial-export economy, energy-import-dependent.",
+        "baseline": {
+          "social.inequality_gini": 0.33,
+          "social.social_trust_index": 70,
+          "social.migration_net_rate": 1.2,
+          "social.unrest_index": 10,
+          "economic.gdp_growth_pct": 0.8,
+          "economic.inflation_pct": 1.9,
+          "economic.unemployment_pct": 2.5,
+          "economic.trade_balance_pct_gdp": 2.4,
+          "political.institutional_stability_index": 82,
+          "political.policy_uncertainty_index": 28,
+          "political.corruption_perception_index": 72,
+          "political.approval_rating_pct": 58,
+          "industrial.industrial_output_growth_pct": 0.4,
+          "industrial.capacity_utilization_pct": 78,
+          "industrial.supply_chain_resilience_index": 60,
+          "industrial.industrial_employment_pct": 4.0,
+          "healthcare.access_index": 78,
+          "healthcare.outcomes_index": 82,
+          "healthcare.cost_burden_pct_gdp": 11.0,
+          "healthcare.pandemic_preparedness_index": 68,
+          "education.attainment_index": 78,
+          "education.stem_graduate_rate": 180,
+          "education.spending_pct_gdp": 4.5,
+          "education.digital_literacy_index": 72,
+          "transportation.infrastructure_quality_index": 72,
+          "transportation.logistics_cost_pct_gdp": 8.0,
+          "transportation.emissions_index": 18,
+          "transportation.mobility_access_index": 58,
+          "agriculture.food_security_index": 66,
+          "agriculture.output_growth_pct": 0.2,
+          "agriculture.farmland_sustainability_index": 68,
+          "agriculture.export_dependence_pct": 2,
+          "energy.price_index": 115,
+          "energy.grid_reliability_index": 86,
+          "energy.import_dependence_pct": 88,
+          "energy.renewable_share_pct": 22
+        }
+      }
+    },
+    "companies": {
+      "helion_semi": {
+        "id": "helion_semi",
+        "name": "Helion Semiconductors (fictional)",
+        "kind": "company",
+        "region": null,
+        "description": "Illustrative multinational chip-fabrication company, headquartered with its primary fab in East Asia.",
+        "baseline": {
+          "industrial.industrial_output_growth_pct": 6.0,
+          "industrial.capacity_utilization_pct": 83.0,
+          "industrial.supply_chain_resilience_index": 52.0
+        }
+      },
+      "meridian_agri": {
+        "id": "meridian_agri",
+        "name": "Meridian AgriCorp (fictional)",
+        "kind": "company",
+        "region": null,
+        "description": "Illustrative multinational agricultural commodities trading and processing company.",
+        "baseline": {
+          "agriculture.output_growth_pct": 3.5,
+          "agriculture.export_dependence_pct": 74.0,
+          "agriculture.farmland_sustainability_index": 46.0
+        }
+      }
+    },
+    "trade_links": [
+      {
+        "importer": "germany",
+        "exporter": "nigeria",
+        "channel": "energy",
+        "dependency_share": 0.18,
+        "rationale": "Illustrative: partial crude/LNG sourcing."
+      },
+      {
+        "importer": "germany",
+        "exporter": "china",
+        "channel": "industrial",
+        "dependency_share": 0.22,
+        "rationale": "Illustrative: intermediate-goods/components sourcing."
+      },
+      {
+        "importer": "japan",
+        "exporter": "nigeria",
+        "channel": "energy",
+        "dependency_share": 0.12,
+        "rationale": "Illustrative: partial crude sourcing."
+      },
+      {
+        "importer": "japan",
+        "exporter": "china",
+        "channel": "industrial",
+        "dependency_share": 0.19,
+        "rationale": "Illustrative: intermediate-goods sourcing."
+      },
+      {
+        "importer": "china",
+        "exporter": "nigeria",
+        "channel": "energy",
+        "dependency_share": 0.15,
+        "rationale": "Illustrative: crude-oil import share."
+      },
+      {
+        "importer": "china",
+        "exporter": "brazil",
+        "channel": "agriculture",
+        "dependency_share": 0.21,
+        "rationale": "Illustrative: soy/grain import share."
+      },
+      {
+        "importer": "usa",
+        "exporter": "china",
+        "channel": "industrial",
+        "dependency_share": 0.14,
+        "rationale": "Illustrative: manufactured-goods import share."
+      },
+      {
+        "importer": "usa",
+        "exporter": "nigeria",
+        "channel": "energy",
+        "dependency_share": 0.04,
+        "rationale": "Illustrative: minor crude import share."
+      },
+      {
+        "importer": "india",
+        "exporter": "nigeria",
+        "channel": "energy",
+        "dependency_share": 0.1,
+        "rationale": "Illustrative: crude-oil import share."
+      },
+      {
+        "importer": "india",
+        "exporter": "china",
+        "channel": "industrial",
+        "dependency_share": 0.16,
+        "rationale": "Illustrative: intermediate-goods import share."
+      },
+      {
+        "importer": "brazil",
+        "exporter": "china",
+        "channel": "industrial",
+        "dependency_share": 0.12,
+        "rationale": "Illustrative: manufactured-goods import share."
+      },
+      {
+        "importer": "nigeria",
+        "exporter": "china",
+        "channel": "industrial",
+        "dependency_share": 0.24,
+        "rationale": "Illustrative: manufactured/infrastructure-goods import share."
+      },
+      {
+        "importer": "germany",
+        "exporter": "brazil",
+        "channel": "agriculture",
+        "dependency_share": 0.09,
+        "rationale": "Illustrative: agricultural commodity import share."
+      },
+      {
+        "importer": "china",
+        "exporter": "usa",
+        "channel": "agriculture",
+        "dependency_share": 0.08,
+        "rationale": "Illustrative: grain import share."
+      },
+      {
+        "importer": "japan",
+        "exporter": "india",
+        "channel": "industrial",
+        "dependency_share": 0.05,
+        "rationale": "Illustrative: component import share."
+      }
+    ],
+    "disclaimer": "All baseline values and trade-dependency shares in this registry are illustrative placeholders for demonstrating the model's architecture \u2014 directionally plausible but NOT sourced, verified, or current real-world statistics. Do not cite them as fact."
+  },
+  "causal_graph": {
+    "mechanism_templates": [
+      {
+        "source_var": "energy.price_index",
+        "target_var": "economic.inflation_pct",
+        "mean_coef": 0.35,
+        "sigma_coef": 0.12,
+        "lag": 1,
+        "rationale": "Energy costs feed directly into consumer price indices.",
+        "source_label": "Energy price index",
+        "target_label": "Inflation"
+      },
+      {
+        "source_var": "energy.price_index",
+        "target_var": "industrial.industrial_output_growth_pct",
+        "mean_coef": -0.25,
+        "sigma_coef": 0.1,
+        "lag": 1,
+        "rationale": "Higher energy costs raise input costs and depress industrial output growth.",
+        "source_label": "Energy price index",
+        "target_label": "Industrial output growth"
+      },
+      {
+        "source_var": "economic.inflation_pct",
+        "target_var": "political.approval_rating_pct",
+        "mean_coef": -0.3,
+        "sigma_coef": 0.12,
+        "lag": 1,
+        "rationale": "Rising prices tend to erode public approval of the sitting executive.",
+        "source_label": "Inflation",
+        "target_label": "Executive approval"
+      },
+      {
+        "source_var": "economic.unemployment_pct",
+        "target_var": "social.unrest_index",
+        "mean_coef": 0.4,
+        "sigma_coef": 0.15,
+        "lag": 1,
+        "rationale": "Rising unemployment is a well-documented driver of civil unrest.",
+        "source_label": "Unemployment",
+        "target_label": "Civil unrest index"
+      },
+      {
+        "source_var": "political.policy_uncertainty_index",
+        "target_var": "economic.gdp_growth_pct",
+        "mean_coef": -0.2,
+        "sigma_coef": 0.08,
+        "lag": 1,
+        "rationale": "Policy uncertainty depresses investment and near-term growth.",
+        "source_label": "Policy uncertainty",
+        "target_label": "GDP growth"
+      },
+      {
+        "source_var": "agriculture.output_growth_pct",
+        "target_var": "economic.trade_balance_pct_gdp",
+        "mean_coef": 0.18,
+        "sigma_coef": 0.08,
+        "lag": 0,
+        "rationale": "Agricultural export earnings flow fairly directly into the trade balance.",
+        "source_label": "Agricultural output growth",
+        "target_label": "Trade balance"
+      },
+      {
+        "source_var": "healthcare.cost_burden_pct_gdp",
+        "target_var": "economic.gdp_growth_pct",
+        "mean_coef": -0.12,
+        "sigma_coef": 0.06,
+        "lag": 2,
+        "rationale": "A rising health-cost burden can crowd out other productive investment over time.",
+        "source_label": "Healthcare cost burden",
+        "target_label": "GDP growth"
+      },
+      {
+        "source_var": "education.spending_pct_gdp",
+        "target_var": "industrial.industrial_output_growth_pct",
+        "mean_coef": 0.15,
+        "sigma_coef": 0.08,
+        "lag": 3,
+        "rationale": "Education investment raises workforce skill and productivity, with a multi-year lag.",
+        "source_label": "Education spending",
+        "target_label": "Industrial output growth"
+      },
+      {
+        "source_var": "transportation.infrastructure_quality_index",
+        "target_var": "industrial.supply_chain_resilience_index",
+        "mean_coef": 0.3,
+        "sigma_coef": 0.1,
+        "lag": 1,
+        "rationale": "Better transport infrastructure reduces logistics fragility.",
+        "source_label": "Infrastructure quality",
+        "target_label": "Supply-chain resilience"
+      },
+      {
+        "source_var": "industrial.industrial_employment_pct",
+        "target_var": "social.inequality_gini",
+        "mean_coef": -0.2,
+        "sigma_coef": 0.08,
+        "lag": 1,
+        "rationale": "A broader industrial-employment base (vs. high-skill-only growth) tends to compress income inequality.",
+        "source_label": "Industrial employment share",
+        "target_label": "Income inequality (Gini)"
+      },
+      {
+        "source_var": "energy.renewable_share_pct",
+        "target_var": "transportation.emissions_index",
+        "mean_coef": -0.25,
+        "sigma_coef": 0.1,
+        "lag": 2,
+        "rationale": "A cleaner generation mix lowers transport-sector emissions intensity as electrification spreads.",
+        "source_label": "Renewable energy share",
+        "target_label": "Transport emissions"
+      },
+      {
+        "source_var": "social.unrest_index",
+        "target_var": "political.institutional_stability_index",
+        "mean_coef": -0.3,
+        "sigma_coef": 0.12,
+        "lag": 0,
+        "rationale": "Sustained unrest directly strains institutional stability.",
+        "source_label": "Civil unrest index",
+        "target_label": "Institutional stability"
+      },
+      {
+        "source_var": "political.institutional_stability_index",
+        "target_var": "economic.gdp_growth_pct",
+        "mean_coef": 0.22,
+        "sigma_coef": 0.09,
+        "lag": 1,
+        "rationale": "Institutional stability supports investment and growth.",
+        "source_label": "Institutional stability",
+        "target_label": "GDP growth"
+      },
+      {
+        "source_var": "economic.gdp_growth_pct",
+        "target_var": "political.approval_rating_pct",
+        "mean_coef": 0.25,
+        "sigma_coef": 0.1,
+        "lag": 1,
+        "rationale": "Growth tends to support incumbent approval.",
+        "source_label": "GDP growth",
+        "target_label": "Executive approval"
+      },
+      {
+        "source_var": "energy.price_index",
+        "target_var": "agriculture.output_growth_pct",
+        "mean_coef": -0.15,
+        "sigma_coef": 0.07,
+        "lag": 1,
+        "rationale": "Energy costs (fertilizer, fuel, irrigation) affect agricultural production costs and output.",
+        "source_label": "Energy price index",
+        "target_label": "Agricultural output growth"
+      },
+      {
+        "source_var": "energy.price_index",
+        "target_var": "transportation.logistics_cost_pct_gdp",
+        "mean_coef": 0.3,
+        "sigma_coef": 0.1,
+        "lag": 0,
+        "rationale": "Fuel costs flow fairly directly into logistics/freight costs.",
+        "source_label": "Energy price index",
+        "target_label": "Logistics cost"
+      },
+      {
+        "source_var": "industrial.supply_chain_resilience_index",
+        "target_var": "economic.gdp_growth_pct",
+        "mean_coef": 0.18,
+        "sigma_coef": 0.08,
+        "lag": 1,
+        "rationale": "Resilient supply chains reduce output volatility and support growth.",
+        "source_label": "Supply-chain resilience",
+        "target_label": "GDP growth"
+      },
+      {
+        "source_var": "healthcare.outcomes_index",
+        "target_var": "economic.gdp_growth_pct",
+        "mean_coef": 0.12,
+        "sigma_coef": 0.06,
+        "lag": 2,
+        "rationale": "A healthier workforce supports long-run productivity.",
+        "source_label": "Health outcomes",
+        "target_label": "GDP growth"
+      },
+      {
+        "source_var": "agriculture.food_security_index",
+        "target_var": "social.unrest_index",
+        "mean_coef": -0.28,
+        "sigma_coef": 0.11,
+        "lag": 0,
+        "rationale": "Food insecurity is a well-documented driver of unrest.",
+        "source_label": "Food security",
+        "target_label": "Civil unrest index"
+      },
+      {
+        "source_var": "political.corruption_perception_index",
+        "target_var": "economic.gdp_growth_pct",
+        "mean_coef": 0.1,
+        "sigma_coef": 0.05,
+        "lag": 2,
+        "rationale": "Lower perceived corruption tends to support investment climate and growth over time.",
+        "source_label": "Corruption perception",
+        "target_label": "GDP growth"
+      }
+    ],
+    "n_within_country_edges": 140,
+    "n_cross_country_edges": 15,
+    "n_total_edges": 155,
+    "cross_country_edges": [
+      {
+        "id": "cc:0",
+        "kind": "cross_country",
+        "source_actor": "nigeria",
+        "source_var": "energy.price_index",
+        "target_actor": "germany",
+        "target_var": "energy.price_index",
+        "belief": {
+          "name": "nigeria->germany:energy",
+          "mu": 0.144,
+          "sigma": 0.086
+        },
+        "lag": 1,
+        "rationale": "Price transmission: a shock to the exporter's energy price index passes through to the importer's own domestic energy price index, scaled by how import-dependent the importer is. (dependency share: 18% \u2014 Illustrative: partial crude/LNG sourcing.)"
+      },
+      {
+        "id": "cc:1",
+        "kind": "cross_country",
+        "source_actor": "china",
+        "source_var": "industrial.industrial_output_growth_pct",
+        "target_actor": "germany",
+        "target_var": "industrial.supply_chain_resilience_index",
+        "belief": {
+          "name": "china->germany:industrial",
+          "mu": 0.154,
+          "sigma": 0.094
+        },
+        "lag": 1,
+        "rationale": "An output shock in the exporter's industrial sector transmits to the importer's supply-chain resilience, scaled by how import-dependent the importer is on that exporter. (dependency share: 22% \u2014 Illustrative: intermediate-goods/components sourcing.)"
+      },
+      {
+        "id": "cc:2",
+        "kind": "cross_country",
+        "source_actor": "nigeria",
+        "source_var": "energy.price_index",
+        "target_actor": "japan",
+        "target_var": "energy.price_index",
+        "belief": {
+          "name": "nigeria->japan:energy",
+          "mu": 0.096,
+          "sigma": 0.074
+        },
+        "lag": 1,
+        "rationale": "Price transmission: a shock to the exporter's energy price index passes through to the importer's own domestic energy price index, scaled by how import-dependent the importer is. (dependency share: 12% \u2014 Illustrative: partial crude sourcing.)"
+      },
+      {
+        "id": "cc:3",
+        "kind": "cross_country",
+        "source_actor": "china",
+        "source_var": "industrial.industrial_output_growth_pct",
+        "target_actor": "japan",
+        "target_var": "industrial.supply_chain_resilience_index",
+        "belief": {
+          "name": "china->japan:industrial",
+          "mu": 0.133,
+          "sigma": 0.088
+        },
+        "lag": 1,
+        "rationale": "An output shock in the exporter's industrial sector transmits to the importer's supply-chain resilience, scaled by how import-dependent the importer is on that exporter. (dependency share: 19% \u2014 Illustrative: intermediate-goods sourcing.)"
+      },
+      {
+        "id": "cc:4",
+        "kind": "cross_country",
+        "source_actor": "nigeria",
+        "source_var": "energy.price_index",
+        "target_actor": "china",
+        "target_var": "energy.price_index",
+        "belief": {
+          "name": "nigeria->china:energy",
+          "mu": 0.12,
+          "sigma": 0.08
+        },
+        "lag": 1,
+        "rationale": "Price transmission: a shock to the exporter's energy price index passes through to the importer's own domestic energy price index, scaled by how import-dependent the importer is. (dependency share: 15% \u2014 Illustrative: crude-oil import share.)"
+      },
+      {
+        "id": "cc:5",
+        "kind": "cross_country",
+        "source_actor": "brazil",
+        "source_var": "agriculture.output_growth_pct",
+        "target_actor": "china",
+        "target_var": "agriculture.food_security_index",
+        "belief": {
+          "name": "brazil->china:agriculture",
+          "mu": 0.126,
+          "sigma": 0.092
+        },
+        "lag": 1,
+        "rationale": "An output shock in the exporter's agricultural sector transmits to the importer's food security, scaled by how import-dependent the importer is on that exporter. (dependency share: 21% \u2014 Illustrative: soy/grain import share.)"
+      },
+      {
+        "id": "cc:6",
+        "kind": "cross_country",
+        "source_actor": "china",
+        "source_var": "industrial.industrial_output_growth_pct",
+        "target_actor": "usa",
+        "target_var": "industrial.supply_chain_resilience_index",
+        "belief": {
+          "name": "china->usa:industrial",
+          "mu": 0.098,
+          "sigma": 0.078
+        },
+        "lag": 1,
+        "rationale": "An output shock in the exporter's industrial sector transmits to the importer's supply-chain resilience, scaled by how import-dependent the importer is on that exporter. (dependency share: 14% \u2014 Illustrative: manufactured-goods import share.)"
+      },
+      {
+        "id": "cc:7",
+        "kind": "cross_country",
+        "source_actor": "nigeria",
+        "source_var": "energy.price_index",
+        "target_actor": "usa",
+        "target_var": "energy.price_index",
+        "belief": {
+          "name": "nigeria->usa:energy",
+          "mu": 0.032,
+          "sigma": 0.058
+        },
+        "lag": 1,
+        "rationale": "Price transmission: a shock to the exporter's energy price index passes through to the importer's own domestic energy price index, scaled by how import-dependent the importer is. (dependency share: 4% \u2014 Illustrative: minor crude import share.)"
+      },
+      {
+        "id": "cc:8",
+        "kind": "cross_country",
+        "source_actor": "nigeria",
+        "source_var": "energy.price_index",
+        "target_actor": "india",
+        "target_var": "energy.price_index",
+        "belief": {
+          "name": "nigeria->india:energy",
+          "mu": 0.08,
+          "sigma": 0.07
+        },
+        "lag": 1,
+        "rationale": "Price transmission: a shock to the exporter's energy price index passes through to the importer's own domestic energy price index, scaled by how import-dependent the importer is. (dependency share: 10% \u2014 Illustrative: crude-oil import share.)"
+      },
+      {
+        "id": "cc:9",
+        "kind": "cross_country",
+        "source_actor": "china",
+        "source_var": "industrial.industrial_output_growth_pct",
+        "target_actor": "india",
+        "target_var": "industrial.supply_chain_resilience_index",
+        "belief": {
+          "name": "china->india:industrial",
+          "mu": 0.112,
+          "sigma": 0.082
+        },
+        "lag": 1,
+        "rationale": "An output shock in the exporter's industrial sector transmits to the importer's supply-chain resilience, scaled by how import-dependent the importer is on that exporter. (dependency share: 16% \u2014 Illustrative: intermediate-goods import share.)"
+      },
+      {
+        "id": "cc:10",
+        "kind": "cross_country",
+        "source_actor": "china",
+        "source_var": "industrial.industrial_output_growth_pct",
+        "target_actor": "brazil",
+        "target_var": "industrial.supply_chain_resilience_index",
+        "belief": {
+          "name": "china->brazil:industrial",
+          "mu": 0.084,
+          "sigma": 0.074
+        },
+        "lag": 1,
+        "rationale": "An output shock in the exporter's industrial sector transmits to the importer's supply-chain resilience, scaled by how import-dependent the importer is on that exporter. (dependency share: 12% \u2014 Illustrative: manufactured-goods import share.)"
+      },
+      {
+        "id": "cc:11",
+        "kind": "cross_country",
+        "source_actor": "china",
+        "source_var": "industrial.industrial_output_growth_pct",
+        "target_actor": "nigeria",
+        "target_var": "industrial.supply_chain_resilience_index",
+        "belief": {
+          "name": "china->nigeria:industrial",
+          "mu": 0.168,
+          "sigma": 0.098
+        },
+        "lag": 1,
+        "rationale": "An output shock in the exporter's industrial sector transmits to the importer's supply-chain resilience, scaled by how import-dependent the importer is on that exporter. (dependency share: 24% \u2014 Illustrative: manufactured/infrastructure-goods import share.)"
+      },
+      {
+        "id": "cc:12",
+        "kind": "cross_country",
+        "source_actor": "brazil",
+        "source_var": "agriculture.output_growth_pct",
+        "target_actor": "germany",
+        "target_var": "agriculture.food_security_index",
+        "belief": {
+          "name": "brazil->germany:agriculture",
+          "mu": 0.054,
+          "sigma": 0.068
+        },
+        "lag": 1,
+        "rationale": "An output shock in the exporter's agricultural sector transmits to the importer's food security, scaled by how import-dependent the importer is on that exporter. (dependency share: 9% \u2014 Illustrative: agricultural commodity import share.)"
+      },
+      {
+        "id": "cc:13",
+        "kind": "cross_country",
+        "source_actor": "usa",
+        "source_var": "agriculture.output_growth_pct",
+        "target_actor": "china",
+        "target_var": "agriculture.food_security_index",
+        "belief": {
+          "name": "usa->china:agriculture",
+          "mu": 0.048,
+          "sigma": 0.066
+        },
+        "lag": 1,
+        "rationale": "An output shock in the exporter's agricultural sector transmits to the importer's food security, scaled by how import-dependent the importer is on that exporter. (dependency share: 8% \u2014 Illustrative: grain import share.)"
+      },
+      {
+        "id": "cc:14",
+        "kind": "cross_country",
+        "source_actor": "india",
+        "source_var": "industrial.industrial_output_growth_pct",
+        "target_actor": "japan",
+        "target_var": "industrial.supply_chain_resilience_index",
+        "belief": {
+          "name": "india->japan:industrial",
+          "mu": 0.035,
+          "sigma": 0.06
+        },
+        "lag": 1,
+        "rationale": "An output shock in the exporter's industrial sector transmits to the importer's supply-chain resilience, scaled by how import-dependent the importer is on that exporter. (dependency share: 5% \u2014 Illustrative: component import share.)"
+      }
+    ]
+  },
+  "decisions": [
+    {
+      "status": "HYPOTHETICAL \u2014 ILLUSTRATIVE MODEL OUTPUT, NOT A REAL-WORLD FORECAST",
+      "decision": {
+        "id": "dec:nigeria_export_levy",
+        "name": "Nigeria \u2014 HYPOTHETICAL 15% crude-energy export levy",
+        "actor": "nigeria",
+        "actor_kind": "country",
+        "status": "HYPOTHETICAL",
+        "description": "HYPOTHETICAL scenario: Nigeria's government imposes a new 15% levy on crude-energy exports, intended to raise fiscal revenue. This is a fictional illustrative scenario, not a real announced policy. Modeled origin effect: a rise in Nigeria's domestic energy price index (cost pass-through plus reduced production incentive at the margin).",
+        "assembly": {
+          "name": "Nigeria: HYPOTHETICAL crude-export levy",
+          "primitives": [
+            {
+              "id": "NGA-P1",
+              "name": "Draft levy framework & legal basis",
+              "cost": 4.0,
+              "lead_time": 2,
+              "prior_failure_rate": 0.1,
+              "tags": [
+                "regulatory"
+              ]
+            },
+            {
+              "id": "NGA-P2",
+              "name": "Legislative approval",
+              "cost": 2.0,
+              "lead_time": 3,
+              "prior_failure_rate": 0.25,
+              "tags": [
+                "political"
+              ]
+            },
+            {
+              "id": "NGA-P3",
+              "name": "Customs & enforcement rollout",
+              "cost": 6.0,
+              "lead_time": 2,
+              "prior_failure_rate": 0.15,
+              "tags": [
+                "operational"
+              ]
+            }
+          ],
+          "assembly_index": 2,
+          "total_cost": 12.0,
+          "critical_path_lead_time": 3
+        },
+        "origin_shocks": [
+          {
+            "actor": "nigeria",
+            "var": "energy.price_index",
+            "delta": 14.0,
+            "rationale": "Illustrative: levy cost passes through to domestic energy pricing and dampens production incentives at the margin."
+          }
+        ],
+        "proxy_route": null
+      },
+      "generated_at": "2026-10-09T04:42:50+00:00",
+      "executive_summary": [
+        "HYPOTHETICAL decision: Nigeria \u2014 HYPOTHETICAL 15% crude-energy export levy.",
+        "Actor: Nigeria (country). Status: HYPOTHETICAL.",
+        "Modeled via an Assembly of 3 action primitive(s), Assembly Index 2, illustrative total cost 12.0.",
+        "Largest modeled domestic effect: Inflation in Nigeria shifts by ~+0.79 (+0.34 to +1.24 across simulated draws), materiality tier 'moderate', direction consistent in 100% of draws.",
+        "Largest modeled cross-border effect: Energy price index in Germany shifts by ~+1.33 (+0.05 to +2.65), materiality tier 'low', reaching that actor via: Nigeria's Energy price index \u2192 Germany's Energy price index (hop 1, modeled lag 1: Price transmission: a shock to the exporter's energy price index passes through to the importer's own domestic energy price index, scaled by how import-dependent the importer is. (dependency share: 18% \u2014 Illustrative: partial crude/LNG sourcing.))"
+      ],
+      "assumptions_and_limitations": [
+        "This decision is HYPOTHETICAL/fictional, authored to exercise the model -- it is not a real announced policy or corporate action.",
+        "All actor baseline values (registry.py) are illustrative placeholders, not sourced or current real-world statistics.",
+        "All causal edges are expert-elicited hypotheses with an explicit uncertainty band (a Bayesian NormalBelief), not statistically fitted or empirically validated causal effects.",
+        "Cross-border spillover is generated only from the illustrative bilateral trade-dependency links in registry.TRADE_LINKS -- real trade/financial/diplomatic spillover channels are far richer than the energy/agriculture/industrial links modeled here.",
+        "Propagation is bounded to a small number of hops and each hop's newly produced effect is damped (factor 0.65) before continuing -- a modeling convenience to keep the walk finite given the graph's cycles, not an empirical decay rate.",
+        "A variable with no further outgoing modeled edges is not asserted to have no further real-world effects -- it means the hand-authored mechanism library (causal_graph.SECTOR_MECHANISMS) does not yet encode one; this is a known gap for expert review to fill, not a finding."
+      ],
+      "domestic_impacts": [
+        {
+          "actor": "nigeria",
+          "var": "economic.inflation_pct",
+          "var_label": "Inflation",
+          "unit": "% / year",
+          "higher_is_better": false,
+          "mean": 0.7894,
+          "std": 0.2737,
+          "p5": 0.341,
+          "p95": 1.2376,
+          "mean_normalized_moves": 0.3947,
+          "first_hop_reached": 1,
+          "actor_label": "Nigeria",
+          "materiality_tier": "moderate",
+          "sign_consistency_pct": 99.8,
+          "dominant_path": [
+            {
+              "hop": 1,
+              "edge_id": "wc:nigeria:0",
+              "source": "nigeria:energy.price_index",
+              "target": "nigeria:economic.inflation_pct",
+              "mean_contribution_normalized": 0.6072,
+              "lag": 1,
+              "rationale": "Energy costs feed directly into consumer price indices."
+            }
+          ],
+          "dominant_path_text": "Nigeria's Energy price index \u2192 Nigeria's Inflation (hop 1, modeled lag 1: Energy costs feed directly into consumer price indices.)"
+        },
+        {
+          "actor": "nigeria",
+          "var": "transportation.logistics_cost_pct_gdp",
+          "var_label": "Logistics cost",
+          "unit": "% of GDP",
+          "higher_is_better": false,
+          "mean": 0.1721,
+          "std": 0.0568,
+          "p5": 0.078,
+          "p95": 0.267,
+          "mean_normalized_moves": 0.3442,
+          "first_hop_reached": 1,
+          "actor_label": "Nigeria",
+          "materiality_tier": "moderate",
+          "sign_consistency_pct": 99.9,
+          "dominant_path": [
+            {
+              "hop": 1,
+              "edge_id": "wc:nigeria:15",
+              "source": "nigeria:energy.price_index",
+              "target": "nigeria:transportation.logistics_cost_pct_gdp",
+              "mean_contribution_normalized": 0.52954,
+              "lag": 0,
+              "rationale": "Fuel costs flow fairly directly into logistics/freight costs."
+            }
+          ],
+          "dominant_path_text": "Nigeria's Energy price index \u2192 Nigeria's Logistics cost (hop 1, modeled lag 0: Fuel costs flow fairly directly into logistics/freight costs.)"
+        },
+        {
+          "actor": "nigeria",
+          "var": "industrial.industrial_output_growth_pct",
+          "var_label": "Industrial output growth",
+          "unit": "% / year",
+          "higher_is_better": true,
+          "mean": -0.5694,
+          "std": 0.2228,
+          "p5": -0.9338,
+          "p95": -0.2072,
+          "mean_normalized_moves": -0.2847,
+          "first_hop_reached": 1,
+          "actor_label": "Nigeria",
+          "materiality_tier": "moderate",
+          "sign_consistency_pct": 99.5,
+          "dominant_path": [
+            {
+              "hop": 1,
+              "edge_id": "wc:nigeria:1",
+              "source": "nigeria:energy.price_index",
+              "target": "nigeria:industrial.industrial_output_growth_pct",
+              "mean_contribution_normalized": -0.43798,
+              "lag": 1,
+              "rationale": "Higher energy costs raise input costs and depress industrial output growth."
+            }
+          ],
+          "dominant_path_text": "Nigeria's Energy price index \u2192 Nigeria's Industrial output growth (hop 1, modeled lag 1: Higher energy costs raise input costs and depress industrial output growth.)"
+        },
+        {
+          "actor": "nigeria",
+          "var": "agriculture.output_growth_pct",
+          "var_label": "Agricultural output growth",
+          "unit": "% / year",
+          "higher_is_better": true,
+          "mean": -0.4246,
+          "std": 0.1979,
+          "p5": -0.7475,
+          "p95": -0.0992,
+          "mean_normalized_moves": -0.1699,
+          "first_hop_reached": 1,
+          "actor_label": "Nigeria",
+          "materiality_tier": "low",
+          "sign_consistency_pct": 98.2,
+          "dominant_path": [
+            {
+              "hop": 1,
+              "edge_id": "wc:nigeria:14",
+              "source": "nigeria:energy.price_index",
+              "target": "nigeria:agriculture.output_growth_pct",
+              "mean_contribution_normalized": -0.26132,
+              "lag": 1,
+              "rationale": "Energy costs (fertilizer, fuel, irrigation) affect agricultural production costs and output."
+            }
+          ],
+          "dominant_path_text": "Nigeria's Energy price index \u2192 Nigeria's Agricultural output growth (hop 1, modeled lag 1: Energy costs (fertilizer, fuel, irrigation) affect agricultural production costs and output.)"
+        },
+        {
+          "actor": "nigeria",
+          "var": "political.approval_rating_pct",
+          "var_label": "Executive approval",
+          "unit": "% approving",
+          "higher_is_better": null,
+          "mean": -0.3873,
+          "std": 0.2128,
+          "p5": -0.78,
+          "p95": -0.0913,
+          "mean_normalized_moves": -0.0775,
+          "first_hop_reached": 2,
+          "actor_label": "Nigeria",
+          "materiality_tier": "low",
+          "sign_consistency_pct": 99.4,
+          "dominant_path": [
+            {
+              "hop": 1,
+              "edge_id": "wc:nigeria:0",
+              "source": "nigeria:energy.price_index",
+              "target": "nigeria:economic.inflation_pct",
+              "mean_contribution_normalized": 0.6072,
+              "lag": 1,
+              "rationale": "Energy costs feed directly into consumer price indices."
+            },
+            {
+              "hop": 2,
+              "edge_id": "wc:nigeria:2",
+              "source": "nigeria:economic.inflation_pct",
+              "target": "nigeria:political.approval_rating_pct",
+              "mean_contribution_normalized": -0.11916,
+              "lag": 1,
+              "rationale": "Rising prices tend to erode public approval of the sitting executive."
+            }
+          ],
+          "dominant_path_text": "Nigeria's Energy price index \u2192 Nigeria's Inflation (hop 1, modeled lag 1: Energy costs feed directly into consumer price indices.)  then  Nigeria's Inflation \u2192 Nigeria's Executive approval (hop 2, modeled lag 1: Rising prices tend to erode public approval of the sitting executive.)"
+        },
+        {
+          "actor": "nigeria",
+          "var": "economic.trade_balance_pct_gdp",
+          "var_label": "Trade balance",
+          "unit": "% of GDP",
+          "higher_is_better": true,
+          "mean": -0.03,
+          "std": 0.0201,
+          "p5": -0.0664,
+          "p95": -0.0031,
+          "mean_normalized_moves": -0.02,
+          "first_hop_reached": 2,
+          "actor_label": "Nigeria",
+          "materiality_tier": "negligible",
+          "sign_consistency_pct": 97.3,
+          "dominant_path": [
+            {
+              "hop": 1,
+              "edge_id": "wc:nigeria:14",
+              "source": "nigeria:energy.price_index",
+              "target": "nigeria:agriculture.output_growth_pct",
+              "mean_contribution_normalized": -0.26132,
+              "lag": 1,
+              "rationale": "Energy costs (fertilizer, fuel, irrigation) affect agricultural production costs and output."
+            },
+            {
+              "hop": 2,
+              "edge_id": "wc:nigeria:5",
+              "source": "nigeria:agriculture.output_growth_pct",
+              "target": "nigeria:economic.trade_balance_pct_gdp",
+              "mean_contribution_normalized": -0.03073,
+              "lag": 0,
+              "rationale": "Agricultural export earnings flow fairly directly into the trade balance."
+            }
+          ],
+          "dominant_path_text": "Nigeria's Energy price index \u2192 Nigeria's Agricultural output growth (hop 1, modeled lag 1: Energy costs (fertilizer, fuel, irrigation) affect agricultural production costs and output.)  then  Nigeria's Agricultural output growth \u2192 Nigeria's Trade balance (hop 2, modeled lag 0: Agricultural export earnings flow fairly directly into the trade balance.)"
+        }
+      ],
+      "cross_border_impacts": [
+        {
+          "actor": "germany",
+          "var": "energy.price_index",
+          "var_label": "Energy price index",
+          "unit": "index (100=baseline)",
+          "higher_is_better": false,
+          "mean": 1.3265,
+          "std": 0.7892,
+          "p5": 0.05,
+          "p95": 2.6453,
+          "mean_normalized_moves": 0.1658,
+          "first_hop_reached": 1,
+          "actor_label": "Germany",
+          "materiality_tier": "low",
+          "sign_consistency_pct": 95.5,
+          "dominant_path": [
+            {
+              "hop": 1,
+              "edge_id": "cc:0",
+              "source": "nigeria:energy.price_index",
+              "target": "germany:energy.price_index",
+              "mean_contribution_normalized": 0.25509,
+              "lag": 1,
+              "rationale": "Price transmission: a shock to the exporter's energy price index passes through to the importer's own domestic energy price index, scaled by how import-dependent the importer is. (dependency share: 18% \u2014 Illustrative: partial crude/LNG sourcing.)"
+            }
+          ],
+          "dominant_path_text": "Nigeria's Energy price index \u2192 Germany's Energy price index (hop 1, modeled lag 1: Price transmission: a shock to the exporter's energy price index passes through to the importer's own domestic energy price index, scaled by how import-dependent the importer is. (dependency share: 18% \u2014 Illustrative: partial crude/LNG sourcing.))"
+        },
+        {
+          "actor": "china",
+          "var": "energy.price_index",
+          "var_label": "Energy price index",
+          "unit": "index (100=baseline)",
+          "higher_is_better": false,
+          "mean": 1.0994,
+          "std": 0.7265,
+          "p5": -0.0815,
+          "p95": 2.2975,
+          "mean_normalized_moves": 0.1374,
+          "first_hop_reached": 1,
+          "actor_label": "China",
+          "materiality_tier": "low",
+          "sign_consistency_pct": 93.6,
+          "dominant_path": [
+            {
+              "hop": 1,
+              "edge_id": "cc:4",
+              "source": "nigeria:energy.price_index",
+              "target": "china:energy.price_index",
+              "mean_contribution_normalized": 0.21143,
+              "lag": 1,
+              "rationale": "Price transmission: a shock to the exporter's energy price index passes through to the importer's own domestic energy price index, scaled by how import-dependent the importer is. (dependency share: 15% \u2014 Illustrative: crude-oil import share.)"
+            }
+          ],
+          "dominant_path_text": "Nigeria's Energy price index \u2192 China's Energy price index (hop 1, modeled lag 1: Price transmission: a shock to the exporter's energy price index passes through to the importer's own domestic energy price index, scaled by how import-dependent the importer is. (dependency share: 15% \u2014 Illustrative: crude-oil import share.))"
+        },
+        {
+          "actor": "japan",
+          "var": "energy.price_index",
+          "var_label": "Energy price index",
+          "unit": "index (100=baseline)",
+          "higher_is_better": false,
+          "mean": 0.8695,
+          "std": 0.6697,
+          "p5": -0.2524,
+          "p95": 1.9728,
+          "mean_normalized_moves": 0.1087,
+          "first_hop_reached": 1,
+          "actor_label": "Japan",
+          "materiality_tier": "low",
+          "sign_consistency_pct": 90.0,
+          "dominant_path": [
+            {
+              "hop": 1,
+              "edge_id": "cc:2",
+              "source": "nigeria:energy.price_index",
+              "target": "japan:energy.price_index",
+              "mean_contribution_normalized": 0.16722,
+              "lag": 1,
+              "rationale": "Price transmission: a shock to the exporter's energy price index passes through to the importer's own domestic energy price index, scaled by how import-dependent the importer is. (dependency share: 12% \u2014 Illustrative: partial crude sourcing.)"
+            }
+          ],
+          "dominant_path_text": "Nigeria's Energy price index \u2192 Japan's Energy price index (hop 1, modeled lag 1: Price transmission: a shock to the exporter's energy price index passes through to the importer's own domestic energy price index, scaled by how import-dependent the importer is. (dependency share: 12% \u2014 Illustrative: partial crude sourcing.))"
+        },
+        {
+          "actor": "india",
+          "var": "energy.price_index",
+          "var_label": "Energy price index",
+          "unit": "index (100=baseline)",
+          "higher_is_better": false,
+          "mean": 0.7142,
+          "std": 0.6456,
+          "p5": -0.3409,
+          "p95": 1.7613,
+          "mean_normalized_moves": 0.0893,
+          "first_hop_reached": 1,
+          "actor_label": "India",
+          "materiality_tier": "low",
+          "sign_consistency_pct": 86.9,
+          "dominant_path": [
+            {
+              "hop": 1,
+              "edge_id": "cc:8",
+              "source": "nigeria:energy.price_index",
+              "target": "india:energy.price_index",
+              "mean_contribution_normalized": 0.13734,
+              "lag": 1,
+              "rationale": "Price transmission: a shock to the exporter's energy price index passes through to the importer's own domestic energy price index, scaled by how import-dependent the importer is. (dependency share: 10% \u2014 Illustrative: crude-oil import share.)"
+            }
+          ],
+          "dominant_path_text": "Nigeria's Energy price index \u2192 India's Energy price index (hop 1, modeled lag 1: Price transmission: a shock to the exporter's energy price index passes through to the importer's own domestic energy price index, scaled by how import-dependent the importer is. (dependency share: 10% \u2014 Illustrative: crude-oil import share.))"
+        },
+        {
+          "actor": "germany",
+          "var": "economic.inflation_pct",
+          "var_label": "Inflation",
+          "unit": "% / year",
+          "higher_is_better": false,
+          "mean": 0.0761,
+          "std": 0.055,
+          "p5": 0.0018,
+          "p95": 0.1776,
+          "mean_normalized_moves": 0.038,
+          "first_hop_reached": 2,
+          "actor_label": "Germany",
+          "materiality_tier": "negligible",
+          "sign_consistency_pct": 95.3,
+          "dominant_path": [
+            {
+              "hop": 1,
+              "edge_id": "cc:0",
+              "source": "nigeria:energy.price_index",
+              "target": "germany:energy.price_index",
+              "mean_contribution_normalized": 0.25509,
+              "lag": 1,
+              "rationale": "Price transmission: a shock to the exporter's energy price index passes through to the importer's own domestic energy price index, scaled by how import-dependent the importer is. (dependency share: 18% \u2014 Illustrative: partial crude/LNG sourcing.)"
+            },
+            {
+              "hop": 2,
+              "edge_id": "wc:germany:0",
+              "source": "germany:energy.price_index",
+              "target": "germany:economic.inflation_pct",
+              "mean_contribution_normalized": 0.05852,
+              "lag": 1,
+              "rationale": "Energy costs feed directly into consumer price indices."
+            }
+          ],
+          "dominant_path_text": "Nigeria's Energy price index \u2192 Germany's Energy price index (hop 1, modeled lag 1: Price transmission: a shock to the exporter's energy price index passes through to the importer's own domestic energy price index, scaled by how import-dependent the importer is. (dependency share: 18% \u2014 Illustrative: partial crude/LNG sourcing.))  then  Germany's Energy price index \u2192 Germany's Inflation (hop 2, modeled lag 1: Energy costs feed directly into consumer price indices.)"
+        },
+        {
+          "actor": "usa",
+          "var": "energy.price_index",
+          "var_label": "Energy price index",
+          "unit": "index (100=baseline)",
+          "higher_is_better": false,
+          "mean": 0.2895,
+          "std": 0.53,
+          "p5": -0.5958,
+          "p95": 1.1651,
+          "mean_normalized_moves": 0.0362,
+          "first_hop_reached": 1,
+          "actor_label": "United States",
+          "materiality_tier": "negligible",
+          "sign_consistency_pct": 70.9,
+          "dominant_path": [
+            {
+              "hop": 1,
+              "edge_id": "cc:7",
+              "source": "nigeria:energy.price_index",
+              "target": "usa:energy.price_index",
+              "mean_contribution_normalized": 0.05568,
+              "lag": 1,
+              "rationale": "Price transmission: a shock to the exporter's energy price index passes through to the importer's own domestic energy price index, scaled by how import-dependent the importer is. (dependency share: 4% \u2014 Illustrative: minor crude import share.)"
+            }
+          ],
+          "dominant_path_text": "Nigeria's Energy price index \u2192 United States's Energy price index (hop 1, modeled lag 1: Price transmission: a shock to the exporter's energy price index passes through to the importer's own domestic energy price index, scaled by how import-dependent the importer is. (dependency share: 4% \u2014 Illustrative: minor crude import share.))"
+        }
+      ],
+      "unmodeled_note": "Several reached variables currently have no further outgoing modeled mechanism (e.g. Agricultural output growth, Energy price index, Supply-chain resilience), so this report's cascade stops there -- not because the real-world effect necessarily stops there.",
+      "simulation": {
+        "n_simulations": 5000,
+        "seed": 2494,
+        "n_nodes_reached": 46,
+        "n_edge_firings": 46
+      }
+    },
+    {
+      "status": "HYPOTHETICAL \u2014 ILLUSTRATIVE MODEL OUTPUT, NOT A REAL-WORLD FORECAST",
+      "decision": {
+        "id": "dec:helion_fab_relocation",
+        "name": "Helion Semiconductors (fictional) \u2014 HYPOTHETICAL primary fab relocation",
+        "actor": "helion_semi",
+        "actor_kind": "company",
+        "status": "HYPOTHETICAL",
+        "description": "HYPOTHETICAL scenario: Helion Semiconductors (a fictional company) relocates its primary fabrication plant out of its current East-Asia site over an 18-month program. Modeled origin effect: a temporary drop in Helion's own industrial output growth during the transition.",
+        "assembly": {
+          "name": "Helion Semiconductors: HYPOTHETICAL fab relocation",
+          "primitives": [
+            {
+              "id": "HEL-P1",
+              "name": "Site selection & permitting",
+              "cost": 120.0,
+              "lead_time": 6,
+              "prior_failure_rate": 0.2,
+              "tags": [
+                "capital"
+              ]
+            },
+            {
+              "id": "HEL-P2",
+              "name": "Equipment relocation & requalification",
+              "cost": 340.0,
+              "lead_time": 9,
+              "prior_failure_rate": 0.3,
+              "tags": [
+                "operational"
+              ]
+            },
+            {
+              "id": "HEL-P3",
+              "name": "Workforce retraining & production ramp",
+              "cost": 85.0,
+              "lead_time": 6,
+              "prior_failure_rate": 0.25,
+              "tags": [
+                "workforce"
+              ]
+            }
+          ],
+          "assembly_index": 2,
+          "total_cost": 545.0,
+          "critical_path_lead_time": 9
+        },
+        "origin_shocks": [
+          {
+            "actor": "helion_semi",
+            "var": "industrial.industrial_output_growth_pct",
+            "delta": -9.0,
+            "rationale": "Illustrative: production disruption during equipment relocation and requalification."
+          }
+        ],
+        "proxy_route": {
+          "home_country": "china",
+          "scope": 0.03,
+          "rationale": "Illustrative modeling simplification: Helion is treated as representing roughly 3% of China's industrial-output-growth variance, so this fraction of its shock is additionally injected into China's own industrial.industrial_output_growth_pct, letting the shock reach China's within-country and cross-country (trade-link) edges. This scope fraction is a modeling convenience, not a measured market-share statistic."
+        }
+      },
+      "generated_at": "2026-10-09T04:42:50+00:00",
+      "executive_summary": [
+        "HYPOTHETICAL decision: Helion Semiconductors (fictional) \u2014 HYPOTHETICAL primary fab relocation.",
+        "Actor: Helion Semiconductors (fictional) (company). Status: HYPOTHETICAL.",
+        "Modeled via an Assembly of 3 action primitive(s), Assembly Index 2, illustrative total cost 545.0.",
+        "Largest modeled cross-border effect: Supply-chain resilience in Nigeria shifts by ~-0.09 (-0.17 to -0.00), materiality tier 'negligible', reaching that actor via: China's Industrial output growth \u2192 Nigeria's Supply-chain resilience (hop 1, modeled lag 1: An output shock in the exporter's industrial sector transmits to the importer's supply-chain resilience, scaled by how import-dependent the importer is on that exporter. (dependency share: 24% \u2014 Illustrative: manufactured/infrastructure-goods import share.))"
+      ],
+      "assumptions_and_limitations": [
+        "This decision is HYPOTHETICAL/fictional, authored to exercise the model -- it is not a real announced policy or corporate action.",
+        "All actor baseline values (registry.py) are illustrative placeholders, not sourced or current real-world statistics.",
+        "All causal edges are expert-elicited hypotheses with an explicit uncertainty band (a Bayesian NormalBelief), not statistically fitted or empirically validated causal effects.",
+        "Cross-border spillover is generated only from the illustrative bilateral trade-dependency links in registry.TRADE_LINKS -- real trade/financial/diplomatic spillover channels are far richer than the energy/agriculture/industrial links modeled here.",
+        "Propagation is bounded to a small number of hops and each hop's newly produced effect is damped (factor 0.65) before continuing -- a modeling convenience to keep the walk finite given the graph's cycles, not an empirical decay rate.",
+        "A variable with no further outgoing modeled edges is not asserted to have no further real-world effects -- it means the hand-authored mechanism library (causal_graph.SECTOR_MECHANISMS) does not yet encode one; this is a known gap for expert review to fill, not a finding.",
+        "This decision's actor (Helion Semiconductors (fictional)) is a company, which has no direct edges in the causal graph; its shock is additionally injected into China at an illustrative scope of 3% (Illustrative modeling simplification: Helion is treated as representing roughly 3% of China's industrial-output-growth variance, so this fraction of its shock is additionally injected into China's own industrial.industrial_output_growth_pct, letting the shock reach China's within-country and cross-country (trade-link) edges. This scope fraction is a modeling convenience, not a measured market-share statistic.)."
+      ],
+      "domestic_impacts": [],
+      "cross_border_impacts": [
+        {
+          "actor": "nigeria",
+          "var": "industrial.supply_chain_resilience_index",
+          "var_label": "Supply-chain resilience",
+          "unit": "index 0-100",
+          "higher_is_better": true,
+          "mean": -0.0882,
+          "std": 0.0523,
+          "p5": -0.1748,
+          "p95": -0.002,
+          "mean_normalized_moves": -0.0147,
+          "first_hop_reached": 1,
+          "actor_label": "Nigeria",
+          "materiality_tier": "negligible",
+          "sign_consistency_pct": 95.3,
+          "dominant_path": [
+            {
+              "hop": 1,
+              "edge_id": "cc:11",
+              "source": "china:industrial.industrial_output_growth_pct",
+              "target": "nigeria:industrial.supply_chain_resilience_index",
+              "mean_contribution_normalized": -0.02263,
+              "lag": 1,
+              "rationale": "An output shock in the exporter's industrial sector transmits to the importer's supply-chain resilience, scaled by how import-dependent the importer is on that exporter. (dependency share: 24% \u2014 Illustrative: manufactured/infrastructure-goods import share.)"
+            }
+          ],
+          "dominant_path_text": "China's Industrial output growth \u2192 Nigeria's Supply-chain resilience (hop 1, modeled lag 1: An output shock in the exporter's industrial sector transmits to the importer's supply-chain resilience, scaled by how import-dependent the importer is on that exporter. (dependency share: 24% \u2014 Illustrative: manufactured/infrastructure-goods import share.))"
+        },
+        {
+          "actor": "germany",
+          "var": "industrial.supply_chain_resilience_index",
+          "var_label": "Supply-chain resilience",
+          "unit": "index 0-100",
+          "higher_is_better": true,
+          "mean": -0.0802,
+          "std": 0.0502,
+          "p5": -0.1623,
+          "p95": 0.0004,
+          "mean_normalized_moves": -0.0134,
+          "first_hop_reached": 1,
+          "actor_label": "Germany",
+          "materiality_tier": "negligible",
+          "sign_consistency_pct": 94.9,
+          "dominant_path": [
+            {
+              "hop": 1,
+              "edge_id": "cc:1",
+              "source": "china:industrial.industrial_output_growth_pct",
+              "target": "germany:industrial.supply_chain_resilience_index",
+              "mean_contribution_normalized": -0.02056,
+              "lag": 1,
+              "rationale": "An output shock in the exporter's industrial sector transmits to the importer's supply-chain resilience, scaled by how import-dependent the importer is on that exporter. (dependency share: 22% \u2014 Illustrative: intermediate-goods/components sourcing.)"
+            }
+          ],
+          "dominant_path_text": "China's Industrial output growth \u2192 Germany's Supply-chain resilience (hop 1, modeled lag 1: An output shock in the exporter's industrial sector transmits to the importer's supply-chain resilience, scaled by how import-dependent the importer is on that exporter. (dependency share: 22% \u2014 Illustrative: intermediate-goods/components sourcing.))"
+        },
+        {
+          "actor": "japan",
+          "var": "industrial.supply_chain_resilience_index",
+          "var_label": "Supply-chain resilience",
+          "unit": "index 0-100",
+          "higher_is_better": true,
+          "mean": -0.0698,
+          "std": 0.047,
+          "p5": -0.1459,
+          "p95": 0.0088,
+          "mean_normalized_moves": -0.0116,
+          "first_hop_reached": 1,
+          "actor_label": "Japan",
+          "materiality_tier": "negligible",
+          "sign_consistency_pct": 93.0,
+          "dominant_path": [
+            {
+              "hop": 1,
+              "edge_id": "cc:3",
+              "source": "china:industrial.industrial_output_growth_pct",
+              "target": "japan:industrial.supply_chain_resilience_index",
+              "mean_contribution_normalized": -0.0179,
+              "lag": 1,
+              "rationale": "An output shock in the exporter's industrial sector transmits to the importer's supply-chain resilience, scaled by how import-dependent the importer is on that exporter. (dependency share: 19% \u2014 Illustrative: intermediate-goods sourcing.)"
+            }
+          ],
+          "dominant_path_text": "China's Industrial output growth \u2192 Japan's Supply-chain resilience (hop 1, modeled lag 1: An output shock in the exporter's industrial sector transmits to the importer's supply-chain resilience, scaled by how import-dependent the importer is on that exporter. (dependency share: 19% \u2014 Illustrative: intermediate-goods sourcing.))"
+        },
+        {
+          "actor": "india",
+          "var": "industrial.supply_chain_resilience_index",
+          "var_label": "Supply-chain resilience",
+          "unit": "index 0-100",
+          "higher_is_better": true,
+          "mean": -0.0599,
+          "std": 0.0435,
+          "p5": -0.1314,
+          "p95": 0.0135,
+          "mean_normalized_moves": -0.01,
+          "first_hop_reached": 1,
+          "actor_label": "India",
+          "materiality_tier": "negligible",
+          "sign_consistency_pct": 91.7,
+          "dominant_path": [
+            {
+              "hop": 1,
+              "edge_id": "cc:9",
+              "source": "china:industrial.industrial_output_growth_pct",
+              "target": "india:industrial.supply_chain_resilience_index",
+              "mean_contribution_normalized": -0.01536,
+              "lag": 1,
+              "rationale": "An output shock in the exporter's industrial sector transmits to the importer's supply-chain resilience, scaled by how import-dependent the importer is on that exporter. (dependency share: 16% \u2014 Illustrative: intermediate-goods import share.)"
+            }
+          ],
+          "dominant_path_text": "China's Industrial output growth \u2192 India's Supply-chain resilience (hop 1, modeled lag 1: An output shock in the exporter's industrial sector transmits to the importer's supply-chain resilience, scaled by how import-dependent the importer is on that exporter. (dependency share: 16% \u2014 Illustrative: intermediate-goods import share.))"
+        },
+        {
+          "actor": "usa",
+          "var": "industrial.supply_chain_resilience_index",
+          "var_label": "Supply-chain resilience",
+          "unit": "index 0-100",
+          "higher_is_better": true,
+          "mean": -0.0522,
+          "std": 0.0407,
+          "p5": -0.1182,
+          "p95": 0.0146,
+          "mean_normalized_moves": -0.0087,
+          "first_hop_reached": 1,
+          "actor_label": "United States",
+          "materiality_tier": "negligible",
+          "sign_consistency_pct": 89.7,
+          "dominant_path": [
+            {
+              "hop": 1,
+              "edge_id": "cc:6",
+              "source": "china:industrial.industrial_output_growth_pct",
+              "target": "usa:industrial.supply_chain_resilience_index",
+              "mean_contribution_normalized": -0.01338,
+              "lag": 1,
+              "rationale": "An output shock in the exporter's industrial sector transmits to the importer's supply-chain resilience, scaled by how import-dependent the importer is on that exporter. (dependency share: 14% \u2014 Illustrative: manufactured-goods import share.)"
+            }
+          ],
+          "dominant_path_text": "China's Industrial output growth \u2192 United States's Supply-chain resilience (hop 1, modeled lag 1: An output shock in the exporter's industrial sector transmits to the importer's supply-chain resilience, scaled by how import-dependent the importer is on that exporter. (dependency share: 14% \u2014 Illustrative: manufactured-goods import share.))"
+        },
+        {
+          "actor": "brazil",
+          "var": "industrial.supply_chain_resilience_index",
+          "var_label": "Supply-chain resilience",
+          "unit": "index 0-100",
+          "higher_is_better": true,
+          "mean": -0.0443,
+          "std": 0.0384,
+          "p5": -0.1066,
+          "p95": 0.0181,
+          "mean_normalized_moves": -0.0074,
+          "first_hop_reached": 1,
+          "actor_label": "Brazil",
+          "materiality_tier": "negligible",
+          "sign_consistency_pct": 87.7,
+          "dominant_path": [
+            {
+              "hop": 1,
+              "edge_id": "cc:10",
+              "source": "china:industrial.industrial_output_growth_pct",
+              "target": "brazil:industrial.supply_chain_resilience_index",
+              "mean_contribution_normalized": -0.01137,
+              "lag": 1,
+              "rationale": "An output shock in the exporter's industrial sector transmits to the importer's supply-chain resilience, scaled by how import-dependent the importer is on that exporter. (dependency share: 12% \u2014 Illustrative: manufactured-goods import share.)"
+            }
+          ],
+          "dominant_path_text": "China's Industrial output growth \u2192 Brazil's Supply-chain resilience (hop 1, modeled lag 1: An output shock in the exporter's industrial sector transmits to the importer's supply-chain resilience, scaled by how import-dependent the importer is on that exporter. (dependency share: 12% \u2014 Illustrative: manufactured-goods import share.))"
+        }
+      ],
+      "unmodeled_note": "Several reached variables currently have no further outgoing modeled mechanism (e.g. GDP growth, Supply-chain resilience), so this report's cascade stops there -- not because the real-world effect necessarily stops there.",
+      "simulation": {
+        "n_simulations": 5000,
+        "seed": 3993,
+        "n_nodes_reached": 12,
+        "n_edge_firings": 10
+      }
+    },
+    {
+      "status": "HYPOTHETICAL \u2014 ILLUSTRATIVE MODEL OUTPUT, NOT A REAL-WORLD FORECAST",
+      "decision": {
+        "id": "dec:germany_renewable_mandate",
+        "name": "Germany \u2014 HYPOTHETICAL accelerated renewable-electricity mandate",
+        "actor": "germany",
+        "actor_kind": "country",
+        "status": "HYPOTHETICAL",
+        "description": "HYPOTHETICAL scenario: Germany legislates a target of +20 percentage points of renewable electricity generation share within 3 years, backed by grid/storage investment and phased fossil retirement. This is a fictional illustrative scenario, not a real announced policy. Modeled origin effect: a direct increase in Germany's renewable generation share.",
+        "assembly": {
+          "name": "Germany: HYPOTHETICAL accelerated renewable mandate",
+          "primitives": [
+            {
+              "id": "DEU-P1",
+              "name": "Legislative mandate & subsidy design",
+              "cost": 15.0,
+              "lead_time": 2,
+              "prior_failure_rate": 0.1,
+              "tags": [
+                "regulatory"
+              ]
+            },
+            {
+              "id": "DEU-P2",
+              "name": "Grid & storage infrastructure buildout",
+              "cost": 220.0,
+              "lead_time": 10,
+              "prior_failure_rate": 0.3,
+              "tags": [
+                "capital",
+                "operational"
+              ]
+            },
+            {
+              "id": "DEU-P3",
+              "name": "Phased fossil-capacity retirement",
+              "cost": 40.0,
+              "lead_time": 8,
+              "prior_failure_rate": 0.2,
+              "tags": [
+                "operational"
+              ]
+            }
+          ],
+          "assembly_index": 2,
+          "total_cost": 275.0,
+          "critical_path_lead_time": 10
+        },
+        "origin_shocks": [
+          {
+            "actor": "germany",
+            "var": "energy.renewable_share_pct",
+            "delta": 20.0,
+            "rationale": "Illustrative: direct legislative/infrastructure effect on generation mix."
+          }
+        ],
+        "proxy_route": null
+      },
+      "generated_at": "2026-10-09T04:42:50+00:00",
+      "executive_summary": [
+        "HYPOTHETICAL decision: Germany \u2014 HYPOTHETICAL accelerated renewable-electricity mandate.",
+        "Actor: Germany (country). Status: HYPOTHETICAL.",
+        "Modeled via an Assembly of 3 action primitive(s), Assembly Index 2, illustrative total cost 275.0.",
+        "Largest modeled domestic effect: Transport emissions in Germany shifts by ~-8.08 (-13.32 to -2.69 across simulated draws), materiality tier 'high', direction consistent in 99% of draws.",
+        "No materially-reached cross-border effects were produced by the current mechanism library and trade-link set for this decision."
+      ],
+      "assumptions_and_limitations": [
+        "This decision is HYPOTHETICAL/fictional, authored to exercise the model -- it is not a real announced policy or corporate action.",
+        "All actor baseline values (registry.py) are illustrative placeholders, not sourced or current real-world statistics.",
+        "All causal edges are expert-elicited hypotheses with an explicit uncertainty band (a Bayesian NormalBelief), not statistically fitted or empirically validated causal effects.",
+        "Cross-border spillover is generated only from the illustrative bilateral trade-dependency links in registry.TRADE_LINKS -- real trade/financial/diplomatic spillover channels are far richer than the energy/agriculture/industrial links modeled here.",
+        "Propagation is bounded to a small number of hops and each hop's newly produced effect is damped (factor 0.65) before continuing -- a modeling convenience to keep the walk finite given the graph's cycles, not an empirical decay rate.",
+        "A variable with no further outgoing modeled edges is not asserted to have no further real-world effects -- it means the hand-authored mechanism library (causal_graph.SECTOR_MECHANISMS) does not yet encode one; this is a known gap for expert review to fill, not a finding."
+      ],
+      "domestic_impacts": [
+        {
+          "actor": "germany",
+          "var": "transportation.emissions_index",
+          "var_label": "Transport emissions",
+          "unit": "index 0-100",
+          "higher_is_better": false,
+          "mean": -8.0845,
+          "std": 3.2586,
+          "p5": -13.3192,
+          "p95": -2.6943,
+          "mean_normalized_moves": -1.6169,
+          "first_hop_reached": 1,
+          "actor_label": "Germany",
+          "materiality_tier": "high",
+          "sign_consistency_pct": 99.1,
+          "dominant_path": [
+            {
+              "hop": 1,
+              "edge_id": "wc:germany:10",
+              "source": "germany:energy.renewable_share_pct",
+              "target": "germany:transportation.emissions_index",
+              "mean_contribution_normalized": -2.48753,
+              "lag": 2,
+              "rationale": "A cleaner generation mix lowers transport-sector emissions intensity as electrification spreads."
+            }
+          ],
+          "dominant_path_text": "Germany's Renewable energy share \u2192 Germany's Transport emissions (hop 1, modeled lag 2: A cleaner generation mix lowers transport-sector emissions intensity as electrification spreads.)"
+        }
+      ],
+      "cross_border_impacts": [],
+      "unmodeled_note": "Several reached variables currently have no further outgoing modeled mechanism (e.g. Transport emissions), so this report's cascade stops there -- not because the real-world effect necessarily stops there.",
+      "simulation": {
+        "n_simulations": 5000,
+        "seed": 2707,
+        "n_nodes_reached": 2,
+        "n_edge_firings": 1
+      }
+    }
+  ],
+  "simulation_config": {
+    "n_simulations": 5000,
+    "seed": 42
+  }
+}
