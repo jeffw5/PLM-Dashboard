@@ -1,0 +1,250 @@
+# Vocabulary: Persona vocabulary
+# File: vocabulary-core-persona.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix tax: <https://www.insperity.com/taxonomy/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix persona: <https://www.insperity.com/vocabulary/persona/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+voc:persona-vocabulary a skos:ConceptScheme ;
+    dcterms:title "Persona vocabulary"@en ;
+    skos:prefLabel "Persona vocabulary"@en ;
+    dcterms:description "The governed persona individuals for MVP1 and the controlled values for persona expertise level, tone, and reading level."@en ;
+    dcterms:subject core:Persona ;
+    skos:scopeNote "Each persona is an individual of core:Persona that selects labels, retrieval ranking, tone, and prompt template; it never grants access and is set from the authenticated role, not from the prompt. Personas never encode protected characteristics. Channels are in the service vocabulary."@en ;
+    dcterms:source "Semantic Governance v1.8 Section 3.8 and Appendix D Section 4.3."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept persona:WorksiteEmployee ,
+        persona:NewHireEmployee ,
+        persona:LifeEventEmployee ,
+        persona:DepartingEmployee ,
+        persona:ClientHumanResourcesAdministrator ,
+        persona:ClientOwnerExecutive ,
+        persona:HumanResourcesSpecialist ,
+        persona:BenefitsSpecialist ,
+        persona:RetirementPlanSpecialist ,
+        persona:PayrollSpecialist ,
+        persona:ComplianceAnalyst ,
+        persona:InsightsAnalyst ,
+        voc:expertise-level ,
+        voc:communication-tone ,
+        voc:reading-level .
+
+persona:WorksiteEmployee a skos:Concept, core:Persona ;
+    skos:prefLabel "Worksite employee"@en ;
+    skos:definition "A persona representing co-employed worksite employees asking about eligibility, costs, deadlines, enrollment, their own match, and vesting."@en ;
+    skos:topConceptOf voc:persona-vocabulary ;
+    skos:broadMatch tax:ActiveWorkerPersona ;
+    core:hasExpertiseLevel voc:expertise-level-novice ;
+    core:usesChannel voc:channel-conversational-agent ;
+    core:usesChannel voc:channel-employee-portal ;
+    skos:inScheme voc:persona-vocabulary .
+
+persona:NewHireEmployee a skos:Concept, core:Persona ;
+    skos:prefLabel "New hire employee"@en ;
+    skos:definition "A persona representing employees in a waiting period or first enrollment window who need to know what to choose, by when, and what happens if nothing is chosen."@en ;
+    skos:topConceptOf voc:persona-vocabulary ;
+    skos:broadMatch tax:JoiningWorkerPersona ;
+    core:hasExpertiseLevel voc:expertise-level-novice ;
+    core:usesChannel voc:channel-conversational-agent ;
+    core:usesChannel voc:channel-employee-portal ;
+    skos:inScheme voc:persona-vocabulary .
+
+persona:LifeEventEmployee a skos:Concept, core:Persona ;
+    skos:prefLabel "Life event employee"@en ;
+    skos:definition "A persona representing employees with a qualifying life event who need to know which changes are allowed and the election window."@en ;
+    skos:topConceptOf voc:persona-vocabulary ;
+    skos:broadMatch tax:LifeChangeWorkerPersona ;
+    core:hasExpertiseLevel voc:expertise-level-novice ;
+    core:usesChannel voc:channel-conversational-agent ;
+    skos:inScheme voc:persona-vocabulary .
+
+persona:DepartingEmployee a skos:Concept, core:Persona ;
+    skos:prefLabel "Departing employee"@en ;
+    skos:definition "A persona representing employees leaving or reducing hours who need continuation coverage, final deductions, loans, rollover, and distribution options."@en ;
+    skos:topConceptOf voc:persona-vocabulary ;
+    skos:broadMatch tax:DepartingWorkerPersona ;
+    core:hasExpertiseLevel voc:expertise-level-novice ;
+    core:usesChannel voc:channel-conversational-agent ;
+    skos:inScheme voc:persona-vocabulary .
+
+persona:ClientHumanResourcesAdministrator a skos:Concept, core:Persona ;
+    skos:prefLabel "Client human resources administrator"@en ;
+    skos:altLabel "Client HR administrator"@en ;
+    skos:definition "A persona representing the human resources contact at a worksite client who needs plan offerings, eligibility rules, deadlines, and employer obligations."@en ;
+    skos:topConceptOf voc:persona-vocabulary ;
+    skos:broadMatch tax:ClientAdministratorPersona ;
+    core:hasExpertiseLevel voc:expertise-level-practitioner ;
+    core:usesChannel voc:channel-conversational-agent ;
+    core:usesChannel voc:channel-client-portal ;
+    skos:inScheme voc:persona-vocabulary .
+
+persona:ClientOwnerExecutive a skos:Concept, core:Persona ;
+    skos:prefLabel "Client owner or executive"@en ;
+    skos:altLabel "Client executive"@en , "Business owner"@en ;
+    skos:definition "A persona representing a business owner or executive at a worksite client who needs plan sponsorship, employer cost, and compliance exposure information."@en ;
+    skos:topConceptOf voc:persona-vocabulary ;
+    skos:broadMatch tax:ClientExecutivePersona ;
+    core:hasExpertiseLevel voc:expertise-level-practitioner ;
+    core:usesChannel voc:channel-conversational-agent ;
+    core:usesChannel voc:channel-in-person-meeting ;
+    skos:inScheme voc:persona-vocabulary .
+
+persona:HumanResourcesSpecialist a skos:Concept, core:Persona ;
+    skos:prefLabel "Human resources specialist"@en ;
+    skos:altLabel "HR specialist"@en , "HR advisor"@en ;
+    skos:definition "A persona representing internal human resources specialists and advisors who need complete, sourced answers to repeat and edge-case client questions."@en ;
+    skos:topConceptOf voc:persona-vocabulary ;
+    skos:broadMatch tax:HumanResourcesAdvisoryPersona ;
+    core:hasExpertiseLevel voc:expertise-level-expert ;
+    core:usesChannel voc:channel-conversational-agent ;
+    core:usesChannel voc:channel-internal-search ;
+    skos:inScheme voc:persona-vocabulary .
+
+persona:BenefitsSpecialist a skos:Concept, core:Persona ;
+    skos:prefLabel "Benefits specialist"@en ;
+    skos:definition "A persona representing internal benefits operations staff who need plan rules, carrier terms, and enrollment exceptions."@en ;
+    skos:topConceptOf voc:persona-vocabulary ;
+    skos:broadMatch tax:BenefitsServicePersona ;
+    core:hasExpertiseLevel voc:expertise-level-expert ;
+    core:usesChannel voc:channel-internal-search ;
+    core:usesChannel voc:channel-conversational-agent ;
+    skos:inScheme voc:persona-vocabulary .
+
+persona:RetirementPlanSpecialist a skos:Concept, core:Persona ;
+    skos:prefLabel "Retirement plan specialist"@en ;
+    skos:altLabel "401(k) specialist"@en ;
+    skos:definition "A persona representing internal retirement plan services staff who need plan document provisions, limits, testing, and distribution rules."@en ;
+    skos:topConceptOf voc:persona-vocabulary ;
+    skos:broadMatch tax:BenefitsServicePersona ;
+    core:hasExpertiseLevel voc:expertise-level-expert ;
+    core:usesChannel voc:channel-internal-search ;
+    core:usesChannel voc:channel-conversational-agent ;
+    skos:inScheme voc:persona-vocabulary .
+
+persona:PayrollSpecialist a skos:Concept, core:Persona ;
+    skos:prefLabel "Payroll specialist"@en ;
+    skos:definition "A persona representing internal payroll operations staff who need deduction timing, compensation definitions, and corrections."@en ;
+    skos:topConceptOf voc:persona-vocabulary ;
+    skos:broadMatch tax:PayrollServicePersona ;
+    core:hasExpertiseLevel voc:expertise-level-practitioner ;
+    core:usesChannel voc:channel-business-application ;
+    core:usesChannel voc:channel-internal-search ;
+    skos:inScheme voc:persona-vocabulary .
+
+persona:ComplianceAnalyst a skos:Concept, core:Persona ;
+    skos:prefLabel "Compliance analyst"@en ;
+    skos:altLabel "Compliance auditor"@en ;
+    skos:definition "A persona representing internal compliance and audit staff who need to know which norm governs a step and evidence of answers given."@en ;
+    skos:topConceptOf voc:persona-vocabulary ;
+    skos:broadMatch tax:CompliancePersona ;
+    core:hasExpertiseLevel voc:expertise-level-expert ;
+    core:usesChannel voc:channel-business-application ;
+    core:usesChannel voc:channel-internal-search ;
+    skos:inScheme voc:persona-vocabulary .
+
+persona:InsightsAnalyst a skos:Concept, core:Persona ;
+    skos:prefLabel "Insights analyst"@en ;
+    skos:altLabel "Analytics consumer"@en ;
+    skos:definition "A persona representing Enterprise Analytics staff who consume measures of question trends, answer quality, and gaps by persona and domain."@en ;
+    skos:topConceptOf voc:persona-vocabulary ;
+    skos:broadMatch tax:AnalyticsPersona ;
+    core:hasExpertiseLevel voc:expertise-level-practitioner ;
+    core:usesChannel voc:channel-dashboard ;
+    core:usesChannel voc:channel-query-endpoint ;
+    skos:inScheme voc:persona-vocabulary .
+
+voc:expertise-level a skos:Concept ;
+    skos:prefLabel "Expertise level"@en ;
+    skos:definition "A controlled value set for a persona's familiarity with a domain."@en ;
+    skos:topConceptOf voc:persona-vocabulary ;
+    skos:narrower voc:expertise-level-novice , voc:expertise-level-practitioner , voc:expertise-level-expert ;
+    skos:inScheme voc:persona-vocabulary .
+
+voc:expertise-level-novice a skos:Concept ;
+    skos:prefLabel "Novice"@en ;
+    skos:definition "An expertise level for users new to the domain who need plain explanations and next steps."@en ;
+    skos:broader voc:expertise-level ;
+    skos:inScheme voc:persona-vocabulary .
+
+voc:expertise-level-practitioner a skos:Concept ;
+    skos:prefLabel "Practitioner"@en ;
+    skos:definition "An expertise level for users who work in the domain regularly and need precise, procedural answers."@en ;
+    skos:broader voc:expertise-level ;
+    skos:inScheme voc:persona-vocabulary .
+
+voc:expertise-level-expert a skos:Concept ;
+    skos:prefLabel "Expert"@en ;
+    skos:definition "An expertise level for specialists who need complete, sourced answers including edge cases."@en ;
+    skos:broader voc:expertise-level ;
+    skos:inScheme voc:persona-vocabulary .
+
+voc:communication-tone a skos:Concept ;
+    skos:prefLabel "Communication tone"@en ;
+    skos:definition "A controlled value set for the tone of answers addressed to a persona."@en ;
+    skos:topConceptOf voc:persona-vocabulary ;
+    skos:narrower voc:tone-reassuring , voc:tone-concise , voc:tone-procedural , voc:tone-formal ;
+    skos:inScheme voc:persona-vocabulary .
+
+voc:tone-reassuring a skos:Concept ;
+    skos:prefLabel "Reassuring"@en ;
+    skos:altLabel "Empathetic"@en ;
+    skos:definition "A communication tone that is warm, plain, and supportive."@en ;
+    skos:broader voc:communication-tone ;
+    skos:inScheme voc:persona-vocabulary .
+
+voc:tone-concise a skos:Concept ;
+    skos:prefLabel "Concise"@en ;
+    skos:definition "A communication tone that is brief and direct."@en ;
+    skos:broader voc:communication-tone ;
+    skos:inScheme voc:persona-vocabulary .
+
+voc:tone-procedural a skos:Concept ;
+    skos:prefLabel "Procedural"@en ;
+    skos:definition "A communication tone that gives ordered steps and deadlines."@en ;
+    skos:broader voc:communication-tone ;
+    skos:inScheme voc:persona-vocabulary .
+
+voc:tone-formal a skos:Concept ;
+    skos:prefLabel "Formal"@en ;
+    skos:definition "A communication tone suited to executives and official correspondence."@en ;
+    skos:broader voc:communication-tone ;
+    skos:inScheme voc:persona-vocabulary .
+
+voc:reading-level a skos:Concept ;
+    skos:prefLabel "Reading level"@en ;
+    skos:definition "A controlled value set for the vocabulary and sentence complexity of answers."@en ;
+    skos:topConceptOf voc:persona-vocabulary ;
+    skos:narrower voc:reading-level-plain-language , voc:reading-level-general-business , voc:reading-level-technical ;
+    skos:inScheme voc:persona-vocabulary .
+
+voc:reading-level-plain-language a skos:Concept ;
+    skos:prefLabel "Plain language"@en ;
+    skos:definition "A reading level using everyday words and short sentences."@en ;
+    skos:broader voc:reading-level ;
+    skos:inScheme voc:persona-vocabulary .
+
+voc:reading-level-general-business a skos:Concept ;
+    skos:prefLabel "General business"@en ;
+    skos:definition "A reading level using common business terms."@en ;
+    skos:broader voc:reading-level ;
+    skos:inScheme voc:persona-vocabulary .
+
+voc:reading-level-technical a skos:Concept ;
+    skos:prefLabel "Technical"@en ;
+    skos:altLabel "Specialist"@en ;
+    skos:definition "A reading level that allows domain and technical terms."@en ;
+    skos:broader voc:reading-level ;
+    skos:inScheme voc:persona-vocabulary .

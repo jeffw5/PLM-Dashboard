@@ -1,0 +1,239 @@
+# Vocabulary: Time vocabulary
+# File: vocabulary-core-time.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+voc:time-vocabulary a skos:ConceptScheme ;
+    dcterms:title "Time vocabulary"@en ;
+    skos:prefLabel "Time vocabulary"@en ;
+    dcterms:description "Controlled values for time units, frequencies, day types, and the United States time zones."@en ;
+    dcterms:subject core:TemporalEntity ;
+    dcterms:source "W3C OWL-Time; ISO 8601; IANA Time Zone Database identifiers."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept voc:time-unit ,
+        voc:frequency ,
+        voc:day-type ,
+        voc:united-states-time-zone .
+
+voc:time-zone-identifier a rdfs:Datatype ;
+    rdfs:label "Time zone identifier"@en ;
+    skos:definition "A datatype for time zone identifiers from the Internet Assigned Numbers Authority Time Zone Database."@en ;
+    rdfs:isDefinedBy voc:time-vocabulary .
+
+voc:time-unit a skos:Concept ;
+    skos:prefLabel "Time unit"@en ;
+    skos:definition "A controlled value set for units in which durations are expressed."@en ;
+    skos:topConceptOf voc:time-vocabulary ;
+    skos:narrower voc:time-unit-second , voc:time-unit-minute , voc:time-unit-hour , voc:time-unit-day , voc:time-unit-week , voc:time-unit-month , voc:time-unit-quarter , voc:time-unit-year ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:time-unit-second a skos:Concept ;
+    skos:prefLabel "Second"@en ;
+    skos:definition "A time unit equal to the base unit of time in the International System of Units."@en ;
+    skos:broader voc:time-unit ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:time-unit-minute a skos:Concept ;
+    skos:prefLabel "Minute"@en ;
+    skos:definition "A time unit equal to sixty seconds."@en ;
+    skos:broader voc:time-unit ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:time-unit-hour a skos:Concept ;
+    skos:prefLabel "Hour"@en ;
+    skos:definition "A time unit equal to sixty minutes."@en ;
+    skos:broader voc:time-unit ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:time-unit-day a skos:Concept ;
+    skos:prefLabel "Day"@en ;
+    skos:definition "A time unit equal to twenty-four hours."@en ;
+    skos:broader voc:time-unit ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:time-unit-week a skos:Concept ;
+    skos:prefLabel "Week"@en ;
+    skos:definition "A time unit equal to seven days."@en ;
+    skos:broader voc:time-unit ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:time-unit-month a skos:Concept ;
+    skos:prefLabel "Month"@en ;
+    skos:definition "A time unit equal to one calendar month."@en ;
+    skos:broader voc:time-unit ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:time-unit-quarter a skos:Concept ;
+    skos:prefLabel "Quarter"@en ;
+    skos:definition "A time unit equal to three calendar months."@en ;
+    skos:broader voc:time-unit ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:time-unit-year a skos:Concept ;
+    skos:prefLabel "Year"@en ;
+    skos:definition "A time unit equal to twelve calendar months."@en ;
+    skos:broader voc:time-unit ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:frequency a skos:Concept ;
+    skos:prefLabel "Frequency"@en ;
+    skos:definition "A controlled value set for how often a recurring event or process occurs."@en ;
+    skos:topConceptOf voc:time-vocabulary ;
+    skos:narrower voc:frequency-daily , voc:frequency-weekly , voc:frequency-biweekly , voc:frequency-semimonthly , voc:frequency-monthly , voc:frequency-quarterly , voc:frequency-semiannually , voc:frequency-annually , voc:frequency-on-demand ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:frequency-daily a skos:Concept ;
+    skos:prefLabel "Daily"@en ;
+    skos:definition "A frequency of once each day."@en ;
+    skos:broader voc:frequency ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:frequency-weekly a skos:Concept ;
+    skos:prefLabel "Weekly"@en ;
+    skos:definition "A frequency of once each week."@en ;
+    skos:broader voc:frequency ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:frequency-biweekly a skos:Concept ;
+    skos:prefLabel "Biweekly"@en ;
+    skos:altLabel "Every two weeks"@en , "Fortnightly"@en ;
+    skos:definition "A frequency of once every two weeks, giving twenty-six occurrences a year."@en ;
+    skos:broader voc:frequency ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:frequency-semimonthly a skos:Concept ;
+    skos:prefLabel "Semimonthly"@en ;
+    skos:altLabel "Twice monthly"@en ;
+    skos:definition "A frequency of twice each month, giving twenty-four occurrences a year."@en ;
+    skos:broader voc:frequency ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:frequency-monthly a skos:Concept ;
+    skos:prefLabel "Monthly"@en ;
+    skos:definition "A frequency of once each month."@en ;
+    skos:broader voc:frequency ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:frequency-quarterly a skos:Concept ;
+    skos:prefLabel "Quarterly"@en ;
+    skos:definition "A frequency of once each quarter."@en ;
+    skos:broader voc:frequency ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:frequency-semiannually a skos:Concept ;
+    skos:prefLabel "Semiannually"@en ;
+    skos:altLabel "Semiannual"@en , "Twice yearly"@en ;
+    skos:definition "A frequency of twice each year."@en ;
+    skos:broader voc:frequency ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:frequency-annually a skos:Concept ;
+    skos:prefLabel "Annually"@en ;
+    skos:altLabel "Annual"@en , "Yearly"@en ;
+    skos:definition "A frequency of once each year."@en ;
+    skos:broader voc:frequency ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:frequency-on-demand a skos:Concept ;
+    skos:prefLabel "On demand"@en ;
+    skos:altLabel "Ad hoc"@en , "Event driven"@en ;
+    skos:definition "A frequency in which occurrences happen when requested rather than on a schedule."@en ;
+    skos:broader voc:frequency ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:day-type a skos:Concept ;
+    skos:prefLabel "Day type"@en ;
+    skos:definition "A controlled value set for how days are counted in deadlines and durations."@en ;
+    skos:topConceptOf voc:time-vocabulary ;
+    skos:narrower voc:day-type-calendar-day , voc:day-type-business-day , voc:day-type-holiday ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:day-type-calendar-day a skos:Concept ;
+    skos:prefLabel "Calendar day"@en ;
+    skos:altLabel "Calendar days"@en ;
+    skos:definition "A day type that counts every day."@en ;
+    skos:broader voc:day-type ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:day-type-business-day a skos:Concept ;
+    skos:prefLabel "Business day"@en ;
+    skos:altLabel "Working day"@en , "Banking day"@en ;
+    skos:definition "A day type that counts weekdays excluding observed holidays."@en ;
+    skos:broader voc:day-type ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:day-type-holiday a skos:Concept ;
+    skos:prefLabel "Holiday"@en ;
+    skos:definition "A day type for days on which the business calendar closes."@en ;
+    skos:broader voc:day-type ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:united-states-time-zone a skos:Concept ;
+    skos:prefLabel "United States time zone"@en ;
+    skos:definition "A controlled value set for the time zones used to resolve local dates and deadlines."@en ;
+    skos:topConceptOf voc:time-vocabulary ;
+    skos:narrower voc:time-zone-eastern-time , voc:time-zone-central-time , voc:time-zone-mountain-time , voc:time-zone-mountain-standard-time-without-daylight-saving , voc:time-zone-pacific-time , voc:time-zone-alaska-time , voc:time-zone-hawaii-aleutian-time ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:time-zone-eastern-time a skos:Concept ;
+    skos:prefLabel "Eastern time"@en ;
+    skos:notation "America/New_York"^^voc:time-zone-identifier ;
+    skos:definition "A United States time zone observed in the eastern states."@en ;
+    skos:broader voc:united-states-time-zone ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:time-zone-central-time a skos:Concept ;
+    skos:prefLabel "Central time"@en ;
+    skos:notation "America/Chicago"^^voc:time-zone-identifier ;
+    skos:definition "A United States time zone observed in the central states."@en ;
+    skos:broader voc:united-states-time-zone ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:time-zone-mountain-time a skos:Concept ;
+    skos:prefLabel "Mountain time"@en ;
+    skos:notation "America/Denver"^^voc:time-zone-identifier ;
+    skos:definition "A United States time zone observed in the mountain states."@en ;
+    skos:broader voc:united-states-time-zone ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:time-zone-mountain-standard-time-without-daylight-saving a skos:Concept ;
+    skos:prefLabel "Mountain standard time without daylight saving"@en ;
+    skos:altLabel "Arizona time"@en ;
+    skos:notation "America/Phoenix"^^voc:time-zone-identifier ;
+    skos:definition "A United States time zone observed in most of Arizona with no daylight saving time."@en ;
+    skos:broader voc:united-states-time-zone ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:time-zone-pacific-time a skos:Concept ;
+    skos:prefLabel "Pacific time"@en ;
+    skos:notation "America/Los_Angeles"^^voc:time-zone-identifier ;
+    skos:definition "A United States time zone observed in the Pacific states."@en ;
+    skos:broader voc:united-states-time-zone ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:time-zone-alaska-time a skos:Concept ;
+    skos:prefLabel "Alaska time"@en ;
+    skos:notation "America/Anchorage"^^voc:time-zone-identifier ;
+    skos:definition "A United States time zone observed in most of Alaska."@en ;
+    skos:broader voc:united-states-time-zone ;
+    skos:inScheme voc:time-vocabulary .
+
+voc:time-zone-hawaii-aleutian-time a skos:Concept ;
+    skos:prefLabel "Hawaii-Aleutian time"@en ;
+    skos:notation "Pacific/Honolulu"^^voc:time-zone-identifier ;
+    skos:definition "A United States time zone observed in Hawaii with no daylight saving time."@en ;
+    skos:broader voc:united-states-time-zone ;
+    skos:inScheme voc:time-vocabulary .

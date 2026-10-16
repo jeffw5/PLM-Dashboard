@@ -1,0 +1,228 @@
+=== taxonomy requirement
+title: Requirement taxonomy
+subject: Requirement
+description: Classification of statements of need, capability, condition, or constraint that a solution, service, process, or knowledge artifact must satisfy.
+scope: Covers kinds of requirement. Priority, status, and verification method values are in the requirement vocabulary. Requirements trace to features, change records, releases, and deployments.
+standard: ISO/IEC/IEEE 29148 requirements engineering; NeOn Ontology Requirements Specification Document; INCOSE Guide to Writing Requirements.
+---
+Stakeholder requirement :: A requirement that states what a stakeholder needs, independent of any solution. || alt: Stakeholder need
+  Business requirement :: A stakeholder requirement that states an organizational goal, objective, or outcome. || alt: Business need; Business objective requirement
+  User requirement :: A stakeholder requirement that states what a user must be able to do or experience. || alt: User story; User need
+  Regulatory requirement :: A stakeholder requirement that arises from a law, regulation, or binding guidance. || alt: Compliance requirement; Legal requirement || relm: tax:LegalNormSource
+  Contractual requirement :: A stakeholder requirement that arises from the terms of an agreement. || alt: Contract requirement || relm: tax:ContractualInstrument
+Solution requirement :: A requirement that states a characteristic a solution must have to meet stakeholder requirements. || alt: System requirement; Product requirement
+  Functional requirement :: A solution requirement that states a behavior or function the solution must perform. || alt: Capability requirement
+  Quality requirement :: A solution requirement that states how well the solution must perform a function or a characteristic it must exhibit. || alt: Non-functional requirement; Quality attribute requirement
+    Performance requirement :: A quality requirement on response time, throughput, or resource use. || alt: Latency requirement
+    Availability requirement :: A quality requirement on the proportion of time a solution is operational. || alt: Uptime requirement
+    Reliability requirement :: A quality requirement on the ability to perform without failure over a period. || alt: Mean time between failures requirement
+    Security requirement :: A quality requirement on protecting confidentiality, integrity, and availability. || alt: Information security requirement
+    Privacy requirement :: A quality requirement on the lawful and limited collection and use of personal information.
+    Usability requirement :: A quality requirement on ease of learning and efficient use. || alt: User experience requirement
+    Accessibility requirement :: A quality requirement on use by people with the widest range of abilities. || alt: Web Content Accessibility Guidelines requirement; WCAG requirement
+    Maintainability requirement :: A quality requirement on the ease of changing and correcting the solution.
+    Scalability requirement :: A quality requirement on handling growth in load or data.
+    Interoperability requirement :: A quality requirement on exchanging and using information with other systems. || alt: Integration requirement
+    Explainability requirement :: A quality requirement on the ability to trace and explain outputs to their inputs and rules. || alt: Traceability requirement; Answer traceability requirement
+  Interface requirement :: A solution requirement that states how the solution interacts with users, systems, or devices. || alt: Integration interface requirement
+  Data requirement :: A solution requirement that states what data must be captured, defined, stored, or retained. || alt: Information requirement
+    Data definition requirement :: A data requirement on the meaning, format, and allowed values of a data element.
+    Data quality requirement :: A data requirement on the accuracy, completeness, consistency, timeliness, or validity of data. || relm: tax:DataQualityDimension
+    Data retention requirement :: A data requirement on how long data is kept and how it is disposed of. || alt: Records retention requirement
+Constraint :: A requirement that limits the design or implementation options available. || alt: Design constraint || scope: Distinct from data constraints in the rule taxonomy, which state what must be true about data.
+  Technical constraint :: A constraint imposed by technology standards, platforms, or existing systems. || alt: Technology constraint
+  Business constraint :: A constraint imposed by budget, schedule, staffing, or policy. || alt: Project constraint
+Knowledge requirement :: A requirement that states what governed knowledge must define or be able to answer. || alt: Ontology requirement
+  Competency question :: A knowledge requirement written as a question the knowledge must be able to answer, run as a test in each release. || alt: CQ; Competency test
+  Coverage requirement :: A knowledge requirement on the terms, mappings, or sources that must be included. || alt: Mapping coverage requirement
+Transition requirement :: A requirement that states a capability needed only to move from the current to the future state. || alt: Migration requirement; Cutover requirement
+
+=== taxonomy role
+title: Role taxonomy
+subject: Role
+description: Classification of roles, the positions or functions a party bears because of its situation and that are realized when it takes part in process steps.
+scope: A role is borne by a party (hasRole) and realized in process steps (performedBy). Personas are not roles and never grant access. Security entitlements are managed separately.
+standard: BFO role (ISO/IEC 21838-2); W3C Organization Ontology; RACI responsibility assignment.
+---
+Employment role :: A role that arises from an employment relationship between a worker and an employer. || relm: tax:EmploymentLifecycle
+  Worker :: An employment role borne by a person who performs work for an organization. || alt: Worker role
+    Employee :: A worker who is employed under an employment relationship and paid through payroll. || alt: Employee role; Staff member
+      Worksite employee :: An employee who performs work at a client worksite under a co-employment relationship. || alt: Co-employed employee; WSE
+    Contingent worker :: A worker engaged for a limited period or task without standard employment. || alt: Temporary worker; Contractor; Consultant
+  Employer :: An employment role borne by an organization that hires and directs workers. || alt: Employer role
+    Co-employer :: An employer that shares employer responsibilities for the same workers with another employer under a co-employment agreement. || alt: Professional employer organization; PEO
+    Client employer :: An employer that is a client of a co-employer and directs the day-to-day work of worksite employees. || alt: Worksite client employer
+  Manager :: An employment role borne by a person who directs the work of other workers. || alt: Supervisor; People manager
+  Executive :: An employment role borne by a person accountable for the direction of an organization or major unit. || alt: Officer; Senior leader
+Commercial role :: A role that arises from a commercial relationship or agreement. || alt: Business relationship role
+  Client :: A commercial role borne by a party that purchases services from the organization under an agreement. || alt: Customer; Client company
+  Prospect :: A commercial role borne by a party being evaluated or pursued as a future client. || alt: Prospective client; Lead
+  Supplier :: A commercial role borne by a party that provides goods or services to the organization. || alt: Vendor; Provider
+    Carrier :: A supplier that underwrites and pays insurance benefits. || alt: Insurance carrier; Insurer
+  Partner :: A commercial role borne by a party that collaborates with the organization to deliver or sell offerings. || alt: Alliance partner; Channel partner
+  Broker :: A commercial role borne by a party that arranges agreements between other parties for a commission or fee. || alt: Agent of record; Intermediary
+Plan role :: A role that arises from participation in a benefit, retirement, or insurance plan. || alt: Benefit plan role
+  Plan sponsor :: A plan role borne by an organization that establishes and maintains a plan. || alt: Sponsor
+  Plan administrator :: A plan role borne by a party responsible for operating a plan under its terms. || alt: Administrator
+  Plan participant :: A plan role borne by a person who is enrolled in a plan. || alt: Participant; Member; Enrollee
+  Dependent :: A plan role borne by a person who receives coverage through a plan participant. || alt: Covered dependent
+  Beneficiary :: A plan role borne by a party designated to receive a benefit on a participant's death. || alt: Designated beneficiary
+Responsibility role :: A role that defines the kind of responsibility a party has for a process step or decision. || alt: Responsibility assignment; RACI role || scope: Used to qualify performedBy and approvedBy.
+  Responsible role :: A responsibility role borne by the party that does the work. || alt: Responsible; Doer
+  Accountable role :: A responsibility role borne by the party that answers for the outcome and approves the work. || alt: Accountable; Approver
+  Consulted role :: A responsibility role borne by a party whose input is sought before work or decisions. || alt: Consulted; Advisor
+  Informed role :: A responsibility role borne by a party kept up to date on progress or outcome. || alt: Informed
+Governance role :: A role that carries authority or duty for the oversight of policies, data, knowledge, or controls. || relm: tax:GovernanceDiscipline
+  Owner :: A governance role borne by the party accountable for an asset, domain, or artifact and for approving changes to it. || alt: Domain owner; Data owner; Business owner
+  Steward :: A governance role borne by the party who maintains the quality, labels, and definitions of data or vocabularies day to day. || alt: Data steward; Vocabulary steward
+  Custodian :: A governance role borne by the party who operates the systems that store and protect an asset. || alt: Data custodian; System owner
+  Change reviewer :: A governance role borne by the party who approves changes before they enter source control and release. || alt: Approver of record
+  Auditor :: A governance role borne by a party who independently examines records and controls. || alt: Internal auditor; External auditor
+  Regulator :: A governance role borne by a government body that oversees compliance with law in a domain. || alt: Supervisory authority
+Knowledge engineering role :: A role that builds, reviews, or maintains governed knowledge artifacts. || alt: Design-time role
+  Knowledge engineer :: A knowledge engineering role borne by the person who builds and extends ontologies under the naming, URI, and definition standards.
+  Subject matter expert :: A knowledge engineering role borne by the person who confirms definitions, rules, and relationships for a domain. || alt: SME; Domain expert
+  Drafting assistant :: A knowledge engineering role borne by an artificial intelligence agent that drafts definitions, labels, mappings, and shapes for human review and never commits on its own. || alt: AI drafting assistant
+Agreement party role :: A role borne by a party because it is a signatory to or named in an agreement. || alt: Contracting party
+  Principal :: An agreement party role borne by the party on whose behalf an agreement is made or an action taken.
+  Representative :: An agreement party role borne by a party authorized to act for another. || alt: Authorized representative; Agent; Legal representative
+  Guarantor :: An agreement party role borne by a party that promises to meet another party's obligation if it defaults.
+
+=== taxonomy rule
+title: Rule taxonomy
+subject: Rule
+description: Classification of rules, the declarative statements authored once in the single source of truth that constrain data, derive decisions, or guard the behavior of services and agents.
+scope: Constraints run as SHACL shapes or JSON Schema; decision rules run as DMN tables behind the Decision API. Multi-step logic is in the logic taxonomy and calculations are in the measure taxonomy. Strength, authoring format, and runtime values are in the rule vocabulary.
+standard: Semantic Governance v1.8 Section 3.5; Object Management Group Semantics of Business Vocabulary and Business Rules; Decision Model and Notation; W3C SHACL.
+---
+Business rule :: A rule that states a business policy or decision logic in terms the business understands. || alt: Business logic rule
+  Decision rule :: A business rule that determines an outcome from input conditions, typically one row of a decision table. || alt: Decision table rule; DMN rule || relm: tax:DecisionTable
+    Eligibility rule :: A decision rule that determines whether a party qualifies for a benefit, service, or action. || alt: Qualification rule
+    Pricing rule :: A decision rule that determines a price, fee, or rate. || alt: Rating rule
+    Routing rule :: A decision rule that determines where work or a request is sent. || alt: Assignment rule
+    Timing rule :: A decision rule that determines a due date, waiting period, or effective date. || alt: Deadline rule; Effective date rule
+    Threshold rule :: A decision rule that triggers an outcome when a measure crosses a defined limit. || alt: Limit rule; Tolerance rule || relm: tax:Threshold
+  Authorization rule :: A business rule that states who may perform or approve an action. || alt: Approval authority rule; Delegation of authority rule
+  Derivation rule :: A business rule that states how a fact is concluded from other facts. || alt: Inference rule; Derived fact rule
+Data constraint :: A rule that states what must always be true about data. || alt: Constraint rule; Integrity constraint || scope: Authored as ontology terms and SHACL shapes or JSON Schema.
+  Cardinality constraint :: A data constraint on how many values a property may or must have. || alt: Multiplicity constraint || ex: A payroll run has exactly one pay period.
+  Value constraint :: A data constraint on the type, format, range, or allowed list of a value. || alt: Domain constraint; Allowed values
+  Uniqueness constraint :: A data constraint that a value or combination of values identifies at most one entity. || alt: Key constraint
+  Referential constraint :: A data constraint that a referenced entity must exist. || alt: Referential integrity rule
+  Temporal constraint :: A data constraint on the order or overlap of dates and periods. || alt: Date order constraint
+  Conditional constraint :: A data constraint that applies only when a stated condition holds. || alt: Dependency constraint
+Data quality rule :: A rule that measures or enforces a dimension of data quality. || relm: tax:DataQualityDimension
+  Completeness rule :: A data quality rule that checks required values are present.
+  Accuracy rule :: A data quality rule that checks values agree with an authoritative source.
+  Consistency rule :: A data quality rule that checks values agree across records and systems.
+  Timeliness rule :: A data quality rule that checks values are current within an agreed period. || alt: Freshness rule
+  Validity rule :: A data quality rule that checks values conform to defined formats and domains.
+Transformation rule :: A rule that states how data in one form is converted into another form. || alt: Mapping rule; Conversion rule || relm: tax:MappingSpecification
+Access control rule :: A rule that states which parties may read or change which information under which conditions. || alt: Entitlement rule; Access rule || relm: tax:AccessControl
+Guardrail rule :: A rule that limits the inputs, actions, or outputs of an automated agent. || alt: Artificial intelligence guardrail; AI guardrail; Agent guardrail
+  Input guardrail :: A guardrail rule that screens requests before an agent acts on them. || alt: Prompt guardrail
+  Action guardrail :: A guardrail rule that restricts which tools or actions an agent may take. || alt: Tool use limit
+  Output guardrail :: A guardrail rule that checks an agent's output before it is released. || alt: Answer guardrail; Grounding check
+  Circuit breaker rule :: A guardrail rule that suspends or degrades an agent when reliability falls below a threshold. || alt: Artificial intelligence circuit breaker; AI circuit breaker || relm: tax:MeanTimeBetweenHallucinations
+
+=== taxonomy measure
+title: Measure taxonomy
+subject: Measure
+description: Classification of measures and calculations, the quantified evaluations of processes, assets, and qualities and the governed formulas that compute them.
+scope: Includes calculations, which are authored as declarative formula specifications with test vectors. Units, aggregation functions, and polarity values are in the measure vocabulary.
+standard: ISO/IEC/IEEE 15939 measurement process; W3C Data Cube Vocabulary for observations; ISO/IEC 5259 and ISO 8000 for data quality; ISO 30414 human capital reporting.
+---
+Base measure :: A measure that quantifies a single attribute by a direct method. || alt: Raw measure; Count || ex: Number of answers served; hours worked.
+Derived measure :: A measure computed from two or more base or derived measures. || alt: Calculated measure; Computed measure || ex: Average handling time.
+Indicator :: A measure that estimates or evaluates an attribute against an information need, often compared to a target. || alt: Metric
+  Key performance indicator :: An indicator that tracks performance against a strategic or operational objective. || alt: KPI; Performance indicator
+  Key risk indicator :: An indicator that signals a change in risk exposure. || alt: KRI; Risk indicator || relm: tax:Risk
+  Service level indicator :: An indicator that measures an aspect of service performance experienced by users. || alt: SLI
+  Reliability indicator :: An indicator of how long or how often a system works without failure. || alt: Reliability metric
+    Mean time between failures :: A reliability indicator equal to operating time divided by the number of failures. || alt: MTBF
+    Mean time to recover :: A reliability indicator equal to the average time to restore service after a failure. || alt: MTTR; Mean time to restore
+    Mean time between hallucinations :: A reliability indicator equal to answers served or hours in service divided by confirmed hallucinations. || alt: MTBH || relm: tax:Hallucination
+  Knowledge quality indicator :: An indicator of the coverage, accuracy, or traceability of governed knowledge and the answers that use it. || alt: Semantic quality metric
+    Mapping coverage :: A knowledge quality indicator equal to the share of inbound schema elements mapped to ontology terms.
+    Mapping accuracy :: A knowledge quality indicator equal to the share of agent-proposed mappings accepted on review.
+    Competency question pass rate :: A knowledge quality indicator equal to the share of competency questions passing in a release.
+    Answer traceability rate :: A knowledge quality indicator equal to the share of artificial intelligence answers that cite governed terms and mappings.
+    Search success rate :: A knowledge quality indicator equal to the share of searches returning a result the user accepts.
+Target :: A measure value that a party commits to achieve within a period. || alt: Goal; Objective value || genus: ok
+  Service level objective :: A target for a service level indicator agreed internally. || alt: SLO
+  Budget target :: A target expressed as a planned amount of money. || alt: Budget
+Forecast value :: A measure value that estimates a future value of a measure from assumptions and history. || alt: Forecast; Projection
+Threshold :: A measure value that, when crossed, triggers an alert, decision, or action. || alt: Limit; Tolerance || genus: ok
+  Alert threshold :: A threshold that triggers a notification for attention. || alt: Warning threshold
+  Tolerance threshold :: A threshold that defines the acceptable band around a target. || alt: Tolerance band
+  Trip threshold :: A threshold that triggers automatic suspension or fallback. || alt: Circuit breaker threshold || relm: tax:CircuitBreakerRule
+Observation :: A measure value recorded for a specific subject, period, and set of dimensions. || alt: Measurement; Data point; Fact || genus: ok
+  Actual value :: An observation that records what occurred. || alt: Actual
+  Benchmark value :: An observation from a comparable population used as a reference. || alt: Benchmark
+Calculation :: A governed formula specification that computes a value from inputs and is verified against test vectors. || alt: Computation; Formula; Calc || scope: Authored once in the single source of truth and generated into services. || genus: ok
+  Arithmetic calculation :: A calculation that combines inputs using addition, subtraction, multiplication, or division. || ex: Gross pay equals hours times rate plus overtime premium.
+  Aggregation calculation :: A calculation that summarizes many values into one, such as a sum, count, or average. || alt: Rollup; Aggregate
+  Ratio calculation :: A calculation that divides one quantity by another to express a proportion or rate. || alt: Percentage calculation; Rate calculation
+  Allocation calculation :: A calculation that distributes an amount across recipients by a defined basis. || alt: Proration; Apportionment
+  Conversion calculation :: A calculation that converts a value between units, currencies, or periods. || alt: Unit conversion; Annualization
+  Date calculation :: A calculation that derives a date or duration from other dates and rules. || alt: Date arithmetic || relm: tax:TimingRule
+  Statistical calculation :: A calculation that estimates a distribution, trend, or relationship from data. || alt: Statistical model; Regression
+  Scoring calculation :: A calculation that combines weighted factors into a single score. || alt: Score; Weighted score
+Measurement dimension :: A characteristic along which measures are evaluated or broken down. || alt: Dimension; Quality dimension group || genus: ok
+  Data quality dimension :: A measurement dimension of how fit data is for its intended use. || alt: Data quality characteristic
+    Accuracy :: A data quality dimension of how closely values agree with reality or an authoritative source.
+    Completeness :: A data quality dimension of whether all required values are present.
+    Consistency :: A data quality dimension of whether values agree across records and systems.
+    Timeliness :: A data quality dimension of whether values are current enough for use. || alt: Freshness; Currency
+    Validity :: A data quality dimension of whether values conform to defined formats and domains.
+    Uniqueness :: A data quality dimension of whether each entity is recorded once.
+  Trust dimension :: A measurement dimension of how much confidence users can place in information or answers. || alt: Trustworthiness dimension
+    Provenance :: A trust dimension of whether the origin and lineage of information are recorded. || alt: Lineage
+    Verification :: A trust dimension of whether facts have been checked against published sources. || alt: Verification status
+    Explainability :: A trust dimension of whether outputs can be traced to inputs, rules, and sources. || alt: Traceability
+  Performance dimension :: A measurement dimension of how well a process or service achieves results with resources. || alt: Operational dimension
+    Efficiency :: A performance dimension of output relative to resources used.
+    Effectiveness :: A performance dimension of the degree to which intended results are achieved.
+    Cost :: A performance dimension of the money spent to produce an output. || alt: Expense
+    Speed :: A performance dimension of the time taken to produce an output. || alt: Cycle time; Lead time; Latency
+
+=== taxonomy logic
+title: Logic taxonomy
+subject: Logic
+description: Classification of logic components, the governed specifications of how a multi-step process, data flow, or reasoning task is carried out by services and agents.
+scope: Logic is authored as code that references single source of truth terms and versions. Business rules and decisions are in their own taxonomies. Operator and truth values are in the logic vocabulary.
+standard: Semantic Governance v1.8 Section 3.5; BPMN gateways and flows; W3C OWL 2 RL and SPARQL for reasoning and retrieval.
+---
+Control flow logic :: A logic component that determines the order and conditions under which process steps are carried out. || alt: Flow logic; Orchestration flow || relm: tax:ProcessStep
+  Sequence :: A control flow logic in which steps run one after another. || alt: Sequential flow
+  Conditional branching :: A control flow logic in which one path is chosen from several by evaluating conditions. || alt: Exclusive gateway; If then else; Branch
+  Parallel execution :: A control flow logic in which several paths run at the same time and later join. || alt: Parallel gateway; Fork and join
+  Iteration :: A control flow logic in which steps repeat until a condition is met or a collection is exhausted. || alt: Loop; Repeat
+  Event-based branching :: A control flow logic in which the path taken depends on which event occurs first. || alt: Event gateway
+  Error handling logic :: A control flow logic that detects failures and decides how to recover. || alt: Exception handling
+    Retry logic :: An error handling logic that repeats a failed step after a delay. || alt: Retry with backoff
+    Fallback logic :: An error handling logic that switches to an alternate path or degraded answer when a step fails. || alt: Graceful degradation
+    Compensation logic :: An error handling logic that undoes the effects of completed steps when a later step fails. || alt: Rollback; Saga compensation
+    Dead-letter routing :: An error handling logic that sets aside messages that cannot be processed after allowed recovery actions. || alt: Dead letter queue handling
+Orchestration logic :: A logic component that coordinates several services or agents to complete a request. || alt: Coordination logic
+  Service orchestration :: An orchestration logic in which a central controller calls services in a defined order. || alt: Workflow orchestration
+  Service choreography :: An orchestration logic in which services react to each other's events without a central controller. || alt: Event choreography
+  Agent orchestration :: An orchestration logic in which a coordinating agent delegates tasks to other agents and tools. || alt: Multi-agent orchestration; Agent-to-agent delegation
+Data flow logic :: A logic component that moves, transforms, or combines data. || alt: Data pipeline logic
+  Transformation logic :: A data flow logic that changes the structure, format, or values of data. || alt: Data transformation || relm: tax:TransformationRule
+  Enrichment logic :: A data flow logic that adds attributes or links from other sources. || alt: Data enrichment
+  Filtering logic :: A data flow logic that keeps or removes records by conditions. || alt: Filter
+  Matching logic :: A data flow logic that determines whether records refer to the same entity. || alt: Entity resolution; Record linkage
+  Routing logic :: A data flow logic that directs messages or records to destinations by content or type. || alt: Content-based routing
+Reasoning logic :: A logic component that draws conclusions from facts and knowledge. || alt: Inference logic
+  Deductive reasoning :: A reasoning logic that derives conclusions that necessarily follow from premises and axioms. || alt: Deduction; Entailment
+  Inductive reasoning :: A reasoning logic that generalizes from observed cases to probable rules. || alt: Induction
+  Abductive reasoning :: A reasoning logic that infers the most likely explanation for observations. || alt: Abduction; Diagnostic reasoning
+  Causal reasoning :: A reasoning logic that determines how changes in one factor produce changes in another. || alt: Causal inference
+  Probabilistic reasoning :: A reasoning logic that computes likelihoods of conclusions under uncertainty. || alt: Bayesian reasoning
+  Temporal reasoning :: A reasoning logic that draws conclusions about the order, overlap, and validity of facts over time.
+Retrieval logic :: A logic component that selects the governed facts and content used to answer a question. || alt: Retrieval-augmented generation logic; RAG logic
+  Semantic search :: A retrieval logic that finds content by meaning using labels, synonyms, and embeddings. || alt: Vector search; Similarity search
+  Graph traversal :: A retrieval logic that follows relationships in the knowledge graph from a starting entity. || alt: Graph query
+  Hybrid retrieval :: A retrieval logic that combines keyword, vector, and graph results and ranks them together. || alt: Federated retrieval
+  Context assembly :: A retrieval logic that composes retrieved facts, definitions, and sources into model context within a token budget. || alt: Context engineering

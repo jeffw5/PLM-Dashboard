@@ -1,0 +1,186 @@
+# Taxonomy: Persona taxonomy
+# File: taxonomy-core-persona.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix tax: <https://www.insperity.com/taxonomy/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+tax:PersonaTaxonomy a skos:ConceptScheme ;
+    dcterms:title "Persona taxonomy"@en ;
+    skos:prefLabel "Persona taxonomy"@en ;
+    dcterms:description "Classification of personas, the governed descriptions of user groups who share goals, vocabulary, and information needs, used to tailor labels, retrieval, tone, and prompts."@en ;
+    dcterms:subject core:Persona ;
+    skos:scopeNote "A persona describes a typical user; it is not a person and not a security role and never grants access. Persona individuals are in the persona vocabulary and link here with skos:broadMatch. Personas never encode protected characteristics."@en ;
+    dcterms:source "Semantic Governance v1.8 Section 3.8."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept tax:WorkforcePersona ,
+        tax:ClientPersona ,
+        tax:ProspectPersona ,
+        tax:ServiceDeliveryPersona ,
+        tax:OversightPersona ,
+        tax:AnalyticsPersona ,
+        tax:TechnologyPersona .
+
+tax:WorkforcePersona a skos:Concept ;
+    skos:prefLabel "Workforce persona"@en ;
+    skos:altLabel "Employee persona"@en , "Worker persona"@en ;
+    skos:definition "A persona representing workers who use services for their own employment, pay, and benefits."@en ;
+    skos:topConceptOf tax:PersonaTaxonomy ;
+    skos:narrower tax:ActiveWorkerPersona , tax:JoiningWorkerPersona , tax:LifeChangeWorkerPersona , tax:DepartingWorkerPersona ;
+    skos:inScheme tax:PersonaTaxonomy .
+
+tax:ActiveWorkerPersona a skos:Concept ;
+    skos:prefLabel "Active worker persona"@en ;
+    skos:altLabel "Current employee persona"@en ;
+    skos:definition "A workforce persona representing workers in ongoing employment."@en ;
+    skos:broader tax:WorkforcePersona ;
+    skos:inScheme tax:PersonaTaxonomy .
+
+tax:JoiningWorkerPersona a skos:Concept ;
+    skos:prefLabel "Joining worker persona"@en ;
+    skos:altLabel "New hire persona"@en ;
+    skos:definition "A workforce persona representing workers who are newly hired or in their first enrollment window."@en ;
+    skos:broader tax:WorkforcePersona ;
+    skos:inScheme tax:PersonaTaxonomy .
+
+tax:LifeChangeWorkerPersona a skos:Concept ;
+    skos:prefLabel "Life change worker persona"@en ;
+    skos:altLabel "Life event persona"@en ;
+    skos:definition "A workforce persona representing workers whose personal circumstances have changed and who need to adjust elections."@en ;
+    skos:broader tax:WorkforcePersona ;
+    skos:inScheme tax:PersonaTaxonomy .
+
+tax:DepartingWorkerPersona a skos:Concept ;
+    skos:prefLabel "Departing worker persona"@en ;
+    skos:altLabel "Separating employee persona"@en ;
+    skos:definition "A workforce persona representing workers leaving employment or reducing hours."@en ;
+    skos:broader tax:WorkforcePersona ;
+    skos:inScheme tax:PersonaTaxonomy .
+
+tax:ClientPersona a skos:Concept ;
+    skos:prefLabel "Client persona"@en ;
+    skos:altLabel "Customer persona"@en , "Employer persona"@en ;
+    skos:definition "A persona representing people at a client organization who administer or sponsor services for their workforce."@en ;
+    skos:topConceptOf tax:PersonaTaxonomy ;
+    skos:narrower tax:ClientAdministratorPersona , tax:ClientExecutivePersona ;
+    skos:inScheme tax:PersonaTaxonomy .
+
+tax:ClientAdministratorPersona a skos:Concept ;
+    skos:prefLabel "Client administrator persona"@en ;
+    skos:altLabel "Client HR administrator persona"@en ;
+    skos:definition "A client persona representing staff who administer human resources, payroll, or benefits at a client."@en ;
+    skos:broader tax:ClientPersona ;
+    skos:inScheme tax:PersonaTaxonomy .
+
+tax:ClientExecutivePersona a skos:Concept ;
+    skos:prefLabel "Client executive persona"@en ;
+    skos:altLabel "Business owner persona"@en ;
+    skos:definition "A client persona representing owners and executives who make sponsorship and spending decisions at a client."@en ;
+    skos:broader tax:ClientPersona ;
+    skos:inScheme tax:PersonaTaxonomy .
+
+tax:ProspectPersona a skos:Concept ;
+    skos:prefLabel "Prospect persona"@en ;
+    skos:altLabel "Buyer persona"@en ;
+    skos:definition "A persona representing people at organizations evaluating whether to become clients."@en ;
+    skos:topConceptOf tax:PersonaTaxonomy ;
+    skos:inScheme tax:PersonaTaxonomy .
+
+tax:ServiceDeliveryPersona a skos:Concept ;
+    skos:prefLabel "Service delivery persona"@en ;
+    skos:altLabel "Internal specialist persona"@en , "Advisor persona"@en ;
+    skos:definition "A persona representing internal staff who answer questions and deliver services to clients and workers."@en ;
+    skos:topConceptOf tax:PersonaTaxonomy ;
+    skos:narrower tax:HumanResourcesAdvisoryPersona , tax:BenefitsServicePersona , tax:PayrollServicePersona , tax:SalesAndServiceManagementPersona ;
+    skos:inScheme tax:PersonaTaxonomy .
+
+tax:HumanResourcesAdvisoryPersona a skos:Concept ;
+    skos:prefLabel "Human resources advisory persona"@en ;
+    skos:altLabel "HR specialist persona"@en ;
+    skos:definition "A service delivery persona representing internal advisors and specialists answering human resources questions."@en ;
+    skos:broader tax:ServiceDeliveryPersona ;
+    skos:inScheme tax:PersonaTaxonomy .
+
+tax:BenefitsServicePersona a skos:Concept ;
+    skos:prefLabel "Benefits service persona"@en ;
+    skos:altLabel "Benefits specialist persona"@en , "Retirement specialist persona"@en ;
+    skos:definition "A service delivery persona representing internal staff who operate benefits and retirement plans."@en ;
+    skos:broader tax:ServiceDeliveryPersona ;
+    skos:inScheme tax:PersonaTaxonomy .
+
+tax:PayrollServicePersona a skos:Concept ;
+    skos:prefLabel "Payroll service persona"@en ;
+    skos:definition "A service delivery persona representing internal staff who operate payroll and deductions."@en ;
+    skos:broader tax:ServiceDeliveryPersona ;
+    skos:inScheme tax:PersonaTaxonomy .
+
+tax:SalesAndServiceManagementPersona a skos:Concept ;
+    skos:prefLabel "Sales and service management persona"@en ;
+    skos:altLabel "Account manager persona"@en , "Sales advisor persona"@en ;
+    skos:definition "A service delivery persona representing internal staff who manage client relationships and renewals."@en ;
+    skos:broader tax:ServiceDeliveryPersona ;
+    skos:inScheme tax:PersonaTaxonomy .
+
+tax:OversightPersona a skos:Concept ;
+    skos:prefLabel "Oversight persona"@en ;
+    skos:altLabel "Assurance persona"@en ;
+    skos:definition "A persona representing internal staff who check that work and answers comply with law, policy, and controls."@en ;
+    skos:topConceptOf tax:PersonaTaxonomy ;
+    skos:narrower tax:CompliancePersona , tax:AuditPersona ;
+    skos:inScheme tax:PersonaTaxonomy .
+
+tax:CompliancePersona a skos:Concept ;
+    skos:prefLabel "Compliance persona"@en ;
+    skos:altLabel "Compliance analyst persona"@en , "Compliance auditor persona"@en ;
+    skos:definition "An oversight persona representing staff who determine which norms govern a step and gather evidence."@en ;
+    skos:broader tax:OversightPersona ;
+    skos:inScheme tax:PersonaTaxonomy .
+
+tax:AuditPersona a skos:Concept ;
+    skos:prefLabel "Audit persona"@en ;
+    skos:altLabel "Auditor persona"@en ;
+    skos:definition "An oversight persona representing internal or external auditors who examine records and controls."@en ;
+    skos:broader tax:OversightPersona ;
+    skos:inScheme tax:PersonaTaxonomy .
+
+tax:AnalyticsPersona a skos:Concept ;
+    skos:prefLabel "Analytics persona"@en ;
+    skos:altLabel "Insights persona"@en , "Data analyst persona"@en ;
+    skos:definition "A persona representing staff who analyze measures, trends, and quality of services and answers."@en ;
+    skos:topConceptOf tax:PersonaTaxonomy ;
+    skos:inScheme tax:PersonaTaxonomy .
+
+tax:TechnologyPersona a skos:Concept ;
+    skos:prefLabel "Technology persona"@en ;
+    skos:altLabel "Technical persona"@en ;
+    skos:definition "A persona representing staff who build, integrate, or operate systems that use governed knowledge."@en ;
+    skos:topConceptOf tax:PersonaTaxonomy ;
+    skos:narrower tax:SoftwareDeveloperPersona , tax:KnowledgePractitionerPersona ;
+    skos:inScheme tax:PersonaTaxonomy .
+
+tax:SoftwareDeveloperPersona a skos:Concept ;
+    skos:prefLabel "Software developer persona"@en ;
+    skos:altLabel "Developer persona"@en ;
+    skos:definition "A technology persona representing engineers who build applications and services that consume knowledge services."@en ;
+    skos:broader tax:TechnologyPersona ;
+    skos:inScheme tax:PersonaTaxonomy .
+
+tax:KnowledgePractitionerPersona a skos:Concept ;
+    skos:prefLabel "Knowledge practitioner persona"@en ;
+    skos:altLabel "Knowledge engineer persona"@en , "Data steward persona"@en ;
+    skos:definition "A technology persona representing knowledge engineers and data stewards who search and maintain governed knowledge."@en ;
+    skos:scopeNote "Design-time responsibilities are roles; this persona only tailors presentation for these users."@en ;
+    skos:broader tax:TechnologyPersona ;
+    skos:inScheme tax:PersonaTaxonomy .

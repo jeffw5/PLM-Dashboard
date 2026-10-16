@@ -1,0 +1,166 @@
+=== taxonomy asset
+title: Asset taxonomy
+subject: Asset
+description: Classification of the things of value that process steps consume, produce, use, or maintain, from buildings and equipment to documents, records, datasets, and software.
+scope: Covers kinds of asset only. Asset status, ownership, and criticality values are in the asset vocabulary. Products offered to clients are in the product taxonomy; parties are in the party taxonomy.
+standard: BFO material entity and generically dependent continuant (ISO/IEC 21838-2); Information Artifact Ontology; Data Catalog Vocabulary for digital asset descriptions.
+---
+Physical asset :: An asset that has material existence and can be located, handled, or occupied. || alt: Tangible asset; Material asset || scope: Aligned to the BFO material entity category. || ex: A worksite building; a laptop.
+  Facility :: A physical asset that is a building, room, or fixed installation used to house people, equipment, or operations. || alt: Premises; Building || ex: Headquarters building; regional service center.
+  Equipment :: A physical asset that is a durable device or apparatus used to perform work. || alt: Tool
+    Computing equipment :: An equipment that processes, stores, or displays digital information. || alt: Hardware; Computing device || ex: Laptop; server; tablet.
+    Communication equipment :: An equipment that transmits or receives voice or data. || ex: Telephone handset; network router.
+    Operational equipment :: An equipment that is used directly in producing goods or delivering physical services. || alt: Machinery
+  Vehicle :: A physical asset that is a means of transporting people or goods. || alt: Fleet asset
+  Inventory :: A physical asset that is a stock of materials or goods held for use, sale, or distribution. || alt: Stock; Supplies
+Information asset :: An asset that consists of information that can be copied across physical or digital carriers without losing its identity. || alt: Information artifact; Information entity || scope: Aligned to the BFO generically dependent continuant category and the Information Artifact Ontology. Software is classified separately as a software asset. || ex: A pay statement; a timesheet; a policy document.
+  Document :: An information asset that is a bounded, human-readable unit of content with a title and author. || ex: Plan document; enrollment guide.
+    Agreement document :: A document that records the terms agreed between two or more parties. || alt: Contract document; Contract || relm: tax:ContractualInstrument
+    Policy document :: A document that states a policy, standard, or procedure in human-readable form. || relm: tax:OrganizationalPolicy
+    Form :: A document that has structured fields for collecting information from a person or system. || ex: Enrollment form; tax withholding form.
+    Notice :: A document that formally informs a party of a fact, right, obligation, or change. || alt: Notification letter || ex: Benefits continuation notice.
+    Report :: A document that presents organized facts, analysis, or measures for a stated purpose and period. || relm: tax:Observation
+    Knowledge article :: A document that answers a specific question or explains a topic for reuse in support and self-service. || alt: Frequently asked question; FAQ; Help article
+  Record :: An information asset that is evidence of an activity, transaction, or state, kept for reference or compliance. || alt: Business record || scope: Records are subject to retention policies.
+    Transaction record :: A record that captures the details of a single business transaction. || ex: Payment record; payroll register entry.
+    Party record :: A record that holds identifying and descriptive information about a party. || alt: Master record; Personnel record; Client record
+    Audit record :: A record that documents who performed an action, when, and with what result, for later review. || alt: Audit log entry; Audit trail entry || relm: tax:AuditTrail
+    Change record :: A record that documents an approved change to a knowledge artifact, its reason, and its approver. || relm: tax:ChangeControl
+  Dataset :: An information asset that is a collection of related data published or curated as a unit. || alt: Data set; Data asset || relm: tax:DataProduct
+  Identifier :: An information asset that is a symbol or code assigned to uniquely designate an entity within a context. || ex: Employee number; client number. || relm: voc:party-identifier-type
+  Knowledge artifact :: An information asset that encodes governed meaning, structure, or logic for use by people, applications, and artificial intelligence agents. || alt: Semantic asset; Knowledge asset
+    Ontology :: A knowledge artifact that formally defines classes, relations, and axioms for a domain using a logic-based language. || ex: Core ontology; payroll ontology.
+    Vocabulary :: A knowledge artifact that defines the preferred, alternate, and hidden labels and definitions of a set of terms. || alt: Controlled vocabulary
+    Taxonomy :: A knowledge artifact that arranges concepts into a classification hierarchy. || alt: Classification scheme; Concept scheme
+    Mapping specification :: A knowledge artifact that defines how elements of a source schema or vocabulary correspond to ontology terms. || alt: Mapping; Crosswalk
+    Validation shape :: A knowledge artifact that defines the constraints data must satisfy, expressed in a shapes language. || alt: Shape; Shapes Constraint Language shape; SHACL shape
+    Rule specification :: A knowledge artifact that declaratively defines a business rule, constraint, logic component, or calculation in the single source of truth. || relm: tax:BusinessRule
+    Prompt template :: A knowledge artifact that defines the versioned instructions, tone, and answer format given to a language model for a persona or task.
+Software asset :: An asset that is a set of executable instructions or a trained model that performs computation. || alt: Software; Digital system || scope: The deployed software is an asset; an artificial intelligence agent acting in a process is classified as an automated agent in the party taxonomy.
+  Application :: A software asset that provides functions to users through an interface. || alt: Software application; System of record || ex: Payroll application; client portal.
+  Software component :: A software asset that is a deployable unit of code providing a defined function to other software. || alt: Microservice; Library
+  Application programming interface :: A software asset that is a defined contract through which software components call one another. || alt: API; Interface
+  Machine learning model :: A software asset that is a trained statistical model producing predictions or generated content from inputs. || alt: Model; Language model; Large language model; LLM
+  Data store :: A software asset that persists and serves data. || alt: Database; Repository
+    Graph store :: A data store that stores and queries data as a graph of nodes and edges. || alt: Triple store; Knowledge graph store
+    Relational database :: A data store that stores data in tables related by keys and queried with a structured query language.
+    Vector store :: A data store that stores embeddings and supports similarity search. || alt: Vector database
+    Document store :: A data store that stores semi-structured documents.
+Financial asset :: An asset that is a monetary claim or contractual right to receive cash or another financial asset. || ex: Cash; accounts receivable.
+  Cash and cash equivalent :: A financial asset that is currency or a highly liquid investment readily convertible to a known amount of cash. || alt: Cash
+  Receivable :: A financial asset that is an amount owed to the organization by another party. || alt: Accounts receivable
+  Investment :: A financial asset that is held to generate income or appreciation. || alt: Investment holding
+  Prepaid amount :: A financial asset that is a payment made in advance for goods or services not yet received. || alt: Prepaid expense
+Intangible asset :: An asset that has no physical substance but provides future value through rights, knowledge, or reputation. || alt: Non-physical asset
+  Intellectual property :: An intangible asset that is a legally protected creation of the mind. || ex: Trademark; patent; copyright.
+  License right :: An intangible asset that is a granted permission to use property owned by another party under stated terms. || alt: License; Software license
+  Brand :: An intangible asset that is the name, identity, and reputation by which an organization or offering is recognized. || alt: Trademark identity
+  Relationship asset :: An intangible asset that is the established, valuable connection between the organization and a group of parties. || alt: Client relationships; Customer relationships
+
+=== taxonomy event
+title: Event taxonomy
+subject: Event
+description: Classification of occurrences that happen at a point or short span in time and can start, end, or result from a process step.
+scope: Events trigger or are produced by process steps through triggers and triggeredBy. Long-running activities are processes, not events. Unwanted outcomes that need resolution are issues.
+standard: BFO process boundary and instantaneous occurrent (ISO/IEC 21838-2); CloudEvents envelope for event messages.
+---
+Business event :: An event that changes the state of a business relationship, agreement, or transaction. || ex: Employee termination; client contract signed.
+  Party event :: A business event that changes the status or attributes of a party. || relm: tax:PartyLifecycle
+    Party onboarding :: A party event in which a party is registered and begins an active relationship with the organization. || alt: Party registration; Hire; Client onboarding
+    Party change :: A party event in which identifying, contact, or status attributes of a party change. || alt: Status change; Job change
+    Party offboarding :: A party event in which an active relationship with a party ends. || alt: Party exit; Termination; Client exit
+    Life event :: A party event in which a change in a person's personal circumstances occurs. || alt: Qualifying life event || scope: Personal circumstances such as marriage, birth, or loss of other coverage; domain ontologies specialize this. || ex: Marriage; birth of a child.
+  Agreement event :: A business event that creates, changes, or ends an agreement between parties. || relm: tax:AgreementLifecycle
+    Agreement execution :: An agreement event in which parties sign or accept an agreement and it becomes binding. || alt: Contract signing
+    Agreement amendment :: An agreement event in which the terms of an existing agreement are changed. || alt: Contract amendment
+    Agreement renewal :: An agreement event in which an agreement is extended for a further term. || alt: Contract renewal
+    Agreement termination :: An agreement event in which an agreement ends before or at its expiry. || alt: Contract termination; Cancellation
+  Transaction event :: A business event in which value is exchanged or committed between parties. || ex: Payment issued; order placed.
+    Order placement :: A transaction event in which a party requests goods or services under stated terms. || alt: Order
+    Payment :: A transaction event in which money is transferred from one party to another. || alt: Payment issued; Disbursement
+    Refund :: A transaction event in which money is returned to a party. || alt: Reversal
+    Enrollment :: A transaction event in which a party elects to participate in an offering or plan. || alt: Election; Sign-up
+Process event :: An event that marks a change in the execution state of a process or process step. || relm: tax:ProcessStep
+  Process start :: A process event that marks the beginning of a process or process step instance. || alt: Step started
+  Process completion :: A process event that marks the successful end of a process or process step instance. || alt: Step completed
+  Process exception :: A process event that marks a deviation from the expected path of a process step. || alt: Exception raised || relm: tax:ProcessExceptionIssue
+  Handoff :: A process event in which responsibility for work passes from one party or role to another. || alt: Transfer of work
+  Escalation raised :: A process event in which work is referred to a higher authority or specialist. || alt: Escalation
+Time event :: An event that occurs because a point in time is reached. || alt: Temporal event; Scheduled event || relm: tax:Instant
+  Period start :: A time event that marks the beginning of a defined period. || ex: Start of a pay period; start of a plan year.
+  Period end :: A time event that marks the end of a defined period. || alt: Period close
+  Deadline reached :: A time event that marks the latest time by which an action must be completed. || alt: Due date reached
+  Effective date reached :: A time event that marks when a rule, policy, agreement, or change takes effect. || alt: Effective date
+  Expiration reached :: A time event that marks when a right, agreement, or document ceases to be valid. || alt: Expiration; Expiry
+Change event :: An event that records a change in data, configuration, or governed knowledge. || relm: tax:ChangeControl
+  Data change :: A change event in which a stored record is created, updated, or deleted. || alt: Change data capture event; Record change
+  Configuration change :: A change event in which settings of a system or service are altered.
+  Knowledge change :: A change event in which a governed term, rule, mapping, or shape is created, changed, or deprecated. || alt: Ontology change; Taxonomy change
+  Regulatory change :: A change event in which a law, regulation, or official guidance is enacted, amended, or repealed. || alt: Legislative change; Norm amendment || relm: tax:LegalNormSource
+System event :: An event that is generated by a software system about its own operation. || alt: Technical event
+  Message receipt :: A system event in which a system receives a message or file from another system. || alt: Inbound message; File received
+  System alert :: A system event that signals a condition requiring attention. || alt: Alert; Alarm
+  Job completion :: A system event that marks the end of a scheduled or batch job. || alt: Batch completion
+  Availability change :: A system event in which a system becomes available or unavailable. || alt: Outage start; Outage end
+Interaction event :: An event in which a party communicates with the organization or one of its systems. || alt: Engagement event
+  Inquiry :: An interaction event in which a party asks a question or requests information. || alt: Question asked; Query
+  Request submission :: An interaction event in which a party submits a request for action. || alt: Service request submitted
+  Feedback submission :: An interaction event in which a party rates or comments on a service or answer. || alt: Feedback; Answer rating
+  Notification delivery :: An interaction event in which the organization sends information to a party. || alt: Notification sent
+  Answer delivery :: An interaction event in which an artificial intelligence agent or person returns an answer to a question. || alt: Response; Assistant answer
+Governance event :: An event in which a governance decision or control outcome is recorded. || relm: tax:GovernanceActivity
+  Approval granted :: A governance event in which an authorized party approves an item. || alt: Approval; Sign-off
+  Approval denied :: A governance event in which an authorized party rejects an item. || alt: Rejection
+  Release published :: A governance event in which a versioned artifact is promoted to an environment. || alt: Release; Deployment
+  Control failure detected :: A governance event in which a control or quality gate does not pass. || alt: Gate failure; Circuit breaker trip
+  Audit completed :: A governance event in which an audit concludes with recorded findings.
+
+=== taxonomy issue
+title: Issue taxonomy
+subject: Issue
+description: Classification of conditions that deviate from what is expected or required and need to be assessed, tracked, or resolved.
+scope: Covers kinds of issue. Severity, priority, status, resolution, and root-cause values are in the issue vocabulary.
+standard: ISO 31000 for risk; ISO/IEC 5259 for data quality; ITIL practice for incident and problem.
+---
+Defect :: An issue that is a fault in an artifact causing it to differ from its specification or intended meaning. || alt: Bug; Fault
+  Data defect :: A defect in data values or records. || alt: Data quality issue || relm: tax:DataQualityDimension
+    Missing value :: A data defect in which a required value is absent. || alt: Null value; Incomplete record
+    Invalid value :: A data defect in which a value does not conform to its allowed type, format, or range. || alt: Malformed value
+    Duplicate record :: A data defect in which the same entity is recorded more than once. || alt: Duplicate
+    Inconsistent value :: A data defect in which values about the same fact disagree across records or systems. || alt: Conflicting value
+    Stale value :: A data defect in which a value is older than its required freshness. || alt: Outdated value
+  Knowledge defect :: A defect in a governed vocabulary, taxonomy, ontology, mapping, or rule. || alt: Semantic defect; Design-time defect
+    Definition defect :: A knowledge defect in which a term's definition is missing, circular, ambiguous, or wrong.
+    Label defect :: A knowledge defect in which a label is missing, duplicated, colliding, or uses an unapproved acronym.
+    Classification defect :: A knowledge defect in which a term is placed under the wrong parent or has no path to the core. || alt: Orphan term; Misclassification
+    Mapping defect :: A knowledge defect in which a source element is mapped to the wrong term or not mapped. || alt: Unmapped element
+    Rule defect :: A knowledge defect in which a rule has a gap, overlap, or incorrect outcome. || alt: Decision table gap; Decision table overlap
+  Software defect :: A defect in software code or configuration. || alt: Code defect
+  Artificial intelligence output defect :: A defect in content generated by an artificial intelligence agent. || alt: AI output defect || relm: tax:ArtificialIntelligenceRisk
+    Hallucination :: An artificial intelligence output defect in which the output states something that is not supported by governed facts or sources. || alt: Confabulation; Fabricated answer || relm: tax:MeanTimeBetweenHallucinations
+    Ungrounded answer :: An artificial intelligence output defect in which an answer does not cite the governed terms and sources it relied on. || alt: Missing citation; Untraceable answer
+    Incorrect citation :: An artificial intelligence output defect in which an answer cites a source that does not support it.
+    Policy violating output :: An artificial intelligence output defect in which the output breaches a guardrail or policy. || alt: Guardrail breach
+Incident :: An issue that is an unplanned interruption or reduction in the quality of a service. || alt: Service incident
+  Service outage :: An incident in which a service is unavailable to its users. || alt: Outage; Downtime
+  Performance degradation :: An incident in which a service is available but slower or less reliable than its service level. || alt: Slowdown
+  Security incident :: An incident that compromises the confidentiality, integrity, or availability of information or systems. || alt: Cybersecurity incident
+  Privacy incident :: An incident in which personal information is accessed, used, or disclosed without authorization. || alt: Data breach; Privacy breach
+Problem :: An issue that is the underlying cause of one or more incidents or defects. || alt: Root cause problem || scope: Problems are resolved by removing the cause, incidents by restoring service.
+Risk :: An issue that is the effect of uncertainty on objectives, expressed as a possible event and its consequence. || alt: Risk item || scope: A risk has not yet occurred; once it occurs it is recorded as an incident or nonconformance.
+  Compliance risk :: A risk of failing to meet a legal, regulatory, or contractual obligation. || alt: Regulatory risk || relm: tax:Obligation
+  Operational risk :: A risk of loss from failed processes, people, systems, or external events.
+  Financial risk :: A risk of monetary loss or adverse financial outcome. || alt: Credit risk; Market risk
+  Strategic risk :: A risk that threatens the organization's direction or competitive position.
+  Artificial intelligence risk :: A risk arising from the design, data, or use of an artificial intelligence system. || alt: AI risk; Model risk
+  Information security risk :: A risk to the confidentiality, integrity, or availability of information. || alt: Cybersecurity risk
+Nonconformance :: An issue in which a requirement, norm, or control is not met. || alt: Nonconformity; Noncompliance
+  Norm violation :: A nonconformance in which an obligation or prohibition in a law, regulation, or policy is breached. || alt: Compliance violation; Regulatory violation || relm: tax:Norm
+  Control deficiency :: A nonconformance in which a control is missing, poorly designed, or not operating as intended. || alt: Control gap || relm: tax:Control
+  Audit finding :: A nonconformance identified and recorded during an audit. || alt: Finding
+  Service level breach :: A nonconformance in which a committed service level is not met. || alt: Service level agreement breach; SLA breach
+Exception :: An issue that is an approved or detected departure from the normal rule or path. || alt: Deviation
+  Process exception issue :: An exception in which a process step cannot complete along its expected path and needs handling. || alt: Process exception case; Work exception
+  Policy exception :: An exception in which a party is permitted to depart from a policy for a stated reason and period. || alt: Waiver; Exemption
+Complaint :: An issue that is an expression of dissatisfaction by a party about a product, service, or interaction. || alt: Grievance; Customer complaint
+Question gap :: An issue in which a question cannot be answered from governed knowledge. || alt: Knowledge gap; Zero-result search; Unanswered question || relm: tax:Inquiry

@@ -1,0 +1,397 @@
+# Taxonomy: Event taxonomy
+# File: taxonomy-core-event.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix tax: <https://www.insperity.com/taxonomy/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+tax:EventTaxonomy a skos:ConceptScheme ;
+    dcterms:title "Event taxonomy"@en ;
+    skos:prefLabel "Event taxonomy"@en ;
+    dcterms:description "Classification of occurrences that happen at a point or short span in time and can start, end, or result from a process step."@en ;
+    dcterms:subject core:Event ;
+    skos:scopeNote "Events trigger or are produced by process steps through triggers and triggeredBy. Long-running activities are processes, not events. Unwanted outcomes that need resolution are issues."@en ;
+    dcterms:source "BFO process boundary and instantaneous occurrent (ISO/IEC 21838-2); CloudEvents envelope for event messages."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept tax:BusinessEvent ,
+        tax:ProcessEvent ,
+        tax:TimeEvent ,
+        tax:ChangeEvent ,
+        tax:SystemEvent ,
+        tax:InteractionEvent ,
+        tax:GovernanceEvent .
+
+tax:BusinessEvent a skos:Concept ;
+    skos:prefLabel "Business event"@en ;
+    skos:definition "An event that changes the state of a business relationship, agreement, or transaction."@en ;
+    skos:example "Employee termination; client contract signed."@en ;
+    skos:topConceptOf tax:EventTaxonomy ;
+    skos:narrower tax:PartyEvent , tax:AgreementEvent , tax:TransactionEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:PartyEvent a skos:Concept ;
+    skos:prefLabel "Party event"@en ;
+    skos:definition "A business event that changes the status or attributes of a party."@en ;
+    skos:broader tax:BusinessEvent ;
+    skos:narrower tax:PartyOnboarding , tax:PartyChange , tax:PartyOffboarding , tax:LifeEvent ;
+    skos:relatedMatch tax:PartyLifecycle ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:PartyOnboarding a skos:Concept ;
+    skos:prefLabel "Party onboarding"@en ;
+    skos:altLabel "Party registration"@en , "Hire"@en , "Client onboarding"@en ;
+    skos:definition "A party event in which a party is registered and begins an active relationship with the organization."@en ;
+    skos:broader tax:PartyEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:PartyChange a skos:Concept ;
+    skos:prefLabel "Party change"@en ;
+    skos:altLabel "Status change"@en , "Job change"@en ;
+    skos:definition "A party event in which identifying, contact, or status attributes of a party change."@en ;
+    skos:broader tax:PartyEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:PartyOffboarding a skos:Concept ;
+    skos:prefLabel "Party offboarding"@en ;
+    skos:altLabel "Party exit"@en , "Termination"@en , "Client exit"@en ;
+    skos:definition "A party event in which an active relationship with a party ends."@en ;
+    skos:broader tax:PartyEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:LifeEvent a skos:Concept ;
+    skos:prefLabel "Life event"@en ;
+    skos:altLabel "Qualifying life event"@en ;
+    skos:definition "A party event in which a change in a person's personal circumstances occurs."@en ;
+    skos:scopeNote "Personal circumstances such as marriage, birth, or loss of other coverage; domain ontologies specialize this."@en ;
+    skos:example "Marriage; birth of a child."@en ;
+    skos:broader tax:PartyEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:AgreementEvent a skos:Concept ;
+    skos:prefLabel "Agreement event"@en ;
+    skos:definition "A business event that creates, changes, or ends an agreement between parties."@en ;
+    skos:broader tax:BusinessEvent ;
+    skos:narrower tax:AgreementExecution , tax:AgreementAmendment , tax:AgreementRenewal , tax:AgreementTermination ;
+    skos:relatedMatch tax:AgreementLifecycle ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:AgreementExecution a skos:Concept ;
+    skos:prefLabel "Agreement execution"@en ;
+    skos:altLabel "Contract signing"@en ;
+    skos:definition "An agreement event in which parties sign or accept an agreement and it becomes binding."@en ;
+    skos:broader tax:AgreementEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:AgreementAmendment a skos:Concept ;
+    skos:prefLabel "Agreement amendment"@en ;
+    skos:altLabel "Contract amendment"@en ;
+    skos:definition "An agreement event in which the terms of an existing agreement are changed."@en ;
+    skos:broader tax:AgreementEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:AgreementRenewal a skos:Concept ;
+    skos:prefLabel "Agreement renewal"@en ;
+    skos:altLabel "Contract renewal"@en ;
+    skos:definition "An agreement event in which an agreement is extended for a further term."@en ;
+    skos:broader tax:AgreementEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:AgreementTermination a skos:Concept ;
+    skos:prefLabel "Agreement termination"@en ;
+    skos:altLabel "Contract termination"@en , "Cancellation"@en ;
+    skos:definition "An agreement event in which an agreement ends before or at its expiry."@en ;
+    skos:broader tax:AgreementEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:TransactionEvent a skos:Concept ;
+    skos:prefLabel "Transaction event"@en ;
+    skos:definition "A business event in which value is exchanged or committed between parties."@en ;
+    skos:example "Payment issued; order placed."@en ;
+    skos:broader tax:BusinessEvent ;
+    skos:narrower tax:OrderPlacement , tax:Payment , tax:Refund , tax:Enrollment ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:OrderPlacement a skos:Concept ;
+    skos:prefLabel "Order placement"@en ;
+    skos:altLabel "Order"@en ;
+    skos:definition "A transaction event in which a party requests goods or services under stated terms."@en ;
+    skos:broader tax:TransactionEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:Payment a skos:Concept ;
+    skos:prefLabel "Payment"@en ;
+    skos:altLabel "Payment issued"@en , "Disbursement"@en ;
+    skos:definition "A transaction event in which money is transferred from one party to another."@en ;
+    skos:broader tax:TransactionEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:Refund a skos:Concept ;
+    skos:prefLabel "Refund"@en ;
+    skos:altLabel "Reversal"@en ;
+    skos:definition "A transaction event in which money is returned to a party."@en ;
+    skos:broader tax:TransactionEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:Enrollment a skos:Concept ;
+    skos:prefLabel "Enrollment"@en ;
+    skos:altLabel "Election"@en , "Sign-up"@en ;
+    skos:definition "A transaction event in which a party elects to participate in an offering or plan."@en ;
+    skos:broader tax:TransactionEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:ProcessEvent a skos:Concept ;
+    skos:prefLabel "Process event"@en ;
+    skos:definition "An event that marks a change in the execution state of a process or process step."@en ;
+    skos:topConceptOf tax:EventTaxonomy ;
+    skos:narrower tax:ProcessStart , tax:ProcessCompletion , tax:ProcessException , tax:Handoff , tax:EscalationRaised ;
+    skos:relatedMatch tax:ProcessStep ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:ProcessStart a skos:Concept ;
+    skos:prefLabel "Process start"@en ;
+    skos:altLabel "Step started"@en ;
+    skos:definition "A process event that marks the beginning of a process or process step instance."@en ;
+    skos:broader tax:ProcessEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:ProcessCompletion a skos:Concept ;
+    skos:prefLabel "Process completion"@en ;
+    skos:altLabel "Step completed"@en ;
+    skos:definition "A process event that marks the successful end of a process or process step instance."@en ;
+    skos:broader tax:ProcessEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:ProcessException a skos:Concept ;
+    skos:prefLabel "Process exception"@en ;
+    skos:altLabel "Exception raised"@en ;
+    skos:definition "A process event that marks a deviation from the expected path of a process step."@en ;
+    skos:broader tax:ProcessEvent ;
+    skos:relatedMatch tax:ProcessExceptionIssue ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:Handoff a skos:Concept ;
+    skos:prefLabel "Handoff"@en ;
+    skos:altLabel "Transfer of work"@en ;
+    skos:definition "A process event in which responsibility for work passes from one party or role to another."@en ;
+    skos:broader tax:ProcessEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:EscalationRaised a skos:Concept ;
+    skos:prefLabel "Escalation raised"@en ;
+    skos:altLabel "Escalation"@en ;
+    skos:definition "A process event in which work is referred to a higher authority or specialist."@en ;
+    skos:broader tax:ProcessEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:TimeEvent a skos:Concept ;
+    skos:prefLabel "Time event"@en ;
+    skos:altLabel "Temporal event"@en , "Scheduled event"@en ;
+    skos:definition "An event that occurs because a point in time is reached."@en ;
+    skos:topConceptOf tax:EventTaxonomy ;
+    skos:narrower tax:PeriodStart , tax:PeriodEnd , tax:DeadlineReached , tax:EffectiveDateReached , tax:ExpirationReached ;
+    skos:relatedMatch tax:Instant ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:PeriodStart a skos:Concept ;
+    skos:prefLabel "Period start"@en ;
+    skos:definition "A time event that marks the beginning of a defined period."@en ;
+    skos:example "Start of a pay period; start of a plan year."@en ;
+    skos:broader tax:TimeEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:PeriodEnd a skos:Concept ;
+    skos:prefLabel "Period end"@en ;
+    skos:altLabel "Period close"@en ;
+    skos:definition "A time event that marks the end of a defined period."@en ;
+    skos:broader tax:TimeEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:DeadlineReached a skos:Concept ;
+    skos:prefLabel "Deadline reached"@en ;
+    skos:altLabel "Due date reached"@en ;
+    skos:definition "A time event that marks the latest time by which an action must be completed."@en ;
+    skos:broader tax:TimeEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:EffectiveDateReached a skos:Concept ;
+    skos:prefLabel "Effective date reached"@en ;
+    skos:altLabel "Effective date"@en ;
+    skos:definition "A time event that marks when a rule, policy, agreement, or change takes effect."@en ;
+    skos:broader tax:TimeEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:ExpirationReached a skos:Concept ;
+    skos:prefLabel "Expiration reached"@en ;
+    skos:altLabel "Expiration"@en , "Expiry"@en ;
+    skos:definition "A time event that marks when a right, agreement, or document ceases to be valid."@en ;
+    skos:broader tax:TimeEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:ChangeEvent a skos:Concept ;
+    skos:prefLabel "Change event"@en ;
+    skos:definition "An event that records a change in data, configuration, or governed knowledge."@en ;
+    skos:topConceptOf tax:EventTaxonomy ;
+    skos:narrower tax:DataChange , tax:ConfigurationChange , tax:KnowledgeChange , tax:RegulatoryChange ;
+    skos:relatedMatch tax:ChangeControl ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:DataChange a skos:Concept ;
+    skos:prefLabel "Data change"@en ;
+    skos:altLabel "Change data capture event"@en , "Record change"@en ;
+    skos:definition "A change event in which a stored record is created, updated, or deleted."@en ;
+    skos:broader tax:ChangeEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:ConfigurationChange a skos:Concept ;
+    skos:prefLabel "Configuration change"@en ;
+    skos:definition "A change event in which settings of a system or service are altered."@en ;
+    skos:broader tax:ChangeEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:KnowledgeChange a skos:Concept ;
+    skos:prefLabel "Knowledge change"@en ;
+    skos:altLabel "Ontology change"@en , "Taxonomy change"@en ;
+    skos:definition "A change event in which a governed term, rule, mapping, or shape is created, changed, or deprecated."@en ;
+    skos:broader tax:ChangeEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:RegulatoryChange a skos:Concept ;
+    skos:prefLabel "Regulatory change"@en ;
+    skos:altLabel "Legislative change"@en , "Norm amendment"@en ;
+    skos:definition "A change event in which a law, regulation, or official guidance is enacted, amended, or repealed."@en ;
+    skos:broader tax:ChangeEvent ;
+    skos:relatedMatch tax:LegalNormSource ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:SystemEvent a skos:Concept ;
+    skos:prefLabel "System event"@en ;
+    skos:altLabel "Technical event"@en ;
+    skos:definition "An event that is generated by a software system about its own operation."@en ;
+    skos:topConceptOf tax:EventTaxonomy ;
+    skos:narrower tax:MessageReceipt , tax:SystemAlert , tax:JobCompletion , tax:AvailabilityChange ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:MessageReceipt a skos:Concept ;
+    skos:prefLabel "Message receipt"@en ;
+    skos:altLabel "Inbound message"@en , "File received"@en ;
+    skos:definition "A system event in which a system receives a message or file from another system."@en ;
+    skos:broader tax:SystemEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:SystemAlert a skos:Concept ;
+    skos:prefLabel "System alert"@en ;
+    skos:altLabel "Alert"@en , "Alarm"@en ;
+    skos:definition "A system event that signals a condition requiring attention."@en ;
+    skos:broader tax:SystemEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:JobCompletion a skos:Concept ;
+    skos:prefLabel "Job completion"@en ;
+    skos:altLabel "Batch completion"@en ;
+    skos:definition "A system event that marks the end of a scheduled or batch job."@en ;
+    skos:broader tax:SystemEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:AvailabilityChange a skos:Concept ;
+    skos:prefLabel "Availability change"@en ;
+    skos:altLabel "Outage start"@en , "Outage end"@en ;
+    skos:definition "A system event in which a system becomes available or unavailable."@en ;
+    skos:broader tax:SystemEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:InteractionEvent a skos:Concept ;
+    skos:prefLabel "Interaction event"@en ;
+    skos:altLabel "Engagement event"@en ;
+    skos:definition "An event in which a party communicates with the organization or one of its systems."@en ;
+    skos:topConceptOf tax:EventTaxonomy ;
+    skos:narrower tax:Inquiry , tax:RequestSubmission , tax:FeedbackSubmission , tax:NotificationDelivery , tax:AnswerDelivery ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:Inquiry a skos:Concept ;
+    skos:prefLabel "Inquiry"@en ;
+    skos:altLabel "Question asked"@en , "Query"@en ;
+    skos:definition "An interaction event in which a party asks a question or requests information."@en ;
+    skos:broader tax:InteractionEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:RequestSubmission a skos:Concept ;
+    skos:prefLabel "Request submission"@en ;
+    skos:altLabel "Service request submitted"@en ;
+    skos:definition "An interaction event in which a party submits a request for action."@en ;
+    skos:broader tax:InteractionEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:FeedbackSubmission a skos:Concept ;
+    skos:prefLabel "Feedback submission"@en ;
+    skos:altLabel "Feedback"@en , "Answer rating"@en ;
+    skos:definition "An interaction event in which a party rates or comments on a service or answer."@en ;
+    skos:broader tax:InteractionEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:NotificationDelivery a skos:Concept ;
+    skos:prefLabel "Notification delivery"@en ;
+    skos:altLabel "Notification sent"@en ;
+    skos:definition "An interaction event in which the organization sends information to a party."@en ;
+    skos:broader tax:InteractionEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:AnswerDelivery a skos:Concept ;
+    skos:prefLabel "Answer delivery"@en ;
+    skos:altLabel "Response"@en , "Assistant answer"@en ;
+    skos:definition "An interaction event in which an artificial intelligence agent or person returns an answer to a question."@en ;
+    skos:broader tax:InteractionEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:GovernanceEvent a skos:Concept ;
+    skos:prefLabel "Governance event"@en ;
+    skos:definition "An event in which a governance decision or control outcome is recorded."@en ;
+    skos:topConceptOf tax:EventTaxonomy ;
+    skos:narrower tax:ApprovalGranted , tax:ApprovalDenied , tax:ReleasePublished , tax:ControlFailureDetected , tax:AuditCompleted ;
+    skos:relatedMatch tax:GovernanceActivity ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:ApprovalGranted a skos:Concept ;
+    skos:prefLabel "Approval granted"@en ;
+    skos:altLabel "Approval"@en , "Sign-off"@en ;
+    skos:definition "A governance event in which an authorized party approves an item."@en ;
+    skos:broader tax:GovernanceEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:ApprovalDenied a skos:Concept ;
+    skos:prefLabel "Approval denied"@en ;
+    skos:altLabel "Rejection"@en ;
+    skos:definition "A governance event in which an authorized party rejects an item."@en ;
+    skos:broader tax:GovernanceEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:ReleasePublished a skos:Concept ;
+    skos:prefLabel "Release published"@en ;
+    skos:altLabel "Release"@en , "Deployment"@en ;
+    skos:definition "A governance event in which a versioned artifact is promoted to an environment."@en ;
+    skos:broader tax:GovernanceEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:ControlFailureDetected a skos:Concept ;
+    skos:prefLabel "Control failure detected"@en ;
+    skos:altLabel "Gate failure"@en , "Circuit breaker trip"@en ;
+    skos:definition "A governance event in which a control or quality gate does not pass."@en ;
+    skos:broader tax:GovernanceEvent ;
+    skos:inScheme tax:EventTaxonomy .
+
+tax:AuditCompleted a skos:Concept ;
+    skos:prefLabel "Audit completed"@en ;
+    skos:definition "A governance event in which an audit concludes with recorded findings."@en ;
+    skos:broader tax:GovernanceEvent ;
+    skos:inScheme tax:EventTaxonomy .

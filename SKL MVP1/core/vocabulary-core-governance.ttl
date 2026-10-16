@@ -1,0 +1,287 @@
+# Vocabulary: Governance vocabulary
+# File: vocabulary-core-governance.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+voc:governance-vocabulary a skos:ConceptScheme ;
+    dcterms:title "Governance vocabulary"@en ;
+    skos:prefLabel "Governance vocabulary"@en ;
+    dcterms:description "Controlled values for data classification, verification status, approval status, version change level, knowledge change type, validation result, and deployment environment."@en ;
+    dcterms:subject core:Governance ;
+    skos:scopeNote "Data classification governs access by named graph. Version change levels follow semantic versioning. Change types follow the Knowledge Graph Change Language."@en ;
+    dcterms:source "Semantic Governance v1.8 Sections 3.3, 3.4, and 3.6; Knowledge Graph Change Language; Semantic Versioning 2.0.0."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept voc:data-classification ,
+        voc:verification-status ,
+        voc:approval-status ,
+        voc:version-change-level ,
+        voc:knowledge-change-type ,
+        voc:validation-result ,
+        voc:deployment-environment .
+
+voc:data-classification a skos:Concept ;
+    skos:prefLabel "Data classification"@en ;
+    skos:altLabel "Information classification"@en ;
+    skos:definition "A controlled value set for the sensitivity of information and the handling it requires."@en ;
+    skos:topConceptOf voc:governance-vocabulary ;
+    skos:narrower voc:classification-public , voc:classification-internal , voc:classification-confidential , voc:classification-restricted ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:classification-public a skos:Concept ;
+    skos:prefLabel "Public"@en ;
+    skos:definition "A data classification for information approved for release outside the organization."@en ;
+    skos:broader voc:data-classification ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:classification-internal a skos:Concept ;
+    skos:prefLabel "Internal"@en ;
+    skos:definition "A data classification for information for use within the organization that would cause limited harm if disclosed."@en ;
+    skos:broader voc:data-classification ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:classification-confidential a skos:Concept ;
+    skos:prefLabel "Confidential"@en ;
+    skos:definition "A data classification for information whose disclosure would cause serious harm to the organization, clients, or workers."@en ;
+    skos:scopeNote "Includes contact details and most worker and client data."@en ;
+    skos:broader voc:data-classification ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:classification-restricted a skos:Concept ;
+    skos:prefLabel "Restricted"@en ;
+    skos:altLabel "Highly confidential"@en ;
+    skos:definition "A data classification for the most sensitive information, available only to named roles with a business need."@en ;
+    skos:scopeNote "Includes government identifiers, pay, health, and bank details."@en ;
+    skos:broader voc:data-classification ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:verification-status a skos:Concept ;
+    skos:prefLabel "Verification status"@en ;
+    skos:definition "A controlled value set for whether a reference fact has been checked against a published source."@en ;
+    skos:topConceptOf voc:governance-vocabulary ;
+    skos:narrower voc:verification-verified , voc:verification-unverified , voc:verification-disputed ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:verification-verified a skos:Concept ;
+    skos:prefLabel "Verified"@en ;
+    skos:definition "A verification status for facts confirmed against a cited authoritative source."@en ;
+    skos:broader voc:verification-status ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:verification-unverified a skos:Concept ;
+    skos:prefLabel "Unverified"@en ;
+    skos:altLabel "Not verified"@en ;
+    skos:definition "A verification status for facts not yet confirmed, reported as warnings rather than hidden."@en ;
+    skos:broader voc:verification-status ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:verification-disputed a skos:Concept ;
+    skos:prefLabel "Disputed"@en ;
+    skos:altLabel "Contested"@en ;
+    skos:definition "A verification status for facts that conflict with an authoritative source and are under review."@en ;
+    skos:broader voc:verification-status ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:approval-status a skos:Concept ;
+    skos:prefLabel "Approval status"@en ;
+    skos:definition "A controlled value set for the state of a request awaiting authorization."@en ;
+    skos:topConceptOf voc:governance-vocabulary ;
+    skos:narrower voc:approval-status-pending-approval , voc:approval-status-approved , voc:approval-status-rejected , voc:approval-status-withdrawn ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:approval-status-pending-approval a skos:Concept ;
+    skos:prefLabel "Pending approval"@en ;
+    skos:altLabel "Awaiting approval"@en ;
+    skos:definition "An approval status for a request submitted and not yet decided."@en ;
+    skos:broader voc:approval-status ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:approval-status-approved a skos:Concept ;
+    skos:prefLabel "Approved"@en ;
+    skos:definition "An approval status for a request accepted by an authorized party."@en ;
+    skos:broader voc:approval-status ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:approval-status-rejected a skos:Concept ;
+    skos:prefLabel "Rejected"@en ;
+    skos:altLabel "Declined"@en ;
+    skos:definition "An approval status for a request declined by an authorized party."@en ;
+    skos:broader voc:approval-status ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:approval-status-withdrawn a skos:Concept ;
+    skos:prefLabel "Withdrawn"@en ;
+    skos:definition "An approval status for a request withdrawn by its submitter."@en ;
+    skos:broader voc:approval-status ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:version-change-level a skos:Concept ;
+    skos:prefLabel "Version change level"@en ;
+    skos:altLabel "Version bump"@en ;
+    skos:definition "A controlled value set for the size of a change under semantic versioning."@en ;
+    skos:topConceptOf voc:governance-vocabulary ;
+    skos:narrower voc:version-change-major-change , voc:version-change-minor-change , voc:version-change-patch-change ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:version-change-major-change a skos:Concept ;
+    skos:prefLabel "Major change"@en ;
+    skos:altLabel "MAJOR"@en , "Major"@en ;
+    skos:definition "A version change level for changes that break consumers, such as removing or redefining a class or property."@en ;
+    skos:broader voc:version-change-level ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:version-change-minor-change a skos:Concept ;
+    skos:prefLabel "Minor change"@en ;
+    skos:altLabel "MINOR"@en , "Minor"@en ;
+    skos:definition "A version change level for backward-compatible additions."@en ;
+    skos:broader voc:version-change-level ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:version-change-patch-change a skos:Concept ;
+    skos:prefLabel "Patch change"@en ;
+    skos:altLabel "PATCH"@en , "Patch"@en ;
+    skos:definition "A version change level for label and documentation fixes."@en ;
+    skos:broader voc:version-change-level ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:knowledge-change-type a skos:Concept ;
+    skos:prefLabel "Knowledge change type"@en ;
+    skos:altLabel "KGCL change type"@en ;
+    skos:definition "A controlled value set for the kind of change made to a knowledge artifact."@en ;
+    skos:topConceptOf voc:governance-vocabulary ;
+    skos:narrower voc:change-type-node-creation , voc:change-type-node-rename , voc:change-type-node-move , voc:change-type-node-deprecation , voc:change-type-definition-change , voc:change-type-synonym-change , voc:change-type-edge-creation , voc:change-type-edge-deletion , voc:change-type-mapping-change ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:change-type-node-creation a skos:Concept ;
+    skos:prefLabel "Node creation"@en ;
+    skos:altLabel "Create node"@en ;
+    skos:definition "A knowledge change type that adds a class, concept, or property."@en ;
+    skos:broader voc:knowledge-change-type ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:change-type-node-rename a skos:Concept ;
+    skos:prefLabel "Node rename"@en ;
+    skos:altLabel "Rename"@en ;
+    skos:definition "A knowledge change type that changes a preferred label."@en ;
+    skos:broader voc:knowledge-change-type ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:change-type-node-move a skos:Concept ;
+    skos:prefLabel "Node move"@en ;
+    skos:altLabel "Reparent"@en ;
+    skos:definition "A knowledge change type that changes the parent of a class or concept."@en ;
+    skos:broader voc:knowledge-change-type ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:change-type-node-deprecation a skos:Concept ;
+    skos:prefLabel "Node deprecation"@en ;
+    skos:altLabel "Obsoletion"@en ;
+    skos:definition "A knowledge change type that marks a term deprecated and names its replacement."@en ;
+    skos:broader voc:knowledge-change-type ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:change-type-definition-change a skos:Concept ;
+    skos:prefLabel "Definition change"@en ;
+    skos:altLabel "New text definition"@en ;
+    skos:definition "A knowledge change type that changes a definition."@en ;
+    skos:broader voc:knowledge-change-type ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:change-type-synonym-change a skos:Concept ;
+    skos:prefLabel "Synonym change"@en ;
+    skos:altLabel "Synonym addition"@en ;
+    skos:definition "A knowledge change type that adds or removes an alternate label."@en ;
+    skos:broader voc:knowledge-change-type ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:change-type-edge-creation a skos:Concept ;
+    skos:prefLabel "Edge creation"@en ;
+    skos:altLabel "Add edge"@en ;
+    skos:definition "A knowledge change type that adds a relationship between terms."@en ;
+    skos:broader voc:knowledge-change-type ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:change-type-edge-deletion a skos:Concept ;
+    skos:prefLabel "Edge deletion"@en ;
+    skos:altLabel "Remove edge"@en ;
+    skos:definition "A knowledge change type that removes a relationship between terms."@en ;
+    skos:broader voc:knowledge-change-type ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:change-type-mapping-change a skos:Concept ;
+    skos:prefLabel "Mapping change"@en ;
+    skos:definition "A knowledge change type that adds, changes, or removes a mapping."@en ;
+    skos:broader voc:knowledge-change-type ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:validation-result a skos:Concept ;
+    skos:prefLabel "Validation result"@en ;
+    skos:definition "A controlled value set for the outcome of a quality gate or check."@en ;
+    skos:topConceptOf voc:governance-vocabulary ;
+    skos:narrower voc:validation-result-passed , voc:validation-result-passed-with-warnings , voc:validation-result-failed ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:validation-result-passed a skos:Concept ;
+    skos:prefLabel "Passed"@en ;
+    skos:definition "A validation result in which all checks succeeded."@en ;
+    skos:broader voc:validation-result ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:validation-result-passed-with-warnings a skos:Concept ;
+    skos:prefLabel "Passed with warnings"@en ;
+    skos:definition "A validation result in which checks succeeded but warnings were raised."@en ;
+    skos:broader voc:validation-result ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:validation-result-failed a skos:Concept ;
+    skos:prefLabel "Failed"@en ;
+    skos:definition "A validation result in which at least one blocking check did not succeed."@en ;
+    skos:broader voc:validation-result ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:deployment-environment a skos:Concept ;
+    skos:prefLabel "Deployment environment"@en ;
+    skos:definition "A controlled value set for the environments a release is promoted through."@en ;
+    skos:topConceptOf voc:governance-vocabulary ;
+    skos:narrower voc:environment-development , voc:environment-test , voc:environment-stage , voc:environment-production ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:environment-development a skos:Concept ;
+    skos:prefLabel "Development"@en ;
+    skos:altLabel "Dev"@en ;
+    skos:definition "A deployment environment for building and unit testing."@en ;
+    skos:broader voc:deployment-environment ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:environment-test a skos:Concept ;
+    skos:prefLabel "Test"@en ;
+    skos:altLabel "Quality assurance environment"@en ;
+    skos:definition "A deployment environment for integration and competency question testing."@en ;
+    skos:broader voc:deployment-environment ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:environment-stage a skos:Concept ;
+    skos:prefLabel "Stage"@en ;
+    skos:altLabel "Staging"@en , "Pre-production"@en ;
+    skos:definition "A deployment environment that mirrors production for final validation."@en ;
+    skos:broader voc:deployment-environment ;
+    skos:inScheme voc:governance-vocabulary .
+
+voc:environment-production a skos:Concept ;
+    skos:prefLabel "Production"@en ;
+    skos:altLabel "Prod"@en , "Live"@en ;
+    skos:definition "A deployment environment that serves real users."@en ;
+    skos:broader voc:deployment-environment ;
+    skos:inScheme voc:governance-vocabulary .

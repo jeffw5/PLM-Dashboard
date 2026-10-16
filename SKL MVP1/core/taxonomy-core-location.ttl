@@ -1,0 +1,220 @@
+# Taxonomy: Location taxonomy
+# File: taxonomy-core-location.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix tax: <https://www.insperity.com/taxonomy/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+tax:LocationTaxonomy a skos:ConceptScheme ;
+    dcterms:title "Location taxonomy"@en ;
+    skos:prefLabel "Location taxonomy"@en ;
+    dcterms:description "Classification of locations, the places, jurisdictions, sites, and references where parties, assets, and process steps are located or where norms apply."@en ;
+    dcterms:subject core:Location ;
+    skos:scopeNote "Jurisdiction values with ISO 3166-2 codes, work arrangement, and address type values are in the location vocabulary."@en ;
+    dcterms:source "BFO site and spatial region (ISO/IEC 21838-2); ISO 3166 country and subdivision codes; LKIF-Core jurisdiction."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept tax:GeographicArea ,
+        tax:Jurisdiction ,
+        tax:Site ,
+        tax:LocationReference ,
+        tax:VirtualLocation .
+
+tax:GeographicArea a skos:Concept ;
+    skos:prefLabel "Geographic area"@en ;
+    skos:altLabel "Geographic location"@en , "Place"@en ;
+    skos:definition "A location that is a region of the earth's surface identified by name or boundary."@en ;
+    skos:topConceptOf tax:LocationTaxonomy ;
+    skos:narrower tax:Country , tax:StateOrProvince , tax:County , tax:City , tax:PostalArea , tax:Region ;
+    skos:inScheme tax:LocationTaxonomy .
+
+tax:Country a skos:Concept ;
+    skos:prefLabel "Country"@en ;
+    skos:altLabel "Nation"@en ;
+    skos:definition "A geographic area that is a sovereign nation."@en ;
+    skos:broader tax:GeographicArea ;
+    skos:inScheme tax:LocationTaxonomy .
+
+tax:StateOrProvince a skos:Concept ;
+    skos:prefLabel "State or province"@en ;
+    skos:altLabel "State"@en , "Province"@en , "Subnational division"@en ;
+    skos:definition "A geographic area that is a first-level subdivision of a country."@en ;
+    skos:broader tax:GeographicArea ;
+    skos:inScheme tax:LocationTaxonomy .
+
+tax:County a skos:Concept ;
+    skos:prefLabel "County"@en ;
+    skos:altLabel "Parish"@en , "Borough"@en ;
+    skos:definition "A geographic area that is a subdivision of a state used for local government."@en ;
+    skos:broader tax:GeographicArea ;
+    skos:inScheme tax:LocationTaxonomy .
+
+tax:City a skos:Concept ;
+    skos:prefLabel "City"@en ;
+    skos:altLabel "Municipality"@en , "Town"@en ;
+    skos:definition "A geographic area that is a municipality or populated place."@en ;
+    skos:broader tax:GeographicArea ;
+    skos:inScheme tax:LocationTaxonomy .
+
+tax:PostalArea a skos:Concept ;
+    skos:prefLabel "Postal area"@en ;
+    skos:altLabel "Zip code area"@en , "Postal code area"@en ;
+    skos:definition "A geographic area identified by a postal code."@en ;
+    skos:broader tax:GeographicArea ;
+    skos:inScheme tax:LocationTaxonomy .
+
+tax:Region a skos:Concept ;
+    skos:prefLabel "Region"@en ;
+    skos:altLabel "Sales region"@en , "Service region"@en , "Territory"@en ;
+    skos:definition "A geographic area grouping countries, states, or cities for business purposes."@en ;
+    skos:broader tax:GeographicArea ;
+    skos:inScheme tax:LocationTaxonomy .
+
+tax:Jurisdiction a skos:Concept ;
+    skos:prefLabel "Jurisdiction"@en ;
+    skos:altLabel "Legal jurisdiction"@en ;
+    skos:definition "A location that is the territory within which a governing authority's laws and regulations apply."@en ;
+    skos:topConceptOf tax:LocationTaxonomy ;
+    skos:narrower tax:NationalJurisdiction , tax:StateJurisdiction , tax:LocalJurisdiction , tax:TaxJurisdiction ;
+    skos:relatedMatch tax:GovernmentBody ;
+    skos:inScheme tax:LocationTaxonomy .
+
+tax:NationalJurisdiction a skos:Concept ;
+    skos:prefLabel "National jurisdiction"@en ;
+    skos:altLabel "Federal jurisdiction"@en ;
+    skos:definition "A jurisdiction of a national government."@en ;
+    skos:broader tax:Jurisdiction ;
+    skos:inScheme tax:LocationTaxonomy .
+
+tax:StateJurisdiction a skos:Concept ;
+    skos:prefLabel "State jurisdiction"@en ;
+    skos:altLabel "Provincial jurisdiction"@en ;
+    skos:definition "A jurisdiction of a state or provincial government."@en ;
+    skos:broader tax:Jurisdiction ;
+    skos:inScheme tax:LocationTaxonomy .
+
+tax:LocalJurisdiction a skos:Concept ;
+    skos:prefLabel "Local jurisdiction"@en ;
+    skos:altLabel "Municipal jurisdiction"@en ;
+    skos:definition "A jurisdiction of a county, city, or other local government."@en ;
+    skos:broader tax:Jurisdiction ;
+    skos:inScheme tax:LocationTaxonomy .
+
+tax:TaxJurisdiction a skos:Concept ;
+    skos:prefLabel "Tax jurisdiction"@en ;
+    skos:altLabel "Taxing jurisdiction"@en ;
+    skos:definition "A jurisdiction defined by a taxing authority, which may cross other boundaries."@en ;
+    skos:broader tax:Jurisdiction ;
+    skos:inScheme tax:LocationTaxonomy .
+
+tax:Site a skos:Concept ;
+    skos:prefLabel "Site"@en ;
+    skos:altLabel "Business location"@en , "Physical site"@en ;
+    skos:definition "A location where an organization carries out activities or keeps assets."@en ;
+    skos:topConceptOf tax:LocationTaxonomy ;
+    skos:narrower tax:Worksite , tax:Office , tax:RemoteWorkLocation , tax:DataCenter , tax:DistributionSite ;
+    skos:inScheme tax:LocationTaxonomy .
+
+tax:Worksite a skos:Concept ;
+    skos:prefLabel "Worksite"@en ;
+    skos:altLabel "Client worksite"@en , "Work location"@en ;
+    skos:definition "A site where workers perform work for a client employer."@en ;
+    skos:broader tax:Site ;
+    skos:inScheme tax:LocationTaxonomy .
+
+tax:Office a skos:Concept ;
+    skos:prefLabel "Office"@en ;
+    skos:altLabel "Branch office"@en , "Headquarters"@en ;
+    skos:definition "A site used mainly for administrative and professional work."@en ;
+    skos:broader tax:Site ;
+    skos:inScheme tax:LocationTaxonomy .
+
+tax:RemoteWorkLocation a skos:Concept ;
+    skos:prefLabel "Remote work location"@en ;
+    skos:altLabel "Home office"@en , "Telework location"@en ;
+    skos:definition "A site outside the employer's premises where a worker regularly works."@en ;
+    skos:broader tax:Site ;
+    skos:inScheme tax:LocationTaxonomy .
+
+tax:DataCenter a skos:Concept ;
+    skos:prefLabel "Data center"@en ;
+    skos:altLabel "Hosting facility"@en ;
+    skos:definition "A site that houses computing and storage infrastructure."@en ;
+    skos:broader tax:Site ;
+    skos:inScheme tax:LocationTaxonomy .
+
+tax:DistributionSite a skos:Concept ;
+    skos:prefLabel "Distribution site"@en ;
+    skos:altLabel "Warehouse"@en , "Fulfilment center"@en ;
+    skos:definition "A site where goods are stored and shipped."@en ;
+    skos:broader tax:Site ;
+    skos:inScheme tax:LocationTaxonomy .
+
+tax:LocationReference a skos:Concept ;
+    skos:prefLabel "Location reference"@en ;
+    skos:altLabel "Location identifier"@en ;
+    skos:definition "A location-related information artifact that identifies a place."@en ;
+    skos:topConceptOf tax:LocationTaxonomy ;
+    skos:narrower tax:PostalAddress , tax:GeographicCoordinate , tax:LocationCode ;
+    skos:inScheme tax:LocationTaxonomy .
+
+tax:PostalAddress a skos:Concept ;
+    skos:prefLabel "Postal address"@en ;
+    skos:altLabel "Address"@en , "Mailing address"@en ;
+    skos:definition "A location reference that identifies a delivery point by street, city, state, and postal code."@en ;
+    skos:broader tax:LocationReference ;
+    skos:inScheme tax:LocationTaxonomy .
+
+tax:GeographicCoordinate a skos:Concept ;
+    skos:prefLabel "Geographic coordinate"@en ;
+    skos:altLabel "Coordinates"@en , "Geolocation"@en ;
+    skos:definition "A location reference given as latitude and longitude."@en ;
+    skos:broader tax:LocationReference ;
+    skos:inScheme tax:LocationTaxonomy .
+
+tax:LocationCode a skos:Concept ;
+    skos:prefLabel "Location code"@en ;
+    skos:altLabel "Site code"@en , "Jurisdiction code"@en ;
+    skos:definition "A location reference given as a code from a standard or system."@en ;
+    skos:broader tax:LocationReference ;
+    skos:inScheme tax:LocationTaxonomy .
+
+tax:VirtualLocation a skos:Concept ;
+    skos:prefLabel "Virtual location"@en ;
+    skos:altLabel "Digital location"@en ;
+    skos:definition "A location in a network or digital space rather than physical space."@en ;
+    skos:topConceptOf tax:LocationTaxonomy ;
+    skos:narrower tax:WebAddress , tax:CloudRegion , tax:CollaborationSpace ;
+    skos:inScheme tax:LocationTaxonomy .
+
+tax:WebAddress a skos:Concept ;
+    skos:prefLabel "Web address"@en ;
+    skos:altLabel "URL"@en , "Web page"@en ;
+    skos:definition "A virtual location identified by a uniform resource locator."@en ;
+    skos:broader tax:VirtualLocation ;
+    skos:inScheme tax:LocationTaxonomy .
+
+tax:CloudRegion a skos:Concept ;
+    skos:prefLabel "Cloud region"@en ;
+    skos:altLabel "Hosting region"@en , "Availability zone"@en ;
+    skos:definition "A virtual location that is a provider-defined geographic grouping of data centers."@en ;
+    skos:broader tax:VirtualLocation ;
+    skos:inScheme tax:LocationTaxonomy .
+
+tax:CollaborationSpace a skos:Concept ;
+    skos:prefLabel "Collaboration space"@en ;
+    skos:altLabel "Workspace"@en , "Channel"@en , "Team site"@en ;
+    skos:definition "A virtual location where people share content and communicate."@en ;
+    skos:broader tax:VirtualLocation ;
+    skos:inScheme tax:LocationTaxonomy .

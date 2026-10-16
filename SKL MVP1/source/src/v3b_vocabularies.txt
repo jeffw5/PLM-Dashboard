@@ -1,0 +1,131 @@
+=== vocabulary service
+title: Service vocabulary
+subject: Service
+description: Controlled values for service operating status, delivery channels, and delivery models.
+---
+Service operating status :: A controlled value set for the current health of a service. || prefix: service-status
+  Operational :: A service operating status in which the service meets its service levels. || alt: Available; Healthy
+  Degraded :: A service operating status in which the service is available but below its service levels. || alt: Impaired
+  Unavailable :: A service operating status in which the service cannot be used. || alt: Down; Outage
+  Under maintenance :: A service operating status in which the service is intentionally unavailable for planned work. || alt: Planned maintenance
+Service channel :: A controlled value set for the means through which a service is delivered or accessed. || prefix: channel
+  Conversational agent :: A service channel in which users ask questions in natural language to an artificial intelligence agent. || alt: Chat assistant; HR 360 agent; Virtual assistant
+  Employee portal :: A service channel that is an authenticated web application for workers. || alt: Employee self-service
+  Client portal :: A service channel that is an authenticated web application for client administrators. || alt: Client self-service
+  Internal search :: A service channel that is the organization's enterprise search for staff. || alt: Enterprise search
+  Business application :: A service channel that is an operational system used by staff to do their work. || alt: Line of business application; Operations Workbench; Payroll application
+  Dashboard :: A service channel that presents measures visually for monitoring and analysis. || alt: Report portal
+  Query endpoint :: A service channel through which systems or analysts query the knowledge graph directly. || alt: SPARQL endpoint; Graph endpoint
+  Programmatic interface :: A service channel through which software calls the service. || alt: Application programming interface; API
+  Email :: A service channel using electronic mail.
+  Telephone :: A service channel using voice calls. || alt: Phone; Call center
+  In-person meeting :: A service channel in which staff meet users face to face or by video. || alt: Advisor meeting; Video meeting
+  Mobile application :: A service channel that is an application on a phone or tablet. || alt: Mobile app
+Service delivery model :: A controlled value set for how much of a service the user performs. || prefix: delivery-model
+  Self-service :: A service delivery model in which users complete the service themselves with tools provided. || alt: Do it yourself
+  Assisted service :: A service delivery model in which staff or agents help users complete the service. || alt: Guided service
+  Full service :: A service delivery model in which the provider performs the service on the user's behalf. || alt: Managed service; Done for you
+
+=== vocabulary capability
+title: Capability vocabulary
+subject: Capability
+description: Controlled values for capability maturity and strategic importance.
+standard: Capability Maturity Model Integration maturity levels; Business Architecture Guild capability assessment.
+---
+Capability maturity level :: A controlled value set for how well defined and controlled a capability is. || prefix: maturity
+  Initial :: A capability maturity level in which work is ad hoc and depends on individuals. || notation: 1 || alt: Level 1
+  Managed :: A capability maturity level in which work is planned and tracked at the project level. || notation: 2 || alt: Level 2; Repeatable
+  Defined :: A capability maturity level in which work follows organization-wide standards. || notation: 3 || alt: Level 3
+  Quantitatively managed :: A capability maturity level in which work is controlled with measures. || notation: 4 || alt: Level 4
+  Optimizing :: A capability maturity level in which work is continuously improved from measures. || notation: 5 || alt: Level 5
+Strategic importance :: A controlled value set for how much a capability distinguishes the organization. || prefix: importance
+  Differentiating :: A strategic importance for capabilities that set the organization apart from competitors. || alt: Competitive advantage
+  Essential :: A strategic importance for capabilities that must be done well but do not differentiate. || alt: Core; Parity
+  Commodity :: A strategic importance for capabilities that can be standardized or outsourced. || alt: Utility
+
+=== vocabulary value
+title: Value vocabulary
+subject: Value
+description: Controlled values for value realization status, time horizon, and certainty.
+---
+Value realization status :: A controlled value set for progress in realizing an expected value. || prefix: value-realization
+  Identified :: A value realization status for a value described but not yet committed.
+  Committed :: A value realization status for a value approved with an owner and target. || alt: Planned
+  In realization :: A value realization status for a value whose enabling work is under way. || alt: In progress
+  Realized :: A value realization status for a value confirmed by measurement. || alt: Achieved
+  Not realized :: A value realization status for a value that was not achieved. || alt: Missed
+Value horizon :: A controlled value set for when a value is expected to occur. || prefix: value-horizon
+  Short term :: A value horizon of within one year. || alt: Near term
+  Medium term :: A value horizon of one to three years.
+  Long term :: A value horizon of more than three years, including generational effects. || alt: Long range
+Value certainty :: A controlled value set for how well a value amount is supported. || prefix: value-certainty
+  Estimated :: A value certainty for amounts based on assumptions. || alt: Projected
+  Measured :: A value certainty for amounts based on observed data.
+  Verified :: A value certainty for measured amounts independently confirmed. || alt: Audited
+
+=== vocabulary policy
+title: Policy vocabulary
+subject: Policy
+description: Controlled values for policy scope, enforcement mode, and compliance status.
+standard: ISO 37301 compliance management; LKIF-Core.
+---
+Policy scope :: A controlled value set for the breadth of parties and activities a policy applies to. || prefix: policy-scope
+  Enterprise :: A policy scope covering the whole organization. || alt: Organization-wide
+  Domain :: A policy scope covering one business domain or function. || alt: Functional
+  Local :: A policy scope covering one site, team, or system.
+  Client-specific :: A policy scope covering one client and its workforce under an agreement.
+Enforcement mode :: A controlled value set for how a policy or rule is enforced at runtime. || prefix: enforcement
+  Blocking :: An enforcement mode that prevents a nonconforming action. || alt: Hard stop
+  Warning :: An enforcement mode that allows a nonconforming action and records a warning. || alt: Soft stop
+  Monitoring only :: An enforcement mode that records conformance without affecting the action. || alt: Audit mode; Shadow mode
+Compliance status :: A controlled value set for whether an obligation or policy is met. || prefix: compliance-status
+  Compliant :: A compliance status in which the obligation is fully met. || alt: Conforming
+  Partially compliant :: A compliance status in which some parts of the obligation are met.
+  Noncompliant :: A compliance status in which the obligation is not met. || alt: Nonconforming; In breach
+  Not assessed :: A compliance status in which conformance has not yet been evaluated. || alt: Unknown compliance
+  Not applicable :: A compliance status in which the obligation does not apply. || alt: Exempt
+
+=== vocabulary governance
+title: Governance vocabulary
+subject: Governance
+description: Controlled values for data classification, verification status, approval status, version change level, knowledge change type, validation result, and deployment environment.
+scope: Data classification governs access by named graph. Version change levels follow semantic versioning. Change types follow the Knowledge Graph Change Language.
+standard: Semantic Governance v1.8 Sections 3.3, 3.4, and 3.6; Knowledge Graph Change Language; Semantic Versioning 2.0.0.
+---
+Data classification :: A controlled value set for the sensitivity of information and the handling it requires. || prefix: classification || alt: Information classification
+  Public :: A data classification for information approved for release outside the organization.
+  Internal :: A data classification for information for use within the organization that would cause limited harm if disclosed.
+  Confidential :: A data classification for information whose disclosure would cause serious harm to the organization, clients, or workers. || scope: Includes contact details and most worker and client data.
+  Restricted :: A data classification for the most sensitive information, available only to named roles with a business need. || alt: Highly confidential || scope: Includes government identifiers, pay, health, and bank details.
+Verification status :: A controlled value set for whether a reference fact has been checked against a published source. || prefix: verification
+  Verified :: A verification status for facts confirmed against a cited authoritative source.
+  Unverified :: A verification status for facts not yet confirmed, reported as warnings rather than hidden. || alt: Not verified
+  Disputed :: A verification status for facts that conflict with an authoritative source and are under review. || alt: Contested
+Approval status :: A controlled value set for the state of a request awaiting authorization. || prefix: approval-status
+  Pending approval :: An approval status for a request submitted and not yet decided. || alt: Awaiting approval
+  Approved :: An approval status for a request accepted by an authorized party.
+  Rejected :: An approval status for a request declined by an authorized party. || alt: Declined
+  Withdrawn :: An approval status for a request withdrawn by its submitter.
+Version change level :: A controlled value set for the size of a change under semantic versioning. || prefix: version-change || alt: Version bump
+  Major change :: A version change level for changes that break consumers, such as removing or redefining a class or property. || alt: MAJOR; Major
+  Minor change :: A version change level for backward-compatible additions. || alt: MINOR; Minor
+  Patch change :: A version change level for label and documentation fixes. || alt: PATCH; Patch
+Knowledge change type :: A controlled value set for the kind of change made to a knowledge artifact. || prefix: change-type || alt: KGCL change type
+  Node creation :: A knowledge change type that adds a class, concept, or property. || alt: Create node
+  Node rename :: A knowledge change type that changes a preferred label. || alt: Rename
+  Node move :: A knowledge change type that changes the parent of a class or concept. || alt: Reparent
+  Node deprecation :: A knowledge change type that marks a term deprecated and names its replacement. || alt: Obsoletion
+  Definition change :: A knowledge change type that changes a definition. || alt: New text definition
+  Synonym change :: A knowledge change type that adds or removes an alternate label. || alt: Synonym addition
+  Edge creation :: A knowledge change type that adds a relationship between terms. || alt: Add edge
+  Edge deletion :: A knowledge change type that removes a relationship between terms. || alt: Remove edge
+  Mapping change :: A knowledge change type that adds, changes, or removes a mapping.
+Validation result :: A controlled value set for the outcome of a quality gate or check. || prefix: validation-result
+  Passed :: A validation result in which all checks succeeded.
+  Passed with warnings :: A validation result in which checks succeeded but warnings were raised.
+  Failed :: A validation result in which at least one blocking check did not succeed.
+Deployment environment :: A controlled value set for the environments a release is promoted through. || prefix: environment
+  Development :: A deployment environment for building and unit testing. || alt: Dev
+  Test :: A deployment environment for integration and competency question testing. || alt: Quality assurance environment
+  Stage :: A deployment environment that mirrors production for final validation. || alt: Staging; Pre-production
+  Production :: A deployment environment that serves real users. || alt: Prod; Live

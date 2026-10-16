@@ -1,0 +1,171 @@
+# Taxonomy: Decision taxonomy
+# File: taxonomy-core-decision.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix tax: <https://www.insperity.com/taxonomy/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+tax:DecisionTaxonomy a skos:ConceptScheme ;
+    dcterms:title "Decision taxonomy"@en ;
+    skos:prefLabel "Decision taxonomy"@en ;
+    dcterms:description "Classification of decisions, the determinations of an outcome or course of action made by a party or automated agent, and of the models used to make them."@en ;
+    dcterms:subject core:Decision ;
+    skos:scopeNote "Decisions are made in decision steps and are governed by rules and policies. Automation level, outcome, confidence, and hit policy values are in the decision vocabulary."@en ;
+    dcterms:source "Object Management Group Decision Model and Notation; ISO/IEC 42001 human oversight; Semantic Governance v1.8 Decision API."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept tax:StrategicDecision ,
+        tax:TacticalDecision ,
+        tax:OperationalDecision ,
+        tax:DecisionModel .
+
+tax:StrategicDecision a skos:Concept ;
+    skos:prefLabel "Strategic decision"@en ;
+    skos:altLabel "Executive decision"@en ;
+    skos:definition "A decision that sets long-term direction, scope, or major resource commitments."@en ;
+    skos:topConceptOf tax:DecisionTaxonomy ;
+    skos:inScheme tax:DecisionTaxonomy .
+
+tax:TacticalDecision a skos:Concept ;
+    skos:prefLabel "Tactical decision"@en ;
+    skos:altLabel "Management decision"@en ;
+    skos:definition "A decision that translates strategy into plans, budgets, and allocations for a medium term."@en ;
+    skos:topConceptOf tax:DecisionTaxonomy ;
+    skos:inScheme tax:DecisionTaxonomy .
+
+tax:OperationalDecision a skos:Concept ;
+    skos:prefLabel "Operational decision"@en ;
+    skos:altLabel "Transactional decision"@en , "Day-to-day decision"@en ;
+    skos:definition "A decision made repeatedly in the course of day-to-day work, often by rules or agents."@en ;
+    skos:topConceptOf tax:DecisionTaxonomy ;
+    skos:narrower tax:EligibilityDetermination , tax:ApprovalDecision , tax:ClassificationDecision , tax:RoutingDecision , tax:PricingDecision , tax:AllocationDecision , tax:PrioritizationDecision , tax:ExceptionDecision , tax:ComplianceDetermination , tax:AnswerDecision ;
+    skos:relatedMatch tax:DecisionStep ;
+    skos:inScheme tax:DecisionTaxonomy .
+
+tax:EligibilityDetermination a skos:Concept ;
+    skos:prefLabel "Eligibility determination"@en ;
+    skos:altLabel "Eligibility decision"@en , "Qualification decision"@en ;
+    skos:definition "An operational decision that establishes whether a party qualifies for something."@en ;
+    skos:broader tax:OperationalDecision ;
+    skos:relatedMatch tax:EligibilityRule ;
+    skos:inScheme tax:DecisionTaxonomy .
+
+tax:ApprovalDecision a skos:Concept ;
+    skos:prefLabel "Approval decision"@en ;
+    skos:altLabel "Authorization decision"@en ;
+    skos:definition "An operational decision that accepts or rejects a request or item."@en ;
+    skos:broader tax:OperationalDecision ;
+    skos:inScheme tax:DecisionTaxonomy .
+
+tax:ClassificationDecision a skos:Concept ;
+    skos:prefLabel "Classification decision"@en ;
+    skos:altLabel "Categorization"@en , "Triage decision"@en ;
+    skos:definition "An operational decision that assigns an item to a category."@en ;
+    skos:broader tax:OperationalDecision ;
+    skos:inScheme tax:DecisionTaxonomy .
+
+tax:RoutingDecision a skos:Concept ;
+    skos:prefLabel "Routing decision"@en ;
+    skos:altLabel "Assignment decision"@en ;
+    skos:definition "An operational decision that selects where work or a request goes next."@en ;
+    skos:broader tax:OperationalDecision ;
+    skos:inScheme tax:DecisionTaxonomy .
+
+tax:PricingDecision a skos:Concept ;
+    skos:prefLabel "Pricing decision"@en ;
+    skos:altLabel "Quote decision"@en , "Rating decision"@en ;
+    skos:definition "An operational decision that sets a price, rate, or fee."@en ;
+    skos:broader tax:OperationalDecision ;
+    skos:inScheme tax:DecisionTaxonomy .
+
+tax:AllocationDecision a skos:Concept ;
+    skos:prefLabel "Allocation decision"@en ;
+    skos:definition "An operational decision that distributes resources or amounts among recipients."@en ;
+    skos:broader tax:OperationalDecision ;
+    skos:inScheme tax:DecisionTaxonomy .
+
+tax:PrioritizationDecision a skos:Concept ;
+    skos:prefLabel "Prioritization decision"@en ;
+    skos:altLabel "Ranking decision"@en ;
+    skos:definition "An operational decision that orders work by importance or urgency."@en ;
+    skos:broader tax:OperationalDecision ;
+    skos:inScheme tax:DecisionTaxonomy .
+
+tax:ExceptionDecision a skos:Concept ;
+    skos:prefLabel "Exception decision"@en ;
+    skos:altLabel "Override decision"@en ;
+    skos:definition "An operational decision on whether and how to handle a departure from a rule or path."@en ;
+    skos:broader tax:OperationalDecision ;
+    skos:relatedMatch tax:PolicyException ;
+    skos:inScheme tax:DecisionTaxonomy .
+
+tax:ComplianceDetermination a skos:Concept ;
+    skos:prefLabel "Compliance determination"@en ;
+    skos:altLabel "Compliance decision"@en ;
+    skos:definition "An operational decision that establishes whether an obligation applies and is met."@en ;
+    skos:broader tax:OperationalDecision ;
+    skos:relatedMatch tax:Obligation ;
+    skos:inScheme tax:DecisionTaxonomy .
+
+tax:AnswerDecision a skos:Concept ;
+    skos:prefLabel "Answer decision"@en ;
+    skos:altLabel "Respond or escalate decision"@en ;
+    skos:definition "An operational decision by an artificial intelligence agent on whether to answer, ask, escalate, or decline."@en ;
+    skos:broader tax:OperationalDecision ;
+    skos:inScheme tax:DecisionTaxonomy .
+
+tax:DecisionModel a skos:Concept ;
+    skos:prefLabel "Decision model"@en ;
+    skos:altLabel "Decision logic specification"@en ;
+    skos:definition "A decision-related information artifact that specifies how a decision is made from its inputs."@en ;
+    skos:topConceptOf tax:DecisionTaxonomy ;
+    skos:narrower tax:DecisionTable , tax:DecisionTree , tax:DecisionRequirementsGraph , tax:ScoringModel , tax:PredictiveDecisionModel ;
+    skos:inScheme tax:DecisionTaxonomy .
+
+tax:DecisionTable a skos:Concept ;
+    skos:prefLabel "Decision table"@en ;
+    skos:altLabel "DMN decision table"@en , "Rule table"@en ;
+    skos:definition "A decision model that maps combinations of input conditions to outputs in rows governed by a hit policy."@en ;
+    skos:broader tax:DecisionModel ;
+    skos:inScheme tax:DecisionTaxonomy .
+
+tax:DecisionTree a skos:Concept ;
+    skos:prefLabel "Decision tree"@en ;
+    skos:altLabel "Decision flow"@en ;
+    skos:definition "A decision model that reaches an outcome through a sequence of branching tests."@en ;
+    skos:broader tax:DecisionModel ;
+    skos:inScheme tax:DecisionTaxonomy .
+
+tax:DecisionRequirementsGraph a skos:Concept ;
+    skos:prefLabel "Decision requirements graph"@en ;
+    skos:altLabel "Decision requirements diagram"@en , "DRD"@en ;
+    skos:definition "A decision model that shows decisions, their input data, knowledge sources, and dependencies."@en ;
+    skos:broader tax:DecisionModel ;
+    skos:inScheme tax:DecisionTaxonomy .
+
+tax:ScoringModel a skos:Concept ;
+    skos:prefLabel "Scoring model"@en ;
+    skos:altLabel "Scorecard"@en ;
+    skos:definition "A decision model that combines weighted factors into a score compared to cut-offs."@en ;
+    skos:broader tax:DecisionModel ;
+    skos:relatedMatch tax:ScoringCalculation ;
+    skos:inScheme tax:DecisionTaxonomy .
+
+tax:PredictiveDecisionModel a skos:Concept ;
+    skos:prefLabel "Predictive decision model"@en ;
+    skos:altLabel "Machine learning decision model"@en ;
+    skos:definition "A decision model whose output is produced by a trained machine learning model."@en ;
+    skos:broader tax:DecisionModel ;
+    skos:relatedMatch tax:MachineLearningModel ;
+    skos:inScheme tax:DecisionTaxonomy .

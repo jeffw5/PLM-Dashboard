@@ -1,0 +1,123 @@
+=== taxonomy value
+title: Value taxonomy
+subject: Value
+description: Classification of value, the benefit or worth that stakeholders receive from offerings, capabilities, and process outcomes, and of the structures used to describe how it is delivered.
+scope: Value is evaluated with measures. Realization status, horizon, and certainty values are in the value vocabulary.
+standard: Business Architecture Guild value stream mapping; ISO 30414 human capital reporting; ISO 26000 social responsibility.
+---
+Economic value :: A value expressed as a financial gain, saving, or avoided cost. || alt: Financial value; Monetary value
+  Revenue growth :: An economic value from increased sales, retention, or pricing. || alt: Revenue increase
+  Cost reduction :: An economic value from lowering current spending. || alt: Cost savings
+  Cost avoidance :: An economic value from preventing spending that would otherwise occur. || alt: Avoided cost
+  Productivity gain :: An economic value from producing more output with the same resources. || alt: Efficiency gain; Time savings
+  Capital efficiency :: An economic value from using less capital or working capital for the same outcome.
+Risk reduction value :: A value from lowering the likelihood or impact of adverse events. || alt: Protection value; Risk mitigation value
+  Compliance assurance :: A risk reduction value from meeting legal, regulatory, and contractual obligations. || alt: Regulatory assurance
+  Loss avoidance :: A risk reduction value from preventing fraud, errors, penalties, or incidents. || alt: Penalty avoidance
+  Resilience :: A risk reduction value from the ability to continue and recover when disruption occurs. || alt: Business continuity
+Stakeholder value :: A value experienced by a particular group of stakeholders. || alt: Experience value
+  Client value :: A stakeholder value experienced by client organizations. || alt: Customer value
+  Employee value :: A stakeholder value experienced by workers, such as security, wellbeing, and growth. || alt: Worker value; Employee experience
+  Partner value :: A stakeholder value experienced by suppliers, carriers, and partners.
+  Shareholder value :: A stakeholder value experienced by owners and investors. || alt: Owner value
+Societal value :: A value that benefits communities or the wider public beyond direct stakeholders. || alt: Social value; Public value
+  Community value :: A societal value that benefits the communities where the organization and its clients operate. || alt: Community benefit
+  Environmental value :: A societal value from reducing harm to or improving the natural environment. || alt: Sustainability value; Planet value
+Information value :: A value from better knowledge, decisions, and trust. || alt: Decision value; Knowledge value
+  Decision quality :: An information value from making decisions that are faster, more consistent, and better informed. || alt: Better decisions
+  Trust and transparency :: An information value from answers and records that can be traced, explained, and verified. || alt: Trust; Transparency
+  Reuse value :: An information value from defining knowledge once and reusing it across services and domains. || alt: Single source of truth value
+Value stream :: A value-related structure that is an end-to-end sequence of stages delivering an outcome to a stakeholder. || alt: Value chain || genus: ok || relm: tax:OperationalProcess
+  Customer value stream :: A value stream that delivers an outcome to an external client or worker. || alt: Operational value stream; Prospect to client value stream
+  Internal value stream :: A value stream that delivers an outcome to an internal stakeholder. || alt: Development value stream; Enabling value stream
+Value proposition :: A value-related statement of the benefits an offering or capability delivers to a stakeholder and why it is preferable to alternatives. || alt: Offer value statement || genus: ok
+  Client value proposition :: A value proposition addressed to clients. || alt: Customer value proposition
+  Employee value proposition :: A value proposition addressed to current and prospective workers. || alt: Employer brand promise
+
+=== taxonomy policy
+title: Policy taxonomy
+subject: Policy
+description: Classification of policies and other normative sources, the governing statements that impose obligations, permissions, and prohibitions on parties and process steps.
+scope: Policies govern process steps through governedBy. Individual norms are classified under Norm and linked to their source. Scope, enforcement, and compliance status values are in the policy vocabulary.
+standard: LKIF-Core norm and legal source; OASIS LegalRuleML; Akoma Ntoso for legislative documents; ISO 37301 compliance management.
+---
+Legal norm source :: A policy issued by a public authority with the force of law. || alt: Legal source; Regulatory source || relm: tax:GovernmentBody
+  Statute :: A legal norm source enacted by a legislative body. || alt: Act; Law; Federal statute; State law || ex: Fair Labor Standards Act.
+  Regulation :: A legal norm source issued by a regulatory agency under statutory authority. || alt: Rule; Administrative rule; Code of Federal Regulations section
+  Agency guidance :: A legal norm source issued by an agency to interpret or apply law without the force of regulation. || alt: Guidance; Interpretive letter; Notice
+  Court decision :: A legal norm source that is a ruling by a court establishing or interpreting law. || alt: Case law; Judicial decision; Precedent
+  Executive order :: A legal norm source issued by a head of government directing government operations.
+Organizational policy :: A policy issued by an organization to govern its own conduct and that of its workers and agents. || alt: Company policy; Internal policy
+  Code of conduct :: An organizational policy that states expected ethical behavior. || alt: Code of ethics
+  Workforce policy :: An organizational policy that governs employment practices, leave, conduct, and pay. || alt: Human resources policy; Employee handbook policy
+  Information security policy :: An organizational policy that protects information and systems. || alt: Security policy
+  Privacy policy :: An organizational policy that governs collection, use, and disclosure of personal information. || alt: Data privacy policy
+  Data classification policy :: An organizational policy that defines classification levels and the handling each requires. || alt: Information classification policy
+  Records retention policy :: An organizational policy that defines how long records are kept and how they are disposed of. || alt: Retention schedule
+  Responsible artificial intelligence policy :: An organizational policy that governs the design, use, and oversight of artificial intelligence. || alt: Responsible AI policy; AI use policy
+  Acceptable use policy :: An organizational policy that governs permitted use of systems and data.
+  Financial control policy :: An organizational policy that governs spending, approval authority, and financial reporting. || alt: Expense policy; Delegation of authority policy
+Contractual instrument :: A policy that arises from an agreement between parties and binds them to its terms. || alt: Agreement; Contract || relm: tax:AgreementDocument
+  Client service agreement :: A contractual instrument that sets the services, fees, and responsibilities between the organization and a client. || alt: Client agreement; Co-employment agreement
+  Service level agreement :: A contractual instrument that commits measurable service levels and remedies. || alt: SLA
+  Plan document :: A contractual instrument that sets the legally binding terms of a benefit or retirement plan. || alt: Plan terms; Summary plan description; SPD
+  Data processing agreement :: A contractual instrument that governs how one party processes personal data for another. || alt: Data protection agreement
+  Terms of service :: A contractual instrument that sets the conditions for using a service or application. || alt: Terms of use
+Standard :: A policy that is a documented agreement on specifications or practices adopted voluntarily or by reference. || alt: Specification
+  International standard :: A standard published by an international standards body. || alt: ISO standard; Consensus standard
+  Industry standard :: A standard published by an industry or professional body. || alt: Industry specification
+  Internal standard :: A standard adopted by the organization for its own work. || alt: Company standard || ex: Naming conventions; documentation standards.
+Procedure :: A policy that specifies the steps to carry out an activity in a consistent way. || alt: Standard operating procedure; SOP; Work instruction || relm: tax:ProcessStep
+Guideline :: A policy that recommends good practice without mandating it. || alt: Guidance note; Best practice
+Norm :: A policy statement that qualifies an action or state as obligatory, permitted, or prohibited for a party in a jurisdiction and period. || alt: Deontic statement; Legal norm || genus: ok || scope: Norms link to steps with governedBy and to their source with a source relation; each has a jurisdiction and effective period.
+  Obligation :: A norm that requires a party to perform an action or achieve a state. || alt: Duty; Requirement to act
+  Permission :: A norm that allows a party to perform an action without requiring it. || alt: Allowance; Authorization
+  Prohibition :: A norm that forbids a party from performing an action. || alt: Restriction; Ban
+  Right :: A norm that entitles a party to an action, benefit, or protection from another party. || alt: Entitlement; Claim right
+
+=== taxonomy governance
+title: Governance taxonomy
+subject: Governance
+description: Classification of governance concepts, the disciplines, bodies, controls, activities, and records through which the organization directs, oversees, and assures its work, data, knowledge, and artificial intelligence.
+scope: Data classification, verification, approval, change, validation, and environment values are in the governance vocabulary. Governance roles are in the role taxonomy.
+standard: ISO/IEC 38500 governance of information technology; ISO/IEC 42001 artificial intelligence management system; ISO 30401; ISO/IEC 11179 metadata registries; Semantic Governance v1.8 Sections 3.3 and 3.4.
+---
+Governance discipline :: A governance area of practice that directs and oversees a defined subject. || alt: Governance domain || genus: ok
+  Corporate governance :: A governance discipline concerned with direction and control of the organization by its board and executives.
+  Data governance :: A governance discipline concerned with the quality, security, and proper use of data. || alt: Information governance
+  Semantic governance :: A governance discipline concerned with shared, governed meaning in vocabularies, taxonomies, ontologies, rules, and mappings. || alt: Knowledge governance; SG
+  Artificial intelligence governance :: A governance discipline concerned with responsible design, deployment, and oversight of artificial intelligence. || alt: AI governance; Model governance
+  Technology governance :: A governance discipline concerned with the value, risk, and performance of technology. || alt: Information technology governance; IT governance
+  Risk governance :: A governance discipline concerned with risk appetite, oversight, and accountability.
+Governance body :: A governance structure that is a group with authority to make or review governance decisions. || alt: Governing body || genus: ok || relm: tax:Committee
+  Board of directors :: A governance body elected to oversee the organization on behalf of owners. || alt: Board
+  Architecture review board :: A governance body that reviews and approves architecture and core and mapping changes. || alt: Architecture board; Architecture
+  Data governance council :: A governance body that sets data policies and resolves data issues across domains. || alt: Data council
+  Change advisory board :: A governance body that assesses and approves changes to production. || alt: CAB
+  Artificial intelligence oversight committee :: A governance body that reviews artificial intelligence use, impact assessments, and incidents. || alt: AI oversight committee; Responsible AI committee
+Control :: A governance measure that modifies risk by preventing, detecting, or correcting unwanted outcomes. || alt: Internal control; Safeguard || genus: ok || relm: tax:ControlDeficiency
+  Preventive control :: A control that stops an unwanted outcome before it occurs. || alt: Preventative control
+  Detective control :: A control that identifies an unwanted outcome after it occurs. || alt: Monitoring control
+  Corrective control :: A control that limits damage and restores the expected state after an unwanted outcome.
+  Quality gate :: A control that blocks release of an artifact that fails defined checks. || alt: Release gate; Validation gate
+  Segregation of duties :: A control that divides conflicting responsibilities among different parties. || alt: Separation of duties
+  Access control :: A control that restricts who can read or change information. || alt: Entitlement control
+  Human oversight :: A control in which a person reviews, approves, or can override an automated decision or output. || alt: Human in the loop; Human review
+Governance activity :: A governance process step undertaken to direct, assure, or improve governed work. || alt: Assurance activity || genus: ok || relm: tax:ProcessStep
+  Review :: A governance activity in which a qualified party examines work for correctness and conformance. || alt: Peer review; Expert review
+  Audit :: A governance activity that independently examines records and controls against criteria. || alt: Internal audit; Compliance audit
+  Impact assessment :: A governance activity that evaluates the effects of a proposed change or system before it proceeds. || alt: Change impact assessment
+    Artificial intelligence impact assessment :: An impact assessment of the effects of an artificial intelligence system on people and the organization. || alt: AI impact assessment
+    Privacy impact assessment :: An impact assessment of the effects of processing on personal information. || alt: Data protection impact assessment
+  Risk assessment :: A governance activity that identifies, analyzes, and evaluates risks. || alt: Risk analysis
+  Change control :: A governance activity that ensures every change is traceable to an approved requirement, tested, and versioned. || alt: Change management; Change governance
+  Attestation :: A governance activity in which a party formally confirms compliance or acknowledgment. || alt: Certification; Acknowledgment
+  Monitoring :: A governance activity that continuously observes artifacts, services, and answers against targets. || alt: Oversight monitoring; Continuous monitoring
+Governance record :: A governance information artifact that documents governance decisions, obligations, or evidence. || alt: Governance artifact; Register || genus: ok
+  Charter :: A governance record that establishes the purpose, authority, and membership of a governance body or program.
+  Decision log :: A governance record that lists governance decisions, their rationale, and approvers. || alt: Architecture decision record; Decision register
+  Obligations register :: A governance record that lists obligations, their sources, owners, and controls. || alt: Compliance register
+  Risk register :: A governance record that lists risks, their ratings, owners, and treatments.
+  Metadata registry :: A governance record that registers each artifact, version, and status. || alt: Artifact registry; Model registry
+  Audit trail :: A governance record of the sequence of actions on an item, who took them, and when. || alt: Audit log
+  Release manifest :: A governance record that lists the artifacts, versions, and checksums in a release. || alt: Component manifest

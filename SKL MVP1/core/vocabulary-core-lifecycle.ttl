@@ -1,0 +1,255 @@
+# Vocabulary: Lifecycle vocabulary
+# File: vocabulary-core-lifecycle.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+voc:lifecycle-vocabulary a skos:ConceptScheme ;
+    dcterms:title "Lifecycle vocabulary"@en ;
+    skos:prefLabel "Lifecycle vocabulary"@en ;
+    dcterms:description "Controlled values for the status of governed artifacts and the stages of the Semantic Knowledge Lifecycle and the ten-stage knowledge governance lifecycle."@en ;
+    dcterms:subject core:Lifecycle ;
+    skos:scopeNote "Lifecycle status is the value of core:hasLifecycleStatus on every governed artifact. Released versions are immutable; terms are deprecated rather than deleted."@en ;
+    dcterms:source "Semantic Governance v1.8 Sections 2.4, 3.3, and 3.4."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept voc:lifecycle-status ,
+        voc:semantic-knowledge-lifecycle-stage ,
+        voc:knowledge-governance-stage ,
+        voc:generic-lifecycle-phase .
+
+voc:lifecycle-status a skos:Concept ;
+    skos:prefLabel "Lifecycle status"@en ;
+    skos:definition "A controlled value set for the governance state of a knowledge artifact or term."@en ;
+    skos:topConceptOf voc:lifecycle-vocabulary ;
+    skos:narrower voc:lifecycle-status-draft , voc:lifecycle-status-candidate , voc:lifecycle-status-released , voc:lifecycle-status-deprecated , voc:lifecycle-status-retired ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:lifecycle-status-draft a skos:Concept ;
+    skos:prefLabel "Draft"@en ;
+    skos:definition "A lifecycle status in which an artifact is being authored and required fields may be incomplete."@en ;
+    skos:broader voc:lifecycle-status ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:lifecycle-status-candidate a skos:Concept ;
+    skos:prefLabel "Candidate"@en ;
+    skos:definition "A lifecycle status in which an artifact has complete required fields and is under review for release."@en ;
+    skos:broader voc:lifecycle-status ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:lifecycle-status-released a skos:Concept ;
+    skos:prefLabel "Released"@en ;
+    skos:altLabel "Published"@en ;
+    skos:definition "A lifecycle status in which an artifact is approved, versioned, published, and immutable."@en ;
+    skos:broader voc:lifecycle-status ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:lifecycle-status-deprecated a skos:Concept ;
+    skos:prefLabel "Deprecated"@en ;
+    skos:definition "A lifecycle status in which an artifact remains available but is replaced and carries a sunset date."@en ;
+    skos:broader voc:lifecycle-status ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:lifecycle-status-retired a skos:Concept ;
+    skos:prefLabel "Retired"@en ;
+    skos:altLabel "Archived"@en ;
+    skos:definition "A lifecycle status in which an artifact is withdrawn from use and kept only for history."@en ;
+    skos:broader voc:lifecycle-status ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:semantic-knowledge-lifecycle-stage a skos:Concept ;
+    skos:prefLabel "Semantic knowledge lifecycle stage"@en ;
+    skos:altLabel "SKL stage"@en ;
+    skos:definition "A controlled value set for the six stages of the Semantic Knowledge Lifecycle."@en ;
+    skos:topConceptOf voc:lifecycle-vocabulary ;
+    skos:narrower voc:semantic-knowledge-stage-ideation , voc:semantic-knowledge-stage-development , voc:semantic-knowledge-stage-testing , voc:semantic-knowledge-stage-deployment , voc:semantic-knowledge-stage-maintenance , voc:semantic-knowledge-stage-retirement ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:semantic-knowledge-stage-ideation a skos:Concept ;
+    skos:prefLabel "Ideation"@en ;
+    skos:notation "1" ;
+    skos:definition "A semantic knowledge lifecycle stage in which scope, competency questions, and sources are agreed; covers governance stages one and two."@en ;
+    skos:broader voc:semantic-knowledge-lifecycle-stage ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:semantic-knowledge-stage-development a skos:Concept ;
+    skos:prefLabel "Development"@en ;
+    skos:notation "2" ;
+    skos:definition "A semantic knowledge lifecycle stage in which terms are defined, concepts organized, and the ontology formalized; covers governance stages three to five."@en ;
+    skos:broader voc:semantic-knowledge-lifecycle-stage ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:semantic-knowledge-stage-testing a skos:Concept ;
+    skos:prefLabel "Testing"@en ;
+    skos:notation "3" ;
+    skos:definition "A semantic knowledge lifecycle stage in which artifacts are validated; covers governance stage six."@en ;
+    skos:broader voc:semantic-knowledge-lifecycle-stage ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:semantic-knowledge-stage-deployment a skos:Concept ;
+    skos:prefLabel "Deployment"@en ;
+    skos:notation "4" ;
+    skos:definition "A semantic knowledge lifecycle stage in which artifacts are registered, published, and deployed; covers governance stages seven and eight."@en ;
+    skos:broader voc:semantic-knowledge-lifecycle-stage ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:semantic-knowledge-stage-maintenance a skos:Concept ;
+    skos:prefLabel "Maintenance"@en ;
+    skos:notation "5" ;
+    skos:definition "A semantic knowledge lifecycle stage in which artifacts are operated, protected, and measured; covers governance stage nine."@en ;
+    skos:broader voc:semantic-knowledge-lifecycle-stage ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:semantic-knowledge-stage-retirement a skos:Concept ;
+    skos:prefLabel "Retirement"@en ;
+    skos:notation "6" ;
+    skos:definition "A semantic knowledge lifecycle stage in which artifacts are changed, versioned, and retired; covers governance stage ten."@en ;
+    skos:broader voc:semantic-knowledge-lifecycle-stage ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:knowledge-governance-stage a skos:Concept ;
+    skos:prefLabel "Knowledge governance stage"@en ;
+    skos:definition "A controlled value set for the ten stages of the knowledge governance lifecycle."@en ;
+    skos:topConceptOf voc:lifecycle-vocabulary ;
+    skos:narrower voc:governance-stage-scope-and-competency-questions , voc:governance-stage-acquire-knowledge-and-provenance , voc:governance-stage-define-terms , voc:governance-stage-organize-concepts , voc:governance-stage-formalize-the-ontology , voc:governance-stage-validate , voc:governance-stage-register-and-publish , voc:governance-stage-deploy-as-persistent-or-virtual-graphs , voc:governance-stage-operate-protect-and-measure , voc:governance-stage-change-version-and-retire ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:governance-stage-scope-and-competency-questions a skos:Concept ;
+    skos:prefLabel "Scope and competency questions"@en ;
+    skos:notation "1" ;
+    skos:definition "A knowledge governance stage that agrees what the knowledge must answer, for whom, and who owns it."@en ;
+    skos:broader voc:knowledge-governance-stage ;
+    skos:broadMatch voc:semantic-knowledge-stage-ideation ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:governance-stage-acquire-knowledge-and-provenance a skos:Concept ;
+    skos:prefLabel "Acquire knowledge and provenance"@en ;
+    skos:notation "2" ;
+    skos:definition "A knowledge governance stage that collects authoritative sources and records where each fact came from."@en ;
+    skos:broader voc:knowledge-governance-stage ;
+    skos:broadMatch voc:semantic-knowledge-stage-ideation ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:governance-stage-define-terms a skos:Concept ;
+    skos:prefLabel "Define terms"@en ;
+    skos:notation "3" ;
+    skos:definition "A knowledge governance stage that sets preferred terms, intensional definitions, and term metadata."@en ;
+    skos:broader voc:knowledge-governance-stage ;
+    skos:broadMatch voc:semantic-knowledge-stage-development ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:governance-stage-organize-concepts a skos:Concept ;
+    skos:prefLabel "Organize concepts"@en ;
+    skos:notation "4" ;
+    skos:definition "A knowledge governance stage that builds hierarchies, associative relations, and mappings to external vocabularies."@en ;
+    skos:broader voc:knowledge-governance-stage ;
+    skos:broadMatch voc:semantic-knowledge-stage-development ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:governance-stage-formalize-the-ontology a skos:Concept ;
+    skos:prefLabel "Formalize the ontology"@en ;
+    skos:notation "5" ;
+    skos:definition "A knowledge governance stage that defines classes, relations, and axioms aligned to a top-level ontology."@en ;
+    skos:broader voc:knowledge-governance-stage ;
+    skos:broadMatch voc:semantic-knowledge-stage-development ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:governance-stage-validate a skos:Concept ;
+    skos:prefLabel "Validate"@en ;
+    skos:notation "6" ;
+    skos:definition "A knowledge governance stage that checks reasoner consistency, data quality, and expert and legal review."@en ;
+    skos:broader voc:knowledge-governance-stage ;
+    skos:broadMatch voc:semantic-knowledge-stage-testing ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:governance-stage-register-and-publish a skos:Concept ;
+    skos:prefLabel "Register and publish"@en ;
+    skos:notation "7" ;
+    skos:definition "A knowledge governance stage that records each artifact, version, and status in a metadata registry."@en ;
+    skos:broader voc:knowledge-governance-stage ;
+    skos:broadMatch voc:semantic-knowledge-stage-deployment ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:governance-stage-deploy-as-persistent-or-virtual-graphs a skos:Concept ;
+    skos:prefLabel "Deploy as persistent or virtual graphs"@en ;
+    skos:notation "8" ;
+    skos:definition "A knowledge governance stage that loads artifacts into a store or exposes databases as a graph."@en ;
+    skos:broader voc:knowledge-governance-stage ;
+    skos:broadMatch voc:semantic-knowledge-stage-deployment ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:governance-stage-operate-protect-and-measure a skos:Concept ;
+    skos:prefLabel "Operate, protect and measure"@en ;
+    skos:notation "9" ;
+    skos:definition "A knowledge governance stage that applies access control, impact assessment, quality monitoring, and reporting."@en ;
+    skos:broader voc:knowledge-governance-stage ;
+    skos:broadMatch voc:semantic-knowledge-stage-maintenance ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:governance-stage-change-version-and-retire a skos:Concept ;
+    skos:prefLabel "Change, version and retire"@en ;
+    skos:notation "10" ;
+    skos:definition "A knowledge governance stage that tracks changes, issues versions, deprecates rather than deletes, and retains history."@en ;
+    skos:broader voc:knowledge-governance-stage ;
+    skos:broadMatch voc:semantic-knowledge-stage-retirement ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:generic-lifecycle-phase a skos:Concept ;
+    skos:prefLabel "Generic lifecycle phase"@en ;
+    skos:definition "A controlled value set for stages shared by most asset, product, and service lifecycles."@en ;
+    skos:topConceptOf voc:lifecycle-vocabulary ;
+    skos:narrower voc:lifecycle-phase-plan , voc:lifecycle-phase-acquire-or-build , voc:lifecycle-phase-introduce , voc:lifecycle-phase-operate , voc:lifecycle-phase-improve , voc:lifecycle-phase-retire ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:lifecycle-phase-plan a skos:Concept ;
+    skos:prefLabel "Plan"@en ;
+    skos:altLabel "Concept"@en , "Strategy"@en ;
+    skos:definition "A generic lifecycle phase in which need, scope, and resources are defined."@en ;
+    skos:broader voc:generic-lifecycle-phase ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:lifecycle-phase-acquire-or-build a skos:Concept ;
+    skos:prefLabel "Acquire or build"@en ;
+    skos:altLabel "Design and build"@en , "Acquire"@en ;
+    skos:definition "A generic lifecycle phase in which the thing is designed, built, or obtained."@en ;
+    skos:broader voc:generic-lifecycle-phase ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:lifecycle-phase-introduce a skos:Concept ;
+    skos:prefLabel "Introduce"@en ;
+    skos:altLabel "Launch"@en , "Transition"@en ;
+    skos:definition "A generic lifecycle phase in which the thing is deployed or launched."@en ;
+    skos:broader voc:generic-lifecycle-phase ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:lifecycle-phase-operate a skos:Concept ;
+    skos:prefLabel "Operate"@en ;
+    skos:altLabel "Run"@en , "Use"@en ;
+    skos:definition "A generic lifecycle phase in which the thing is used and supported."@en ;
+    skos:broader voc:generic-lifecycle-phase ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:lifecycle-phase-improve a skos:Concept ;
+    skos:prefLabel "Improve"@en ;
+    skos:altLabel "Enhance"@en , "Change"@en ;
+    skos:definition "A generic lifecycle phase in which the thing is changed or enhanced."@en ;
+    skos:broader voc:generic-lifecycle-phase ;
+    skos:inScheme voc:lifecycle-vocabulary .
+
+voc:lifecycle-phase-retire a skos:Concept ;
+    skos:prefLabel "Retire"@en ;
+    skos:altLabel "Dispose"@en , "Sunset"@en ;
+    skos:definition "A generic lifecycle phase in which the thing is withdrawn and disposed of."@en ;
+    skos:broader voc:generic-lifecycle-phase ;
+    skos:inScheme voc:lifecycle-vocabulary .

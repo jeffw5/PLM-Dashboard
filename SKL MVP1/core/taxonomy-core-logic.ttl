@@ -1,0 +1,270 @@
+# Taxonomy: Logic taxonomy
+# File: taxonomy-core-logic.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix tax: <https://www.insperity.com/taxonomy/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+tax:LogicTaxonomy a skos:ConceptScheme ;
+    dcterms:title "Logic taxonomy"@en ;
+    skos:prefLabel "Logic taxonomy"@en ;
+    dcterms:description "Classification of logic components, the governed specifications of how a multi-step process, data flow, or reasoning task is carried out by services and agents."@en ;
+    dcterms:subject core:Logic ;
+    skos:scopeNote "Logic is authored as code that references single source of truth terms and versions. Business rules and decisions are in their own taxonomies. Operator and truth values are in the logic vocabulary."@en ;
+    dcterms:source "Semantic Governance v1.8 Section 3.5; BPMN gateways and flows; W3C OWL 2 RL and SPARQL for reasoning and retrieval."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept tax:ControlFlowLogic ,
+        tax:OrchestrationLogic ,
+        tax:DataFlowLogic ,
+        tax:ReasoningLogic ,
+        tax:RetrievalLogic .
+
+tax:ControlFlowLogic a skos:Concept ;
+    skos:prefLabel "Control flow logic"@en ;
+    skos:altLabel "Flow logic"@en , "Orchestration flow"@en ;
+    skos:definition "A logic component that determines the order and conditions under which process steps are carried out."@en ;
+    skos:topConceptOf tax:LogicTaxonomy ;
+    skos:narrower tax:Sequence , tax:ConditionalBranching , tax:ParallelExecution , tax:Iteration , tax:EventBasedBranching , tax:ErrorHandlingLogic ;
+    skos:relatedMatch tax:ProcessStep ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:Sequence a skos:Concept ;
+    skos:prefLabel "Sequence"@en ;
+    skos:altLabel "Sequential flow"@en ;
+    skos:definition "A control flow logic in which steps run one after another."@en ;
+    skos:broader tax:ControlFlowLogic ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:ConditionalBranching a skos:Concept ;
+    skos:prefLabel "Conditional branching"@en ;
+    skos:altLabel "Exclusive gateway"@en , "If then else"@en , "Branch"@en ;
+    skos:definition "A control flow logic in which one path is chosen from several by evaluating conditions."@en ;
+    skos:broader tax:ControlFlowLogic ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:ParallelExecution a skos:Concept ;
+    skos:prefLabel "Parallel execution"@en ;
+    skos:altLabel "Parallel gateway"@en , "Fork and join"@en ;
+    skos:definition "A control flow logic in which several paths run at the same time and later join."@en ;
+    skos:broader tax:ControlFlowLogic ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:Iteration a skos:Concept ;
+    skos:prefLabel "Iteration"@en ;
+    skos:altLabel "Loop"@en , "Repeat"@en ;
+    skos:definition "A control flow logic in which steps repeat until a condition is met or a collection is exhausted."@en ;
+    skos:broader tax:ControlFlowLogic ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:EventBasedBranching a skos:Concept ;
+    skos:prefLabel "Event-based branching"@en ;
+    skos:altLabel "Event gateway"@en ;
+    skos:definition "A control flow logic in which the path taken depends on which event occurs first."@en ;
+    skos:broader tax:ControlFlowLogic ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:ErrorHandlingLogic a skos:Concept ;
+    skos:prefLabel "Error handling logic"@en ;
+    skos:altLabel "Exception handling"@en ;
+    skos:definition "A control flow logic that detects failures and decides how to recover."@en ;
+    skos:broader tax:ControlFlowLogic ;
+    skos:narrower tax:RetryLogic , tax:FallbackLogic , tax:CompensationLogic , tax:DeadLetterRouting ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:RetryLogic a skos:Concept ;
+    skos:prefLabel "Retry logic"@en ;
+    skos:altLabel "Retry with backoff"@en ;
+    skos:definition "An error handling logic that repeats a failed step after a delay."@en ;
+    skos:broader tax:ErrorHandlingLogic ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:FallbackLogic a skos:Concept ;
+    skos:prefLabel "Fallback logic"@en ;
+    skos:altLabel "Graceful degradation"@en ;
+    skos:definition "An error handling logic that switches to an alternate path or degraded answer when a step fails."@en ;
+    skos:broader tax:ErrorHandlingLogic ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:CompensationLogic a skos:Concept ;
+    skos:prefLabel "Compensation logic"@en ;
+    skos:altLabel "Rollback"@en , "Saga compensation"@en ;
+    skos:definition "An error handling logic that undoes the effects of completed steps when a later step fails."@en ;
+    skos:broader tax:ErrorHandlingLogic ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:DeadLetterRouting a skos:Concept ;
+    skos:prefLabel "Dead-letter routing"@en ;
+    skos:altLabel "Dead letter queue handling"@en ;
+    skos:definition "An error handling logic that sets aside messages that cannot be processed after allowed recovery actions."@en ;
+    skos:broader tax:ErrorHandlingLogic ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:OrchestrationLogic a skos:Concept ;
+    skos:prefLabel "Orchestration logic"@en ;
+    skos:altLabel "Coordination logic"@en ;
+    skos:definition "A logic component that coordinates several services or agents to complete a request."@en ;
+    skos:topConceptOf tax:LogicTaxonomy ;
+    skos:narrower tax:ServiceOrchestration , tax:ServiceChoreography , tax:AgentOrchestration ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:ServiceOrchestration a skos:Concept ;
+    skos:prefLabel "Service orchestration"@en ;
+    skos:altLabel "Workflow orchestration"@en ;
+    skos:definition "An orchestration logic in which a central controller calls services in a defined order."@en ;
+    skos:broader tax:OrchestrationLogic ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:ServiceChoreography a skos:Concept ;
+    skos:prefLabel "Service choreography"@en ;
+    skos:altLabel "Event choreography"@en ;
+    skos:definition "An orchestration logic in which services react to each other's events without a central controller."@en ;
+    skos:broader tax:OrchestrationLogic ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:AgentOrchestration a skos:Concept ;
+    skos:prefLabel "Agent orchestration"@en ;
+    skos:altLabel "Multi-agent orchestration"@en , "Agent-to-agent delegation"@en ;
+    skos:definition "An orchestration logic in which a coordinating agent delegates tasks to other agents and tools."@en ;
+    skos:broader tax:OrchestrationLogic ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:DataFlowLogic a skos:Concept ;
+    skos:prefLabel "Data flow logic"@en ;
+    skos:altLabel "Data pipeline logic"@en ;
+    skos:definition "A logic component that moves, transforms, or combines data."@en ;
+    skos:topConceptOf tax:LogicTaxonomy ;
+    skos:narrower tax:TransformationLogic , tax:EnrichmentLogic , tax:FilteringLogic , tax:MatchingLogic , tax:RoutingLogic ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:TransformationLogic a skos:Concept ;
+    skos:prefLabel "Transformation logic"@en ;
+    skos:altLabel "Data transformation"@en ;
+    skos:definition "A data flow logic that changes the structure, format, or values of data."@en ;
+    skos:broader tax:DataFlowLogic ;
+    skos:relatedMatch tax:TransformationRule ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:EnrichmentLogic a skos:Concept ;
+    skos:prefLabel "Enrichment logic"@en ;
+    skos:altLabel "Data enrichment"@en ;
+    skos:definition "A data flow logic that adds attributes or links from other sources."@en ;
+    skos:broader tax:DataFlowLogic ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:FilteringLogic a skos:Concept ;
+    skos:prefLabel "Filtering logic"@en ;
+    skos:altLabel "Filter"@en ;
+    skos:definition "A data flow logic that keeps or removes records by conditions."@en ;
+    skos:broader tax:DataFlowLogic ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:MatchingLogic a skos:Concept ;
+    skos:prefLabel "Matching logic"@en ;
+    skos:altLabel "Entity resolution"@en , "Record linkage"@en ;
+    skos:definition "A data flow logic that determines whether records refer to the same entity."@en ;
+    skos:broader tax:DataFlowLogic ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:RoutingLogic a skos:Concept ;
+    skos:prefLabel "Routing logic"@en ;
+    skos:altLabel "Content-based routing"@en ;
+    skos:definition "A data flow logic that directs messages or records to destinations by content or type."@en ;
+    skos:broader tax:DataFlowLogic ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:ReasoningLogic a skos:Concept ;
+    skos:prefLabel "Reasoning logic"@en ;
+    skos:altLabel "Inference logic"@en ;
+    skos:definition "A logic component that draws conclusions from facts and knowledge."@en ;
+    skos:topConceptOf tax:LogicTaxonomy ;
+    skos:narrower tax:DeductiveReasoning , tax:InductiveReasoning , tax:AbductiveReasoning , tax:CausalReasoning , tax:ProbabilisticReasoning , tax:TemporalReasoning ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:DeductiveReasoning a skos:Concept ;
+    skos:prefLabel "Deductive reasoning"@en ;
+    skos:altLabel "Deduction"@en , "Entailment"@en ;
+    skos:definition "A reasoning logic that derives conclusions that necessarily follow from premises and axioms."@en ;
+    skos:broader tax:ReasoningLogic ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:InductiveReasoning a skos:Concept ;
+    skos:prefLabel "Inductive reasoning"@en ;
+    skos:altLabel "Induction"@en ;
+    skos:definition "A reasoning logic that generalizes from observed cases to probable rules."@en ;
+    skos:broader tax:ReasoningLogic ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:AbductiveReasoning a skos:Concept ;
+    skos:prefLabel "Abductive reasoning"@en ;
+    skos:altLabel "Abduction"@en , "Diagnostic reasoning"@en ;
+    skos:definition "A reasoning logic that infers the most likely explanation for observations."@en ;
+    skos:broader tax:ReasoningLogic ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:CausalReasoning a skos:Concept ;
+    skos:prefLabel "Causal reasoning"@en ;
+    skos:altLabel "Causal inference"@en ;
+    skos:definition "A reasoning logic that determines how changes in one factor produce changes in another."@en ;
+    skos:broader tax:ReasoningLogic ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:ProbabilisticReasoning a skos:Concept ;
+    skos:prefLabel "Probabilistic reasoning"@en ;
+    skos:altLabel "Bayesian reasoning"@en ;
+    skos:definition "A reasoning logic that computes likelihoods of conclusions under uncertainty."@en ;
+    skos:broader tax:ReasoningLogic ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:TemporalReasoning a skos:Concept ;
+    skos:prefLabel "Temporal reasoning"@en ;
+    skos:definition "A reasoning logic that draws conclusions about the order, overlap, and validity of facts over time."@en ;
+    skos:broader tax:ReasoningLogic ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:RetrievalLogic a skos:Concept ;
+    skos:prefLabel "Retrieval logic"@en ;
+    skos:altLabel "Retrieval-augmented generation logic"@en , "RAG logic"@en ;
+    skos:definition "A logic component that selects the governed facts and content used to answer a question."@en ;
+    skos:topConceptOf tax:LogicTaxonomy ;
+    skos:narrower tax:SemanticSearch , tax:GraphTraversal , tax:HybridRetrieval , tax:ContextAssembly ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:SemanticSearch a skos:Concept ;
+    skos:prefLabel "Semantic search"@en ;
+    skos:altLabel "Vector search"@en , "Similarity search"@en ;
+    skos:definition "A retrieval logic that finds content by meaning using labels, synonyms, and embeddings."@en ;
+    skos:broader tax:RetrievalLogic ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:GraphTraversal a skos:Concept ;
+    skos:prefLabel "Graph traversal"@en ;
+    skos:altLabel "Graph query"@en ;
+    skos:definition "A retrieval logic that follows relationships in the knowledge graph from a starting entity."@en ;
+    skos:broader tax:RetrievalLogic ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:HybridRetrieval a skos:Concept ;
+    skos:prefLabel "Hybrid retrieval"@en ;
+    skos:altLabel "Federated retrieval"@en ;
+    skos:definition "A retrieval logic that combines keyword, vector, and graph results and ranks them together."@en ;
+    skos:broader tax:RetrievalLogic ;
+    skos:inScheme tax:LogicTaxonomy .
+
+tax:ContextAssembly a skos:Concept ;
+    skos:prefLabel "Context assembly"@en ;
+    skos:altLabel "Context engineering"@en ;
+    skos:definition "A retrieval logic that composes retrieved facts, definitions, and sources into model context within a token budget."@en ;
+    skos:broader tax:RetrievalLogic ;
+    skos:inScheme tax:LogicTaxonomy .

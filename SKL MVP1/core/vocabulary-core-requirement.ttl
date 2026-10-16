@@ -1,0 +1,144 @@
+# Vocabulary: Requirement vocabulary
+# File: vocabulary-core-requirement.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+voc:requirement-vocabulary a skos:ConceptScheme ;
+    dcterms:title "Requirement vocabulary"@en ;
+    skos:prefLabel "Requirement vocabulary"@en ;
+    dcterms:description "Controlled values that describe the priority, status, and verification method of requirements."@en ;
+    dcterms:subject core:Requirement ;
+    dcterms:source "ISO/IEC/IEEE 29148; INCOSE verification methods; MoSCoW prioritization."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept voc:requirement-priority ,
+        voc:requirement-status ,
+        voc:verification-method .
+
+voc:requirement-priority a skos:Concept ;
+    skos:prefLabel "Requirement priority"@en ;
+    skos:definition "A controlled value set for the relative importance of a requirement in a release."@en ;
+    skos:topConceptOf voc:requirement-vocabulary ;
+    skos:narrower voc:requirement-priority-must-have , voc:requirement-priority-should-have , voc:requirement-priority-could-have , voc:requirement-priority-will-not-have-this-time ;
+    skos:inScheme voc:requirement-vocabulary .
+
+voc:requirement-priority-must-have a skos:Concept ;
+    skos:prefLabel "Must have"@en ;
+    skos:altLabel "Must"@en , "Mandatory"@en ;
+    skos:definition "A requirement priority for requirements without which the release fails."@en ;
+    skos:broader voc:requirement-priority ;
+    skos:inScheme voc:requirement-vocabulary .
+
+voc:requirement-priority-should-have a skos:Concept ;
+    skos:prefLabel "Should have"@en ;
+    skos:altLabel "Should"@en ;
+    skos:definition "A requirement priority for important requirements that can be deferred with a workaround."@en ;
+    skos:broader voc:requirement-priority ;
+    skos:inScheme voc:requirement-vocabulary .
+
+voc:requirement-priority-could-have a skos:Concept ;
+    skos:prefLabel "Could have"@en ;
+    skos:altLabel "Could"@en , "Nice to have"@en ;
+    skos:definition "A requirement priority for desirable requirements included if capacity allows."@en ;
+    skos:broader voc:requirement-priority ;
+    skos:inScheme voc:requirement-vocabulary .
+
+voc:requirement-priority-will-not-have-this-time a skos:Concept ;
+    skos:prefLabel "Will not have this time"@en ;
+    skos:altLabel "Won't have"@en , "Out of scope"@en ;
+    skos:definition "A requirement priority for requirements explicitly out of scope for the release."@en ;
+    skos:broader voc:requirement-priority ;
+    skos:inScheme voc:requirement-vocabulary .
+
+voc:requirement-status a skos:Concept ;
+    skos:prefLabel "Requirement status"@en ;
+    skos:definition "A controlled value set for where a requirement stands in its lifecycle."@en ;
+    skos:topConceptOf voc:requirement-vocabulary ;
+    skos:narrower voc:requirement-status-proposed , voc:requirement-status-approved , voc:requirement-status-implemented , voc:requirement-status-verified , voc:requirement-status-deferred , voc:requirement-status-rejected ;
+    skos:inScheme voc:requirement-vocabulary .
+
+voc:requirement-status-proposed a skos:Concept ;
+    skos:prefLabel "Proposed"@en ;
+    skos:altLabel "Draft requirement"@en ;
+    skos:definition "A requirement status for a requirement captured but not yet reviewed."@en ;
+    skos:broader voc:requirement-status ;
+    skos:inScheme voc:requirement-vocabulary .
+
+voc:requirement-status-approved a skos:Concept ;
+    skos:prefLabel "Approved"@en ;
+    skos:altLabel "Baselined"@en ;
+    skos:definition "A requirement status for a requirement accepted for implementation."@en ;
+    skos:broader voc:requirement-status ;
+    skos:inScheme voc:requirement-vocabulary .
+
+voc:requirement-status-implemented a skos:Concept ;
+    skos:prefLabel "Implemented"@en ;
+    skos:definition "A requirement status for a requirement built and awaiting verification."@en ;
+    skos:broader voc:requirement-status ;
+    skos:inScheme voc:requirement-vocabulary .
+
+voc:requirement-status-verified a skos:Concept ;
+    skos:prefLabel "Verified"@en ;
+    skos:altLabel "Passed"@en ;
+    skos:definition "A requirement status for a requirement shown to be met by its verification method."@en ;
+    skos:broader voc:requirement-status ;
+    skos:inScheme voc:requirement-vocabulary .
+
+voc:requirement-status-deferred a skos:Concept ;
+    skos:prefLabel "Deferred"@en ;
+    skos:altLabel "Postponed"@en ;
+    skos:definition "A requirement status for an approved requirement moved to a later release."@en ;
+    skos:broader voc:requirement-status ;
+    skos:inScheme voc:requirement-vocabulary .
+
+voc:requirement-status-rejected a skos:Concept ;
+    skos:prefLabel "Rejected"@en ;
+    skos:altLabel "Declined"@en ;
+    skos:definition "A requirement status for a requirement not accepted."@en ;
+    skos:broader voc:requirement-status ;
+    skos:inScheme voc:requirement-vocabulary .
+
+voc:verification-method a skos:Concept ;
+    skos:prefLabel "Verification method"@en ;
+    skos:definition "A controlled value set for how a requirement is shown to be met."@en ;
+    skos:topConceptOf voc:requirement-vocabulary ;
+    skos:narrower voc:verification-method-inspection , voc:verification-method-analysis , voc:verification-method-demonstration , voc:verification-method-test ;
+    skos:inScheme voc:requirement-vocabulary .
+
+voc:verification-method-inspection a skos:Concept ;
+    skos:prefLabel "Inspection"@en ;
+    skos:altLabel "Review"@en ;
+    skos:definition "A verification method that examines an artifact against the requirement without executing it."@en ;
+    skos:broader voc:verification-method ;
+    skos:inScheme voc:requirement-vocabulary .
+
+voc:verification-method-analysis a skos:Concept ;
+    skos:prefLabel "Analysis"@en ;
+    skos:definition "A verification method that uses models, calculations, or reasoning to show the requirement is met."@en ;
+    skos:broader voc:verification-method ;
+    skos:inScheme voc:requirement-vocabulary .
+
+voc:verification-method-demonstration a skos:Concept ;
+    skos:prefLabel "Demonstration"@en ;
+    skos:definition "A verification method that shows the function operating without detailed measurement."@en ;
+    skos:broader voc:verification-method ;
+    skos:inScheme voc:requirement-vocabulary .
+
+voc:verification-method-test a skos:Concept ;
+    skos:prefLabel "Test"@en ;
+    skos:altLabel "Competency question test"@en ;
+    skos:definition "A verification method that executes the item under controlled conditions and measures results."@en ;
+    skos:broader voc:verification-method ;
+    skos:inScheme voc:requirement-vocabulary .

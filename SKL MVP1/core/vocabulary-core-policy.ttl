@@ -1,0 +1,130 @@
+# Vocabulary: Policy vocabulary
+# File: vocabulary-core-policy.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+voc:policy-vocabulary a skos:ConceptScheme ;
+    dcterms:title "Policy vocabulary"@en ;
+    skos:prefLabel "Policy vocabulary"@en ;
+    dcterms:description "Controlled values for policy scope, enforcement mode, and compliance status."@en ;
+    dcterms:subject core:Policy ;
+    dcterms:source "ISO 37301 compliance management; LKIF-Core."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept voc:policy-scope ,
+        voc:enforcement-mode ,
+        voc:compliance-status .
+
+voc:policy-scope a skos:Concept ;
+    skos:prefLabel "Policy scope"@en ;
+    skos:definition "A controlled value set for the breadth of parties and activities a policy applies to."@en ;
+    skos:topConceptOf voc:policy-vocabulary ;
+    skos:narrower voc:policy-scope-enterprise , voc:policy-scope-domain , voc:policy-scope-local , voc:policy-scope-client-specific ;
+    skos:inScheme voc:policy-vocabulary .
+
+voc:policy-scope-enterprise a skos:Concept ;
+    skos:prefLabel "Enterprise"@en ;
+    skos:altLabel "Organization-wide"@en ;
+    skos:definition "A policy scope covering the whole organization."@en ;
+    skos:broader voc:policy-scope ;
+    skos:inScheme voc:policy-vocabulary .
+
+voc:policy-scope-domain a skos:Concept ;
+    skos:prefLabel "Domain"@en ;
+    skos:altLabel "Functional"@en ;
+    skos:definition "A policy scope covering one business domain or function."@en ;
+    skos:broader voc:policy-scope ;
+    skos:inScheme voc:policy-vocabulary .
+
+voc:policy-scope-local a skos:Concept ;
+    skos:prefLabel "Local"@en ;
+    skos:definition "A policy scope covering one site, team, or system."@en ;
+    skos:broader voc:policy-scope ;
+    skos:inScheme voc:policy-vocabulary .
+
+voc:policy-scope-client-specific a skos:Concept ;
+    skos:prefLabel "Client-specific"@en ;
+    skos:definition "A policy scope covering one client and its workforce under an agreement."@en ;
+    skos:broader voc:policy-scope ;
+    skos:inScheme voc:policy-vocabulary .
+
+voc:enforcement-mode a skos:Concept ;
+    skos:prefLabel "Enforcement mode"@en ;
+    skos:definition "A controlled value set for how a policy or rule is enforced at runtime."@en ;
+    skos:topConceptOf voc:policy-vocabulary ;
+    skos:narrower voc:enforcement-blocking , voc:enforcement-warning , voc:enforcement-monitoring-only ;
+    skos:inScheme voc:policy-vocabulary .
+
+voc:enforcement-blocking a skos:Concept ;
+    skos:prefLabel "Blocking"@en ;
+    skos:altLabel "Hard stop"@en ;
+    skos:definition "An enforcement mode that prevents a nonconforming action."@en ;
+    skos:broader voc:enforcement-mode ;
+    skos:inScheme voc:policy-vocabulary .
+
+voc:enforcement-warning a skos:Concept ;
+    skos:prefLabel "Warning"@en ;
+    skos:altLabel "Soft stop"@en ;
+    skos:definition "An enforcement mode that allows a nonconforming action and records a warning."@en ;
+    skos:broader voc:enforcement-mode ;
+    skos:inScheme voc:policy-vocabulary .
+
+voc:enforcement-monitoring-only a skos:Concept ;
+    skos:prefLabel "Monitoring only"@en ;
+    skos:altLabel "Audit mode"@en , "Shadow mode"@en ;
+    skos:definition "An enforcement mode that records conformance without affecting the action."@en ;
+    skos:broader voc:enforcement-mode ;
+    skos:inScheme voc:policy-vocabulary .
+
+voc:compliance-status a skos:Concept ;
+    skos:prefLabel "Compliance status"@en ;
+    skos:definition "A controlled value set for whether an obligation or policy is met."@en ;
+    skos:topConceptOf voc:policy-vocabulary ;
+    skos:narrower voc:compliance-status-compliant , voc:compliance-status-partially-compliant , voc:compliance-status-noncompliant , voc:compliance-status-not-assessed , voc:compliance-status-not-applicable ;
+    skos:inScheme voc:policy-vocabulary .
+
+voc:compliance-status-compliant a skos:Concept ;
+    skos:prefLabel "Compliant"@en ;
+    skos:altLabel "Conforming"@en ;
+    skos:definition "A compliance status in which the obligation is fully met."@en ;
+    skos:broader voc:compliance-status ;
+    skos:inScheme voc:policy-vocabulary .
+
+voc:compliance-status-partially-compliant a skos:Concept ;
+    skos:prefLabel "Partially compliant"@en ;
+    skos:definition "A compliance status in which some parts of the obligation are met."@en ;
+    skos:broader voc:compliance-status ;
+    skos:inScheme voc:policy-vocabulary .
+
+voc:compliance-status-noncompliant a skos:Concept ;
+    skos:prefLabel "Noncompliant"@en ;
+    skos:altLabel "Nonconforming"@en , "In breach"@en ;
+    skos:definition "A compliance status in which the obligation is not met."@en ;
+    skos:broader voc:compliance-status ;
+    skos:inScheme voc:policy-vocabulary .
+
+voc:compliance-status-not-assessed a skos:Concept ;
+    skos:prefLabel "Not assessed"@en ;
+    skos:altLabel "Unknown compliance"@en ;
+    skos:definition "A compliance status in which conformance has not yet been evaluated."@en ;
+    skos:broader voc:compliance-status ;
+    skos:inScheme voc:policy-vocabulary .
+
+voc:compliance-status-not-applicable a skos:Concept ;
+    skos:prefLabel "Not applicable"@en ;
+    skos:altLabel "Exempt"@en ;
+    skos:definition "A compliance status in which the obligation does not apply."@en ;
+    skos:broader voc:compliance-status ;
+    skos:inScheme voc:policy-vocabulary .

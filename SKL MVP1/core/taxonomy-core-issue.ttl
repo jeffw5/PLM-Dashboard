@@ -1,0 +1,341 @@
+# Taxonomy: Issue taxonomy
+# File: taxonomy-core-issue.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix tax: <https://www.insperity.com/taxonomy/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+tax:IssueTaxonomy a skos:ConceptScheme ;
+    dcterms:title "Issue taxonomy"@en ;
+    skos:prefLabel "Issue taxonomy"@en ;
+    dcterms:description "Classification of conditions that deviate from what is expected or required and need to be assessed, tracked, or resolved."@en ;
+    dcterms:subject core:Issue ;
+    skos:scopeNote "Covers kinds of issue. Severity, priority, status, resolution, and root-cause values are in the issue vocabulary."@en ;
+    dcterms:source "ISO 31000 for risk; ISO/IEC 5259 for data quality; ITIL practice for incident and problem."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept tax:Defect ,
+        tax:Incident ,
+        tax:Problem ,
+        tax:Risk ,
+        tax:Nonconformance ,
+        tax:Exception ,
+        tax:Complaint ,
+        tax:QuestionGap .
+
+tax:Defect a skos:Concept ;
+    skos:prefLabel "Defect"@en ;
+    skos:altLabel "Bug"@en , "Fault"@en ;
+    skos:definition "An issue that is a fault in an artifact causing it to differ from its specification or intended meaning."@en ;
+    skos:topConceptOf tax:IssueTaxonomy ;
+    skos:narrower tax:DataDefect , tax:KnowledgeDefect , tax:SoftwareDefect , tax:ArtificialIntelligenceOutputDefect ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:DataDefect a skos:Concept ;
+    skos:prefLabel "Data defect"@en ;
+    skos:altLabel "Data quality issue"@en ;
+    skos:definition "A defect in data values or records."@en ;
+    skos:broader tax:Defect ;
+    skos:narrower tax:MissingValue , tax:InvalidValue , tax:DuplicateRecord , tax:InconsistentValue , tax:StaleValue ;
+    skos:relatedMatch tax:DataQualityDimension ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:MissingValue a skos:Concept ;
+    skos:prefLabel "Missing value"@en ;
+    skos:altLabel "Null value"@en , "Incomplete record"@en ;
+    skos:definition "A data defect in which a required value is absent."@en ;
+    skos:broader tax:DataDefect ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:InvalidValue a skos:Concept ;
+    skos:prefLabel "Invalid value"@en ;
+    skos:altLabel "Malformed value"@en ;
+    skos:definition "A data defect in which a value does not conform to its allowed type, format, or range."@en ;
+    skos:broader tax:DataDefect ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:DuplicateRecord a skos:Concept ;
+    skos:prefLabel "Duplicate record"@en ;
+    skos:altLabel "Duplicate"@en ;
+    skos:definition "A data defect in which the same entity is recorded more than once."@en ;
+    skos:broader tax:DataDefect ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:InconsistentValue a skos:Concept ;
+    skos:prefLabel "Inconsistent value"@en ;
+    skos:altLabel "Conflicting value"@en ;
+    skos:definition "A data defect in which values about the same fact disagree across records or systems."@en ;
+    skos:broader tax:DataDefect ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:StaleValue a skos:Concept ;
+    skos:prefLabel "Stale value"@en ;
+    skos:altLabel "Outdated value"@en ;
+    skos:definition "A data defect in which a value is older than its required freshness."@en ;
+    skos:broader tax:DataDefect ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:KnowledgeDefect a skos:Concept ;
+    skos:prefLabel "Knowledge defect"@en ;
+    skos:altLabel "Semantic defect"@en , "Design-time defect"@en ;
+    skos:definition "A defect in a governed vocabulary, taxonomy, ontology, mapping, or rule."@en ;
+    skos:broader tax:Defect ;
+    skos:narrower tax:DefinitionDefect , tax:LabelDefect , tax:ClassificationDefect , tax:MappingDefect , tax:RuleDefect ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:DefinitionDefect a skos:Concept ;
+    skos:prefLabel "Definition defect"@en ;
+    skos:definition "A knowledge defect in which a term's definition is missing, circular, ambiguous, or wrong."@en ;
+    skos:broader tax:KnowledgeDefect ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:LabelDefect a skos:Concept ;
+    skos:prefLabel "Label defect"@en ;
+    skos:definition "A knowledge defect in which a label is missing, duplicated, colliding, or uses an unapproved acronym."@en ;
+    skos:broader tax:KnowledgeDefect ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:ClassificationDefect a skos:Concept ;
+    skos:prefLabel "Classification defect"@en ;
+    skos:altLabel "Orphan term"@en , "Misclassification"@en ;
+    skos:definition "A knowledge defect in which a term is placed under the wrong parent or has no path to the core."@en ;
+    skos:broader tax:KnowledgeDefect ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:MappingDefect a skos:Concept ;
+    skos:prefLabel "Mapping defect"@en ;
+    skos:altLabel "Unmapped element"@en ;
+    skos:definition "A knowledge defect in which a source element is mapped to the wrong term or not mapped."@en ;
+    skos:broader tax:KnowledgeDefect ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:RuleDefect a skos:Concept ;
+    skos:prefLabel "Rule defect"@en ;
+    skos:altLabel "Decision table gap"@en , "Decision table overlap"@en ;
+    skos:definition "A knowledge defect in which a rule has a gap, overlap, or incorrect outcome."@en ;
+    skos:broader tax:KnowledgeDefect ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:SoftwareDefect a skos:Concept ;
+    skos:prefLabel "Software defect"@en ;
+    skos:altLabel "Code defect"@en ;
+    skos:definition "A defect in software code or configuration."@en ;
+    skos:broader tax:Defect ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:ArtificialIntelligenceOutputDefect a skos:Concept ;
+    skos:prefLabel "Artificial intelligence output defect"@en ;
+    skos:altLabel "AI output defect"@en ;
+    skos:definition "A defect in content generated by an artificial intelligence agent."@en ;
+    skos:broader tax:Defect ;
+    skos:narrower tax:Hallucination , tax:UngroundedAnswer , tax:IncorrectCitation , tax:PolicyViolatingOutput ;
+    skos:relatedMatch tax:ArtificialIntelligenceRisk ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:Hallucination a skos:Concept ;
+    skos:prefLabel "Hallucination"@en ;
+    skos:altLabel "Confabulation"@en , "Fabricated answer"@en ;
+    skos:definition "An artificial intelligence output defect in which the output states something that is not supported by governed facts or sources."@en ;
+    skos:broader tax:ArtificialIntelligenceOutputDefect ;
+    skos:relatedMatch tax:MeanTimeBetweenHallucinations ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:UngroundedAnswer a skos:Concept ;
+    skos:prefLabel "Ungrounded answer"@en ;
+    skos:altLabel "Missing citation"@en , "Untraceable answer"@en ;
+    skos:definition "An artificial intelligence output defect in which an answer does not cite the governed terms and sources it relied on."@en ;
+    skos:broader tax:ArtificialIntelligenceOutputDefect ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:IncorrectCitation a skos:Concept ;
+    skos:prefLabel "Incorrect citation"@en ;
+    skos:definition "An artificial intelligence output defect in which an answer cites a source that does not support it."@en ;
+    skos:broader tax:ArtificialIntelligenceOutputDefect ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:PolicyViolatingOutput a skos:Concept ;
+    skos:prefLabel "Policy violating output"@en ;
+    skos:altLabel "Guardrail breach"@en ;
+    skos:definition "An artificial intelligence output defect in which the output breaches a guardrail or policy."@en ;
+    skos:broader tax:ArtificialIntelligenceOutputDefect ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:Incident a skos:Concept ;
+    skos:prefLabel "Incident"@en ;
+    skos:altLabel "Service incident"@en ;
+    skos:definition "An issue that is an unplanned interruption or reduction in the quality of a service."@en ;
+    skos:topConceptOf tax:IssueTaxonomy ;
+    skos:narrower tax:ServiceOutage , tax:PerformanceDegradation , tax:SecurityIncident , tax:PrivacyIncident ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:ServiceOutage a skos:Concept ;
+    skos:prefLabel "Service outage"@en ;
+    skos:altLabel "Outage"@en , "Downtime"@en ;
+    skos:definition "An incident in which a service is unavailable to its users."@en ;
+    skos:broader tax:Incident ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:PerformanceDegradation a skos:Concept ;
+    skos:prefLabel "Performance degradation"@en ;
+    skos:altLabel "Slowdown"@en ;
+    skos:definition "An incident in which a service is available but slower or less reliable than its service level."@en ;
+    skos:broader tax:Incident ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:SecurityIncident a skos:Concept ;
+    skos:prefLabel "Security incident"@en ;
+    skos:altLabel "Cybersecurity incident"@en ;
+    skos:definition "An incident that compromises the confidentiality, integrity, or availability of information or systems."@en ;
+    skos:broader tax:Incident ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:PrivacyIncident a skos:Concept ;
+    skos:prefLabel "Privacy incident"@en ;
+    skos:altLabel "Data breach"@en , "Privacy breach"@en ;
+    skos:definition "An incident in which personal information is accessed, used, or disclosed without authorization."@en ;
+    skos:broader tax:Incident ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:Problem a skos:Concept ;
+    skos:prefLabel "Problem"@en ;
+    skos:altLabel "Root cause problem"@en ;
+    skos:definition "An issue that is the underlying cause of one or more incidents or defects."@en ;
+    skos:scopeNote "Problems are resolved by removing the cause, incidents by restoring service."@en ;
+    skos:topConceptOf tax:IssueTaxonomy ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:Risk a skos:Concept ;
+    skos:prefLabel "Risk"@en ;
+    skos:altLabel "Risk item"@en ;
+    skos:definition "An issue that is the effect of uncertainty on objectives, expressed as a possible event and its consequence."@en ;
+    skos:scopeNote "A risk has not yet occurred; once it occurs it is recorded as an incident or nonconformance."@en ;
+    skos:topConceptOf tax:IssueTaxonomy ;
+    skos:narrower tax:ComplianceRisk , tax:OperationalRisk , tax:FinancialRisk , tax:StrategicRisk , tax:ArtificialIntelligenceRisk , tax:InformationSecurityRisk ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:ComplianceRisk a skos:Concept ;
+    skos:prefLabel "Compliance risk"@en ;
+    skos:altLabel "Regulatory risk"@en ;
+    skos:definition "A risk of failing to meet a legal, regulatory, or contractual obligation."@en ;
+    skos:broader tax:Risk ;
+    skos:relatedMatch tax:Obligation ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:OperationalRisk a skos:Concept ;
+    skos:prefLabel "Operational risk"@en ;
+    skos:definition "A risk of loss from failed processes, people, systems, or external events."@en ;
+    skos:broader tax:Risk ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:FinancialRisk a skos:Concept ;
+    skos:prefLabel "Financial risk"@en ;
+    skos:altLabel "Credit risk"@en , "Market risk"@en ;
+    skos:definition "A risk of monetary loss or adverse financial outcome."@en ;
+    skos:broader tax:Risk ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:StrategicRisk a skos:Concept ;
+    skos:prefLabel "Strategic risk"@en ;
+    skos:definition "A risk that threatens the organization's direction or competitive position."@en ;
+    skos:broader tax:Risk ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:ArtificialIntelligenceRisk a skos:Concept ;
+    skos:prefLabel "Artificial intelligence risk"@en ;
+    skos:altLabel "AI risk"@en , "Model risk"@en ;
+    skos:definition "A risk arising from the design, data, or use of an artificial intelligence system."@en ;
+    skos:broader tax:Risk ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:InformationSecurityRisk a skos:Concept ;
+    skos:prefLabel "Information security risk"@en ;
+    skos:altLabel "Cybersecurity risk"@en ;
+    skos:definition "A risk to the confidentiality, integrity, or availability of information."@en ;
+    skos:broader tax:Risk ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:Nonconformance a skos:Concept ;
+    skos:prefLabel "Nonconformance"@en ;
+    skos:altLabel "Nonconformity"@en , "Noncompliance"@en ;
+    skos:definition "An issue in which a requirement, norm, or control is not met."@en ;
+    skos:topConceptOf tax:IssueTaxonomy ;
+    skos:narrower tax:NormViolation , tax:ControlDeficiency , tax:AuditFinding , tax:ServiceLevelBreach ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:NormViolation a skos:Concept ;
+    skos:prefLabel "Norm violation"@en ;
+    skos:altLabel "Compliance violation"@en , "Regulatory violation"@en ;
+    skos:definition "A nonconformance in which an obligation or prohibition in a law, regulation, or policy is breached."@en ;
+    skos:broader tax:Nonconformance ;
+    skos:relatedMatch tax:Norm ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:ControlDeficiency a skos:Concept ;
+    skos:prefLabel "Control deficiency"@en ;
+    skos:altLabel "Control gap"@en ;
+    skos:definition "A nonconformance in which a control is missing, poorly designed, or not operating as intended."@en ;
+    skos:broader tax:Nonconformance ;
+    skos:relatedMatch tax:Control ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:AuditFinding a skos:Concept ;
+    skos:prefLabel "Audit finding"@en ;
+    skos:altLabel "Finding"@en ;
+    skos:definition "A nonconformance identified and recorded during an audit."@en ;
+    skos:broader tax:Nonconformance ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:ServiceLevelBreach a skos:Concept ;
+    skos:prefLabel "Service level breach"@en ;
+    skos:altLabel "Service level agreement breach"@en , "SLA breach"@en ;
+    skos:definition "A nonconformance in which a committed service level is not met."@en ;
+    skos:broader tax:Nonconformance ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:Exception a skos:Concept ;
+    skos:prefLabel "Exception"@en ;
+    skos:altLabel "Deviation"@en ;
+    skos:definition "An issue that is an approved or detected departure from the normal rule or path."@en ;
+    skos:topConceptOf tax:IssueTaxonomy ;
+    skos:narrower tax:ProcessExceptionIssue , tax:PolicyException ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:ProcessExceptionIssue a skos:Concept ;
+    skos:prefLabel "Process exception issue"@en ;
+    skos:altLabel "Process exception case"@en , "Work exception"@en ;
+    skos:definition "An exception in which a process step cannot complete along its expected path and needs handling."@en ;
+    skos:broader tax:Exception ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:PolicyException a skos:Concept ;
+    skos:prefLabel "Policy exception"@en ;
+    skos:altLabel "Waiver"@en , "Exemption"@en ;
+    skos:definition "An exception in which a party is permitted to depart from a policy for a stated reason and period."@en ;
+    skos:broader tax:Exception ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:Complaint a skos:Concept ;
+    skos:prefLabel "Complaint"@en ;
+    skos:altLabel "Grievance"@en , "Customer complaint"@en ;
+    skos:definition "An issue that is an expression of dissatisfaction by a party about a product, service, or interaction."@en ;
+    skos:topConceptOf tax:IssueTaxonomy ;
+    skos:inScheme tax:IssueTaxonomy .
+
+tax:QuestionGap a skos:Concept ;
+    skos:prefLabel "Question gap"@en ;
+    skos:altLabel "Knowledge gap"@en , "Zero-result search"@en , "Unanswered question"@en ;
+    skos:definition "An issue in which a question cannot be answered from governed knowledge."@en ;
+    skos:topConceptOf tax:IssueTaxonomy ;
+    skos:relatedMatch tax:Inquiry ;
+    skos:inScheme tax:IssueTaxonomy .

@@ -1,0 +1,244 @@
+# Taxonomy: Rule taxonomy
+# File: taxonomy-core-rule.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix tax: <https://www.insperity.com/taxonomy/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+tax:RuleTaxonomy a skos:ConceptScheme ;
+    dcterms:title "Rule taxonomy"@en ;
+    skos:prefLabel "Rule taxonomy"@en ;
+    dcterms:description "Classification of rules, the declarative statements authored once in the single source of truth that constrain data, derive decisions, or guard the behavior of services and agents."@en ;
+    dcterms:subject core:Rule ;
+    skos:scopeNote "Constraints run as SHACL shapes or JSON Schema; decision rules run as DMN tables behind the Decision API. Multi-step logic is in the logic taxonomy and calculations are in the measure taxonomy. Strength, authoring format, and runtime values are in the rule vocabulary."@en ;
+    dcterms:source "Semantic Governance v1.8 Section 3.5; Object Management Group Semantics of Business Vocabulary and Business Rules; Decision Model and Notation; W3C SHACL."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept tax:BusinessRule ,
+        tax:DataConstraint ,
+        tax:DataQualityRule ,
+        tax:TransformationRule ,
+        tax:AccessControlRule ,
+        tax:GuardrailRule .
+
+tax:BusinessRule a skos:Concept ;
+    skos:prefLabel "Business rule"@en ;
+    skos:altLabel "Business logic rule"@en ;
+    skos:definition "A rule that states a business policy or decision logic in terms the business understands."@en ;
+    skos:topConceptOf tax:RuleTaxonomy ;
+    skos:narrower tax:DecisionRule , tax:AuthorizationRule , tax:DerivationRule ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:DecisionRule a skos:Concept ;
+    skos:prefLabel "Decision rule"@en ;
+    skos:altLabel "Decision table rule"@en , "DMN rule"@en ;
+    skos:definition "A business rule that determines an outcome from input conditions, typically one row of a decision table."@en ;
+    skos:broader tax:BusinessRule ;
+    skos:narrower tax:EligibilityRule , tax:PricingRule , tax:RoutingRule , tax:TimingRule , tax:ThresholdRule ;
+    skos:relatedMatch tax:DecisionTable ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:EligibilityRule a skos:Concept ;
+    skos:prefLabel "Eligibility rule"@en ;
+    skos:altLabel "Qualification rule"@en ;
+    skos:definition "A decision rule that determines whether a party qualifies for a benefit, service, or action."@en ;
+    skos:broader tax:DecisionRule ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:PricingRule a skos:Concept ;
+    skos:prefLabel "Pricing rule"@en ;
+    skos:altLabel "Rating rule"@en ;
+    skos:definition "A decision rule that determines a price, fee, or rate."@en ;
+    skos:broader tax:DecisionRule ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:RoutingRule a skos:Concept ;
+    skos:prefLabel "Routing rule"@en ;
+    skos:altLabel "Assignment rule"@en ;
+    skos:definition "A decision rule that determines where work or a request is sent."@en ;
+    skos:broader tax:DecisionRule ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:TimingRule a skos:Concept ;
+    skos:prefLabel "Timing rule"@en ;
+    skos:altLabel "Deadline rule"@en , "Effective date rule"@en ;
+    skos:definition "A decision rule that determines a due date, waiting period, or effective date."@en ;
+    skos:broader tax:DecisionRule ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:ThresholdRule a skos:Concept ;
+    skos:prefLabel "Threshold rule"@en ;
+    skos:altLabel "Limit rule"@en , "Tolerance rule"@en ;
+    skos:definition "A decision rule that triggers an outcome when a measure crosses a defined limit."@en ;
+    skos:broader tax:DecisionRule ;
+    skos:relatedMatch tax:Threshold ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:AuthorizationRule a skos:Concept ;
+    skos:prefLabel "Authorization rule"@en ;
+    skos:altLabel "Approval authority rule"@en , "Delegation of authority rule"@en ;
+    skos:definition "A business rule that states who may perform or approve an action."@en ;
+    skos:broader tax:BusinessRule ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:DerivationRule a skos:Concept ;
+    skos:prefLabel "Derivation rule"@en ;
+    skos:altLabel "Inference rule"@en , "Derived fact rule"@en ;
+    skos:definition "A business rule that states how a fact is concluded from other facts."@en ;
+    skos:broader tax:BusinessRule ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:DataConstraint a skos:Concept ;
+    skos:prefLabel "Data constraint"@en ;
+    skos:altLabel "Constraint rule"@en , "Integrity constraint"@en ;
+    skos:definition "A rule that states what must always be true about data."@en ;
+    skos:scopeNote "Authored as ontology terms and SHACL shapes or JSON Schema."@en ;
+    skos:topConceptOf tax:RuleTaxonomy ;
+    skos:narrower tax:CardinalityConstraint , tax:ValueConstraint , tax:UniquenessConstraint , tax:ReferentialConstraint , tax:TemporalConstraint , tax:ConditionalConstraint ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:CardinalityConstraint a skos:Concept ;
+    skos:prefLabel "Cardinality constraint"@en ;
+    skos:altLabel "Multiplicity constraint"@en ;
+    skos:definition "A data constraint on how many values a property may or must have."@en ;
+    skos:example "A payroll run has exactly one pay period."@en ;
+    skos:broader tax:DataConstraint ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:ValueConstraint a skos:Concept ;
+    skos:prefLabel "Value constraint"@en ;
+    skos:altLabel "Domain constraint"@en , "Allowed values"@en ;
+    skos:definition "A data constraint on the type, format, range, or allowed list of a value."@en ;
+    skos:broader tax:DataConstraint ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:UniquenessConstraint a skos:Concept ;
+    skos:prefLabel "Uniqueness constraint"@en ;
+    skos:altLabel "Key constraint"@en ;
+    skos:definition "A data constraint that a value or combination of values identifies at most one entity."@en ;
+    skos:broader tax:DataConstraint ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:ReferentialConstraint a skos:Concept ;
+    skos:prefLabel "Referential constraint"@en ;
+    skos:altLabel "Referential integrity rule"@en ;
+    skos:definition "A data constraint that a referenced entity must exist."@en ;
+    skos:broader tax:DataConstraint ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:TemporalConstraint a skos:Concept ;
+    skos:prefLabel "Temporal constraint"@en ;
+    skos:altLabel "Date order constraint"@en ;
+    skos:definition "A data constraint on the order or overlap of dates and periods."@en ;
+    skos:broader tax:DataConstraint ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:ConditionalConstraint a skos:Concept ;
+    skos:prefLabel "Conditional constraint"@en ;
+    skos:altLabel "Dependency constraint"@en ;
+    skos:definition "A data constraint that applies only when a stated condition holds."@en ;
+    skos:broader tax:DataConstraint ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:DataQualityRule a skos:Concept ;
+    skos:prefLabel "Data quality rule"@en ;
+    skos:definition "A rule that measures or enforces a dimension of data quality."@en ;
+    skos:topConceptOf tax:RuleTaxonomy ;
+    skos:narrower tax:CompletenessRule , tax:AccuracyRule , tax:ConsistencyRule , tax:TimelinessRule , tax:ValidityRule ;
+    skos:relatedMatch tax:DataQualityDimension ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:CompletenessRule a skos:Concept ;
+    skos:prefLabel "Completeness rule"@en ;
+    skos:definition "A data quality rule that checks required values are present."@en ;
+    skos:broader tax:DataQualityRule ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:AccuracyRule a skos:Concept ;
+    skos:prefLabel "Accuracy rule"@en ;
+    skos:definition "A data quality rule that checks values agree with an authoritative source."@en ;
+    skos:broader tax:DataQualityRule ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:ConsistencyRule a skos:Concept ;
+    skos:prefLabel "Consistency rule"@en ;
+    skos:definition "A data quality rule that checks values agree across records and systems."@en ;
+    skos:broader tax:DataQualityRule ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:TimelinessRule a skos:Concept ;
+    skos:prefLabel "Timeliness rule"@en ;
+    skos:altLabel "Freshness rule"@en ;
+    skos:definition "A data quality rule that checks values are current within an agreed period."@en ;
+    skos:broader tax:DataQualityRule ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:ValidityRule a skos:Concept ;
+    skos:prefLabel "Validity rule"@en ;
+    skos:definition "A data quality rule that checks values conform to defined formats and domains."@en ;
+    skos:broader tax:DataQualityRule ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:TransformationRule a skos:Concept ;
+    skos:prefLabel "Transformation rule"@en ;
+    skos:altLabel "Mapping rule"@en , "Conversion rule"@en ;
+    skos:definition "A rule that states how data in one form is converted into another form."@en ;
+    skos:topConceptOf tax:RuleTaxonomy ;
+    skos:relatedMatch tax:MappingSpecification ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:AccessControlRule a skos:Concept ;
+    skos:prefLabel "Access control rule"@en ;
+    skos:altLabel "Entitlement rule"@en , "Access rule"@en ;
+    skos:definition "A rule that states which parties may read or change which information under which conditions."@en ;
+    skos:topConceptOf tax:RuleTaxonomy ;
+    skos:relatedMatch tax:AccessControl ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:GuardrailRule a skos:Concept ;
+    skos:prefLabel "Guardrail rule"@en ;
+    skos:altLabel "Artificial intelligence guardrail"@en , "AI guardrail"@en , "Agent guardrail"@en ;
+    skos:definition "A rule that limits the inputs, actions, or outputs of an automated agent."@en ;
+    skos:topConceptOf tax:RuleTaxonomy ;
+    skos:narrower tax:InputGuardrail , tax:ActionGuardrail , tax:OutputGuardrail , tax:CircuitBreakerRule ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:InputGuardrail a skos:Concept ;
+    skos:prefLabel "Input guardrail"@en ;
+    skos:altLabel "Prompt guardrail"@en ;
+    skos:definition "A guardrail rule that screens requests before an agent acts on them."@en ;
+    skos:broader tax:GuardrailRule ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:ActionGuardrail a skos:Concept ;
+    skos:prefLabel "Action guardrail"@en ;
+    skos:altLabel "Tool use limit"@en ;
+    skos:definition "A guardrail rule that restricts which tools or actions an agent may take."@en ;
+    skos:broader tax:GuardrailRule ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:OutputGuardrail a skos:Concept ;
+    skos:prefLabel "Output guardrail"@en ;
+    skos:altLabel "Answer guardrail"@en , "Grounding check"@en ;
+    skos:definition "A guardrail rule that checks an agent's output before it is released."@en ;
+    skos:broader tax:GuardrailRule ;
+    skos:inScheme tax:RuleTaxonomy .
+
+tax:CircuitBreakerRule a skos:Concept ;
+    skos:prefLabel "Circuit breaker rule"@en ;
+    skos:altLabel "Artificial intelligence circuit breaker"@en , "AI circuit breaker"@en ;
+    skos:definition "A guardrail rule that suspends or degrades an agent when reliability falls below a threshold."@en ;
+    skos:broader tax:GuardrailRule ;
+    skos:relatedMatch tax:MeanTimeBetweenHallucinations ;
+    skos:inScheme tax:RuleTaxonomy .

@@ -1,0 +1,117 @@
+# Vocabulary: Product vocabulary
+# File: vocabulary-core-product.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+voc:product-vocabulary a skos:ConceptScheme ;
+    dcterms:title "Product vocabulary"@en ;
+    skos:prefLabel "Product vocabulary"@en ;
+    dcterms:description "Controlled values that describe the availability status and commercial model of products."@en ;
+    dcterms:subject core:Product ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept voc:product-availability-status ,
+        voc:offering-model .
+
+voc:product-availability-status a skos:Concept ;
+    skos:prefLabel "Product availability status"@en ;
+    skos:definition "A controlled value set for whether a product can be sold."@en ;
+    skos:topConceptOf voc:product-vocabulary ;
+    skos:narrower voc:product-status-in-development , voc:product-status-pilot , voc:product-status-generally-available , voc:product-status-closed-to-new-sales , voc:product-status-discontinued ;
+    skos:inScheme voc:product-vocabulary .
+
+voc:product-status-in-development a skos:Concept ;
+    skos:prefLabel "In development"@en ;
+    skos:altLabel "Pipeline"@en ;
+    skos:definition "A product availability status for products being designed and not yet sold."@en ;
+    skos:broader voc:product-availability-status ;
+    skos:inScheme voc:product-vocabulary .
+
+voc:product-status-pilot a skos:Concept ;
+    skos:prefLabel "Pilot"@en ;
+    skos:altLabel "Beta"@en , "Limited availability"@en ;
+    skos:definition "A product availability status for products offered to a limited set of clients for evaluation."@en ;
+    skos:broader voc:product-availability-status ;
+    skos:inScheme voc:product-vocabulary .
+
+voc:product-status-generally-available a skos:Concept ;
+    skos:prefLabel "Generally available"@en ;
+    skos:altLabel "Available"@en , "Launched"@en ;
+    skos:definition "A product availability status for products sold to all eligible clients."@en ;
+    skos:broader voc:product-availability-status ;
+    skos:inScheme voc:product-vocabulary .
+
+voc:product-status-closed-to-new-sales a skos:Concept ;
+    skos:prefLabel "Closed to new sales"@en ;
+    skos:altLabel "Grandfathered"@en ;
+    skos:definition "A product availability status for products still serviced but no longer sold."@en ;
+    skos:broader voc:product-availability-status ;
+    skos:inScheme voc:product-vocabulary .
+
+voc:product-status-discontinued a skos:Concept ;
+    skos:prefLabel "Discontinued"@en ;
+    skos:altLabel "Withdrawn"@en , "End of life"@en ;
+    skos:definition "A product availability status for products no longer sold or serviced."@en ;
+    skos:broader voc:product-availability-status ;
+    skos:inScheme voc:product-vocabulary .
+
+voc:offering-model a skos:Concept ;
+    skos:prefLabel "Offering model"@en ;
+    skos:definition "A controlled value set for how a product is priced and sold."@en ;
+    skos:topConceptOf voc:product-vocabulary ;
+    skos:narrower voc:offering-model-one-time-purchase , voc:offering-model-subscription , voc:offering-model-per-employee-per-month , voc:offering-model-percentage-of-payroll , voc:offering-model-usage-based , voc:offering-model-premium-based ;
+    skos:inScheme voc:product-vocabulary .
+
+voc:offering-model-one-time-purchase a skos:Concept ;
+    skos:prefLabel "One-time purchase"@en ;
+    skos:altLabel "Perpetual license"@en ;
+    skos:definition "An offering model in which the client pays once for ownership or perpetual use."@en ;
+    skos:broader voc:offering-model ;
+    skos:inScheme voc:product-vocabulary .
+
+voc:offering-model-subscription a skos:Concept ;
+    skos:prefLabel "Subscription"@en ;
+    skos:altLabel "Recurring"@en ;
+    skos:definition "An offering model in which the client pays a recurring fee for continued access."@en ;
+    skos:broader voc:offering-model ;
+    skos:inScheme voc:product-vocabulary .
+
+voc:offering-model-per-employee-per-month a skos:Concept ;
+    skos:prefLabel "Per employee per month"@en ;
+    skos:altLabel "PEPM"@en , "Per worker per month"@en ;
+    skos:definition "An offering model in which the fee is charged for each covered worker each month."@en ;
+    skos:broader voc:offering-model ;
+    skos:inScheme voc:product-vocabulary .
+
+voc:offering-model-percentage-of-payroll a skos:Concept ;
+    skos:prefLabel "Percentage of payroll"@en ;
+    skos:altLabel "Payroll-based fee"@en ;
+    skos:definition "An offering model in which the fee is a percentage of the client's gross payroll."@en ;
+    skos:broader voc:offering-model ;
+    skos:inScheme voc:product-vocabulary .
+
+voc:offering-model-usage-based a skos:Concept ;
+    skos:prefLabel "Usage-based"@en ;
+    skos:altLabel "Pay as you go"@en , "Metered"@en ;
+    skos:definition "An offering model in which the fee depends on measured consumption."@en ;
+    skos:broader voc:offering-model ;
+    skos:inScheme voc:product-vocabulary .
+
+voc:offering-model-premium-based a skos:Concept ;
+    skos:prefLabel "Premium-based"@en ;
+    skos:altLabel "Premium"@en ;
+    skos:definition "An offering model in which the client pays an insurance premium for coverage."@en ;
+    skos:broader voc:offering-model ;
+    skos:inScheme voc:product-vocabulary .

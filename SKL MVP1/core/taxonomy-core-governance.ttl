@@ -1,0 +1,309 @@
+# Taxonomy: Governance taxonomy
+# File: taxonomy-core-governance.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix tax: <https://www.insperity.com/taxonomy/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+tax:GovernanceTaxonomy a skos:ConceptScheme ;
+    dcterms:title "Governance taxonomy"@en ;
+    skos:prefLabel "Governance taxonomy"@en ;
+    dcterms:description "Classification of governance concepts, the disciplines, bodies, controls, activities, and records through which the organization directs, oversees, and assures its work, data, knowledge, and artificial intelligence."@en ;
+    dcterms:subject core:Governance ;
+    skos:scopeNote "Data classification, verification, approval, change, validation, and environment values are in the governance vocabulary. Governance roles are in the role taxonomy."@en ;
+    dcterms:source "ISO/IEC 38500 governance of information technology; ISO/IEC 42001 artificial intelligence management system; ISO 30401; ISO/IEC 11179 metadata registries; Semantic Governance v1.8 Sections 3.3 and 3.4."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept tax:GovernanceDiscipline ,
+        tax:GovernanceBody ,
+        tax:Control ,
+        tax:GovernanceActivity ,
+        tax:GovernanceRecord .
+
+tax:GovernanceDiscipline a skos:Concept ;
+    skos:prefLabel "Governance discipline"@en ;
+    skos:altLabel "Governance domain"@en ;
+    skos:definition "A governance area of practice that directs and oversees a defined subject."@en ;
+    skos:topConceptOf tax:GovernanceTaxonomy ;
+    skos:narrower tax:CorporateGovernance , tax:DataGovernance , tax:SemanticGovernance , tax:ArtificialIntelligenceGovernance , tax:TechnologyGovernance , tax:RiskGovernance ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:CorporateGovernance a skos:Concept ;
+    skos:prefLabel "Corporate governance"@en ;
+    skos:definition "A governance discipline concerned with direction and control of the organization by its board and executives."@en ;
+    skos:broader tax:GovernanceDiscipline ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:DataGovernance a skos:Concept ;
+    skos:prefLabel "Data governance"@en ;
+    skos:altLabel "Information governance"@en ;
+    skos:definition "A governance discipline concerned with the quality, security, and proper use of data."@en ;
+    skos:broader tax:GovernanceDiscipline ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:SemanticGovernance a skos:Concept ;
+    skos:prefLabel "Semantic governance"@en ;
+    skos:altLabel "Knowledge governance"@en , "SG"@en ;
+    skos:definition "A governance discipline concerned with shared, governed meaning in vocabularies, taxonomies, ontologies, rules, and mappings."@en ;
+    skos:broader tax:GovernanceDiscipline ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:ArtificialIntelligenceGovernance a skos:Concept ;
+    skos:prefLabel "Artificial intelligence governance"@en ;
+    skos:altLabel "AI governance"@en , "Model governance"@en ;
+    skos:definition "A governance discipline concerned with responsible design, deployment, and oversight of artificial intelligence."@en ;
+    skos:broader tax:GovernanceDiscipline ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:TechnologyGovernance a skos:Concept ;
+    skos:prefLabel "Technology governance"@en ;
+    skos:altLabel "Information technology governance"@en , "IT governance"@en ;
+    skos:definition "A governance discipline concerned with the value, risk, and performance of technology."@en ;
+    skos:broader tax:GovernanceDiscipline ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:RiskGovernance a skos:Concept ;
+    skos:prefLabel "Risk governance"@en ;
+    skos:definition "A governance discipline concerned with risk appetite, oversight, and accountability."@en ;
+    skos:broader tax:GovernanceDiscipline ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:GovernanceBody a skos:Concept ;
+    skos:prefLabel "Governance body"@en ;
+    skos:altLabel "Governing body"@en ;
+    skos:definition "A governance structure that is a group with authority to make or review governance decisions."@en ;
+    skos:topConceptOf tax:GovernanceTaxonomy ;
+    skos:narrower tax:BoardOfDirectors , tax:ArchitectureReviewBoard , tax:DataGovernanceCouncil , tax:ChangeAdvisoryBoard , tax:ArtificialIntelligenceOversightCommittee ;
+    skos:relatedMatch tax:Committee ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:BoardOfDirectors a skos:Concept ;
+    skos:prefLabel "Board of directors"@en ;
+    skos:altLabel "Board"@en ;
+    skos:definition "A governance body elected to oversee the organization on behalf of owners."@en ;
+    skos:broader tax:GovernanceBody ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:ArchitectureReviewBoard a skos:Concept ;
+    skos:prefLabel "Architecture review board"@en ;
+    skos:altLabel "Architecture board"@en , "Architecture"@en ;
+    skos:definition "A governance body that reviews and approves architecture and core and mapping changes."@en ;
+    skos:broader tax:GovernanceBody ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:DataGovernanceCouncil a skos:Concept ;
+    skos:prefLabel "Data governance council"@en ;
+    skos:altLabel "Data council"@en ;
+    skos:definition "A governance body that sets data policies and resolves data issues across domains."@en ;
+    skos:broader tax:GovernanceBody ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:ChangeAdvisoryBoard a skos:Concept ;
+    skos:prefLabel "Change advisory board"@en ;
+    skos:altLabel "CAB"@en ;
+    skos:definition "A governance body that assesses and approves changes to production."@en ;
+    skos:broader tax:GovernanceBody ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:ArtificialIntelligenceOversightCommittee a skos:Concept ;
+    skos:prefLabel "Artificial intelligence oversight committee"@en ;
+    skos:altLabel "AI oversight committee"@en , "Responsible AI committee"@en ;
+    skos:definition "A governance body that reviews artificial intelligence use, impact assessments, and incidents."@en ;
+    skos:broader tax:GovernanceBody ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:Control a skos:Concept ;
+    skos:prefLabel "Control"@en ;
+    skos:altLabel "Internal control"@en , "Safeguard"@en ;
+    skos:definition "A governance measure that modifies risk by preventing, detecting, or correcting unwanted outcomes."@en ;
+    skos:topConceptOf tax:GovernanceTaxonomy ;
+    skos:narrower tax:PreventiveControl , tax:DetectiveControl , tax:CorrectiveControl , tax:QualityGate , tax:SegregationOfDuties , tax:AccessControl , tax:HumanOversight ;
+    skos:relatedMatch tax:ControlDeficiency ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:PreventiveControl a skos:Concept ;
+    skos:prefLabel "Preventive control"@en ;
+    skos:altLabel "Preventative control"@en ;
+    skos:definition "A control that stops an unwanted outcome before it occurs."@en ;
+    skos:broader tax:Control ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:DetectiveControl a skos:Concept ;
+    skos:prefLabel "Detective control"@en ;
+    skos:altLabel "Monitoring control"@en ;
+    skos:definition "A control that identifies an unwanted outcome after it occurs."@en ;
+    skos:broader tax:Control ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:CorrectiveControl a skos:Concept ;
+    skos:prefLabel "Corrective control"@en ;
+    skos:definition "A control that limits damage and restores the expected state after an unwanted outcome."@en ;
+    skos:broader tax:Control ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:QualityGate a skos:Concept ;
+    skos:prefLabel "Quality gate"@en ;
+    skos:altLabel "Release gate"@en , "Validation gate"@en ;
+    skos:definition "A control that blocks release of an artifact that fails defined checks."@en ;
+    skos:broader tax:Control ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:SegregationOfDuties a skos:Concept ;
+    skos:prefLabel "Segregation of duties"@en ;
+    skos:altLabel "Separation of duties"@en ;
+    skos:definition "A control that divides conflicting responsibilities among different parties."@en ;
+    skos:broader tax:Control ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:AccessControl a skos:Concept ;
+    skos:prefLabel "Access control"@en ;
+    skos:altLabel "Entitlement control"@en ;
+    skos:definition "A control that restricts who can read or change information."@en ;
+    skos:broader tax:Control ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:HumanOversight a skos:Concept ;
+    skos:prefLabel "Human oversight"@en ;
+    skos:altLabel "Human in the loop"@en , "Human review"@en ;
+    skos:definition "A control in which a person reviews, approves, or can override an automated decision or output."@en ;
+    skos:broader tax:Control ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:GovernanceActivity a skos:Concept ;
+    skos:prefLabel "Governance activity"@en ;
+    skos:altLabel "Assurance activity"@en ;
+    skos:definition "A governance process step undertaken to direct, assure, or improve governed work."@en ;
+    skos:topConceptOf tax:GovernanceTaxonomy ;
+    skos:narrower tax:Review , tax:Audit , tax:ImpactAssessment , tax:RiskAssessment , tax:ChangeControl , tax:Attestation , tax:Monitoring ;
+    skos:relatedMatch tax:ProcessStep ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:Review a skos:Concept ;
+    skos:prefLabel "Review"@en ;
+    skos:altLabel "Peer review"@en , "Expert review"@en ;
+    skos:definition "A governance activity in which a qualified party examines work for correctness and conformance."@en ;
+    skos:broader tax:GovernanceActivity ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:Audit a skos:Concept ;
+    skos:prefLabel "Audit"@en ;
+    skos:altLabel "Internal audit"@en , "Compliance audit"@en ;
+    skos:definition "A governance activity that independently examines records and controls against criteria."@en ;
+    skos:broader tax:GovernanceActivity ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:ImpactAssessment a skos:Concept ;
+    skos:prefLabel "Impact assessment"@en ;
+    skos:altLabel "Change impact assessment"@en ;
+    skos:definition "A governance activity that evaluates the effects of a proposed change or system before it proceeds."@en ;
+    skos:broader tax:GovernanceActivity ;
+    skos:narrower tax:ArtificialIntelligenceImpactAssessment , tax:PrivacyImpactAssessment ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:ArtificialIntelligenceImpactAssessment a skos:Concept ;
+    skos:prefLabel "Artificial intelligence impact assessment"@en ;
+    skos:altLabel "AI impact assessment"@en ;
+    skos:definition "An impact assessment of the effects of an artificial intelligence system on people and the organization."@en ;
+    skos:broader tax:ImpactAssessment ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:PrivacyImpactAssessment a skos:Concept ;
+    skos:prefLabel "Privacy impact assessment"@en ;
+    skos:altLabel "Data protection impact assessment"@en ;
+    skos:definition "An impact assessment of the effects of processing on personal information."@en ;
+    skos:broader tax:ImpactAssessment ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:RiskAssessment a skos:Concept ;
+    skos:prefLabel "Risk assessment"@en ;
+    skos:altLabel "Risk analysis"@en ;
+    skos:definition "A governance activity that identifies, analyzes, and evaluates risks."@en ;
+    skos:broader tax:GovernanceActivity ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:ChangeControl a skos:Concept ;
+    skos:prefLabel "Change control"@en ;
+    skos:altLabel "Change management"@en , "Change governance"@en ;
+    skos:definition "A governance activity that ensures every change is traceable to an approved requirement, tested, and versioned."@en ;
+    skos:broader tax:GovernanceActivity ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:Attestation a skos:Concept ;
+    skos:prefLabel "Attestation"@en ;
+    skos:altLabel "Certification"@en , "Acknowledgment"@en ;
+    skos:definition "A governance activity in which a party formally confirms compliance or acknowledgment."@en ;
+    skos:broader tax:GovernanceActivity ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:Monitoring a skos:Concept ;
+    skos:prefLabel "Monitoring"@en ;
+    skos:altLabel "Oversight monitoring"@en , "Continuous monitoring"@en ;
+    skos:definition "A governance activity that continuously observes artifacts, services, and answers against targets."@en ;
+    skos:broader tax:GovernanceActivity ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:GovernanceRecord a skos:Concept ;
+    skos:prefLabel "Governance record"@en ;
+    skos:altLabel "Governance artifact"@en , "Register"@en ;
+    skos:definition "A governance information artifact that documents governance decisions, obligations, or evidence."@en ;
+    skos:topConceptOf tax:GovernanceTaxonomy ;
+    skos:narrower tax:Charter , tax:DecisionLog , tax:ObligationsRegister , tax:RiskRegister , tax:MetadataRegistry , tax:AuditTrail , tax:ReleaseManifest ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:Charter a skos:Concept ;
+    skos:prefLabel "Charter"@en ;
+    skos:definition "A governance record that establishes the purpose, authority, and membership of a governance body or program."@en ;
+    skos:broader tax:GovernanceRecord ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:DecisionLog a skos:Concept ;
+    skos:prefLabel "Decision log"@en ;
+    skos:altLabel "Architecture decision record"@en , "Decision register"@en ;
+    skos:definition "A governance record that lists governance decisions, their rationale, and approvers."@en ;
+    skos:broader tax:GovernanceRecord ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:ObligationsRegister a skos:Concept ;
+    skos:prefLabel "Obligations register"@en ;
+    skos:altLabel "Compliance register"@en ;
+    skos:definition "A governance record that lists obligations, their sources, owners, and controls."@en ;
+    skos:broader tax:GovernanceRecord ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:RiskRegister a skos:Concept ;
+    skos:prefLabel "Risk register"@en ;
+    skos:definition "A governance record that lists risks, their ratings, owners, and treatments."@en ;
+    skos:broader tax:GovernanceRecord ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:MetadataRegistry a skos:Concept ;
+    skos:prefLabel "Metadata registry"@en ;
+    skos:altLabel "Artifact registry"@en , "Model registry"@en ;
+    skos:definition "A governance record that registers each artifact, version, and status."@en ;
+    skos:broader tax:GovernanceRecord ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:AuditTrail a skos:Concept ;
+    skos:prefLabel "Audit trail"@en ;
+    skos:altLabel "Audit log"@en ;
+    skos:definition "A governance record of the sequence of actions on an item, who took them, and when."@en ;
+    skos:broader tax:GovernanceRecord ;
+    skos:inScheme tax:GovernanceTaxonomy .
+
+tax:ReleaseManifest a skos:Concept ;
+    skos:prefLabel "Release manifest"@en ;
+    skos:altLabel "Component manifest"@en ;
+    skos:definition "A governance record that lists the artifacts, versions, and checksums in a release."@en ;
+    skos:broader tax:GovernanceRecord ;
+    skos:inScheme tax:GovernanceTaxonomy .

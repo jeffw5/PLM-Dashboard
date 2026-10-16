@@ -1,0 +1,274 @@
+# Taxonomy: Policy taxonomy
+# File: taxonomy-core-policy.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix tax: <https://www.insperity.com/taxonomy/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+tax:PolicyTaxonomy a skos:ConceptScheme ;
+    dcterms:title "Policy taxonomy"@en ;
+    skos:prefLabel "Policy taxonomy"@en ;
+    dcterms:description "Classification of policies and other normative sources, the governing statements that impose obligations, permissions, and prohibitions on parties and process steps."@en ;
+    dcterms:subject core:Policy ;
+    skos:scopeNote "Policies govern process steps through governedBy. Individual norms are classified under Norm and linked to their source. Scope, enforcement, and compliance status values are in the policy vocabulary."@en ;
+    dcterms:source "LKIF-Core norm and legal source; OASIS LegalRuleML; Akoma Ntoso for legislative documents; ISO 37301 compliance management."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept tax:LegalNormSource ,
+        tax:OrganizationalPolicy ,
+        tax:ContractualInstrument ,
+        tax:Standard ,
+        tax:Procedure ,
+        tax:Guideline ,
+        tax:Norm .
+
+tax:LegalNormSource a skos:Concept ;
+    skos:prefLabel "Legal norm source"@en ;
+    skos:altLabel "Legal source"@en , "Regulatory source"@en ;
+    skos:definition "A policy issued by a public authority with the force of law."@en ;
+    skos:topConceptOf tax:PolicyTaxonomy ;
+    skos:narrower tax:Statute , tax:Regulation , tax:AgencyGuidance , tax:CourtDecision , tax:ExecutiveOrder ;
+    skos:relatedMatch tax:GovernmentBody ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:Statute a skos:Concept ;
+    skos:prefLabel "Statute"@en ;
+    skos:altLabel "Act"@en , "Law"@en , "Federal statute"@en , "State law"@en ;
+    skos:definition "A legal norm source enacted by a legislative body."@en ;
+    skos:example "Fair Labor Standards Act."@en ;
+    skos:broader tax:LegalNormSource ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:Regulation a skos:Concept ;
+    skos:prefLabel "Regulation"@en ;
+    skos:altLabel "Rule"@en , "Administrative rule"@en , "Code of Federal Regulations section"@en ;
+    skos:definition "A legal norm source issued by a regulatory agency under statutory authority."@en ;
+    skos:broader tax:LegalNormSource ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:AgencyGuidance a skos:Concept ;
+    skos:prefLabel "Agency guidance"@en ;
+    skos:altLabel "Guidance"@en , "Interpretive letter"@en , "Notice"@en ;
+    skos:definition "A legal norm source issued by an agency to interpret or apply law without the force of regulation."@en ;
+    skos:broader tax:LegalNormSource ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:CourtDecision a skos:Concept ;
+    skos:prefLabel "Court decision"@en ;
+    skos:altLabel "Case law"@en , "Judicial decision"@en , "Precedent"@en ;
+    skos:definition "A legal norm source that is a ruling by a court establishing or interpreting law."@en ;
+    skos:broader tax:LegalNormSource ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:ExecutiveOrder a skos:Concept ;
+    skos:prefLabel "Executive order"@en ;
+    skos:definition "A legal norm source issued by a head of government directing government operations."@en ;
+    skos:broader tax:LegalNormSource ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:OrganizationalPolicy a skos:Concept ;
+    skos:prefLabel "Organizational policy"@en ;
+    skos:altLabel "Company policy"@en , "Internal policy"@en ;
+    skos:definition "A policy issued by an organization to govern its own conduct and that of its workers and agents."@en ;
+    skos:topConceptOf tax:PolicyTaxonomy ;
+    skos:narrower tax:CodeOfConduct , tax:WorkforcePolicy , tax:InformationSecurityPolicy , tax:PrivacyPolicy , tax:DataClassificationPolicy , tax:RecordsRetentionPolicy , tax:ResponsibleArtificialIntelligencePolicy , tax:AcceptableUsePolicy , tax:FinancialControlPolicy ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:CodeOfConduct a skos:Concept ;
+    skos:prefLabel "Code of conduct"@en ;
+    skos:altLabel "Code of ethics"@en ;
+    skos:definition "An organizational policy that states expected ethical behavior."@en ;
+    skos:broader tax:OrganizationalPolicy ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:WorkforcePolicy a skos:Concept ;
+    skos:prefLabel "Workforce policy"@en ;
+    skos:altLabel "Human resources policy"@en , "Employee handbook policy"@en ;
+    skos:definition "An organizational policy that governs employment practices, leave, conduct, and pay."@en ;
+    skos:broader tax:OrganizationalPolicy ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:InformationSecurityPolicy a skos:Concept ;
+    skos:prefLabel "Information security policy"@en ;
+    skos:altLabel "Security policy"@en ;
+    skos:definition "An organizational policy that protects information and systems."@en ;
+    skos:broader tax:OrganizationalPolicy ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:PrivacyPolicy a skos:Concept ;
+    skos:prefLabel "Privacy policy"@en ;
+    skos:altLabel "Data privacy policy"@en ;
+    skos:definition "An organizational policy that governs collection, use, and disclosure of personal information."@en ;
+    skos:broader tax:OrganizationalPolicy ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:DataClassificationPolicy a skos:Concept ;
+    skos:prefLabel "Data classification policy"@en ;
+    skos:altLabel "Information classification policy"@en ;
+    skos:definition "An organizational policy that defines classification levels and the handling each requires."@en ;
+    skos:broader tax:OrganizationalPolicy ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:RecordsRetentionPolicy a skos:Concept ;
+    skos:prefLabel "Records retention policy"@en ;
+    skos:altLabel "Retention schedule"@en ;
+    skos:definition "An organizational policy that defines how long records are kept and how they are disposed of."@en ;
+    skos:broader tax:OrganizationalPolicy ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:ResponsibleArtificialIntelligencePolicy a skos:Concept ;
+    skos:prefLabel "Responsible artificial intelligence policy"@en ;
+    skos:altLabel "Responsible AI policy"@en , "AI use policy"@en ;
+    skos:definition "An organizational policy that governs the design, use, and oversight of artificial intelligence."@en ;
+    skos:broader tax:OrganizationalPolicy ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:AcceptableUsePolicy a skos:Concept ;
+    skos:prefLabel "Acceptable use policy"@en ;
+    skos:definition "An organizational policy that governs permitted use of systems and data."@en ;
+    skos:broader tax:OrganizationalPolicy ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:FinancialControlPolicy a skos:Concept ;
+    skos:prefLabel "Financial control policy"@en ;
+    skos:altLabel "Expense policy"@en , "Delegation of authority policy"@en ;
+    skos:definition "An organizational policy that governs spending, approval authority, and financial reporting."@en ;
+    skos:broader tax:OrganizationalPolicy ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:ContractualInstrument a skos:Concept ;
+    skos:prefLabel "Contractual instrument"@en ;
+    skos:altLabel "Agreement"@en , "Contract"@en ;
+    skos:definition "A policy that arises from an agreement between parties and binds them to its terms."@en ;
+    skos:topConceptOf tax:PolicyTaxonomy ;
+    skos:narrower tax:ClientServiceAgreement , tax:ServiceLevelAgreement , tax:PlanDocument , tax:DataProcessingAgreement , tax:TermsOfService ;
+    skos:relatedMatch tax:AgreementDocument ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:ClientServiceAgreement a skos:Concept ;
+    skos:prefLabel "Client service agreement"@en ;
+    skos:altLabel "Client agreement"@en , "Co-employment agreement"@en ;
+    skos:definition "A contractual instrument that sets the services, fees, and responsibilities between the organization and a client."@en ;
+    skos:broader tax:ContractualInstrument ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:ServiceLevelAgreement a skos:Concept ;
+    skos:prefLabel "Service level agreement"@en ;
+    skos:altLabel "SLA"@en ;
+    skos:definition "A contractual instrument that commits measurable service levels and remedies."@en ;
+    skos:broader tax:ContractualInstrument ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:PlanDocument a skos:Concept ;
+    skos:prefLabel "Plan document"@en ;
+    skos:altLabel "Plan terms"@en , "Summary plan description"@en , "SPD"@en ;
+    skos:definition "A contractual instrument that sets the legally binding terms of a benefit or retirement plan."@en ;
+    skos:broader tax:ContractualInstrument ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:DataProcessingAgreement a skos:Concept ;
+    skos:prefLabel "Data processing agreement"@en ;
+    skos:altLabel "Data protection agreement"@en ;
+    skos:definition "A contractual instrument that governs how one party processes personal data for another."@en ;
+    skos:broader tax:ContractualInstrument ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:TermsOfService a skos:Concept ;
+    skos:prefLabel "Terms of service"@en ;
+    skos:altLabel "Terms of use"@en ;
+    skos:definition "A contractual instrument that sets the conditions for using a service or application."@en ;
+    skos:broader tax:ContractualInstrument ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:Standard a skos:Concept ;
+    skos:prefLabel "Standard"@en ;
+    skos:altLabel "Specification"@en ;
+    skos:definition "A policy that is a documented agreement on specifications or practices adopted voluntarily or by reference."@en ;
+    skos:topConceptOf tax:PolicyTaxonomy ;
+    skos:narrower tax:InternationalStandard , tax:IndustryStandard , tax:InternalStandard ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:InternationalStandard a skos:Concept ;
+    skos:prefLabel "International standard"@en ;
+    skos:altLabel "ISO standard"@en , "Consensus standard"@en ;
+    skos:definition "A standard published by an international standards body."@en ;
+    skos:broader tax:Standard ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:IndustryStandard a skos:Concept ;
+    skos:prefLabel "Industry standard"@en ;
+    skos:altLabel "Industry specification"@en ;
+    skos:definition "A standard published by an industry or professional body."@en ;
+    skos:broader tax:Standard ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:InternalStandard a skos:Concept ;
+    skos:prefLabel "Internal standard"@en ;
+    skos:altLabel "Company standard"@en ;
+    skos:definition "A standard adopted by the organization for its own work."@en ;
+    skos:example "Naming conventions; documentation standards."@en ;
+    skos:broader tax:Standard ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:Procedure a skos:Concept ;
+    skos:prefLabel "Procedure"@en ;
+    skos:altLabel "Standard operating procedure"@en , "SOP"@en , "Work instruction"@en ;
+    skos:definition "A policy that specifies the steps to carry out an activity in a consistent way."@en ;
+    skos:topConceptOf tax:PolicyTaxonomy ;
+    skos:relatedMatch tax:ProcessStep ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:Guideline a skos:Concept ;
+    skos:prefLabel "Guideline"@en ;
+    skos:altLabel "Guidance note"@en , "Best practice"@en ;
+    skos:definition "A policy that recommends good practice without mandating it."@en ;
+    skos:topConceptOf tax:PolicyTaxonomy ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:Norm a skos:Concept ;
+    skos:prefLabel "Norm"@en ;
+    skos:altLabel "Deontic statement"@en , "Legal norm"@en ;
+    skos:definition "A policy statement that qualifies an action or state as obligatory, permitted, or prohibited for a party in a jurisdiction and period."@en ;
+    skos:scopeNote "Norms link to steps with governedBy and to their source with a source relation; each has a jurisdiction and effective period."@en ;
+    skos:topConceptOf tax:PolicyTaxonomy ;
+    skos:narrower tax:Obligation , tax:Permission , tax:Prohibition , tax:Right ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:Obligation a skos:Concept ;
+    skos:prefLabel "Obligation"@en ;
+    skos:altLabel "Duty"@en , "Requirement to act"@en ;
+    skos:definition "A norm that requires a party to perform an action or achieve a state."@en ;
+    skos:broader tax:Norm ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:Permission a skos:Concept ;
+    skos:prefLabel "Permission"@en ;
+    skos:altLabel "Allowance"@en , "Authorization"@en ;
+    skos:definition "A norm that allows a party to perform an action without requiring it."@en ;
+    skos:broader tax:Norm ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:Prohibition a skos:Concept ;
+    skos:prefLabel "Prohibition"@en ;
+    skos:altLabel "Restriction"@en , "Ban"@en ;
+    skos:definition "A norm that forbids a party from performing an action."@en ;
+    skos:broader tax:Norm ;
+    skos:inScheme tax:PolicyTaxonomy .
+
+tax:Right a skos:Concept ;
+    skos:prefLabel "Right"@en ;
+    skos:altLabel "Entitlement"@en , "Claim right"@en ;
+    skos:definition "A norm that entitles a party to an action, benefit, or protection from another party."@en ;
+    skos:broader tax:Norm ;
+    skos:inScheme tax:PolicyTaxonomy .

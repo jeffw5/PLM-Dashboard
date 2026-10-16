@@ -1,0 +1,156 @@
+# Vocabulary: Logic vocabulary
+# File: vocabulary-core-logic.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+voc:logic-vocabulary a skos:ConceptScheme ;
+    dcterms:title "Logic vocabulary"@en ;
+    skos:prefLabel "Logic vocabulary"@en ;
+    dcterms:description "Controlled values for logical operators, comparison operators, and truth values used in rules, conditions, and queries."@en ;
+    dcterms:subject core:Logic ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept voc:logical-operator ,
+        voc:comparison-operator ,
+        voc:truth-value .
+
+voc:logical-operator a skos:Concept ;
+    skos:prefLabel "Logical operator"@en ;
+    skos:definition "A controlled value set for operators that combine conditions."@en ;
+    skos:topConceptOf voc:logic-vocabulary ;
+    skos:narrower voc:logical-operator-conjunction , voc:logical-operator-disjunction , voc:logical-operator-negation , voc:logical-operator-exclusive-disjunction , voc:logical-operator-implication ;
+    skos:inScheme voc:logic-vocabulary .
+
+voc:logical-operator-conjunction a skos:Concept ;
+    skos:prefLabel "Conjunction"@en ;
+    skos:altLabel "AND"@en , "And"@en ;
+    skos:definition "A logical operator that is true when all operands are true."@en ;
+    skos:broader voc:logical-operator ;
+    skos:inScheme voc:logic-vocabulary .
+
+voc:logical-operator-disjunction a skos:Concept ;
+    skos:prefLabel "Disjunction"@en ;
+    skos:altLabel "OR"@en , "Or"@en ;
+    skos:definition "A logical operator that is true when at least one operand is true."@en ;
+    skos:broader voc:logical-operator ;
+    skos:inScheme voc:logic-vocabulary .
+
+voc:logical-operator-negation a skos:Concept ;
+    skos:prefLabel "Negation"@en ;
+    skos:altLabel "NOT"@en , "Not"@en ;
+    skos:definition "A logical operator that reverses the truth of its operand."@en ;
+    skos:broader voc:logical-operator ;
+    skos:inScheme voc:logic-vocabulary .
+
+voc:logical-operator-exclusive-disjunction a skos:Concept ;
+    skos:prefLabel "Exclusive disjunction"@en ;
+    skos:altLabel "XOR"@en , "Exclusive or"@en ;
+    skos:definition "A logical operator that is true when exactly one of two operands is true."@en ;
+    skos:broader voc:logical-operator ;
+    skos:inScheme voc:logic-vocabulary .
+
+voc:logical-operator-implication a skos:Concept ;
+    skos:prefLabel "Implication"@en ;
+    skos:altLabel "If then"@en , "Implies"@en ;
+    skos:definition "A logical operator that is false only when its antecedent is true and its consequent false."@en ;
+    skos:broader voc:logical-operator ;
+    skos:inScheme voc:logic-vocabulary .
+
+voc:comparison-operator a skos:Concept ;
+    skos:prefLabel "Comparison operator"@en ;
+    skos:definition "A controlled value set for operators that compare two values."@en ;
+    skos:topConceptOf voc:logic-vocabulary ;
+    skos:narrower voc:comparison-equal-to , voc:comparison-not-equal-to , voc:comparison-greater-than , voc:comparison-greater-than-or-equal-to , voc:comparison-less-than , voc:comparison-less-than-or-equal-to , voc:comparison-between , voc:comparison-in-set ;
+    skos:inScheme voc:logic-vocabulary .
+
+voc:comparison-equal-to a skos:Concept ;
+    skos:prefLabel "Equal to"@en ;
+    skos:altLabel "Equals"@en ;
+    skos:definition "A comparison operator that is true when values are the same."@en ;
+    skos:broader voc:comparison-operator ;
+    skos:inScheme voc:logic-vocabulary .
+
+voc:comparison-not-equal-to a skos:Concept ;
+    skos:prefLabel "Not equal to"@en ;
+    skos:definition "A comparison operator that is true when values differ."@en ;
+    skos:broader voc:comparison-operator ;
+    skos:inScheme voc:logic-vocabulary .
+
+voc:comparison-greater-than a skos:Concept ;
+    skos:prefLabel "Greater than"@en ;
+    skos:definition "A comparison operator that is true when the first value exceeds the second."@en ;
+    skos:broader voc:comparison-operator ;
+    skos:inScheme voc:logic-vocabulary .
+
+voc:comparison-greater-than-or-equal-to a skos:Concept ;
+    skos:prefLabel "Greater than or equal to"@en ;
+    skos:altLabel "At least"@en ;
+    skos:definition "A comparison operator that is true when the first value is not less than the second."@en ;
+    skos:broader voc:comparison-operator ;
+    skos:inScheme voc:logic-vocabulary .
+
+voc:comparison-less-than a skos:Concept ;
+    skos:prefLabel "Less than"@en ;
+    skos:definition "A comparison operator that is true when the first value is below the second."@en ;
+    skos:broader voc:comparison-operator ;
+    skos:inScheme voc:logic-vocabulary .
+
+voc:comparison-less-than-or-equal-to a skos:Concept ;
+    skos:prefLabel "Less than or equal to"@en ;
+    skos:altLabel "At most"@en ;
+    skos:definition "A comparison operator that is true when the first value does not exceed the second."@en ;
+    skos:broader voc:comparison-operator ;
+    skos:inScheme voc:logic-vocabulary .
+
+voc:comparison-between a skos:Concept ;
+    skos:prefLabel "Between"@en ;
+    skos:altLabel "In range"@en ;
+    skos:definition "A comparison operator that is true when a value lies within an inclusive range."@en ;
+    skos:broader voc:comparison-operator ;
+    skos:inScheme voc:logic-vocabulary .
+
+voc:comparison-in-set a skos:Concept ;
+    skos:prefLabel "In set"@en ;
+    skos:altLabel "One of"@en , "In list"@en ;
+    skos:definition "A comparison operator that is true when a value is a member of a list."@en ;
+    skos:broader voc:comparison-operator ;
+    skos:inScheme voc:logic-vocabulary .
+
+voc:truth-value a skos:Concept ;
+    skos:prefLabel "Truth value"@en ;
+    skos:definition "A controlled value set for the result of evaluating a condition."@en ;
+    skos:topConceptOf voc:logic-vocabulary ;
+    skos:narrower voc:truth-value-true , voc:truth-value-false , voc:truth-value-unknown ;
+    skos:inScheme voc:logic-vocabulary .
+
+voc:truth-value-true a skos:Concept ;
+    skos:prefLabel "True"@en ;
+    skos:definition "A truth value for a condition that holds."@en ;
+    skos:broader voc:truth-value ;
+    skos:inScheme voc:logic-vocabulary .
+
+voc:truth-value-false a skos:Concept ;
+    skos:prefLabel "False"@en ;
+    skos:definition "A truth value for a condition that does not hold."@en ;
+    skos:broader voc:truth-value ;
+    skos:inScheme voc:logic-vocabulary .
+
+voc:truth-value-unknown a skos:Concept ;
+    skos:prefLabel "Unknown"@en ;
+    skos:altLabel "Undetermined"@en ;
+    skos:definition "A truth value for a condition that cannot be evaluated from the available facts."@en ;
+    skos:scopeNote "Needed because the graph follows open-world semantics."@en ;
+    skos:broader voc:truth-value ;
+    skos:inScheme voc:logic-vocabulary .

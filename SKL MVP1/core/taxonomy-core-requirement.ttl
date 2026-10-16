@@ -1,0 +1,254 @@
+# Taxonomy: Requirement taxonomy
+# File: taxonomy-core-requirement.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix tax: <https://www.insperity.com/taxonomy/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+tax:RequirementTaxonomy a skos:ConceptScheme ;
+    dcterms:title "Requirement taxonomy"@en ;
+    skos:prefLabel "Requirement taxonomy"@en ;
+    dcterms:description "Classification of statements of need, capability, condition, or constraint that a solution, service, process, or knowledge artifact must satisfy."@en ;
+    dcterms:subject core:Requirement ;
+    skos:scopeNote "Covers kinds of requirement. Priority, status, and verification method values are in the requirement vocabulary. Requirements trace to features, change records, releases, and deployments."@en ;
+    dcterms:source "ISO/IEC/IEEE 29148 requirements engineering; NeOn Ontology Requirements Specification Document; INCOSE Guide to Writing Requirements."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept tax:StakeholderRequirement ,
+        tax:SolutionRequirement ,
+        tax:Constraint ,
+        tax:KnowledgeRequirement ,
+        tax:TransitionRequirement .
+
+tax:StakeholderRequirement a skos:Concept ;
+    skos:prefLabel "Stakeholder requirement"@en ;
+    skos:altLabel "Stakeholder need"@en ;
+    skos:definition "A requirement that states what a stakeholder needs, independent of any solution."@en ;
+    skos:topConceptOf tax:RequirementTaxonomy ;
+    skos:narrower tax:BusinessRequirement , tax:UserRequirement , tax:RegulatoryRequirement , tax:ContractualRequirement ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:BusinessRequirement a skos:Concept ;
+    skos:prefLabel "Business requirement"@en ;
+    skos:altLabel "Business need"@en , "Business objective requirement"@en ;
+    skos:definition "A stakeholder requirement that states an organizational goal, objective, or outcome."@en ;
+    skos:broader tax:StakeholderRequirement ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:UserRequirement a skos:Concept ;
+    skos:prefLabel "User requirement"@en ;
+    skos:altLabel "User story"@en , "User need"@en ;
+    skos:definition "A stakeholder requirement that states what a user must be able to do or experience."@en ;
+    skos:broader tax:StakeholderRequirement ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:RegulatoryRequirement a skos:Concept ;
+    skos:prefLabel "Regulatory requirement"@en ;
+    skos:altLabel "Compliance requirement"@en , "Legal requirement"@en ;
+    skos:definition "A stakeholder requirement that arises from a law, regulation, or binding guidance."@en ;
+    skos:broader tax:StakeholderRequirement ;
+    skos:relatedMatch tax:LegalNormSource ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:ContractualRequirement a skos:Concept ;
+    skos:prefLabel "Contractual requirement"@en ;
+    skos:altLabel "Contract requirement"@en ;
+    skos:definition "A stakeholder requirement that arises from the terms of an agreement."@en ;
+    skos:broader tax:StakeholderRequirement ;
+    skos:relatedMatch tax:ContractualInstrument ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:SolutionRequirement a skos:Concept ;
+    skos:prefLabel "Solution requirement"@en ;
+    skos:altLabel "System requirement"@en , "Product requirement"@en ;
+    skos:definition "A requirement that states a characteristic a solution must have to meet stakeholder requirements."@en ;
+    skos:topConceptOf tax:RequirementTaxonomy ;
+    skos:narrower tax:FunctionalRequirement , tax:QualityRequirement , tax:InterfaceRequirement , tax:DataRequirement ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:FunctionalRequirement a skos:Concept ;
+    skos:prefLabel "Functional requirement"@en ;
+    skos:altLabel "Capability requirement"@en ;
+    skos:definition "A solution requirement that states a behavior or function the solution must perform."@en ;
+    skos:broader tax:SolutionRequirement ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:QualityRequirement a skos:Concept ;
+    skos:prefLabel "Quality requirement"@en ;
+    skos:altLabel "Non-functional requirement"@en , "Quality attribute requirement"@en ;
+    skos:definition "A solution requirement that states how well the solution must perform a function or a characteristic it must exhibit."@en ;
+    skos:broader tax:SolutionRequirement ;
+    skos:narrower tax:PerformanceRequirement , tax:AvailabilityRequirement , tax:ReliabilityRequirement , tax:SecurityRequirement , tax:PrivacyRequirement , tax:UsabilityRequirement , tax:AccessibilityRequirement , tax:MaintainabilityRequirement , tax:ScalabilityRequirement , tax:InteroperabilityRequirement , tax:ExplainabilityRequirement ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:PerformanceRequirement a skos:Concept ;
+    skos:prefLabel "Performance requirement"@en ;
+    skos:altLabel "Latency requirement"@en ;
+    skos:definition "A quality requirement on response time, throughput, or resource use."@en ;
+    skos:broader tax:QualityRequirement ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:AvailabilityRequirement a skos:Concept ;
+    skos:prefLabel "Availability requirement"@en ;
+    skos:altLabel "Uptime requirement"@en ;
+    skos:definition "A quality requirement on the proportion of time a solution is operational."@en ;
+    skos:broader tax:QualityRequirement ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:ReliabilityRequirement a skos:Concept ;
+    skos:prefLabel "Reliability requirement"@en ;
+    skos:altLabel "Mean time between failures requirement"@en ;
+    skos:definition "A quality requirement on the ability to perform without failure over a period."@en ;
+    skos:broader tax:QualityRequirement ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:SecurityRequirement a skos:Concept ;
+    skos:prefLabel "Security requirement"@en ;
+    skos:altLabel "Information security requirement"@en ;
+    skos:definition "A quality requirement on protecting confidentiality, integrity, and availability."@en ;
+    skos:broader tax:QualityRequirement ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:PrivacyRequirement a skos:Concept ;
+    skos:prefLabel "Privacy requirement"@en ;
+    skos:definition "A quality requirement on the lawful and limited collection and use of personal information."@en ;
+    skos:broader tax:QualityRequirement ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:UsabilityRequirement a skos:Concept ;
+    skos:prefLabel "Usability requirement"@en ;
+    skos:altLabel "User experience requirement"@en ;
+    skos:definition "A quality requirement on ease of learning and efficient use."@en ;
+    skos:broader tax:QualityRequirement ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:AccessibilityRequirement a skos:Concept ;
+    skos:prefLabel "Accessibility requirement"@en ;
+    skos:altLabel "Web Content Accessibility Guidelines requirement"@en , "WCAG requirement"@en ;
+    skos:definition "A quality requirement on use by people with the widest range of abilities."@en ;
+    skos:broader tax:QualityRequirement ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:MaintainabilityRequirement a skos:Concept ;
+    skos:prefLabel "Maintainability requirement"@en ;
+    skos:definition "A quality requirement on the ease of changing and correcting the solution."@en ;
+    skos:broader tax:QualityRequirement ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:ScalabilityRequirement a skos:Concept ;
+    skos:prefLabel "Scalability requirement"@en ;
+    skos:definition "A quality requirement on handling growth in load or data."@en ;
+    skos:broader tax:QualityRequirement ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:InteroperabilityRequirement a skos:Concept ;
+    skos:prefLabel "Interoperability requirement"@en ;
+    skos:altLabel "Integration requirement"@en ;
+    skos:definition "A quality requirement on exchanging and using information with other systems."@en ;
+    skos:broader tax:QualityRequirement ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:ExplainabilityRequirement a skos:Concept ;
+    skos:prefLabel "Explainability requirement"@en ;
+    skos:altLabel "Traceability requirement"@en , "Answer traceability requirement"@en ;
+    skos:definition "A quality requirement on the ability to trace and explain outputs to their inputs and rules."@en ;
+    skos:broader tax:QualityRequirement ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:InterfaceRequirement a skos:Concept ;
+    skos:prefLabel "Interface requirement"@en ;
+    skos:altLabel "Integration interface requirement"@en ;
+    skos:definition "A solution requirement that states how the solution interacts with users, systems, or devices."@en ;
+    skos:broader tax:SolutionRequirement ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:DataRequirement a skos:Concept ;
+    skos:prefLabel "Data requirement"@en ;
+    skos:altLabel "Information requirement"@en ;
+    skos:definition "A solution requirement that states what data must be captured, defined, stored, or retained."@en ;
+    skos:broader tax:SolutionRequirement ;
+    skos:narrower tax:DataDefinitionRequirement , tax:DataQualityRequirement , tax:DataRetentionRequirement ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:DataDefinitionRequirement a skos:Concept ;
+    skos:prefLabel "Data definition requirement"@en ;
+    skos:definition "A data requirement on the meaning, format, and allowed values of a data element."@en ;
+    skos:broader tax:DataRequirement ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:DataQualityRequirement a skos:Concept ;
+    skos:prefLabel "Data quality requirement"@en ;
+    skos:definition "A data requirement on the accuracy, completeness, consistency, timeliness, or validity of data."@en ;
+    skos:broader tax:DataRequirement ;
+    skos:relatedMatch tax:DataQualityDimension ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:DataRetentionRequirement a skos:Concept ;
+    skos:prefLabel "Data retention requirement"@en ;
+    skos:altLabel "Records retention requirement"@en ;
+    skos:definition "A data requirement on how long data is kept and how it is disposed of."@en ;
+    skos:broader tax:DataRequirement ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:Constraint a skos:Concept ;
+    skos:prefLabel "Constraint"@en ;
+    skos:altLabel "Design constraint"@en ;
+    skos:definition "A requirement that limits the design or implementation options available."@en ;
+    skos:scopeNote "Distinct from data constraints in the rule taxonomy, which state what must be true about data."@en ;
+    skos:topConceptOf tax:RequirementTaxonomy ;
+    skos:narrower tax:TechnicalConstraint , tax:BusinessConstraint ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:TechnicalConstraint a skos:Concept ;
+    skos:prefLabel "Technical constraint"@en ;
+    skos:altLabel "Technology constraint"@en ;
+    skos:definition "A constraint imposed by technology standards, platforms, or existing systems."@en ;
+    skos:broader tax:Constraint ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:BusinessConstraint a skos:Concept ;
+    skos:prefLabel "Business constraint"@en ;
+    skos:altLabel "Project constraint"@en ;
+    skos:definition "A constraint imposed by budget, schedule, staffing, or policy."@en ;
+    skos:broader tax:Constraint ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:KnowledgeRequirement a skos:Concept ;
+    skos:prefLabel "Knowledge requirement"@en ;
+    skos:altLabel "Ontology requirement"@en ;
+    skos:definition "A requirement that states what governed knowledge must define or be able to answer."@en ;
+    skos:topConceptOf tax:RequirementTaxonomy ;
+    skos:narrower tax:CompetencyQuestion , tax:CoverageRequirement ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:CompetencyQuestion a skos:Concept ;
+    skos:prefLabel "Competency question"@en ;
+    skos:altLabel "CQ"@en , "Competency test"@en ;
+    skos:definition "A knowledge requirement written as a question the knowledge must be able to answer, run as a test in each release."@en ;
+    skos:broader tax:KnowledgeRequirement ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:CoverageRequirement a skos:Concept ;
+    skos:prefLabel "Coverage requirement"@en ;
+    skos:altLabel "Mapping coverage requirement"@en ;
+    skos:definition "A knowledge requirement on the terms, mappings, or sources that must be included."@en ;
+    skos:broader tax:KnowledgeRequirement ;
+    skos:inScheme tax:RequirementTaxonomy .
+
+tax:TransitionRequirement a skos:Concept ;
+    skos:prefLabel "Transition requirement"@en ;
+    skos:altLabel "Migration requirement"@en , "Cutover requirement"@en ;
+    skos:definition "A requirement that states a capability needed only to move from the current to the future state."@en ;
+    skos:topConceptOf tax:RequirementTaxonomy ;
+    skos:inScheme tax:RequirementTaxonomy .

@@ -1,0 +1,413 @@
+# Taxonomy: Measure taxonomy
+# File: taxonomy-core-measure.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix tax: <https://www.insperity.com/taxonomy/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+tax:MeasureTaxonomy a skos:ConceptScheme ;
+    dcterms:title "Measure taxonomy"@en ;
+    skos:prefLabel "Measure taxonomy"@en ;
+    dcterms:description "Classification of measures and calculations, the quantified evaluations of processes, assets, and qualities and the governed formulas that compute them."@en ;
+    dcterms:subject core:Measure ;
+    skos:scopeNote "Includes calculations, which are authored as declarative formula specifications with test vectors. Units, aggregation functions, and polarity values are in the measure vocabulary."@en ;
+    dcterms:source "ISO/IEC/IEEE 15939 measurement process; W3C Data Cube Vocabulary for observations; ISO/IEC 5259 and ISO 8000 for data quality; ISO 30414 human capital reporting."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept tax:BaseMeasure ,
+        tax:DerivedMeasure ,
+        tax:Indicator ,
+        tax:Target ,
+        tax:ForecastValue ,
+        tax:Threshold ,
+        tax:Observation ,
+        tax:Calculation ,
+        tax:MeasurementDimension .
+
+tax:BaseMeasure a skos:Concept ;
+    skos:prefLabel "Base measure"@en ;
+    skos:altLabel "Raw measure"@en , "Count"@en ;
+    skos:definition "A measure that quantifies a single attribute by a direct method."@en ;
+    skos:example "Number of answers served; hours worked."@en ;
+    skos:topConceptOf tax:MeasureTaxonomy ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:DerivedMeasure a skos:Concept ;
+    skos:prefLabel "Derived measure"@en ;
+    skos:altLabel "Calculated measure"@en , "Computed measure"@en ;
+    skos:definition "A measure computed from two or more base or derived measures."@en ;
+    skos:example "Average handling time."@en ;
+    skos:topConceptOf tax:MeasureTaxonomy ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:Indicator a skos:Concept ;
+    skos:prefLabel "Indicator"@en ;
+    skos:altLabel "Metric"@en ;
+    skos:definition "A measure that estimates or evaluates an attribute against an information need, often compared to a target."@en ;
+    skos:topConceptOf tax:MeasureTaxonomy ;
+    skos:narrower tax:KeyPerformanceIndicator , tax:KeyRiskIndicator , tax:ServiceLevelIndicator , tax:ReliabilityIndicator , tax:KnowledgeQualityIndicator ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:KeyPerformanceIndicator a skos:Concept ;
+    skos:prefLabel "Key performance indicator"@en ;
+    skos:altLabel "KPI"@en , "Performance indicator"@en ;
+    skos:definition "An indicator that tracks performance against a strategic or operational objective."@en ;
+    skos:broader tax:Indicator ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:KeyRiskIndicator a skos:Concept ;
+    skos:prefLabel "Key risk indicator"@en ;
+    skos:altLabel "KRI"@en , "Risk indicator"@en ;
+    skos:definition "An indicator that signals a change in risk exposure."@en ;
+    skos:broader tax:Indicator ;
+    skos:relatedMatch tax:Risk ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:ServiceLevelIndicator a skos:Concept ;
+    skos:prefLabel "Service level indicator"@en ;
+    skos:altLabel "SLI"@en ;
+    skos:definition "An indicator that measures an aspect of service performance experienced by users."@en ;
+    skos:broader tax:Indicator ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:ReliabilityIndicator a skos:Concept ;
+    skos:prefLabel "Reliability indicator"@en ;
+    skos:altLabel "Reliability metric"@en ;
+    skos:definition "An indicator of how long or how often a system works without failure."@en ;
+    skos:broader tax:Indicator ;
+    skos:narrower tax:MeanTimeBetweenFailures , tax:MeanTimeToRecover , tax:MeanTimeBetweenHallucinations ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:MeanTimeBetweenFailures a skos:Concept ;
+    skos:prefLabel "Mean time between failures"@en ;
+    skos:altLabel "MTBF"@en ;
+    skos:definition "A reliability indicator equal to operating time divided by the number of failures."@en ;
+    skos:broader tax:ReliabilityIndicator ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:MeanTimeToRecover a skos:Concept ;
+    skos:prefLabel "Mean time to recover"@en ;
+    skos:altLabel "MTTR"@en , "Mean time to restore"@en ;
+    skos:definition "A reliability indicator equal to the average time to restore service after a failure."@en ;
+    skos:broader tax:ReliabilityIndicator ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:MeanTimeBetweenHallucinations a skos:Concept ;
+    skos:prefLabel "Mean time between hallucinations"@en ;
+    skos:altLabel "MTBH"@en ;
+    skos:definition "A reliability indicator equal to answers served or hours in service divided by confirmed hallucinations."@en ;
+    skos:broader tax:ReliabilityIndicator ;
+    skos:relatedMatch tax:Hallucination ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:KnowledgeQualityIndicator a skos:Concept ;
+    skos:prefLabel "Knowledge quality indicator"@en ;
+    skos:altLabel "Semantic quality metric"@en ;
+    skos:definition "An indicator of the coverage, accuracy, or traceability of governed knowledge and the answers that use it."@en ;
+    skos:broader tax:Indicator ;
+    skos:narrower tax:MappingCoverage , tax:MappingAccuracy , tax:CompetencyQuestionPassRate , tax:AnswerTraceabilityRate , tax:SearchSuccessRate ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:MappingCoverage a skos:Concept ;
+    skos:prefLabel "Mapping coverage"@en ;
+    skos:definition "A knowledge quality indicator equal to the share of inbound schema elements mapped to ontology terms."@en ;
+    skos:broader tax:KnowledgeQualityIndicator ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:MappingAccuracy a skos:Concept ;
+    skos:prefLabel "Mapping accuracy"@en ;
+    skos:definition "A knowledge quality indicator equal to the share of agent-proposed mappings accepted on review."@en ;
+    skos:broader tax:KnowledgeQualityIndicator ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:CompetencyQuestionPassRate a skos:Concept ;
+    skos:prefLabel "Competency question pass rate"@en ;
+    skos:definition "A knowledge quality indicator equal to the share of competency questions passing in a release."@en ;
+    skos:broader tax:KnowledgeQualityIndicator ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:AnswerTraceabilityRate a skos:Concept ;
+    skos:prefLabel "Answer traceability rate"@en ;
+    skos:definition "A knowledge quality indicator equal to the share of artificial intelligence answers that cite governed terms and mappings."@en ;
+    skos:broader tax:KnowledgeQualityIndicator ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:SearchSuccessRate a skos:Concept ;
+    skos:prefLabel "Search success rate"@en ;
+    skos:definition "A knowledge quality indicator equal to the share of searches returning a result the user accepts."@en ;
+    skos:broader tax:KnowledgeQualityIndicator ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:Target a skos:Concept ;
+    skos:prefLabel "Target"@en ;
+    skos:altLabel "Goal"@en , "Objective value"@en ;
+    skos:definition "A measure value that a party commits to achieve within a period."@en ;
+    skos:topConceptOf tax:MeasureTaxonomy ;
+    skos:narrower tax:ServiceLevelObjective , tax:BudgetTarget ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:ServiceLevelObjective a skos:Concept ;
+    skos:prefLabel "Service level objective"@en ;
+    skos:altLabel "SLO"@en ;
+    skos:definition "A target for a service level indicator agreed internally."@en ;
+    skos:broader tax:Target ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:BudgetTarget a skos:Concept ;
+    skos:prefLabel "Budget target"@en ;
+    skos:altLabel "Budget"@en ;
+    skos:definition "A target expressed as a planned amount of money."@en ;
+    skos:broader tax:Target ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:ForecastValue a skos:Concept ;
+    skos:prefLabel "Forecast value"@en ;
+    skos:altLabel "Forecast"@en , "Projection"@en ;
+    skos:definition "A measure value that estimates a future value of a measure from assumptions and history."@en ;
+    skos:topConceptOf tax:MeasureTaxonomy ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:Threshold a skos:Concept ;
+    skos:prefLabel "Threshold"@en ;
+    skos:altLabel "Limit"@en , "Tolerance"@en ;
+    skos:definition "A measure value that, when crossed, triggers an alert, decision, or action."@en ;
+    skos:topConceptOf tax:MeasureTaxonomy ;
+    skos:narrower tax:AlertThreshold , tax:ToleranceThreshold , tax:TripThreshold ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:AlertThreshold a skos:Concept ;
+    skos:prefLabel "Alert threshold"@en ;
+    skos:altLabel "Warning threshold"@en ;
+    skos:definition "A threshold that triggers a notification for attention."@en ;
+    skos:broader tax:Threshold ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:ToleranceThreshold a skos:Concept ;
+    skos:prefLabel "Tolerance threshold"@en ;
+    skos:altLabel "Tolerance band"@en ;
+    skos:definition "A threshold that defines the acceptable band around a target."@en ;
+    skos:broader tax:Threshold ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:TripThreshold a skos:Concept ;
+    skos:prefLabel "Trip threshold"@en ;
+    skos:altLabel "Circuit breaker threshold"@en ;
+    skos:definition "A threshold that triggers automatic suspension or fallback."@en ;
+    skos:broader tax:Threshold ;
+    skos:relatedMatch tax:CircuitBreakerRule ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:Observation a skos:Concept ;
+    skos:prefLabel "Observation"@en ;
+    skos:altLabel "Measurement"@en , "Data point"@en , "Fact"@en ;
+    skos:definition "A measure value recorded for a specific subject, period, and set of dimensions."@en ;
+    skos:topConceptOf tax:MeasureTaxonomy ;
+    skos:narrower tax:ActualValue , tax:BenchmarkValue ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:ActualValue a skos:Concept ;
+    skos:prefLabel "Actual value"@en ;
+    skos:altLabel "Actual"@en ;
+    skos:definition "An observation that records what occurred."@en ;
+    skos:broader tax:Observation ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:BenchmarkValue a skos:Concept ;
+    skos:prefLabel "Benchmark value"@en ;
+    skos:altLabel "Benchmark"@en ;
+    skos:definition "An observation from a comparable population used as a reference."@en ;
+    skos:broader tax:Observation ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:Calculation a skos:Concept ;
+    skos:prefLabel "Calculation"@en ;
+    skos:altLabel "Computation"@en , "Formula"@en , "Calc"@en ;
+    skos:definition "A governed formula specification that computes a value from inputs and is verified against test vectors."@en ;
+    skos:scopeNote "Authored once in the single source of truth and generated into services."@en ;
+    skos:topConceptOf tax:MeasureTaxonomy ;
+    skos:narrower tax:ArithmeticCalculation , tax:AggregationCalculation , tax:RatioCalculation , tax:AllocationCalculation , tax:ConversionCalculation , tax:DateCalculation , tax:StatisticalCalculation , tax:ScoringCalculation ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:ArithmeticCalculation a skos:Concept ;
+    skos:prefLabel "Arithmetic calculation"@en ;
+    skos:definition "A calculation that combines inputs using addition, subtraction, multiplication, or division."@en ;
+    skos:example "Gross pay equals hours times rate plus overtime premium."@en ;
+    skos:broader tax:Calculation ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:AggregationCalculation a skos:Concept ;
+    skos:prefLabel "Aggregation calculation"@en ;
+    skos:altLabel "Rollup"@en , "Aggregate"@en ;
+    skos:definition "A calculation that summarizes many values into one, such as a sum, count, or average."@en ;
+    skos:broader tax:Calculation ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:RatioCalculation a skos:Concept ;
+    skos:prefLabel "Ratio calculation"@en ;
+    skos:altLabel "Percentage calculation"@en , "Rate calculation"@en ;
+    skos:definition "A calculation that divides one quantity by another to express a proportion or rate."@en ;
+    skos:broader tax:Calculation ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:AllocationCalculation a skos:Concept ;
+    skos:prefLabel "Allocation calculation"@en ;
+    skos:altLabel "Proration"@en , "Apportionment"@en ;
+    skos:definition "A calculation that distributes an amount across recipients by a defined basis."@en ;
+    skos:broader tax:Calculation ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:ConversionCalculation a skos:Concept ;
+    skos:prefLabel "Conversion calculation"@en ;
+    skos:altLabel "Unit conversion"@en , "Annualization"@en ;
+    skos:definition "A calculation that converts a value between units, currencies, or periods."@en ;
+    skos:broader tax:Calculation ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:DateCalculation a skos:Concept ;
+    skos:prefLabel "Date calculation"@en ;
+    skos:altLabel "Date arithmetic"@en ;
+    skos:definition "A calculation that derives a date or duration from other dates and rules."@en ;
+    skos:broader tax:Calculation ;
+    skos:relatedMatch tax:TimingRule ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:StatisticalCalculation a skos:Concept ;
+    skos:prefLabel "Statistical calculation"@en ;
+    skos:altLabel "Statistical model"@en , "Regression"@en ;
+    skos:definition "A calculation that estimates a distribution, trend, or relationship from data."@en ;
+    skos:broader tax:Calculation ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:ScoringCalculation a skos:Concept ;
+    skos:prefLabel "Scoring calculation"@en ;
+    skos:altLabel "Score"@en , "Weighted score"@en ;
+    skos:definition "A calculation that combines weighted factors into a single score."@en ;
+    skos:broader tax:Calculation ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:MeasurementDimension a skos:Concept ;
+    skos:prefLabel "Measurement dimension"@en ;
+    skos:altLabel "Dimension"@en , "Quality dimension group"@en ;
+    skos:definition "A characteristic along which measures are evaluated or broken down."@en ;
+    skos:topConceptOf tax:MeasureTaxonomy ;
+    skos:narrower tax:DataQualityDimension , tax:TrustDimension , tax:PerformanceDimension ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:DataQualityDimension a skos:Concept ;
+    skos:prefLabel "Data quality dimension"@en ;
+    skos:altLabel "Data quality characteristic"@en ;
+    skos:definition "A measurement dimension of how fit data is for its intended use."@en ;
+    skos:broader tax:MeasurementDimension ;
+    skos:narrower tax:Accuracy , tax:Completeness , tax:Consistency , tax:Timeliness , tax:Validity , tax:Uniqueness ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:Accuracy a skos:Concept ;
+    skos:prefLabel "Accuracy"@en ;
+    skos:definition "A data quality dimension of how closely values agree with reality or an authoritative source."@en ;
+    skos:broader tax:DataQualityDimension ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:Completeness a skos:Concept ;
+    skos:prefLabel "Completeness"@en ;
+    skos:definition "A data quality dimension of whether all required values are present."@en ;
+    skos:broader tax:DataQualityDimension ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:Consistency a skos:Concept ;
+    skos:prefLabel "Consistency"@en ;
+    skos:definition "A data quality dimension of whether values agree across records and systems."@en ;
+    skos:broader tax:DataQualityDimension ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:Timeliness a skos:Concept ;
+    skos:prefLabel "Timeliness"@en ;
+    skos:altLabel "Freshness"@en , "Currency"@en ;
+    skos:definition "A data quality dimension of whether values are current enough for use."@en ;
+    skos:broader tax:DataQualityDimension ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:Validity a skos:Concept ;
+    skos:prefLabel "Validity"@en ;
+    skos:definition "A data quality dimension of whether values conform to defined formats and domains."@en ;
+    skos:broader tax:DataQualityDimension ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:Uniqueness a skos:Concept ;
+    skos:prefLabel "Uniqueness"@en ;
+    skos:definition "A data quality dimension of whether each entity is recorded once."@en ;
+    skos:broader tax:DataQualityDimension ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:TrustDimension a skos:Concept ;
+    skos:prefLabel "Trust dimension"@en ;
+    skos:altLabel "Trustworthiness dimension"@en ;
+    skos:definition "A measurement dimension of how much confidence users can place in information or answers."@en ;
+    skos:broader tax:MeasurementDimension ;
+    skos:narrower tax:Provenance , tax:Verification , tax:Explainability ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:Provenance a skos:Concept ;
+    skos:prefLabel "Provenance"@en ;
+    skos:altLabel "Lineage"@en ;
+    skos:definition "A trust dimension of whether the origin and lineage of information are recorded."@en ;
+    skos:broader tax:TrustDimension ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:Verification a skos:Concept ;
+    skos:prefLabel "Verification"@en ;
+    skos:altLabel "Verification status"@en ;
+    skos:definition "A trust dimension of whether facts have been checked against published sources."@en ;
+    skos:broader tax:TrustDimension ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:Explainability a skos:Concept ;
+    skos:prefLabel "Explainability"@en ;
+    skos:altLabel "Traceability"@en ;
+    skos:definition "A trust dimension of whether outputs can be traced to inputs, rules, and sources."@en ;
+    skos:broader tax:TrustDimension ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:PerformanceDimension a skos:Concept ;
+    skos:prefLabel "Performance dimension"@en ;
+    skos:altLabel "Operational dimension"@en ;
+    skos:definition "A measurement dimension of how well a process or service achieves results with resources."@en ;
+    skos:broader tax:MeasurementDimension ;
+    skos:narrower tax:Efficiency , tax:Effectiveness , tax:Cost , tax:Speed ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:Efficiency a skos:Concept ;
+    skos:prefLabel "Efficiency"@en ;
+    skos:definition "A performance dimension of output relative to resources used."@en ;
+    skos:broader tax:PerformanceDimension ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:Effectiveness a skos:Concept ;
+    skos:prefLabel "Effectiveness"@en ;
+    skos:definition "A performance dimension of the degree to which intended results are achieved."@en ;
+    skos:broader tax:PerformanceDimension ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:Cost a skos:Concept ;
+    skos:prefLabel "Cost"@en ;
+    skos:altLabel "Expense"@en ;
+    skos:definition "A performance dimension of the money spent to produce an output."@en ;
+    skos:broader tax:PerformanceDimension ;
+    skos:inScheme tax:MeasureTaxonomy .
+
+tax:Speed a skos:Concept ;
+    skos:prefLabel "Speed"@en ;
+    skos:altLabel "Cycle time"@en , "Lead time"@en , "Latency"@en ;
+    skos:definition "A performance dimension of the time taken to produce an output."@en ;
+    skos:broader tax:PerformanceDimension ;
+    skos:inScheme tax:MeasureTaxonomy .

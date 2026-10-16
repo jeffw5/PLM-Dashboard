@@ -1,0 +1,344 @@
+# Taxonomy: Role taxonomy
+# File: taxonomy-core-role.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix tax: <https://www.insperity.com/taxonomy/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+tax:RoleTaxonomy a skos:ConceptScheme ;
+    dcterms:title "Role taxonomy"@en ;
+    skos:prefLabel "Role taxonomy"@en ;
+    dcterms:description "Classification of roles, the positions or functions a party bears because of its situation and that are realized when it takes part in process steps."@en ;
+    dcterms:subject core:Role ;
+    skos:scopeNote "A role is borne by a party (hasRole) and realized in process steps (performedBy). Personas are not roles and never grant access. Security entitlements are managed separately."@en ;
+    dcterms:source "BFO role (ISO/IEC 21838-2); W3C Organization Ontology; RACI responsibility assignment."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept tax:EmploymentRole ,
+        tax:CommercialRole ,
+        tax:PlanRole ,
+        tax:ResponsibilityRole ,
+        tax:GovernanceRole ,
+        tax:KnowledgeEngineeringRole ,
+        tax:AgreementPartyRole .
+
+tax:EmploymentRole a skos:Concept ;
+    skos:prefLabel "Employment role"@en ;
+    skos:definition "A role that arises from an employment relationship between a worker and an employer."@en ;
+    skos:topConceptOf tax:RoleTaxonomy ;
+    skos:narrower tax:Worker , tax:Employer , tax:Manager , tax:Executive ;
+    skos:relatedMatch tax:EmploymentLifecycle ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:Worker a skos:Concept ;
+    skos:prefLabel "Worker"@en ;
+    skos:altLabel "Worker role"@en ;
+    skos:definition "An employment role borne by a person who performs work for an organization."@en ;
+    skos:broader tax:EmploymentRole ;
+    skos:narrower tax:Employee , tax:ContingentWorker ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:Employee a skos:Concept ;
+    skos:prefLabel "Employee"@en ;
+    skos:altLabel "Employee role"@en , "Staff member"@en ;
+    skos:definition "A worker who is employed under an employment relationship and paid through payroll."@en ;
+    skos:broader tax:Worker ;
+    skos:narrower tax:WorksiteEmployee ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:WorksiteEmployee a skos:Concept ;
+    skos:prefLabel "Worksite employee"@en ;
+    skos:altLabel "Co-employed employee"@en , "WSE"@en ;
+    skos:definition "An employee who performs work at a client worksite under a co-employment relationship."@en ;
+    skos:broader tax:Employee ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:ContingentWorker a skos:Concept ;
+    skos:prefLabel "Contingent worker"@en ;
+    skos:altLabel "Temporary worker"@en , "Contractor"@en , "Consultant"@en ;
+    skos:definition "A worker engaged for a limited period or task without standard employment."@en ;
+    skos:broader tax:Worker ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:Employer a skos:Concept ;
+    skos:prefLabel "Employer"@en ;
+    skos:altLabel "Employer role"@en ;
+    skos:definition "An employment role borne by an organization that hires and directs workers."@en ;
+    skos:broader tax:EmploymentRole ;
+    skos:narrower tax:CoEmployer , tax:ClientEmployer ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:CoEmployer a skos:Concept ;
+    skos:prefLabel "Co-employer"@en ;
+    skos:altLabel "Professional employer organization"@en , "PEO"@en ;
+    skos:definition "An employer that shares employer responsibilities for the same workers with another employer under a co-employment agreement."@en ;
+    skos:broader tax:Employer ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:ClientEmployer a skos:Concept ;
+    skos:prefLabel "Client employer"@en ;
+    skos:altLabel "Worksite client employer"@en ;
+    skos:definition "An employer that is a client of a co-employer and directs the day-to-day work of worksite employees."@en ;
+    skos:broader tax:Employer ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:Manager a skos:Concept ;
+    skos:prefLabel "Manager"@en ;
+    skos:altLabel "Supervisor"@en , "People manager"@en ;
+    skos:definition "An employment role borne by a person who directs the work of other workers."@en ;
+    skos:broader tax:EmploymentRole ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:Executive a skos:Concept ;
+    skos:prefLabel "Executive"@en ;
+    skos:altLabel "Officer"@en , "Senior leader"@en ;
+    skos:definition "An employment role borne by a person accountable for the direction of an organization or major unit."@en ;
+    skos:broader tax:EmploymentRole ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:CommercialRole a skos:Concept ;
+    skos:prefLabel "Commercial role"@en ;
+    skos:altLabel "Business relationship role"@en ;
+    skos:definition "A role that arises from a commercial relationship or agreement."@en ;
+    skos:topConceptOf tax:RoleTaxonomy ;
+    skos:narrower tax:Client , tax:Prospect , tax:Supplier , tax:Partner , tax:Broker ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:Client a skos:Concept ;
+    skos:prefLabel "Client"@en ;
+    skos:altLabel "Customer"@en , "Client company"@en ;
+    skos:definition "A commercial role borne by a party that purchases services from the organization under an agreement."@en ;
+    skos:broader tax:CommercialRole ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:Prospect a skos:Concept ;
+    skos:prefLabel "Prospect"@en ;
+    skos:altLabel "Prospective client"@en , "Lead"@en ;
+    skos:definition "A commercial role borne by a party being evaluated or pursued as a future client."@en ;
+    skos:broader tax:CommercialRole ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:Supplier a skos:Concept ;
+    skos:prefLabel "Supplier"@en ;
+    skos:altLabel "Vendor"@en , "Provider"@en ;
+    skos:definition "A commercial role borne by a party that provides goods or services to the organization."@en ;
+    skos:broader tax:CommercialRole ;
+    skos:narrower tax:Carrier ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:Carrier a skos:Concept ;
+    skos:prefLabel "Carrier"@en ;
+    skos:altLabel "Insurance carrier"@en , "Insurer"@en ;
+    skos:definition "A supplier that underwrites and pays insurance benefits."@en ;
+    skos:broader tax:Supplier ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:Partner a skos:Concept ;
+    skos:prefLabel "Partner"@en ;
+    skos:altLabel "Alliance partner"@en , "Channel partner"@en ;
+    skos:definition "A commercial role borne by a party that collaborates with the organization to deliver or sell offerings."@en ;
+    skos:broader tax:CommercialRole ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:Broker a skos:Concept ;
+    skos:prefLabel "Broker"@en ;
+    skos:altLabel "Agent of record"@en , "Intermediary"@en ;
+    skos:definition "A commercial role borne by a party that arranges agreements between other parties for a commission or fee."@en ;
+    skos:broader tax:CommercialRole ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:PlanRole a skos:Concept ;
+    skos:prefLabel "Plan role"@en ;
+    skos:altLabel "Benefit plan role"@en ;
+    skos:definition "A role that arises from participation in a benefit, retirement, or insurance plan."@en ;
+    skos:topConceptOf tax:RoleTaxonomy ;
+    skos:narrower tax:PlanSponsor , tax:PlanAdministrator , tax:PlanParticipant , tax:Dependent , tax:Beneficiary ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:PlanSponsor a skos:Concept ;
+    skos:prefLabel "Plan sponsor"@en ;
+    skos:altLabel "Sponsor"@en ;
+    skos:definition "A plan role borne by an organization that establishes and maintains a plan."@en ;
+    skos:broader tax:PlanRole ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:PlanAdministrator a skos:Concept ;
+    skos:prefLabel "Plan administrator"@en ;
+    skos:altLabel "Administrator"@en ;
+    skos:definition "A plan role borne by a party responsible for operating a plan under its terms."@en ;
+    skos:broader tax:PlanRole ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:PlanParticipant a skos:Concept ;
+    skos:prefLabel "Plan participant"@en ;
+    skos:altLabel "Participant"@en , "Member"@en , "Enrollee"@en ;
+    skos:definition "A plan role borne by a person who is enrolled in a plan."@en ;
+    skos:broader tax:PlanRole ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:Dependent a skos:Concept ;
+    skos:prefLabel "Dependent"@en ;
+    skos:altLabel "Covered dependent"@en ;
+    skos:definition "A plan role borne by a person who receives coverage through a plan participant."@en ;
+    skos:broader tax:PlanRole ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:Beneficiary a skos:Concept ;
+    skos:prefLabel "Beneficiary"@en ;
+    skos:altLabel "Designated beneficiary"@en ;
+    skos:definition "A plan role borne by a party designated to receive a benefit on a participant's death."@en ;
+    skos:broader tax:PlanRole ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:ResponsibilityRole a skos:Concept ;
+    skos:prefLabel "Responsibility role"@en ;
+    skos:altLabel "Responsibility assignment"@en , "RACI role"@en ;
+    skos:definition "A role that defines the kind of responsibility a party has for a process step or decision."@en ;
+    skos:scopeNote "Used to qualify performedBy and approvedBy."@en ;
+    skos:topConceptOf tax:RoleTaxonomy ;
+    skos:narrower tax:ResponsibleRole , tax:AccountableRole , tax:ConsultedRole , tax:InformedRole ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:ResponsibleRole a skos:Concept ;
+    skos:prefLabel "Responsible role"@en ;
+    skos:altLabel "Responsible"@en , "Doer"@en ;
+    skos:definition "A responsibility role borne by the party that does the work."@en ;
+    skos:broader tax:ResponsibilityRole ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:AccountableRole a skos:Concept ;
+    skos:prefLabel "Accountable role"@en ;
+    skos:altLabel "Accountable"@en , "Approver"@en ;
+    skos:definition "A responsibility role borne by the party that answers for the outcome and approves the work."@en ;
+    skos:broader tax:ResponsibilityRole ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:ConsultedRole a skos:Concept ;
+    skos:prefLabel "Consulted role"@en ;
+    skos:altLabel "Consulted"@en , "Advisor"@en ;
+    skos:definition "A responsibility role borne by a party whose input is sought before work or decisions."@en ;
+    skos:broader tax:ResponsibilityRole ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:InformedRole a skos:Concept ;
+    skos:prefLabel "Informed role"@en ;
+    skos:altLabel "Informed"@en ;
+    skos:definition "A responsibility role borne by a party kept up to date on progress or outcome."@en ;
+    skos:broader tax:ResponsibilityRole ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:GovernanceRole a skos:Concept ;
+    skos:prefLabel "Governance role"@en ;
+    skos:definition "A role that carries authority or duty for the oversight of policies, data, knowledge, or controls."@en ;
+    skos:topConceptOf tax:RoleTaxonomy ;
+    skos:narrower tax:Owner , tax:Steward , tax:Custodian , tax:ChangeReviewer , tax:Auditor , tax:Regulator ;
+    skos:relatedMatch tax:GovernanceDiscipline ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:Owner a skos:Concept ;
+    skos:prefLabel "Owner"@en ;
+    skos:altLabel "Domain owner"@en , "Data owner"@en , "Business owner"@en ;
+    skos:definition "A governance role borne by the party accountable for an asset, domain, or artifact and for approving changes to it."@en ;
+    skos:broader tax:GovernanceRole ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:Steward a skos:Concept ;
+    skos:prefLabel "Steward"@en ;
+    skos:altLabel "Data steward"@en , "Vocabulary steward"@en ;
+    skos:definition "A governance role borne by the party who maintains the quality, labels, and definitions of data or vocabularies day to day."@en ;
+    skos:broader tax:GovernanceRole ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:Custodian a skos:Concept ;
+    skos:prefLabel "Custodian"@en ;
+    skos:altLabel "Data custodian"@en , "System owner"@en ;
+    skos:definition "A governance role borne by the party who operates the systems that store and protect an asset."@en ;
+    skos:broader tax:GovernanceRole ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:ChangeReviewer a skos:Concept ;
+    skos:prefLabel "Change reviewer"@en ;
+    skos:altLabel "Approver of record"@en ;
+    skos:definition "A governance role borne by the party who approves changes before they enter source control and release."@en ;
+    skos:broader tax:GovernanceRole ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:Auditor a skos:Concept ;
+    skos:prefLabel "Auditor"@en ;
+    skos:altLabel "Internal auditor"@en , "External auditor"@en ;
+    skos:definition "A governance role borne by a party who independently examines records and controls."@en ;
+    skos:broader tax:GovernanceRole ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:Regulator a skos:Concept ;
+    skos:prefLabel "Regulator"@en ;
+    skos:altLabel "Supervisory authority"@en ;
+    skos:definition "A governance role borne by a government body that oversees compliance with law in a domain."@en ;
+    skos:broader tax:GovernanceRole ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:KnowledgeEngineeringRole a skos:Concept ;
+    skos:prefLabel "Knowledge engineering role"@en ;
+    skos:altLabel "Design-time role"@en ;
+    skos:definition "A role that builds, reviews, or maintains governed knowledge artifacts."@en ;
+    skos:topConceptOf tax:RoleTaxonomy ;
+    skos:narrower tax:KnowledgeEngineer , tax:SubjectMatterExpert , tax:DraftingAssistant ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:KnowledgeEngineer a skos:Concept ;
+    skos:prefLabel "Knowledge engineer"@en ;
+    skos:definition "A knowledge engineering role borne by the person who builds and extends ontologies under the naming, URI, and definition standards."@en ;
+    skos:broader tax:KnowledgeEngineeringRole ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:SubjectMatterExpert a skos:Concept ;
+    skos:prefLabel "Subject matter expert"@en ;
+    skos:altLabel "SME"@en , "Domain expert"@en ;
+    skos:definition "A knowledge engineering role borne by the person who confirms definitions, rules, and relationships for a domain."@en ;
+    skos:broader tax:KnowledgeEngineeringRole ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:DraftingAssistant a skos:Concept ;
+    skos:prefLabel "Drafting assistant"@en ;
+    skos:altLabel "AI drafting assistant"@en ;
+    skos:definition "A knowledge engineering role borne by an artificial intelligence agent that drafts definitions, labels, mappings, and shapes for human review and never commits on its own."@en ;
+    skos:broader tax:KnowledgeEngineeringRole ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:AgreementPartyRole a skos:Concept ;
+    skos:prefLabel "Agreement party role"@en ;
+    skos:altLabel "Contracting party"@en ;
+    skos:definition "A role borne by a party because it is a signatory to or named in an agreement."@en ;
+    skos:topConceptOf tax:RoleTaxonomy ;
+    skos:narrower tax:Principal , tax:Representative , tax:Guarantor ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:Principal a skos:Concept ;
+    skos:prefLabel "Principal"@en ;
+    skos:definition "An agreement party role borne by the party on whose behalf an agreement is made or an action taken."@en ;
+    skos:broader tax:AgreementPartyRole ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:Representative a skos:Concept ;
+    skos:prefLabel "Representative"@en ;
+    skos:altLabel "Authorized representative"@en , "Agent"@en , "Legal representative"@en ;
+    skos:definition "An agreement party role borne by a party authorized to act for another."@en ;
+    skos:broader tax:AgreementPartyRole ;
+    skos:inScheme tax:RoleTaxonomy .
+
+tax:Guarantor a skos:Concept ;
+    skos:prefLabel "Guarantor"@en ;
+    skos:definition "An agreement party role borne by a party that promises to meet another party's obligation if it defaults."@en ;
+    skos:broader tax:AgreementPartyRole ;
+    skos:inScheme tax:RoleTaxonomy .

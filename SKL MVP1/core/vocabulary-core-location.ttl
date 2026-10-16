@@ -1,0 +1,582 @@
+# Vocabulary: Location vocabulary
+# File: vocabulary-core-location.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix tax: <https://www.insperity.com/taxonomy/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+voc:location-vocabulary a skos:ConceptScheme ;
+    dcterms:title "Location vocabulary"@en ;
+    skos:prefLabel "Location vocabulary"@en ;
+    dcterms:description "Controlled values for the United States jurisdictions where worksite clients operate, work arrangements, and address types."@en ;
+    dcterms:subject core:Location ;
+    skos:scopeNote "Jurisdictions carry ISO 3166 codes in skos:notation. The federal and state jurisdictions are siblings under one value set, because skos:broader is used only for classification; the legal containment of a state within the United States is modeled in the ontology with located in."@en ;
+    dcterms:source "ISO 3166-1 and ISO 3166-2 codes; LKIF-Core jurisdiction."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept voc:jurisdiction ,
+        voc:work-arrangement ,
+        voc:address-type .
+
+voc:country-code a rdfs:Datatype ;
+    rdfs:label "Country code"@en ;
+    skos:definition "A datatype for two-letter country codes defined by ISO 3166-1."@en ;
+    rdfs:isDefinedBy voc:location-vocabulary .
+
+voc:country-subdivision-code a rdfs:Datatype ;
+    rdfs:label "Country subdivision code"@en ;
+    skos:definition "A datatype for country subdivision codes defined by ISO 3166-2."@en ;
+    rdfs:isDefinedBy voc:location-vocabulary .
+
+voc:jurisdiction a skos:Concept ;
+    skos:prefLabel "United States jurisdiction"@en ;
+    skos:definition "A controlled value set for the federal, state, and District of Columbia jurisdictions whose laws apply to worksite clients."@en ;
+    skos:topConceptOf voc:location-vocabulary ;
+    skos:narrower voc:jurisdiction-united-states-federal , voc:jurisdiction-alabama , voc:jurisdiction-alaska , voc:jurisdiction-arizona , voc:jurisdiction-arkansas , voc:jurisdiction-california , voc:jurisdiction-colorado , voc:jurisdiction-connecticut , voc:jurisdiction-delaware , voc:jurisdiction-district-of-columbia , voc:jurisdiction-florida , voc:jurisdiction-georgia , voc:jurisdiction-hawaii , voc:jurisdiction-idaho , voc:jurisdiction-illinois , voc:jurisdiction-indiana , voc:jurisdiction-iowa , voc:jurisdiction-kansas , voc:jurisdiction-kentucky , voc:jurisdiction-louisiana , voc:jurisdiction-maine , voc:jurisdiction-maryland , voc:jurisdiction-massachusetts , voc:jurisdiction-michigan , voc:jurisdiction-minnesota , voc:jurisdiction-mississippi , voc:jurisdiction-missouri , voc:jurisdiction-montana , voc:jurisdiction-nebraska , voc:jurisdiction-nevada , voc:jurisdiction-new-hampshire , voc:jurisdiction-new-jersey , voc:jurisdiction-new-mexico , voc:jurisdiction-new-york , voc:jurisdiction-north-carolina , voc:jurisdiction-north-dakota , voc:jurisdiction-ohio , voc:jurisdiction-oklahoma , voc:jurisdiction-oregon , voc:jurisdiction-pennsylvania , voc:jurisdiction-rhode-island , voc:jurisdiction-south-carolina , voc:jurisdiction-south-dakota , voc:jurisdiction-tennessee , voc:jurisdiction-texas , voc:jurisdiction-utah , voc:jurisdiction-vermont , voc:jurisdiction-virginia , voc:jurisdiction-washington , voc:jurisdiction-west-virginia , voc:jurisdiction-wisconsin , voc:jurisdiction-wyoming ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-united-states-federal a skos:Concept ;
+    skos:prefLabel "United States federal jurisdiction"@en ;
+    skos:altLabel "Federal"@en , "United States"@en , "US"@en ;
+    skos:notation "US"^^voc:country-code ;
+    skos:definition "A national jurisdiction in which United States federal law and federal agencies apply."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:NationalJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-alabama a skos:Concept ;
+    skos:prefLabel "Alabama"@en ;
+    skos:altLabel "AL"@en ;
+    skos:notation "US-AL"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Alabama and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-alaska a skos:Concept ;
+    skos:prefLabel "Alaska"@en ;
+    skos:altLabel "AK"@en ;
+    skos:notation "US-AK"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Alaska and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-arizona a skos:Concept ;
+    skos:prefLabel "Arizona"@en ;
+    skos:altLabel "AZ"@en ;
+    skos:notation "US-AZ"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Arizona and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-arkansas a skos:Concept ;
+    skos:prefLabel "Arkansas"@en ;
+    skos:altLabel "AR"@en ;
+    skos:notation "US-AR"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Arkansas and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-california a skos:Concept ;
+    skos:prefLabel "California"@en ;
+    skos:altLabel "CA"@en ;
+    skos:notation "US-CA"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of California and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-colorado a skos:Concept ;
+    skos:prefLabel "Colorado"@en ;
+    skos:altLabel "CO"@en ;
+    skos:notation "US-CO"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Colorado and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-connecticut a skos:Concept ;
+    skos:prefLabel "Connecticut"@en ;
+    skos:altLabel "CT"@en ;
+    skos:notation "US-CT"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Connecticut and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-delaware a skos:Concept ;
+    skos:prefLabel "Delaware"@en ;
+    skos:altLabel "DE"@en ;
+    skos:notation "US-DE"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Delaware and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-district-of-columbia a skos:Concept ;
+    skos:prefLabel "District of Columbia"@en ;
+    skos:altLabel "DC"@en ;
+    skos:notation "US-DC"^^voc:country-subdivision-code ;
+    skos:definition "A state-level jurisdiction comprising the District of Columbia and the laws, regulations, and agencies of the District that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-florida a skos:Concept ;
+    skos:prefLabel "Florida"@en ;
+    skos:altLabel "FL"@en ;
+    skos:notation "US-FL"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Florida and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-georgia a skos:Concept ;
+    skos:prefLabel "Georgia"@en ;
+    skos:altLabel "GA"@en ;
+    skos:notation "US-GA"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Georgia and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-hawaii a skos:Concept ;
+    skos:prefLabel "Hawaii"@en ;
+    skos:altLabel "HI"@en ;
+    skos:notation "US-HI"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Hawaii and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-idaho a skos:Concept ;
+    skos:prefLabel "Idaho"@en ;
+    skos:altLabel "ID"@en ;
+    skos:notation "US-ID"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Idaho and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-illinois a skos:Concept ;
+    skos:prefLabel "Illinois"@en ;
+    skos:altLabel "IL"@en ;
+    skos:notation "US-IL"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Illinois and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-indiana a skos:Concept ;
+    skos:prefLabel "Indiana"@en ;
+    skos:altLabel "IN"@en ;
+    skos:notation "US-IN"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Indiana and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-iowa a skos:Concept ;
+    skos:prefLabel "Iowa"@en ;
+    skos:altLabel "IA"@en ;
+    skos:notation "US-IA"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Iowa and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-kansas a skos:Concept ;
+    skos:prefLabel "Kansas"@en ;
+    skos:altLabel "KS"@en ;
+    skos:notation "US-KS"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Kansas and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-kentucky a skos:Concept ;
+    skos:prefLabel "Kentucky"@en ;
+    skos:altLabel "KY"@en ;
+    skos:notation "US-KY"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Kentucky and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-louisiana a skos:Concept ;
+    skos:prefLabel "Louisiana"@en ;
+    skos:altLabel "LA"@en ;
+    skos:notation "US-LA"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Louisiana and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-maine a skos:Concept ;
+    skos:prefLabel "Maine"@en ;
+    skos:altLabel "ME"@en ;
+    skos:notation "US-ME"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Maine and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-maryland a skos:Concept ;
+    skos:prefLabel "Maryland"@en ;
+    skos:altLabel "MD"@en ;
+    skos:notation "US-MD"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Maryland and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-massachusetts a skos:Concept ;
+    skos:prefLabel "Massachusetts"@en ;
+    skos:altLabel "MA"@en ;
+    skos:notation "US-MA"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Massachusetts and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-michigan a skos:Concept ;
+    skos:prefLabel "Michigan"@en ;
+    skos:altLabel "MI"@en ;
+    skos:notation "US-MI"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Michigan and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-minnesota a skos:Concept ;
+    skos:prefLabel "Minnesota"@en ;
+    skos:altLabel "MN"@en ;
+    skos:notation "US-MN"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Minnesota and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-mississippi a skos:Concept ;
+    skos:prefLabel "Mississippi"@en ;
+    skos:altLabel "MS"@en ;
+    skos:notation "US-MS"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Mississippi and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-missouri a skos:Concept ;
+    skos:prefLabel "Missouri"@en ;
+    skos:altLabel "MO"@en ;
+    skos:notation "US-MO"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Missouri and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-montana a skos:Concept ;
+    skos:prefLabel "Montana"@en ;
+    skos:altLabel "MT"@en ;
+    skos:notation "US-MT"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Montana and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-nebraska a skos:Concept ;
+    skos:prefLabel "Nebraska"@en ;
+    skos:altLabel "NE"@en ;
+    skos:notation "US-NE"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Nebraska and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-nevada a skos:Concept ;
+    skos:prefLabel "Nevada"@en ;
+    skos:altLabel "NV"@en ;
+    skos:notation "US-NV"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Nevada and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-new-hampshire a skos:Concept ;
+    skos:prefLabel "New Hampshire"@en ;
+    skos:altLabel "NH"@en ;
+    skos:notation "US-NH"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of New Hampshire and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-new-jersey a skos:Concept ;
+    skos:prefLabel "New Jersey"@en ;
+    skos:altLabel "NJ"@en ;
+    skos:notation "US-NJ"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of New Jersey and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-new-mexico a skos:Concept ;
+    skos:prefLabel "New Mexico"@en ;
+    skos:altLabel "NM"@en ;
+    skos:notation "US-NM"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of New Mexico and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-new-york a skos:Concept ;
+    skos:prefLabel "New York"@en ;
+    skos:altLabel "NY"@en ;
+    skos:notation "US-NY"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of New York and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-north-carolina a skos:Concept ;
+    skos:prefLabel "North Carolina"@en ;
+    skos:altLabel "NC"@en ;
+    skos:notation "US-NC"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of North Carolina and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-north-dakota a skos:Concept ;
+    skos:prefLabel "North Dakota"@en ;
+    skos:altLabel "ND"@en ;
+    skos:notation "US-ND"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of North Dakota and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-ohio a skos:Concept ;
+    skos:prefLabel "Ohio"@en ;
+    skos:altLabel "OH"@en ;
+    skos:notation "US-OH"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Ohio and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-oklahoma a skos:Concept ;
+    skos:prefLabel "Oklahoma"@en ;
+    skos:altLabel "OK"@en ;
+    skos:notation "US-OK"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Oklahoma and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-oregon a skos:Concept ;
+    skos:prefLabel "Oregon"@en ;
+    skos:altLabel "OR"@en ;
+    skos:notation "US-OR"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Oregon and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-pennsylvania a skos:Concept ;
+    skos:prefLabel "Pennsylvania"@en ;
+    skos:altLabel "PA"@en ;
+    skos:notation "US-PA"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Pennsylvania and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-rhode-island a skos:Concept ;
+    skos:prefLabel "Rhode Island"@en ;
+    skos:altLabel "RI"@en ;
+    skos:notation "US-RI"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Rhode Island and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-south-carolina a skos:Concept ;
+    skos:prefLabel "South Carolina"@en ;
+    skos:altLabel "SC"@en ;
+    skos:notation "US-SC"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of South Carolina and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-south-dakota a skos:Concept ;
+    skos:prefLabel "South Dakota"@en ;
+    skos:altLabel "SD"@en ;
+    skos:notation "US-SD"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of South Dakota and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-tennessee a skos:Concept ;
+    skos:prefLabel "Tennessee"@en ;
+    skos:altLabel "TN"@en ;
+    skos:notation "US-TN"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Tennessee and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-texas a skos:Concept ;
+    skos:prefLabel "Texas"@en ;
+    skos:altLabel "TX"@en ;
+    skos:notation "US-TX"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Texas and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-utah a skos:Concept ;
+    skos:prefLabel "Utah"@en ;
+    skos:altLabel "UT"@en ;
+    skos:notation "US-UT"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Utah and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-vermont a skos:Concept ;
+    skos:prefLabel "Vermont"@en ;
+    skos:altLabel "VT"@en ;
+    skos:notation "US-VT"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Vermont and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-virginia a skos:Concept ;
+    skos:prefLabel "Virginia"@en ;
+    skos:altLabel "VA"@en ;
+    skos:notation "US-VA"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Virginia and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-washington a skos:Concept ;
+    skos:prefLabel "Washington"@en ;
+    skos:altLabel "WA"@en ;
+    skos:notation "US-WA"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Washington and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-west-virginia a skos:Concept ;
+    skos:prefLabel "West Virginia"@en ;
+    skos:altLabel "WV"@en ;
+    skos:notation "US-WV"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of West Virginia and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-wisconsin a skos:Concept ;
+    skos:prefLabel "Wisconsin"@en ;
+    skos:altLabel "WI"@en ;
+    skos:notation "US-WI"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Wisconsin and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:jurisdiction-wyoming a skos:Concept ;
+    skos:prefLabel "Wyoming"@en ;
+    skos:altLabel "WY"@en ;
+    skos:notation "US-WY"^^voc:country-subdivision-code ;
+    skos:definition "A state jurisdiction comprising the state of Wyoming and the state and local laws, regulations, and agencies that apply there."@en ;
+    skos:broader voc:jurisdiction ;
+    skos:broadMatch tax:StateJurisdiction ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:work-arrangement a skos:Concept ;
+    skos:prefLabel "Work arrangement"@en ;
+    skos:definition "A controlled value set for where a worker regularly performs work."@en ;
+    skos:topConceptOf voc:location-vocabulary ;
+    skos:narrower voc:work-arrangement-onsite , voc:work-arrangement-remote , voc:work-arrangement-hybrid ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:work-arrangement-onsite a skos:Concept ;
+    skos:prefLabel "Onsite"@en ;
+    skos:altLabel "In office"@en , "On premises"@en ;
+    skos:definition "A work arrangement in which the worker works at an employer or client site."@en ;
+    skos:broader voc:work-arrangement ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:work-arrangement-remote a skos:Concept ;
+    skos:prefLabel "Remote"@en ;
+    skos:altLabel "Telework"@en , "Work from home"@en ;
+    skos:definition "A work arrangement in which the worker works away from employer and client sites."@en ;
+    skos:broader voc:work-arrangement ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:work-arrangement-hybrid a skos:Concept ;
+    skos:prefLabel "Hybrid"@en ;
+    skos:definition "A work arrangement in which the worker splits time between onsite and remote work."@en ;
+    skos:broader voc:work-arrangement ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:address-type a skos:Concept ;
+    skos:prefLabel "Address type"@en ;
+    skos:definition "A controlled value set for the purpose of a postal address."@en ;
+    skos:topConceptOf voc:location-vocabulary ;
+    skos:narrower voc:address-type-physical-address , voc:address-type-mailing-address , voc:address-type-worksite-address , voc:address-type-billing-address , voc:address-type-registered-address ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:address-type-physical-address a skos:Concept ;
+    skos:prefLabel "Physical address"@en ;
+    skos:altLabel "Street address"@en , "Residence address"@en ;
+    skos:definition "An address type for where a party or site is located."@en ;
+    skos:broader voc:address-type ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:address-type-mailing-address a skos:Concept ;
+    skos:prefLabel "Mailing address"@en ;
+    skos:definition "An address type for where correspondence is delivered."@en ;
+    skos:broader voc:address-type ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:address-type-worksite-address a skos:Concept ;
+    skos:prefLabel "Worksite address"@en ;
+    skos:altLabel "Work location address"@en ;
+    skos:definition "An address type for where workers perform work for a client."@en ;
+    skos:broader voc:address-type ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:address-type-billing-address a skos:Concept ;
+    skos:prefLabel "Billing address"@en ;
+    skos:definition "An address type for where invoices are sent."@en ;
+    skos:broader voc:address-type ;
+    skos:inScheme voc:location-vocabulary .
+
+voc:address-type-registered-address a skos:Concept ;
+    skos:prefLabel "Registered address"@en ;
+    skos:altLabel "Registered office"@en ;
+    skos:definition "An address type for a legal entity's official registered office."@en ;
+    skos:broader voc:address-type ;
+    skos:inScheme voc:location-vocabulary .

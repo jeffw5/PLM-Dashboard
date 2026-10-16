@@ -1,0 +1,224 @@
+# Taxonomy: Service taxonomy
+# File: taxonomy-core-service.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix tax: <https://www.insperity.com/taxonomy/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+tax:ServiceTaxonomy a skos:ConceptScheme ;
+    dcterms:title "Service taxonomy"@en ;
+    skos:prefLabel "Service taxonomy"@en ;
+    dcterms:description "Classification of services, the capabilities offered and realized through process steps to deliver outcomes for clients, workers, and internal consumers."@en ;
+    dcterms:subject core:Service ;
+    skos:scopeNote "Covers kinds of service. Packaged commercial offerings are in the product taxonomy. Service status, channel, and delivery model values are in the service vocabulary."@en ;
+    dcterms:source "BFO disposition realized in processes (ISO/IEC 21838-2); ISO/IEC 20000 service management; Semantic Governance v1.8 Appendix D semantic services."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept tax:BusinessService ,
+        tax:TechnologyService ,
+        tax:SemanticService .
+
+tax:BusinessService a skos:Concept ;
+    skos:prefLabel "Business service"@en ;
+    skos:altLabel "Business function service"@en ;
+    skos:definition "A service that delivers a business outcome to clients, workers, or internal units."@en ;
+    skos:topConceptOf tax:ServiceTaxonomy ;
+    skos:narrower tax:HumanResourcesService , tax:AdvisoryService , tax:AdministrativeService , tax:ClientSupportService , tax:FinancialService ;
+    skos:inScheme tax:ServiceTaxonomy .
+
+tax:HumanResourcesService a skos:Concept ;
+    skos:prefLabel "Human resources service"@en ;
+    skos:altLabel "HR service"@en , "Workforce service"@en ;
+    skos:definition "A business service that administers or advises on employment and workforce matters."@en ;
+    skos:broader tax:BusinessService ;
+    skos:narrower tax:PayrollService , tax:BenefitsAdministrationService , tax:EmploymentComplianceService , tax:TalentService , tax:WorkersCompensationService ;
+    skos:inScheme tax:ServiceTaxonomy .
+
+tax:PayrollService a skos:Concept ;
+    skos:prefLabel "Payroll service"@en ;
+    skos:altLabel "Payroll processing"@en ;
+    skos:definition "A human resources service that calculates, pays, and reports compensation and withholding."@en ;
+    skos:broader tax:HumanResourcesService ;
+    skos:inScheme tax:ServiceTaxonomy .
+
+tax:BenefitsAdministrationService a skos:Concept ;
+    skos:prefLabel "Benefits administration service"@en ;
+    skos:altLabel "Benefits service"@en ;
+    skos:definition "A human resources service that offers and administers benefit and retirement plans."@en ;
+    skos:broader tax:HumanResourcesService ;
+    skos:inScheme tax:ServiceTaxonomy .
+
+tax:EmploymentComplianceService a skos:Concept ;
+    skos:prefLabel "Employment compliance service"@en ;
+    skos:altLabel "Human resources compliance service"@en ;
+    skos:definition "A human resources service that helps employers meet employment laws and obligations."@en ;
+    skos:broader tax:HumanResourcesService ;
+    skos:inScheme tax:ServiceTaxonomy .
+
+tax:TalentService a skos:Concept ;
+    skos:prefLabel "Talent service"@en ;
+    skos:altLabel "Talent management service"@en ;
+    skos:definition "A human resources service that supports recruiting, learning, and performance."@en ;
+    skos:broader tax:HumanResourcesService ;
+    skos:inScheme tax:ServiceTaxonomy .
+
+tax:WorkersCompensationService a skos:Concept ;
+    skos:prefLabel "Workers compensation service"@en ;
+    skos:altLabel "Workplace safety service"@en ;
+    skos:definition "A human resources service that administers workplace injury coverage and claims."@en ;
+    skos:broader tax:HumanResourcesService ;
+    skos:inScheme tax:ServiceTaxonomy .
+
+tax:AdvisoryService a skos:Concept ;
+    skos:prefLabel "Advisory service"@en ;
+    skos:altLabel "Consulting service"@en ;
+    skos:definition "A business service that provides expert guidance on a question or decision."@en ;
+    skos:broader tax:BusinessService ;
+    skos:inScheme tax:ServiceTaxonomy .
+
+tax:AdministrativeService a skos:Concept ;
+    skos:prefLabel "Administrative service"@en ;
+    skos:altLabel "Back-office service"@en ;
+    skos:definition "A business service that performs recurring administrative transactions."@en ;
+    skos:broader tax:BusinessService ;
+    skos:inScheme tax:ServiceTaxonomy .
+
+tax:ClientSupportService a skos:Concept ;
+    skos:prefLabel "Client support service"@en ;
+    skos:altLabel "Customer support"@en , "Help desk"@en , "Service center"@en ;
+    skos:definition "A business service that answers inquiries and resolves requests."@en ;
+    skos:broader tax:BusinessService ;
+    skos:inScheme tax:ServiceTaxonomy .
+
+tax:FinancialService a skos:Concept ;
+    skos:prefLabel "Financial service"@en ;
+    skos:altLabel "Payment service"@en , "Treasury service"@en ;
+    skos:definition "A business service that moves, holds, or manages money."@en ;
+    skos:broader tax:BusinessService ;
+    skos:inScheme tax:ServiceTaxonomy .
+
+tax:TechnologyService a skos:Concept ;
+    skos:prefLabel "Technology service"@en ;
+    skos:altLabel "Information technology service"@en , "IT service"@en ;
+    skos:definition "A service that provides computing, data, or integration functions."@en ;
+    skos:topConceptOf tax:ServiceTaxonomy ;
+    skos:narrower tax:ApplicationService , tax:DataService , tax:IntegrationService , tax:PlatformService , tax:InfrastructureService , tax:SecurityService ;
+    skos:inScheme tax:ServiceTaxonomy .
+
+tax:ApplicationService a skos:Concept ;
+    skos:prefLabel "Application service"@en ;
+    skos:altLabel "Software service"@en ;
+    skos:definition "A technology service that exposes application functions to users or systems."@en ;
+    skos:broader tax:TechnologyService ;
+    skos:inScheme tax:ServiceTaxonomy .
+
+tax:DataService a skos:Concept ;
+    skos:prefLabel "Data service"@en ;
+    skos:altLabel "Data access service"@en ;
+    skos:definition "A technology service that provides access to or movement of data."@en ;
+    skos:broader tax:TechnologyService ;
+    skos:inScheme tax:ServiceTaxonomy .
+
+tax:IntegrationService a skos:Concept ;
+    skos:prefLabel "Integration service"@en ;
+    skos:altLabel "Integration platform service"@en , "Event streaming service"@en ;
+    skos:definition "A technology service that connects systems by exchanging messages or files."@en ;
+    skos:broader tax:TechnologyService ;
+    skos:inScheme tax:ServiceTaxonomy .
+
+tax:PlatformService a skos:Concept ;
+    skos:prefLabel "Platform service"@en ;
+    skos:altLabel "Platform as a service"@en ;
+    skos:definition "A technology service that provides a runtime environment for building and running applications."@en ;
+    skos:broader tax:TechnologyService ;
+    skos:inScheme tax:ServiceTaxonomy .
+
+tax:InfrastructureService a skos:Concept ;
+    skos:prefLabel "Infrastructure service"@en ;
+    skos:altLabel "Infrastructure as a service"@en ;
+    skos:definition "A technology service that provides compute, storage, or network capacity."@en ;
+    skos:broader tax:TechnologyService ;
+    skos:inScheme tax:ServiceTaxonomy .
+
+tax:SecurityService a skos:Concept ;
+    skos:prefLabel "Security service"@en ;
+    skos:altLabel "Identity and access management service"@en ;
+    skos:definition "A technology service that provides identity, access control, or threat protection."@en ;
+    skos:broader tax:TechnologyService ;
+    skos:inScheme tax:ServiceTaxonomy .
+
+tax:SemanticService a skos:Concept ;
+    skos:prefLabel "Semantic service"@en ;
+    skos:altLabel "Knowledge service"@en , "Semantic knowledge layer service"@en ;
+    skos:definition "A service that publishes or uses governed knowledge to give meaning, context, or answers."@en ;
+    skos:scopeNote "The semantic services of the Semantic Knowledge Layer consumed by the HR 360 agent."@en ;
+    skos:topConceptOf tax:ServiceTaxonomy ;
+    skos:narrower tax:VocabularyService , tax:SearchService , tax:RetrievalService , tax:MappingService , tax:ValidationService , tax:DecisionService , tax:LineageService , tax:AnswerService ;
+    skos:inScheme tax:ServiceTaxonomy .
+
+tax:VocabularyService a skos:Concept ;
+    skos:prefLabel "Vocabulary service"@en ;
+    skos:altLabel "Terminology service"@en , "Label service"@en ;
+    skos:definition "A semantic service that serves terms, labels, and definitions, including persona labels."@en ;
+    skos:broader tax:SemanticService ;
+    skos:inScheme tax:ServiceTaxonomy .
+
+tax:SearchService a skos:Concept ;
+    skos:prefLabel "Search service"@en ;
+    skos:altLabel "Semantic search service"@en ;
+    skos:definition "A semantic service that finds governed content and terms by keyword and meaning."@en ;
+    skos:broader tax:SemanticService ;
+    skos:inScheme tax:ServiceTaxonomy .
+
+tax:RetrievalService a skos:Concept ;
+    skos:prefLabel "Retrieval service"@en ;
+    skos:altLabel "Context service"@en , "Retrieval-augmented generation service"@en ;
+    skos:definition "A semantic service that assembles governed facts and sources into context for an agent."@en ;
+    skos:broader tax:SemanticService ;
+    skos:inScheme tax:ServiceTaxonomy .
+
+tax:MappingService a skos:Concept ;
+    skos:prefLabel "Mapping service"@en ;
+    skos:altLabel "Semantic mapping service"@en ;
+    skos:definition "A semantic service that maps inbound schema elements and values to ontology terms."@en ;
+    skos:broader tax:SemanticService ;
+    skos:inScheme tax:ServiceTaxonomy .
+
+tax:ValidationService a skos:Concept ;
+    skos:prefLabel "Validation service"@en ;
+    skos:altLabel "Shape validation service"@en , "Grounding service"@en ;
+    skos:definition "A semantic service that checks data and answers against shapes, rules, and sources."@en ;
+    skos:broader tax:SemanticService ;
+    skos:inScheme tax:ServiceTaxonomy .
+
+tax:DecisionService a skos:Concept ;
+    skos:prefLabel "Decision service"@en ;
+    skos:altLabel "Decision API"@en , "Rules service"@en ;
+    skos:definition "A semantic service that evaluates governed decision models and returns an outcome and trace."@en ;
+    skos:broader tax:SemanticService ;
+    skos:inScheme tax:ServiceTaxonomy .
+
+tax:LineageService a skos:Concept ;
+    skos:prefLabel "Lineage service"@en ;
+    skos:altLabel "Provenance service"@en , "Traceability service"@en ;
+    skos:definition "A semantic service that reports the provenance and traceability of facts, answers, and changes."@en ;
+    skos:broader tax:SemanticService ;
+    skos:inScheme tax:ServiceTaxonomy .
+
+tax:AnswerService a skos:Concept ;
+    skos:prefLabel "Answer service"@en ;
+    skos:altLabel "Conversational answer service"@en , "Question answering service"@en ;
+    skos:definition "A semantic service that returns natural language answers grounded in governed knowledge."@en ;
+    skos:broader tax:SemanticService ;
+    skos:inScheme tax:ServiceTaxonomy .

@@ -1,0 +1,169 @@
+=== taxonomy decision
+title: Decision taxonomy
+subject: Decision
+description: Classification of decisions, the determinations of an outcome or course of action made by a party or automated agent, and of the models used to make them.
+scope: Decisions are made in decision steps and are governed by rules and policies. Automation level, outcome, confidence, and hit policy values are in the decision vocabulary.
+standard: Object Management Group Decision Model and Notation; ISO/IEC 42001 human oversight; Semantic Governance v1.8 Decision API.
+---
+Strategic decision :: A decision that sets long-term direction, scope, or major resource commitments. || alt: Executive decision
+Tactical decision :: A decision that translates strategy into plans, budgets, and allocations for a medium term. || alt: Management decision
+Operational decision :: A decision made repeatedly in the course of day-to-day work, often by rules or agents. || alt: Transactional decision; Day-to-day decision || relm: tax:DecisionStep
+  Eligibility determination :: An operational decision that establishes whether a party qualifies for something. || alt: Eligibility decision; Qualification decision || relm: tax:EligibilityRule
+  Approval decision :: An operational decision that accepts or rejects a request or item. || alt: Authorization decision
+  Classification decision :: An operational decision that assigns an item to a category. || alt: Categorization; Triage decision
+  Routing decision :: An operational decision that selects where work or a request goes next. || alt: Assignment decision
+  Pricing decision :: An operational decision that sets a price, rate, or fee. || alt: Quote decision; Rating decision
+  Allocation decision :: An operational decision that distributes resources or amounts among recipients.
+  Prioritization decision :: An operational decision that orders work by importance or urgency. || alt: Ranking decision
+  Exception decision :: An operational decision on whether and how to handle a departure from a rule or path. || alt: Override decision || relm: tax:PolicyException
+  Compliance determination :: An operational decision that establishes whether an obligation applies and is met. || alt: Compliance decision || relm: tax:Obligation
+  Answer decision :: An operational decision by an artificial intelligence agent on whether to answer, ask, escalate, or decline. || alt: Respond or escalate decision
+Decision model :: A decision-related information artifact that specifies how a decision is made from its inputs. || alt: Decision logic specification || genus: ok
+  Decision table :: A decision model that maps combinations of input conditions to outputs in rows governed by a hit policy. || alt: DMN decision table; Rule table
+  Decision tree :: A decision model that reaches an outcome through a sequence of branching tests. || alt: Decision flow
+  Decision requirements graph :: A decision model that shows decisions, their input data, knowledge sources, and dependencies. || alt: Decision requirements diagram; DRD
+  Scoring model :: A decision model that combines weighted factors into a score compared to cut-offs. || alt: Scorecard || relm: tax:ScoringCalculation
+  Predictive decision model :: A decision model whose output is produced by a trained machine learning model. || alt: Machine learning decision model || relm: tax:MachineLearningModel
+
+=== taxonomy time
+title: Time taxonomy
+subject: TemporalEntity
+description: Classification of temporal entities, the instants, intervals, durations, and schedules used to date, sequence, and bound facts, rules, and process steps.
+scope: Time units, frequencies, day types, and time zones are in the time vocabulary. Domain periods such as pay period or plan year specialize the concepts here.
+standard: BFO temporal region (ISO/IEC 21838-2); W3C OWL-Time; ISO 8601 date and time representation.
+---
+Instant :: A temporal entity that is a single point on a time line with no duration. || alt: Point in time; Time instant
+  Calendar date :: An instant identified at the precision of a day. || alt: Date
+  Date and time :: An instant identified to the second or finer, with a time zone. || alt: Timestamp; Date time
+  Deadline :: An instant by which an action must be completed. || alt: Due date; Cut-off
+  Effective date :: An instant from which a rule, agreement, election, or value applies. || alt: Start date; Effective from
+  End date :: An instant after which a rule, agreement, election, or value no longer applies. || alt: Expiration date; Effective to; Termination date
+Interval :: A temporal entity that is a stretch of time with a beginning and an end. || alt: Time interval; Period
+  Calendar period :: An interval aligned to the civil calendar. || alt: Calendar interval
+    Calendar day :: A calendar period of one day from midnight to midnight in a time zone. || alt: Day
+    Calendar week :: A calendar period of seven consecutive days. || alt: Week
+    Calendar month :: A calendar period corresponding to one month of the civil calendar. || alt: Month
+    Calendar quarter :: A calendar period of three consecutive months beginning in January, April, July, or October. || alt: Quarter
+    Calendar year :: A calendar period from the first of January to the thirty-first of December. || alt: Year
+  Fiscal period :: An interval used for financial reporting that may differ from the calendar. || alt: Accounting period
+    Fiscal month :: A fiscal period that is one month of the fiscal calendar. || alt: Accounting month
+    Fiscal quarter :: A fiscal period that is one quarter of the fiscal year. || alt: Financial quarter
+    Fiscal year :: A fiscal period of twelve months used for financial reporting and budgeting. || alt: Financial year
+  Business period :: An interval defined by a business cycle such as a pay, plan, coverage, or reporting cycle. || alt: Cycle period || scope: Specialized in domain ontologies as pay period, plan year, coverage period, and so on.
+  Validity period :: An interval during which a rule, agreement, value, or version is in force. || alt: Effective period; Period of applicability || scope: Bounded by an effective date and an end date.
+  Time window :: An interval during which an action is permitted or must occur. || alt: Window; Election window; Open period
+  Reporting period :: An interval that measures and observations are reported for. || alt: Measurement period
+Duration :: A temporal entity that is an amount of time without a fixed position on the time line. || alt: Length of time; Time span || ex: Ninety days; forty hours.
+  Waiting period :: A duration that must elapse before an entitlement begins. || alt: Probationary period
+  Notice period :: A duration of advance notice required before an action takes effect.
+  Retention period :: A duration for which a record must be kept. || alt: Records retention period
+  Service level duration :: A duration committed for responding to or resolving a request. || alt: Response time target; Resolution time target
+Schedule :: A temporal entity that specifies when recurring or planned occurrences happen. || alt: Timetable || genus: ok
+  Recurring schedule :: A schedule that repeats at a defined frequency. || alt: Recurrence; Recurring pattern
+  One-time schedule :: A schedule for a single planned occurrence. || alt: Single occurrence
+  Business calendar :: A schedule that defines working days, holidays, and cut-off times. || alt: Working calendar; Holiday calendar
+
+=== taxonomy location
+title: Location taxonomy
+subject: Location
+description: Classification of locations, the places, jurisdictions, sites, and references where parties, assets, and process steps are located or where norms apply.
+scope: Jurisdiction values with ISO 3166-2 codes, work arrangement, and address type values are in the location vocabulary.
+standard: BFO site and spatial region (ISO/IEC 21838-2); ISO 3166 country and subdivision codes; LKIF-Core jurisdiction.
+---
+Geographic area :: A location that is a region of the earth's surface identified by name or boundary. || alt: Geographic location; Place
+  Country :: A geographic area that is a sovereign nation. || alt: Nation
+  State or province :: A geographic area that is a first-level subdivision of a country. || alt: State; Province; Subnational division
+  County :: A geographic area that is a subdivision of a state used for local government. || alt: Parish; Borough
+  City :: A geographic area that is a municipality or populated place. || alt: Municipality; Town
+  Postal area :: A geographic area identified by a postal code. || alt: Zip code area; Postal code area
+  Region :: A geographic area grouping countries, states, or cities for business purposes. || alt: Sales region; Service region; Territory
+Jurisdiction :: A location that is the territory within which a governing authority's laws and regulations apply. || alt: Legal jurisdiction || relm: tax:GovernmentBody
+  National jurisdiction :: A jurisdiction of a national government. || alt: Federal jurisdiction
+  State jurisdiction :: A jurisdiction of a state or provincial government. || alt: Provincial jurisdiction
+  Local jurisdiction :: A jurisdiction of a county, city, or other local government. || alt: Municipal jurisdiction
+  Tax jurisdiction :: A jurisdiction defined by a taxing authority, which may cross other boundaries. || alt: Taxing jurisdiction
+Site :: A location where an organization carries out activities or keeps assets. || alt: Business location; Physical site
+  Worksite :: A site where workers perform work for a client employer. || alt: Client worksite; Work location
+  Office :: A site used mainly for administrative and professional work. || alt: Branch office; Headquarters
+  Remote work location :: A site outside the employer's premises where a worker regularly works. || alt: Home office; Telework location
+  Data center :: A site that houses computing and storage infrastructure. || alt: Hosting facility
+  Distribution site :: A site where goods are stored and shipped. || alt: Warehouse; Fulfilment center
+Location reference :: A location-related information artifact that identifies a place. || alt: Location identifier || genus: ok
+  Postal address :: A location reference that identifies a delivery point by street, city, state, and postal code. || alt: Address; Mailing address
+  Geographic coordinate :: A location reference given as latitude and longitude. || alt: Coordinates; Geolocation
+  Location code :: A location reference given as a code from a standard or system. || alt: Site code; Jurisdiction code
+Virtual location :: A location in a network or digital space rather than physical space. || alt: Digital location
+  Web address :: A virtual location identified by a uniform resource locator. || alt: URL; Web page
+  Cloud region :: A virtual location that is a provider-defined geographic grouping of data centers. || alt: Hosting region; Availability zone
+  Collaboration space :: A virtual location where people share content and communicate. || alt: Workspace; Channel; Team site
+
+=== taxonomy service
+title: Service taxonomy
+subject: Service
+description: Classification of services, the capabilities offered and realized through process steps to deliver outcomes for clients, workers, and internal consumers.
+scope: Covers kinds of service. Packaged commercial offerings are in the product taxonomy. Service status, channel, and delivery model values are in the service vocabulary.
+standard: BFO disposition realized in processes (ISO/IEC 21838-2); ISO/IEC 20000 service management; Semantic Governance v1.8 Appendix D semantic services.
+---
+Business service :: A service that delivers a business outcome to clients, workers, or internal units. || alt: Business function service
+  Human resources service :: A business service that administers or advises on employment and workforce matters. || alt: HR service; Workforce service
+    Payroll service :: A human resources service that calculates, pays, and reports compensation and withholding. || alt: Payroll processing
+    Benefits administration service :: A human resources service that offers and administers benefit and retirement plans. || alt: Benefits service
+    Employment compliance service :: A human resources service that helps employers meet employment laws and obligations. || alt: Human resources compliance service
+    Talent service :: A human resources service that supports recruiting, learning, and performance. || alt: Talent management service
+    Workers compensation service :: A human resources service that administers workplace injury coverage and claims. || alt: Workplace safety service
+  Advisory service :: A business service that provides expert guidance on a question or decision. || alt: Consulting service
+  Administrative service :: A business service that performs recurring administrative transactions. || alt: Back-office service
+  Client support service :: A business service that answers inquiries and resolves requests. || alt: Customer support; Help desk; Service center
+  Financial service :: A business service that moves, holds, or manages money. || alt: Payment service; Treasury service
+Technology service :: A service that provides computing, data, or integration functions. || alt: Information technology service; IT service
+  Application service :: A technology service that exposes application functions to users or systems. || alt: Software service
+  Data service :: A technology service that provides access to or movement of data. || alt: Data access service
+  Integration service :: A technology service that connects systems by exchanging messages or files. || alt: Integration platform service; Event streaming service
+  Platform service :: A technology service that provides a runtime environment for building and running applications. || alt: Platform as a service
+  Infrastructure service :: A technology service that provides compute, storage, or network capacity. || alt: Infrastructure as a service
+  Security service :: A technology service that provides identity, access control, or threat protection. || alt: Identity and access management service
+Semantic service :: A service that publishes or uses governed knowledge to give meaning, context, or answers. || alt: Knowledge service; Semantic knowledge layer service || scope: The semantic services of the Semantic Knowledge Layer consumed by the HR 360 agent.
+  Vocabulary service :: A semantic service that serves terms, labels, and definitions, including persona labels. || alt: Terminology service; Label service
+  Search service :: A semantic service that finds governed content and terms by keyword and meaning. || alt: Semantic search service
+  Retrieval service :: A semantic service that assembles governed facts and sources into context for an agent. || alt: Context service; Retrieval-augmented generation service
+  Mapping service :: A semantic service that maps inbound schema elements and values to ontology terms. || alt: Semantic mapping service
+  Validation service :: A semantic service that checks data and answers against shapes, rules, and sources. || alt: Shape validation service; Grounding service
+  Decision service :: A semantic service that evaluates governed decision models and returns an outcome and trace. || alt: Decision API; Rules service
+  Lineage service :: A semantic service that reports the provenance and traceability of facts, answers, and changes. || alt: Provenance service; Traceability service
+  Answer service :: A semantic service that returns natural language answers grounded in governed knowledge. || alt: Conversational answer service; Question answering service
+
+=== taxonomy capability
+title: Capability taxonomy
+subject: Capability
+description: Classification of business capabilities, the abilities an organization has or needs to achieve outcomes, independent of how they are organized or implemented.
+scope: Capabilities are stable and implementation-neutral; processes realize them and services expose them. Maturity and strategic importance values are in the capability vocabulary.
+standard: BFO disposition and function (ISO/IEC 21838-2); The Open Group TOGAF and Business Architecture Guild capability mapping.
+---
+Strategic capability :: A capability for setting direction and shaping the organization. || alt: Direction-setting capability
+  Strategy management :: A strategic capability to define, communicate, and adjust strategy and objectives. || alt: Strategic planning capability
+  Portfolio management :: A strategic capability to select and balance investments in initiatives and offerings. || alt: Investment management
+  Enterprise architecture management :: A strategic capability to design and govern the structure of business, information, and technology. || alt: Architecture management
+  Innovation management :: A strategic capability to generate, test, and scale new ideas.
+  Performance management :: A strategic capability to set targets, measure results, and drive improvement. || alt: Enterprise performance management
+Customer-facing capability :: A capability for creating and delivering value to clients and their workers. || alt: Core capability; Value delivery capability
+  Client relationship management :: A customer-facing capability to acquire, understand, serve, and retain clients. || alt: Customer management; Account management
+  Marketing management :: A customer-facing capability to generate awareness and demand.
+  Sales management :: A customer-facing capability to pursue and win new and renewed business. || alt: Selling
+  Offering management :: A customer-facing capability to define, price, and evolve products and services. || alt: Product management
+  Service delivery management :: A customer-facing capability to fulfil services to agreed levels. || alt: Service management
+  Client support management :: A customer-facing capability to answer inquiries and resolve requests. || alt: Customer service management
+Supporting capability :: A capability that enables strategic and customer-facing capabilities. || alt: Enabling capability
+  Workforce management :: A supporting capability to attract, pay, develop, and retain people. || alt: Human capital management
+  Financial management :: A supporting capability to plan, record, report, and control money. || alt: Finance management
+  Procurement management :: A supporting capability to source and manage suppliers. || alt: Supplier management
+  Legal management :: A supporting capability to manage agreements, legal advice, and disputes. || alt: Legal affairs management
+  Risk and compliance management :: A supporting capability to identify and treat risks and meet obligations. || alt: Governance, risk, and compliance; GRC
+  Technology management :: A supporting capability to plan, build, run, and secure technology. || alt: Information technology management
+  Facilities management :: A supporting capability to provide and maintain workplaces.
+Information and knowledge capability :: A capability for managing and using data, knowledge, and artificial intelligence. || alt: Data and artificial intelligence capability
+  Data management :: An information and knowledge capability to acquire, define, store, and govern data. || alt: Data governance capability
+  Knowledge management :: An information and knowledge capability to capture, organize, and share knowledge. || alt: Knowledge engineering capability
+  Semantic management :: An information and knowledge capability to define and govern shared meaning through vocabularies, taxonomies, and ontologies. || alt: Semantic governance capability; Ontology management
+  Analytics management :: An information and knowledge capability to analyze data and report insights. || alt: Analytics; Business intelligence; BI
+  Artificial intelligence management :: An information and knowledge capability to develop, deploy, monitor, and govern artificial intelligence systems responsibly. || alt: AI management; AI governance capability
+  Content management :: An information and knowledge capability to create, publish, and retain documents and content. || alt: Document management; Records management

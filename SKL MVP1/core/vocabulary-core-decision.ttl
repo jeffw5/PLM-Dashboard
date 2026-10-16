@@ -1,0 +1,192 @@
+# Vocabulary: Decision vocabulary
+# File: vocabulary-core-decision.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+voc:decision-vocabulary a skos:ConceptScheme ;
+    dcterms:title "Decision vocabulary"@en ;
+    skos:prefLabel "Decision vocabulary"@en ;
+    dcterms:description "Controlled values for decision automation level, outcome, confidence, and decision table hit policy."@en ;
+    dcterms:subject core:Decision ;
+    dcterms:source "Object Management Group Decision Model and Notation; ISO/IEC 42001 human oversight."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept voc:decision-automation-level ,
+        voc:decision-outcome ,
+        voc:decision-confidence ,
+        voc:hit-policy .
+
+voc:hit-policy-code a rdfs:Datatype ;
+    rdfs:label "Hit policy code"@en ;
+    skos:definition "A datatype for the single-letter hit policy codes defined by Decision Model and Notation."@en ;
+    rdfs:isDefinedBy voc:decision-vocabulary .
+
+voc:decision-automation-level a skos:Concept ;
+    skos:prefLabel "Decision automation level"@en ;
+    skos:definition "A controlled value set for the extent of human involvement in a decision."@en ;
+    skos:topConceptOf voc:decision-vocabulary ;
+    skos:narrower voc:decision-automation-human-decided , voc:decision-automation-human-in-the-loop , voc:decision-automation-human-on-the-loop , voc:decision-automation-fully-automated-decision ;
+    skos:inScheme voc:decision-vocabulary .
+
+voc:decision-automation-human-decided a skos:Concept ;
+    skos:prefLabel "Human decided"@en ;
+    skos:altLabel "Manual decision"@en ;
+    skos:definition "A decision automation level in which a person makes the decision with or without information from systems."@en ;
+    skos:broader voc:decision-automation-level ;
+    skos:inScheme voc:decision-vocabulary .
+
+voc:decision-automation-human-in-the-loop a skos:Concept ;
+    skos:prefLabel "Human in the loop"@en ;
+    skos:altLabel "Human approval required"@en ;
+    skos:definition "A decision automation level in which software recommends and a person must approve before the decision takes effect."@en ;
+    skos:broader voc:decision-automation-level ;
+    skos:inScheme voc:decision-vocabulary .
+
+voc:decision-automation-human-on-the-loop a skos:Concept ;
+    skos:prefLabel "Human on the loop"@en ;
+    skos:altLabel "Human oversight"@en ;
+    skos:definition "A decision automation level in which software decides and a person monitors and can override."@en ;
+    skos:broader voc:decision-automation-level ;
+    skos:inScheme voc:decision-vocabulary .
+
+voc:decision-automation-fully-automated-decision a skos:Concept ;
+    skos:prefLabel "Fully automated decision"@en ;
+    skos:altLabel "Straight-through decision"@en ;
+    skos:definition "A decision automation level in which software decides without human review."@en ;
+    skos:broader voc:decision-automation-level ;
+    skos:inScheme voc:decision-vocabulary .
+
+voc:decision-outcome a skos:Concept ;
+    skos:prefLabel "Decision outcome"@en ;
+    skos:definition "A controlled value set for the result of an approval or eligibility decision."@en ;
+    skos:topConceptOf voc:decision-vocabulary ;
+    skos:narrower voc:decision-outcome-approved , voc:decision-outcome-partially-approved , voc:decision-outcome-denied , voc:decision-outcome-deferred , voc:decision-outcome-referred ;
+    skos:inScheme voc:decision-vocabulary .
+
+voc:decision-outcome-approved a skos:Concept ;
+    skos:prefLabel "Approved"@en ;
+    skos:altLabel "Eligible"@en , "Granted"@en ;
+    skos:definition "A decision outcome accepting the request in full."@en ;
+    skos:broader voc:decision-outcome ;
+    skos:inScheme voc:decision-vocabulary .
+
+voc:decision-outcome-partially-approved a skos:Concept ;
+    skos:prefLabel "Partially approved"@en ;
+    skos:definition "A decision outcome accepting part of the request."@en ;
+    skos:broader voc:decision-outcome ;
+    skos:inScheme voc:decision-vocabulary .
+
+voc:decision-outcome-denied a skos:Concept ;
+    skos:prefLabel "Denied"@en ;
+    skos:altLabel "Ineligible"@en , "Rejected"@en ;
+    skos:definition "A decision outcome rejecting the request."@en ;
+    skos:broader voc:decision-outcome ;
+    skos:inScheme voc:decision-vocabulary .
+
+voc:decision-outcome-deferred a skos:Concept ;
+    skos:prefLabel "Deferred"@en ;
+    skos:altLabel "Pending information"@en ;
+    skos:definition "A decision outcome postponing the decision pending information or time."@en ;
+    skos:broader voc:decision-outcome ;
+    skos:inScheme voc:decision-vocabulary .
+
+voc:decision-outcome-referred a skos:Concept ;
+    skos:prefLabel "Referred"@en ;
+    skos:altLabel "Escalated"@en ;
+    skos:definition "A decision outcome passing the decision to another party or level."@en ;
+    skos:broader voc:decision-outcome ;
+    skos:inScheme voc:decision-vocabulary .
+
+voc:decision-confidence a skos:Concept ;
+    skos:prefLabel "Decision confidence"@en ;
+    skos:definition "A controlled value set for how confident the decision maker or model is in the outcome."@en ;
+    skos:topConceptOf voc:decision-vocabulary ;
+    skos:narrower voc:confidence-high-confidence , voc:confidence-medium-confidence , voc:confidence-low-confidence ;
+    skos:inScheme voc:decision-vocabulary .
+
+voc:confidence-high-confidence a skos:Concept ;
+    skos:prefLabel "High confidence"@en ;
+    skos:definition "A decision confidence in which the outcome is well supported by governed facts."@en ;
+    skos:broader voc:decision-confidence ;
+    skos:inScheme voc:decision-vocabulary .
+
+voc:confidence-medium-confidence a skos:Concept ;
+    skos:prefLabel "Medium confidence"@en ;
+    skos:definition "A decision confidence in which the outcome is supported with some gaps."@en ;
+    skos:broader voc:decision-confidence ;
+    skos:inScheme voc:decision-vocabulary .
+
+voc:confidence-low-confidence a skos:Concept ;
+    skos:prefLabel "Low confidence"@en ;
+    skos:definition "A decision confidence in which the outcome is weakly supported and should be reviewed."@en ;
+    skos:scopeNote "Low-confidence answers and mappings are routed to human review."@en ;
+    skos:broader voc:decision-confidence ;
+    skos:inScheme voc:decision-vocabulary .
+
+voc:hit-policy a skos:Concept ;
+    skos:prefLabel "Hit policy"@en ;
+    skos:definition "A controlled value set for how a decision table resolves multiple matching rules."@en ;
+    skos:topConceptOf voc:decision-vocabulary ;
+    skos:narrower voc:hit-policy-unique , voc:hit-policy-first , voc:hit-policy-priority , voc:hit-policy-any , voc:hit-policy-collect , voc:hit-policy-rule-order , voc:hit-policy-output-order ;
+    skos:inScheme voc:decision-vocabulary .
+
+voc:hit-policy-unique a skos:Concept ;
+    skos:prefLabel "Unique"@en ;
+    skos:notation "U"^^voc:hit-policy-code ;
+    skos:definition "A hit policy in which at most one rule may match."@en ;
+    skos:broader voc:hit-policy ;
+    skos:inScheme voc:decision-vocabulary .
+
+voc:hit-policy-first a skos:Concept ;
+    skos:prefLabel "First"@en ;
+    skos:notation "F"^^voc:hit-policy-code ;
+    skos:definition "A hit policy in which the first matching rule in order is used."@en ;
+    skos:broader voc:hit-policy ;
+    skos:inScheme voc:decision-vocabulary .
+
+voc:hit-policy-priority a skos:Concept ;
+    skos:prefLabel "Priority"@en ;
+    skos:notation "P"^^voc:hit-policy-code ;
+    skos:definition "A hit policy in which the matching rule with the highest output priority is used."@en ;
+    skos:broader voc:hit-policy ;
+    skos:inScheme voc:decision-vocabulary .
+
+voc:hit-policy-any a skos:Concept ;
+    skos:prefLabel "Any"@en ;
+    skos:notation "A"^^voc:hit-policy-code ;
+    skos:definition "A hit policy in which several rules may match if they give the same output."@en ;
+    skos:broader voc:hit-policy ;
+    skos:inScheme voc:decision-vocabulary .
+
+voc:hit-policy-collect a skos:Concept ;
+    skos:prefLabel "Collect"@en ;
+    skos:notation "C"^^voc:hit-policy-code ;
+    skos:definition "A hit policy in which all matching outputs are returned or aggregated."@en ;
+    skos:broader voc:hit-policy ;
+    skos:inScheme voc:decision-vocabulary .
+
+voc:hit-policy-rule-order a skos:Concept ;
+    skos:prefLabel "Rule order"@en ;
+    skos:notation "R"^^voc:hit-policy-code ;
+    skos:definition "A hit policy in which all matching outputs are returned in rule order."@en ;
+    skos:broader voc:hit-policy ;
+    skos:inScheme voc:decision-vocabulary .
+
+voc:hit-policy-output-order a skos:Concept ;
+    skos:prefLabel "Output order"@en ;
+    skos:notation "O"^^voc:hit-policy-code ;
+    skos:definition "A hit policy in which all matching outputs are returned in output priority order."@en ;
+    skos:broader voc:hit-policy ;
+    skos:inScheme voc:decision-vocabulary .

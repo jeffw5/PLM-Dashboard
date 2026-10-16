@@ -1,0 +1,219 @@
+# Taxonomy: Party taxonomy
+# File: taxonomy-core-party.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix tax: <https://www.insperity.com/taxonomy/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+tax:PartyTaxonomy a skos:ConceptScheme ;
+    dcterms:title "Party taxonomy"@en ;
+    skos:prefLabel "Party taxonomy"@en ;
+    dcterms:description "Classification of the persons, organizations, groups, and automated agents that can take part in process steps, hold roles, and enter agreements."@en ;
+    dcterms:subject core:Party ;
+    skos:scopeNote "Classifies what a party is, not the roles it plays. Employee, client, and co-employer are roles in the role taxonomy; persona categories are in the persona taxonomy."@en ;
+    dcterms:source "BFO object and object aggregate (ISO/IEC 21838-2); W3C Organization Ontology; PROV-O agent."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept tax:Person ,
+        tax:Organization ,
+        tax:Group ,
+        tax:AutomatedAgent .
+
+tax:Person a skos:Concept ;
+    skos:prefLabel "Person"@en ;
+    skos:altLabel "Individual"@en , "Natural person"@en ;
+    skos:definition "A party that is an individual human being."@en ;
+    skos:scopeNote "A person bears roles such as employee or client administrator; those are in the role taxonomy. Personal attributes are confidential and governed by named-graph access."@en ;
+    skos:topConceptOf tax:PartyTaxonomy ;
+    skos:inScheme tax:PartyTaxonomy .
+
+tax:Organization a skos:Concept ;
+    skos:prefLabel "Organization"@en ;
+    skos:altLabel "Entity"@en ;
+    skos:hiddenLabel "Organisation"@en ;
+    skos:definition "A party that is a group of people organized for a purpose and able to act as a unit."@en ;
+    skos:topConceptOf tax:PartyTaxonomy ;
+    skos:narrower tax:LegalEntity , tax:GovernmentBody , tax:OrganizationalUnit ;
+    skos:inScheme tax:PartyTaxonomy .
+
+tax:LegalEntity a skos:Concept ;
+    skos:prefLabel "Legal entity"@en ;
+    skos:altLabel "Company"@en , "Business entity"@en ;
+    skos:definition "An organization that has legal capacity to enter contracts, own assets, and bear obligations."@en ;
+    skos:broader tax:Organization ;
+    skos:narrower tax:Corporation , tax:LimitedLiabilityCompany , tax:Partnership , tax:SoleProprietorship , tax:NonprofitOrganization ;
+    skos:inScheme tax:PartyTaxonomy .
+
+tax:Corporation a skos:Concept ;
+    skos:prefLabel "Corporation"@en ;
+    skos:altLabel "Incorporated company"@en ;
+    skos:definition "A legal entity that is incorporated under law with separate legal existence from its owners."@en ;
+    skos:broader tax:LegalEntity ;
+    skos:inScheme tax:PartyTaxonomy .
+
+tax:LimitedLiabilityCompany a skos:Concept ;
+    skos:prefLabel "Limited liability company"@en ;
+    skos:altLabel "LLC"@en ;
+    skos:definition "A legal entity whose owners' liability is limited to their investment and that may be taxed as a partnership or corporation."@en ;
+    skos:broader tax:LegalEntity ;
+    skos:inScheme tax:PartyTaxonomy .
+
+tax:Partnership a skos:Concept ;
+    skos:prefLabel "Partnership"@en ;
+    skos:altLabel "Limited partnership"@en , "General partnership"@en ;
+    skos:definition "A legal entity formed by two or more owners who share profits and liabilities under a partnership agreement."@en ;
+    skos:broader tax:LegalEntity ;
+    skos:inScheme tax:PartyTaxonomy .
+
+tax:SoleProprietorship a skos:Concept ;
+    skos:prefLabel "Sole proprietorship"@en ;
+    skos:altLabel "Sole trader"@en ;
+    skos:definition "A legal entity owned and run by one person with no legal distinction between owner and business."@en ;
+    skos:broader tax:LegalEntity ;
+    skos:inScheme tax:PartyTaxonomy .
+
+tax:NonprofitOrganization a skos:Concept ;
+    skos:prefLabel "Nonprofit organization"@en ;
+    skos:altLabel "Not-for-profit organization"@en , "Charity"@en ;
+    skos:definition "A legal entity organized for a purpose other than generating profit for owners."@en ;
+    skos:broader tax:LegalEntity ;
+    skos:inScheme tax:PartyTaxonomy .
+
+tax:GovernmentBody a skos:Concept ;
+    skos:prefLabel "Government body"@en ;
+    skos:altLabel "Government organization"@en , "Public authority"@en ;
+    skos:definition "An organization that exercises public authority under law."@en ;
+    skos:broader tax:Organization ;
+    skos:narrower tax:LegislativeBody , tax:RegulatoryAgency , tax:Court ;
+    skos:inScheme tax:PartyTaxonomy .
+
+tax:LegislativeBody a skos:Concept ;
+    skos:prefLabel "Legislative body"@en ;
+    skos:altLabel "Legislature"@en , "Congress"@en ;
+    skos:definition "A government body that enacts laws."@en ;
+    skos:broader tax:GovernmentBody ;
+    skos:inScheme tax:PartyTaxonomy .
+
+tax:RegulatoryAgency a skos:Concept ;
+    skos:prefLabel "Regulatory agency"@en ;
+    skos:altLabel "Regulator"@en , "Agency"@en ;
+    skos:definition "A government body that issues and enforces regulations and guidance."@en ;
+    skos:example "Department of Labor; Internal Revenue Service."@en ;
+    skos:broader tax:GovernmentBody ;
+    skos:inScheme tax:PartyTaxonomy .
+
+tax:Court a skos:Concept ;
+    skos:prefLabel "Court"@en ;
+    skos:altLabel "Tribunal"@en ;
+    skos:definition "A government body that adjudicates disputes and interprets law."@en ;
+    skos:broader tax:GovernmentBody ;
+    skos:inScheme tax:PartyTaxonomy .
+
+tax:OrganizationalUnit a skos:Concept ;
+    skos:prefLabel "Organizational unit"@en ;
+    skos:altLabel "Org unit"@en , "Business unit"@en ;
+    skos:definition "An organization that is a subdivision of a larger organization with its own responsibilities."@en ;
+    skos:broader tax:Organization ;
+    skos:narrower tax:Division , tax:Department , tax:Team , tax:Committee ;
+    skos:inScheme tax:PartyTaxonomy .
+
+tax:Division a skos:Concept ;
+    skos:prefLabel "Division"@en ;
+    skos:altLabel "Line of business"@en ;
+    skos:definition "An organizational unit that groups related departments under shared leadership."@en ;
+    skos:broader tax:OrganizationalUnit ;
+    skos:inScheme tax:PartyTaxonomy .
+
+tax:Department a skos:Concept ;
+    skos:prefLabel "Department"@en ;
+    skos:altLabel "Function"@en ;
+    skos:definition "An organizational unit responsible for a defined function."@en ;
+    skos:example "Enterprise Analytics; Benefits Operations."@en ;
+    skos:broader tax:OrganizationalUnit ;
+    skos:inScheme tax:PartyTaxonomy .
+
+tax:Team a skos:Concept ;
+    skos:prefLabel "Team"@en ;
+    skos:altLabel "Squad"@en , "Working group"@en ;
+    skos:definition "An organizational unit of people who work together toward shared objectives."@en ;
+    skos:broader tax:OrganizationalUnit ;
+    skos:inScheme tax:PartyTaxonomy .
+
+tax:Committee a skos:Concept ;
+    skos:prefLabel "Committee"@en ;
+    skos:altLabel "Board"@en , "Council"@en , "Steering committee"@en ;
+    skos:definition "An organizational unit of members appointed to deliberate or decide on a defined matter."@en ;
+    skos:broader tax:OrganizationalUnit ;
+    skos:relatedMatch tax:GovernanceBody ;
+    skos:inScheme tax:PartyTaxonomy .
+
+tax:Group a skos:Concept ;
+    skos:prefLabel "Group"@en ;
+    skos:altLabel "Collection of parties"@en ;
+    skos:definition "A party that is a collection of persons or organizations treated together without forming a single organization."@en ;
+    skos:topConceptOf tax:PartyTaxonomy ;
+    skos:narrower tax:Household , tax:Cohort , tax:MembershipGroup ;
+    skos:inScheme tax:PartyTaxonomy .
+
+tax:Household a skos:Concept ;
+    skos:prefLabel "Household"@en ;
+    skos:altLabel "Family unit"@en ;
+    skos:definition "A group of persons who share a residence or are linked as a family unit for benefits or tax purposes."@en ;
+    skos:broader tax:Group ;
+    skos:inScheme tax:PartyTaxonomy .
+
+tax:Cohort a skos:Concept ;
+    skos:prefLabel "Cohort"@en ;
+    skos:altLabel "Segment"@en ;
+    skos:definition "A group of persons sharing a characteristic or event within a period, used for analysis or communication."@en ;
+    skos:broader tax:Group ;
+    skos:inScheme tax:PartyTaxonomy .
+
+tax:MembershipGroup a skos:Concept ;
+    skos:prefLabel "Membership group"@en ;
+    skos:altLabel "Association membership"@en ;
+    skos:definition "A group of parties that have joined an association or program."@en ;
+    skos:broader tax:Group ;
+    skos:inScheme tax:PartyTaxonomy .
+
+tax:AutomatedAgent a skos:Concept ;
+    skos:prefLabel "Automated agent"@en ;
+    skos:altLabel "Software agent"@en , "Digital agent"@en ;
+    skos:definition "A party that is a software system acting with delegated authority to perform or support process steps."@en ;
+    skos:scopeNote "Covers acting agents. The deployed code is also a software asset."@en ;
+    skos:topConceptOf tax:PartyTaxonomy ;
+    skos:narrower tax:ArtificialIntelligenceAgent , tax:SystemAccount , tax:RoboticProcessAutomationAgent ;
+    skos:inScheme tax:PartyTaxonomy .
+
+tax:ArtificialIntelligenceAgent a skos:Concept ;
+    skos:prefLabel "Artificial intelligence agent"@en ;
+    skos:altLabel "AI agent"@en , "Assistant"@en , "Conversational agent"@en ;
+    skos:definition "An automated agent that uses a language or machine learning model to interpret requests and take actions or produce answers."@en ;
+    skos:example "HR 360 agent."@en ;
+    skos:broader tax:AutomatedAgent ;
+    skos:inScheme tax:PartyTaxonomy .
+
+tax:SystemAccount a skos:Concept ;
+    skos:prefLabel "System account"@en ;
+    skos:altLabel "Service account"@en , "Bot account"@en ;
+    skos:definition "An automated agent that is a non-human identity under which a service or integration runs."@en ;
+    skos:broader tax:AutomatedAgent ;
+    skos:inScheme tax:PartyTaxonomy .
+
+tax:RoboticProcessAutomationAgent a skos:Concept ;
+    skos:prefLabel "Robotic process automation agent"@en ;
+    skos:altLabel "RPA bot"@en , "Bot"@en ;
+    skos:definition "An automated agent that executes scripted interactions with user interfaces or systems."@en ;
+    skos:broader tax:AutomatedAgent ;
+    skos:inScheme tax:PartyTaxonomy .

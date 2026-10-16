@@ -1,0 +1,134 @@
+# Vocabulary: Asset vocabulary
+# File: vocabulary-core-asset.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+voc:asset-vocabulary a skos:ConceptScheme ;
+    dcterms:title "Asset vocabulary"@en ;
+    skos:prefLabel "Asset vocabulary"@en ;
+    dcterms:description "Controlled values that describe the status, ownership, and criticality of assets."@en ;
+    dcterms:subject core:Asset ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept voc:asset-status ,
+        voc:asset-ownership-type ,
+        voc:asset-criticality .
+
+voc:asset-status a skos:Concept ;
+    skos:prefLabel "Asset status"@en ;
+    skos:definition "A controlled value set for the operational state of an asset."@en ;
+    skos:topConceptOf voc:asset-vocabulary ;
+    skos:narrower voc:asset-status-planned , voc:asset-status-active , voc:asset-status-under-maintenance , voc:asset-status-inactive , voc:asset-status-disposed ;
+    skos:inScheme voc:asset-vocabulary .
+
+voc:asset-status-planned a skos:Concept ;
+    skos:prefLabel "Planned"@en ;
+    skos:definition "An asset status in which the asset is approved but not yet acquired or built."@en ;
+    skos:broader voc:asset-status ;
+    skos:inScheme voc:asset-vocabulary .
+
+voc:asset-status-active a skos:Concept ;
+    skos:prefLabel "Active"@en ;
+    skos:altLabel "In service"@en , "In use"@en ;
+    skos:definition "An asset status in which the asset is in service and available for use."@en ;
+    skos:broader voc:asset-status ;
+    skos:inScheme voc:asset-vocabulary .
+
+voc:asset-status-under-maintenance a skos:Concept ;
+    skos:prefLabel "Under maintenance"@en ;
+    skos:definition "An asset status in which the asset is temporarily out of service for repair or upgrade."@en ;
+    skos:broader voc:asset-status ;
+    skos:inScheme voc:asset-vocabulary .
+
+voc:asset-status-inactive a skos:Concept ;
+    skos:prefLabel "Inactive"@en ;
+    skos:altLabel "Idle"@en , "Standby"@en ;
+    skos:definition "An asset status in which the asset is held but not in use."@en ;
+    skos:broader voc:asset-status ;
+    skos:inScheme voc:asset-vocabulary .
+
+voc:asset-status-disposed a skos:Concept ;
+    skos:prefLabel "Disposed"@en ;
+    skos:altLabel "Decommissioned"@en ;
+    skos:definition "An asset status in which the asset has been sold, scrapped, deleted, or otherwise removed."@en ;
+    skos:broader voc:asset-status ;
+    skos:inScheme voc:asset-vocabulary .
+
+voc:asset-ownership-type a skos:Concept ;
+    skos:prefLabel "Asset ownership type"@en ;
+    skos:definition "A controlled value set for the basis on which the organization holds an asset."@en ;
+    skos:topConceptOf voc:asset-vocabulary ;
+    skos:narrower voc:asset-ownership-owned , voc:asset-ownership-leased , voc:asset-ownership-licensed , voc:asset-ownership-subscribed ;
+    skos:inScheme voc:asset-vocabulary .
+
+voc:asset-ownership-owned a skos:Concept ;
+    skos:prefLabel "Owned"@en ;
+    skos:definition "An asset ownership type in which the organization holds legal title."@en ;
+    skos:broader voc:asset-ownership-type ;
+    skos:inScheme voc:asset-vocabulary .
+
+voc:asset-ownership-leased a skos:Concept ;
+    skos:prefLabel "Leased"@en ;
+    skos:definition "An asset ownership type in which the organization uses the asset under a lease for a term."@en ;
+    skos:broader voc:asset-ownership-type ;
+    skos:inScheme voc:asset-vocabulary .
+
+voc:asset-ownership-licensed a skos:Concept ;
+    skos:prefLabel "Licensed"@en ;
+    skos:definition "An asset ownership type in which the organization holds a license to use the asset."@en ;
+    skos:broader voc:asset-ownership-type ;
+    skos:inScheme voc:asset-vocabulary .
+
+voc:asset-ownership-subscribed a skos:Concept ;
+    skos:prefLabel "Subscribed"@en ;
+    skos:altLabel "Subscription"@en ;
+    skos:definition "An asset ownership type in which the organization accesses the asset as a service for recurring fees."@en ;
+    skos:broader voc:asset-ownership-type ;
+    skos:inScheme voc:asset-vocabulary .
+
+voc:asset-criticality a skos:Concept ;
+    skos:prefLabel "Asset criticality"@en ;
+    skos:definition "A controlled value set for how essential an asset is to operations."@en ;
+    skos:topConceptOf voc:asset-vocabulary ;
+    skos:narrower voc:asset-criticality-mission-critical , voc:asset-criticality-business-critical , voc:asset-criticality-business-supporting , voc:asset-criticality-non-critical ;
+    skos:inScheme voc:asset-vocabulary .
+
+voc:asset-criticality-mission-critical a skos:Concept ;
+    skos:prefLabel "Mission critical"@en ;
+    skos:altLabel "Tier 1"@en ;
+    skos:definition "An asset criticality for assets whose loss stops essential services."@en ;
+    skos:broader voc:asset-criticality ;
+    skos:inScheme voc:asset-vocabulary .
+
+voc:asset-criticality-business-critical a skos:Concept ;
+    skos:prefLabel "Business critical"@en ;
+    skos:altLabel "Tier 2"@en ;
+    skos:definition "An asset criticality for assets whose loss seriously degrades important services."@en ;
+    skos:broader voc:asset-criticality ;
+    skos:inScheme voc:asset-vocabulary .
+
+voc:asset-criticality-business-supporting a skos:Concept ;
+    skos:prefLabel "Business supporting"@en ;
+    skos:altLabel "Tier 3"@en ;
+    skos:definition "An asset criticality for assets whose loss causes limited disruption."@en ;
+    skos:broader voc:asset-criticality ;
+    skos:inScheme voc:asset-vocabulary .
+
+voc:asset-criticality-non-critical a skos:Concept ;
+    skos:prefLabel "Non-critical"@en ;
+    skos:altLabel "Tier 4"@en ;
+    skos:definition "An asset criticality for assets whose loss has negligible operational effect."@en ;
+    skos:broader voc:asset-criticality ;
+    skos:inScheme voc:asset-vocabulary .

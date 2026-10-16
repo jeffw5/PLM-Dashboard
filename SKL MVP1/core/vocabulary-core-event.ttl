@@ -1,0 +1,98 @@
+# Vocabulary: Event vocabulary
+# File: vocabulary-core-event.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+voc:event-vocabulary a skos:ConceptScheme ;
+    dcterms:title "Event vocabulary"@en ;
+    skos:prefLabel "Event vocabulary"@en ;
+    dcterms:description "Controlled values that describe how events are sourced and processed."@en ;
+    dcterms:subject core:Event ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept voc:event-source-type ,
+        voc:event-processing-status .
+
+voc:event-source-type a skos:Concept ;
+    skos:prefLabel "Event source type"@en ;
+    skos:definition "A controlled value set for what originates an event."@en ;
+    skos:topConceptOf voc:event-vocabulary ;
+    skos:narrower voc:event-source-system-generated , voc:event-source-user-generated , voc:event-source-scheduled , voc:event-source-external-notification ;
+    skos:inScheme voc:event-vocabulary .
+
+voc:event-source-system-generated a skos:Concept ;
+    skos:prefLabel "System generated"@en ;
+    skos:altLabel "Machine generated"@en ;
+    skos:definition "An event source type for events raised by software."@en ;
+    skos:broader voc:event-source-type ;
+    skos:inScheme voc:event-vocabulary .
+
+voc:event-source-user-generated a skos:Concept ;
+    skos:prefLabel "User generated"@en ;
+    skos:definition "An event source type for events caused by a person's action."@en ;
+    skos:broader voc:event-source-type ;
+    skos:inScheme voc:event-vocabulary .
+
+voc:event-source-scheduled a skos:Concept ;
+    skos:prefLabel "Scheduled"@en ;
+    skos:definition "An event source type for events raised by a schedule or timer."@en ;
+    skos:broader voc:event-source-type ;
+    skos:inScheme voc:event-vocabulary .
+
+voc:event-source-external-notification a skos:Concept ;
+    skos:prefLabel "External notification"@en ;
+    skos:altLabel "Third-party notification"@en ;
+    skos:definition "An event source type for events received from an outside party or feed."@en ;
+    skos:broader voc:event-source-type ;
+    skos:inScheme voc:event-vocabulary .
+
+voc:event-processing-status a skos:Concept ;
+    skos:prefLabel "Event processing status"@en ;
+    skos:definition "A controlled value set for the state of an event in the processing pipeline."@en ;
+    skos:topConceptOf voc:event-vocabulary ;
+    skos:narrower voc:event-processing-received , voc:event-processing-processed , voc:event-processing-retrying , voc:event-processing-dead-lettered , voc:event-processing-discarded ;
+    skos:inScheme voc:event-vocabulary .
+
+voc:event-processing-received a skos:Concept ;
+    skos:prefLabel "Received"@en ;
+    skos:definition "An event processing status in which the event has been accepted but not yet processed."@en ;
+    skos:broader voc:event-processing-status ;
+    skos:inScheme voc:event-vocabulary .
+
+voc:event-processing-processed a skos:Concept ;
+    skos:prefLabel "Processed"@en ;
+    skos:altLabel "Consumed"@en ;
+    skos:definition "An event processing status in which all subscribers have handled the event."@en ;
+    skos:broader voc:event-processing-status ;
+    skos:inScheme voc:event-vocabulary .
+
+voc:event-processing-retrying a skos:Concept ;
+    skos:prefLabel "Retrying"@en ;
+    skos:definition "An event processing status in which processing failed and is being retried."@en ;
+    skos:broader voc:event-processing-status ;
+    skos:inScheme voc:event-vocabulary .
+
+voc:event-processing-dead-lettered a skos:Concept ;
+    skos:prefLabel "Dead-lettered"@en ;
+    skos:altLabel "Dead letter"@en ;
+    skos:definition "An event processing status in which the event could not be processed after all allowed recovery actions."@en ;
+    skos:broader voc:event-processing-status ;
+    skos:inScheme voc:event-vocabulary .
+
+voc:event-processing-discarded a skos:Concept ;
+    skos:prefLabel "Discarded"@en ;
+    skos:definition "An event processing status in which the event was deliberately ignored as a duplicate or irrelevant."@en ;
+    skos:broader voc:event-processing-status ;
+    skos:inScheme voc:event-vocabulary .

@@ -1,0 +1,201 @@
+# Taxonomy: Product taxonomy
+# File: taxonomy-core-product.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix tax: <https://www.insperity.com/taxonomy/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+tax:ProductTaxonomy a skos:ConceptScheme ;
+    dcterms:title "Product taxonomy"@en ;
+    skos:prefLabel "Product taxonomy"@en ;
+    dcterms:description "Classification of offerings that the organization or its partners make available to clients and their workers."@en ;
+    dcterms:subject core:Product ;
+    skos:scopeNote "Covers kinds of offering. Product status and offering model values are in the product vocabulary. Packages are related to their components with hasComponent, not skos:narrower."@en ;
+    dcterms:source "GS1 Global Product Classification and United Nations Standard Products and Services Code concepts, generalized."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept tax:Good ,
+        tax:ServiceOffering ,
+        tax:BundledOffering ,
+        tax:FinancialProduct ,
+        tax:InformationProduct .
+
+tax:Good a skos:Concept ;
+    skos:prefLabel "Good"@en ;
+    skos:altLabel "Goods"@en , "Merchandise"@en ;
+    skos:definition "A product that is a tangible or digital item whose ownership or use transfers to the buyer."@en ;
+    skos:topConceptOf tax:ProductTaxonomy ;
+    skos:narrower tax:PhysicalGood , tax:DigitalGood ;
+    skos:inScheme tax:ProductTaxonomy .
+
+tax:PhysicalGood a skos:Concept ;
+    skos:prefLabel "Physical good"@en ;
+    skos:altLabel "Hardware product"@en ;
+    skos:definition "A good that has material form and is shipped or delivered."@en ;
+    skos:broader tax:Good ;
+    skos:inScheme tax:ProductTaxonomy .
+
+tax:DigitalGood a skos:Concept ;
+    skos:prefLabel "Digital good"@en ;
+    skos:altLabel "Digital product"@en ;
+    skos:definition "A good delivered and used in electronic form."@en ;
+    skos:broader tax:Good ;
+    skos:narrower tax:SoftwareProduct , tax:DigitalContent ;
+    skos:inScheme tax:ProductTaxonomy .
+
+tax:SoftwareProduct a skos:Concept ;
+    skos:prefLabel "Software product"@en ;
+    skos:altLabel "Software as a service"@en , "SaaS"@en , "Application product"@en ;
+    skos:definition "A digital good that is software licensed or subscribed to by clients."@en ;
+    skos:broader tax:DigitalGood ;
+    skos:inScheme tax:ProductTaxonomy .
+
+tax:DigitalContent a skos:Concept ;
+    skos:prefLabel "Digital content"@en ;
+    skos:altLabel "Content product"@en , "E-learning course"@en ;
+    skos:definition "A digital good that is media or information content."@en ;
+    skos:broader tax:DigitalGood ;
+    skos:inScheme tax:ProductTaxonomy .
+
+tax:ServiceOffering a skos:Concept ;
+    skos:prefLabel "Service offering"@en ;
+    skos:altLabel "Service product"@en , "Packaged service"@en ;
+    skos:definition "A product that is the commitment to perform activities or provide outcomes for a client."@en ;
+    skos:topConceptOf tax:ProductTaxonomy ;
+    skos:narrower tax:OutsourcedServiceOffering , tax:AdvisoryServiceOffering , tax:TechnologyServiceOffering , tax:AdministrationServiceOffering ;
+    skos:relatedMatch tax:BusinessService ;
+    skos:inScheme tax:ProductTaxonomy .
+
+tax:OutsourcedServiceOffering a skos:Concept ;
+    skos:prefLabel "Outsourced service offering"@en ;
+    skos:altLabel "Managed service offering"@en , "Co-employment offering"@en , "Professional employer organization offering"@en , "PEO offering"@en ;
+    skos:definition "A service offering in which the provider takes over a business function for the client."@en ;
+    skos:broader tax:ServiceOffering ;
+    skos:inScheme tax:ProductTaxonomy .
+
+tax:AdvisoryServiceOffering a skos:Concept ;
+    skos:prefLabel "Advisory service offering"@en ;
+    skos:altLabel "Consulting offering"@en ;
+    skos:definition "A service offering that provides expert guidance and recommendations."@en ;
+    skos:broader tax:ServiceOffering ;
+    skos:inScheme tax:ProductTaxonomy .
+
+tax:TechnologyServiceOffering a skos:Concept ;
+    skos:prefLabel "Technology service offering"@en ;
+    skos:altLabel "Platform offering"@en ;
+    skos:definition "A service offering that provides access to software, platforms, or infrastructure operated by the provider."@en ;
+    skos:broader tax:ServiceOffering ;
+    skos:inScheme tax:ProductTaxonomy .
+
+tax:AdministrationServiceOffering a skos:Concept ;
+    skos:prefLabel "Administration service offering"@en ;
+    skos:altLabel "Administrative services offering"@en ;
+    skos:definition "A service offering that performs recurring administrative transactions for the client."@en ;
+    skos:broader tax:ServiceOffering ;
+    skos:inScheme tax:ProductTaxonomy .
+
+tax:BundledOffering a skos:Concept ;
+    skos:prefLabel "Bundled offering"@en ;
+    skos:altLabel "Bundle"@en , "Package"@en , "Service bundle"@en , "Suite"@en ;
+    skos:definition "A product that combines several products or services sold as one package."@en ;
+    skos:topConceptOf tax:ProductTaxonomy ;
+    skos:inScheme tax:ProductTaxonomy .
+
+tax:FinancialProduct a skos:Concept ;
+    skos:prefLabel "Financial product"@en ;
+    skos:altLabel "Financial services product"@en ;
+    skos:definition "A product that is a contract providing financial protection, savings, credit, or investment."@en ;
+    skos:topConceptOf tax:ProductTaxonomy ;
+    skos:narrower tax:InsuranceProduct , tax:RetirementSavingsProduct , tax:SpendingAccountProduct , tax:CreditProduct ;
+    skos:inScheme tax:ProductTaxonomy .
+
+tax:InsuranceProduct a skos:Concept ;
+    skos:prefLabel "Insurance product"@en ;
+    skos:altLabel "Insurance plan"@en , "Coverage"@en ;
+    skos:definition "A financial product that pays benefits when a covered loss or event occurs, in exchange for premiums."@en ;
+    skos:broader tax:FinancialProduct ;
+    skos:narrower tax:HealthInsuranceProduct , tax:LifeInsuranceProduct , tax:DisabilityInsuranceProduct , tax:PropertyAndCasualtyInsuranceProduct ;
+    skos:inScheme tax:ProductTaxonomy .
+
+tax:HealthInsuranceProduct a skos:Concept ;
+    skos:prefLabel "Health insurance product"@en ;
+    skos:altLabel "Health plan"@en , "Medical plan"@en ;
+    skos:definition "An insurance product that covers medical, dental, vision, or prescription costs."@en ;
+    skos:broader tax:InsuranceProduct ;
+    skos:inScheme tax:ProductTaxonomy .
+
+tax:LifeInsuranceProduct a skos:Concept ;
+    skos:prefLabel "Life insurance product"@en ;
+    skos:altLabel "Life plan"@en ;
+    skos:definition "An insurance product that pays a benefit on the death of the insured."@en ;
+    skos:broader tax:InsuranceProduct ;
+    skos:inScheme tax:ProductTaxonomy .
+
+tax:DisabilityInsuranceProduct a skos:Concept ;
+    skos:prefLabel "Disability insurance product"@en ;
+    skos:altLabel "Disability plan"@en ;
+    skos:definition "An insurance product that replaces income when the insured cannot work due to disability."@en ;
+    skos:broader tax:InsuranceProduct ;
+    skos:inScheme tax:ProductTaxonomy .
+
+tax:PropertyAndCasualtyInsuranceProduct a skos:Concept ;
+    skos:prefLabel "Property and casualty insurance product"@en ;
+    skos:altLabel "Workers compensation insurance"@en , "Liability insurance"@en ;
+    skos:definition "An insurance product that covers damage to property or liability to others."@en ;
+    skos:broader tax:InsuranceProduct ;
+    skos:inScheme tax:ProductTaxonomy .
+
+tax:RetirementSavingsProduct a skos:Concept ;
+    skos:prefLabel "Retirement savings product"@en ;
+    skos:altLabel "Retirement plan"@en , "Defined contribution plan"@en ;
+    skos:definition "A financial product that accumulates savings for retirement with tax advantages."@en ;
+    skos:broader tax:FinancialProduct ;
+    skos:inScheme tax:ProductTaxonomy .
+
+tax:SpendingAccountProduct a skos:Concept ;
+    skos:prefLabel "Spending account product"@en ;
+    skos:altLabel "Flexible spending account"@en , "Health savings account"@en ;
+    skos:definition "A financial product that sets aside funds for qualified expenses."@en ;
+    skos:broader tax:FinancialProduct ;
+    skos:inScheme tax:ProductTaxonomy .
+
+tax:CreditProduct a skos:Concept ;
+    skos:prefLabel "Credit product"@en ;
+    skos:altLabel "Loan"@en ;
+    skos:definition "A financial product that lends money or extends credit."@en ;
+    skos:broader tax:FinancialProduct ;
+    skos:inScheme tax:ProductTaxonomy .
+
+tax:InformationProduct a skos:Concept ;
+    skos:prefLabel "Information product"@en ;
+    skos:altLabel "Data and insight product"@en ;
+    skos:definition "A product whose value lies in information delivered to the buyer."@en ;
+    skos:topConceptOf tax:ProductTaxonomy ;
+    skos:narrower tax:DataProduct , tax:ReportProduct ;
+    skos:inScheme tax:ProductTaxonomy .
+
+tax:DataProduct a skos:Concept ;
+    skos:prefLabel "Data product"@en ;
+    skos:altLabel "Data as a product"@en ;
+    skos:definition "An information product that is a curated, documented, and governed dataset offered for reuse by consumers."@en ;
+    skos:scopeNote "Described with the Object Management Group Data Product Ontology and Data Catalog Vocabulary."@en ;
+    skos:broader tax:InformationProduct ;
+    skos:inScheme tax:ProductTaxonomy .
+
+tax:ReportProduct a skos:Concept ;
+    skos:prefLabel "Report product"@en ;
+    skos:altLabel "Analytics product"@en , "Benchmark report"@en ;
+    skos:definition "An information product delivered as a recurring report or dashboard."@en ;
+    skos:broader tax:InformationProduct ;
+    skos:inScheme tax:ProductTaxonomy .

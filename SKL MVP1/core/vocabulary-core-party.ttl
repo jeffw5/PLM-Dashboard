@@ -1,0 +1,153 @@
+# Vocabulary: Party vocabulary
+# File: vocabulary-core-party.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+voc:party-vocabulary a skos:ConceptScheme ;
+    dcterms:title "Party vocabulary"@en ;
+    skos:prefLabel "Party vocabulary"@en ;
+    dcterms:description "Controlled values that describe the relationship status of parties and the kinds of identifiers assigned to them."@en ;
+    dcterms:subject core:Party ;
+    skos:scopeNote "Identifier values themselves are confidential or restricted data and are never stored in vocabularies."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept voc:party-relationship-status ,
+        voc:party-identifier-type ,
+        voc:contact-method-type .
+
+voc:party-relationship-status a skos:Concept ;
+    skos:prefLabel "Party relationship status"@en ;
+    skos:definition "A controlled value set for the state of a party's relationship with the organization."@en ;
+    skos:topConceptOf voc:party-vocabulary ;
+    skos:narrower voc:party-status-prospective , voc:party-status-onboarding , voc:party-status-active , voc:party-status-suspended , voc:party-status-terminated ;
+    skos:inScheme voc:party-vocabulary .
+
+voc:party-status-prospective a skos:Concept ;
+    skos:prefLabel "Prospective"@en ;
+    skos:altLabel "Prospect"@en ;
+    skos:definition "A party relationship status for a party being evaluated or pursued."@en ;
+    skos:broader voc:party-relationship-status ;
+    skos:inScheme voc:party-vocabulary .
+
+voc:party-status-onboarding a skos:Concept ;
+    skos:prefLabel "Onboarding"@en ;
+    skos:altLabel "Implementation"@en , "Pending start"@en ;
+    skos:definition "A party relationship status for a party whose relationship is being set up."@en ;
+    skos:broader voc:party-relationship-status ;
+    skos:inScheme voc:party-vocabulary .
+
+voc:party-status-active a skos:Concept ;
+    skos:prefLabel "Active"@en ;
+    skos:altLabel "Current"@en ;
+    skos:definition "A party relationship status for a party in a current relationship."@en ;
+    skos:broader voc:party-relationship-status ;
+    skos:inScheme voc:party-vocabulary .
+
+voc:party-status-suspended a skos:Concept ;
+    skos:prefLabel "Suspended"@en ;
+    skos:altLabel "On hold"@en , "Leave"@en ;
+    skos:definition "A party relationship status for a party whose relationship is temporarily paused."@en ;
+    skos:broader voc:party-relationship-status ;
+    skos:inScheme voc:party-vocabulary .
+
+voc:party-status-terminated a skos:Concept ;
+    skos:prefLabel "Terminated"@en ;
+    skos:altLabel "Inactive"@en , "Former"@en , "Separated"@en ;
+    skos:definition "A party relationship status for a party whose relationship has ended."@en ;
+    skos:broader voc:party-relationship-status ;
+    skos:inScheme voc:party-vocabulary .
+
+voc:party-identifier-type a skos:Concept ;
+    skos:prefLabel "Party identifier type"@en ;
+    skos:definition "A controlled value set for the kinds of identifier assigned to parties."@en ;
+    skos:topConceptOf voc:party-vocabulary ;
+    skos:narrower voc:party-identifier-employer-identification-number , voc:party-identifier-taxpayer-identification-number , voc:party-identifier-legal-entity-identifier , voc:party-identifier-employee-number , voc:party-identifier-client-number , voc:party-identifier-supplier-number ;
+    skos:inScheme voc:party-vocabulary .
+
+voc:party-identifier-employer-identification-number a skos:Concept ;
+    skos:prefLabel "Employer identification number"@en ;
+    skos:altLabel "EIN"@en , "Federal employer identification number"@en , "FEIN"@en ;
+    skos:definition "A party identifier type assigned by the Internal Revenue Service to an employer for tax purposes."@en ;
+    skos:broader voc:party-identifier-type ;
+    skos:inScheme voc:party-vocabulary .
+
+voc:party-identifier-taxpayer-identification-number a skos:Concept ;
+    skos:prefLabel "Taxpayer identification number"@en ;
+    skos:altLabel "TIN"@en , "Social security number"@en , "SSN"@en ;
+    skos:definition "A party identifier type assigned by a tax authority to a person or entity."@en ;
+    skos:scopeNote "Values are restricted data."@en ;
+    skos:broader voc:party-identifier-type ;
+    skos:inScheme voc:party-vocabulary .
+
+voc:party-identifier-legal-entity-identifier a skos:Concept ;
+    skos:prefLabel "Legal entity identifier"@en ;
+    skos:altLabel "LEI"@en ;
+    skos:definition "A party identifier type that is the ISO 17442 global code for a legal entity."@en ;
+    skos:broader voc:party-identifier-type ;
+    skos:inScheme voc:party-vocabulary .
+
+voc:party-identifier-employee-number a skos:Concept ;
+    skos:prefLabel "Employee number"@en ;
+    skos:altLabel "Employee identifier"@en , "Worker number"@en ;
+    skos:definition "A party identifier type assigned by the organization to a worker."@en ;
+    skos:broader voc:party-identifier-type ;
+    skos:inScheme voc:party-vocabulary .
+
+voc:party-identifier-client-number a skos:Concept ;
+    skos:prefLabel "Client number"@en ;
+    skos:altLabel "Client identifier"@en , "Customer number"@en ;
+    skos:definition "A party identifier type assigned by the organization to a client."@en ;
+    skos:broader voc:party-identifier-type ;
+    skos:inScheme voc:party-vocabulary .
+
+voc:party-identifier-supplier-number a skos:Concept ;
+    skos:prefLabel "Supplier number"@en ;
+    skos:altLabel "Vendor number"@en ;
+    skos:definition "A party identifier type assigned by the organization to a supplier."@en ;
+    skos:broader voc:party-identifier-type ;
+    skos:inScheme voc:party-vocabulary .
+
+voc:contact-method-type a skos:Concept ;
+    skos:prefLabel "Contact method type"@en ;
+    skos:definition "A controlled value set for the means by which a party can be contacted."@en ;
+    skos:topConceptOf voc:party-vocabulary ;
+    skos:narrower voc:contact-method-email-address , voc:contact-method-telephone-number , voc:contact-method-postal-mail , voc:contact-method-secure-portal-message ;
+    skos:inScheme voc:party-vocabulary .
+
+voc:contact-method-email-address a skos:Concept ;
+    skos:prefLabel "Email address"@en ;
+    skos:definition "A contact method type using electronic mail."@en ;
+    skos:broader voc:contact-method-type ;
+    skos:inScheme voc:party-vocabulary .
+
+voc:contact-method-telephone-number a skos:Concept ;
+    skos:prefLabel "Telephone number"@en ;
+    skos:altLabel "Phone number"@en , "Mobile number"@en ;
+    skos:definition "A contact method type using voice or text messaging."@en ;
+    skos:broader voc:contact-method-type ;
+    skos:inScheme voc:party-vocabulary .
+
+voc:contact-method-postal-mail a skos:Concept ;
+    skos:prefLabel "Postal mail"@en ;
+    skos:definition "A contact method type using a postal address."@en ;
+    skos:broader voc:contact-method-type ;
+    skos:inScheme voc:party-vocabulary .
+
+voc:contact-method-secure-portal-message a skos:Concept ;
+    skos:prefLabel "Secure portal message"@en ;
+    skos:altLabel "Portal message"@en ;
+    skos:definition "A contact method type using a message in an authenticated portal."@en ;
+    skos:broader voc:contact-method-type ;
+    skos:inScheme voc:party-vocabulary .

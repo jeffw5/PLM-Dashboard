@@ -1,0 +1,173 @@
+=== vocabulary asset
+title: Asset vocabulary
+subject: Asset
+description: Controlled values that describe the status, ownership, and criticality of assets.
+---
+Asset status :: A controlled value set for the operational state of an asset. || prefix: asset-status
+  Planned :: An asset status in which the asset is approved but not yet acquired or built.
+  Active :: An asset status in which the asset is in service and available for use. || alt: In service; In use
+  Under maintenance :: An asset status in which the asset is temporarily out of service for repair or upgrade.
+  Inactive :: An asset status in which the asset is held but not in use. || alt: Idle; Standby
+  Disposed :: An asset status in which the asset has been sold, scrapped, deleted, or otherwise removed. || alt: Decommissioned
+Asset ownership type :: A controlled value set for the basis on which the organization holds an asset. || prefix: asset-ownership
+  Owned :: An asset ownership type in which the organization holds legal title.
+  Leased :: An asset ownership type in which the organization uses the asset under a lease for a term.
+  Licensed :: An asset ownership type in which the organization holds a license to use the asset.
+  Subscribed :: An asset ownership type in which the organization accesses the asset as a service for recurring fees. || alt: Subscription
+Asset criticality :: A controlled value set for how essential an asset is to operations. || prefix: asset-criticality
+  Mission critical :: An asset criticality for assets whose loss stops essential services. || alt: Tier 1
+  Business critical :: An asset criticality for assets whose loss seriously degrades important services. || alt: Tier 2
+  Business supporting :: An asset criticality for assets whose loss causes limited disruption. || alt: Tier 3
+  Non-critical :: An asset criticality for assets whose loss has negligible operational effect. || alt: Tier 4
+
+=== vocabulary event
+title: Event vocabulary
+subject: Event
+description: Controlled values that describe how events are sourced and processed.
+---
+Event source type :: A controlled value set for what originates an event. || prefix: event-source
+  System generated :: An event source type for events raised by software. || alt: Machine generated
+  User generated :: An event source type for events caused by a person's action.
+  Scheduled :: An event source type for events raised by a schedule or timer.
+  External notification :: An event source type for events received from an outside party or feed. || alt: Third-party notification
+Event processing status :: A controlled value set for the state of an event in the processing pipeline. || prefix: event-processing
+  Received :: An event processing status in which the event has been accepted but not yet processed.
+  Processed :: An event processing status in which all subscribers have handled the event. || alt: Consumed
+  Retrying :: An event processing status in which processing failed and is being retried.
+  Dead-lettered :: An event processing status in which the event could not be processed after all allowed recovery actions. || alt: Dead letter
+  Discarded :: An event processing status in which the event was deliberately ignored as a duplicate or irrelevant.
+
+=== vocabulary issue
+title: Issue vocabulary
+subject: Issue
+description: Controlled values that describe the severity, priority, status, resolution, and root cause of issues.
+---
+Issue severity :: A controlled value set for the magnitude of an issue's impact. || prefix: severity
+  Critical severity :: An issue severity for issues that stop an essential service or cause serious harm or legal exposure. || alt: Severity 1; Sev 1 || id: severity-critical
+  High severity :: An issue severity for issues that seriously degrade a service or affect many users. || alt: Severity 2; Major || id: severity-high
+  Medium severity :: An issue severity for issues with limited impact and an available workaround. || alt: Severity 3; Moderate || id: severity-medium
+  Low severity :: An issue severity for issues with minor or cosmetic impact. || alt: Severity 4; Minor || id: severity-low
+Issue priority :: A controlled value set for the order in which issues are worked. || prefix: priority
+  Urgent priority :: An issue priority for issues to be worked immediately. || alt: Priority 1; P1 || id: priority-urgent
+  High priority :: An issue priority for issues to be worked before normal work. || alt: Priority 2; P2 || id: priority-high
+  Normal priority :: An issue priority for issues worked in standard order. || alt: Priority 3; P3; Medium || id: priority-normal
+  Low priority :: An issue priority for issues worked when capacity allows. || alt: Priority 4; P4 || id: priority-low
+Issue status :: A controlled value set for where an issue stands in its lifecycle. || prefix: issue-status
+  Open :: An issue status for a reported issue not yet assessed. || alt: New
+  Triaged :: An issue status for an issue assessed and assigned. || alt: Assigned; Acknowledged
+  In progress :: An issue status for an issue being worked on. || alt: Active
+  On hold :: An issue status for an issue paused while waiting on a party or event. || alt: Pending; Waiting
+  Resolved :: An issue status for an issue whose fix or workaround is in place pending confirmation.
+  Closed :: An issue status for an issue confirmed resolved or otherwise ended.
+  Reopened :: An issue status for a closed issue that has recurred or was not fixed.
+Resolution type :: A controlled value set for how an issue ended. || prefix: resolution
+  Fixed :: A resolution type in which the cause was corrected. || alt: Corrected
+  Workaround provided :: A resolution type in which the effect was avoided without removing the cause. || alt: Workaround
+  Duplicate :: A resolution type in which the issue was already reported.
+  Not reproducible :: A resolution type in which the issue could not be observed again. || alt: Cannot reproduce
+  Working as designed :: A resolution type in which the behavior was found to be intended. || alt: By design
+  Will not fix :: A resolution type in which a decision was made not to correct the issue. || alt: Won't fix; Accepted risk
+Root cause category :: A controlled value set for the kind of underlying cause of an issue. || prefix: root-cause
+  People :: A root cause category for causes in skills, staffing, or human error. || alt: Human error
+  Process :: A root cause category for causes in process design or execution.
+  Technology :: A root cause category for causes in software, hardware, or infrastructure. || alt: System
+  Data :: A root cause category for causes in data quality or availability.
+  Knowledge :: A root cause category for causes in definitions, mappings, rules, or other governed knowledge. || alt: Semantic
+  External :: A root cause category for causes outside the organization's control. || alt: Third party
+
+=== vocabulary lifecycle
+title: Lifecycle vocabulary
+subject: Lifecycle
+description: Controlled values for the status of governed artifacts and the stages of the Semantic Knowledge Lifecycle and the ten-stage knowledge governance lifecycle.
+scope: Lifecycle status is the value of core:hasLifecycleStatus on every governed artifact. Released versions are immutable; terms are deprecated rather than deleted.
+standard: Semantic Governance v1.8 Sections 2.4, 3.3, and 3.4.
+---
+Lifecycle status :: A controlled value set for the governance state of a knowledge artifact or term. || prefix: lifecycle-status
+  Draft :: A lifecycle status in which an artifact is being authored and required fields may be incomplete.
+  Candidate :: A lifecycle status in which an artifact has complete required fields and is under review for release.
+  Released :: A lifecycle status in which an artifact is approved, versioned, published, and immutable. || alt: Published
+  Deprecated :: A lifecycle status in which an artifact remains available but is replaced and carries a sunset date.
+  Retired :: A lifecycle status in which an artifact is withdrawn from use and kept only for history. || alt: Archived
+Semantic knowledge lifecycle stage :: A controlled value set for the six stages of the Semantic Knowledge Lifecycle. || prefix: semantic-knowledge-stage || alt: SKL stage
+  Ideation :: A semantic knowledge lifecycle stage in which scope, competency questions, and sources are agreed; covers governance stages one and two. || notation: 1
+  Development :: A semantic knowledge lifecycle stage in which terms are defined, concepts organized, and the ontology formalized; covers governance stages three to five. || notation: 2
+  Testing :: A semantic knowledge lifecycle stage in which artifacts are validated; covers governance stage six. || notation: 3
+  Deployment :: A semantic knowledge lifecycle stage in which artifacts are registered, published, and deployed; covers governance stages seven and eight. || notation: 4
+  Maintenance :: A semantic knowledge lifecycle stage in which artifacts are operated, protected, and measured; covers governance stage nine. || notation: 5
+  Retirement :: A semantic knowledge lifecycle stage in which artifacts are changed, versioned, and retired; covers governance stage ten. || notation: 6
+Knowledge governance stage :: A controlled value set for the ten stages of the knowledge governance lifecycle. || prefix: governance-stage
+  Scope and competency questions :: A knowledge governance stage that agrees what the knowledge must answer, for whom, and who owns it. || notation: 1 || props: skos:broadMatch voc:semantic-knowledge-stage-ideation
+  Acquire knowledge and provenance :: A knowledge governance stage that collects authoritative sources and records where each fact came from. || notation: 2 || props: skos:broadMatch voc:semantic-knowledge-stage-ideation
+  Define terms :: A knowledge governance stage that sets preferred terms, intensional definitions, and term metadata. || notation: 3 || props: skos:broadMatch voc:semantic-knowledge-stage-development
+  Organize concepts :: A knowledge governance stage that builds hierarchies, associative relations, and mappings to external vocabularies. || notation: 4 || props: skos:broadMatch voc:semantic-knowledge-stage-development
+  Formalize the ontology :: A knowledge governance stage that defines classes, relations, and axioms aligned to a top-level ontology. || notation: 5 || props: skos:broadMatch voc:semantic-knowledge-stage-development
+  Validate :: A knowledge governance stage that checks reasoner consistency, data quality, and expert and legal review. || notation: 6 || props: skos:broadMatch voc:semantic-knowledge-stage-testing
+  Register and publish :: A knowledge governance stage that records each artifact, version, and status in a metadata registry. || notation: 7 || props: skos:broadMatch voc:semantic-knowledge-stage-deployment
+  Deploy as persistent or virtual graphs :: A knowledge governance stage that loads artifacts into a store or exposes databases as a graph. || notation: 8 || props: skos:broadMatch voc:semantic-knowledge-stage-deployment
+  Operate, protect and measure :: A knowledge governance stage that applies access control, impact assessment, quality monitoring, and reporting. || notation: 9 || props: skos:broadMatch voc:semantic-knowledge-stage-maintenance
+  Change, version and retire :: A knowledge governance stage that tracks changes, issues versions, deprecates rather than deletes, and retains history. || notation: 10 || props: skos:broadMatch voc:semantic-knowledge-stage-retirement
+Generic lifecycle phase :: A controlled value set for stages shared by most asset, product, and service lifecycles. || prefix: lifecycle-phase
+  Plan :: A generic lifecycle phase in which need, scope, and resources are defined. || alt: Concept; Strategy
+  Acquire or build :: A generic lifecycle phase in which the thing is designed, built, or obtained. || alt: Design and build; Acquire
+  Introduce :: A generic lifecycle phase in which the thing is deployed or launched. || alt: Launch; Transition
+  Operate :: A generic lifecycle phase in which the thing is used and supported. || alt: Run; Use
+  Improve :: A generic lifecycle phase in which the thing is changed or enhanced. || alt: Enhance; Change
+  Retire :: A generic lifecycle phase in which the thing is withdrawn and disposed of. || alt: Dispose; Sunset
+
+=== vocabulary party
+title: Party vocabulary
+subject: Party
+description: Controlled values that describe the relationship status of parties and the kinds of identifiers assigned to them.
+scope: Identifier values themselves are confidential or restricted data and are never stored in vocabularies.
+---
+Party relationship status :: A controlled value set for the state of a party's relationship with the organization. || prefix: party-status
+  Prospective :: A party relationship status for a party being evaluated or pursued. || alt: Prospect
+  Onboarding :: A party relationship status for a party whose relationship is being set up. || alt: Implementation; Pending start
+  Active :: A party relationship status for a party in a current relationship. || alt: Current
+  Suspended :: A party relationship status for a party whose relationship is temporarily paused. || alt: On hold; Leave
+  Terminated :: A party relationship status for a party whose relationship has ended. || alt: Inactive; Former; Separated
+Party identifier type :: A controlled value set for the kinds of identifier assigned to parties. || prefix: party-identifier
+  Employer identification number :: A party identifier type assigned by the Internal Revenue Service to an employer for tax purposes. || alt: EIN; Federal employer identification number; FEIN
+  Taxpayer identification number :: A party identifier type assigned by a tax authority to a person or entity. || alt: TIN; Social security number; SSN || scope: Values are restricted data.
+  Legal entity identifier :: A party identifier type that is the ISO 17442 global code for a legal entity. || alt: LEI
+  Employee number :: A party identifier type assigned by the organization to a worker. || alt: Employee identifier; Worker number
+  Client number :: A party identifier type assigned by the organization to a client. || alt: Client identifier; Customer number
+  Supplier number :: A party identifier type assigned by the organization to a supplier. || alt: Vendor number
+Contact method type :: A controlled value set for the means by which a party can be contacted. || prefix: contact-method
+  Email address :: A contact method type using electronic mail.
+  Telephone number :: A contact method type using voice or text messaging. || alt: Phone number; Mobile number
+  Postal mail :: A contact method type using a postal address.
+  Secure portal message :: A contact method type using a message in an authenticated portal. || alt: Portal message
+
+=== vocabulary persona
+title: Persona vocabulary
+subject: Persona
+description: The governed persona individuals for MVP1 and the controlled values for persona expertise level, tone, and reading level.
+scope: Each persona is an individual of core:Persona that selects labels, retrieval ranking, tone, and prompt template; it never grants access and is set from the authenticated role, not from the prompt. Personas never encode protected characteristics. Channels are in the service vocabulary.
+standard: Semantic Governance v1.8 Section 3.8 and Appendix D Section 4.3.
+---
+Worksite employee :: A persona representing co-employed worksite employees asking about eligibility, costs, deadlines, enrollment, their own match, and vesting. || ns: persona || id: WorksiteEmployee || type: core:Persona || bm: tax:ActiveWorkerPersona || props: core:hasExpertiseLevel voc:expertise-level-novice; core:usesChannel voc:channel-conversational-agent; core:usesChannel voc:channel-employee-portal
+New hire employee :: A persona representing employees in a waiting period or first enrollment window who need to know what to choose, by when, and what happens if nothing is chosen. || ns: persona || id: NewHireEmployee || type: core:Persona || bm: tax:JoiningWorkerPersona || props: core:hasExpertiseLevel voc:expertise-level-novice; core:usesChannel voc:channel-conversational-agent; core:usesChannel voc:channel-employee-portal
+Life event employee :: A persona representing employees with a qualifying life event who need to know which changes are allowed and the election window. || ns: persona || id: LifeEventEmployee || type: core:Persona || bm: tax:LifeChangeWorkerPersona || props: core:hasExpertiseLevel voc:expertise-level-novice; core:usesChannel voc:channel-conversational-agent
+Departing employee :: A persona representing employees leaving or reducing hours who need continuation coverage, final deductions, loans, rollover, and distribution options. || ns: persona || id: DepartingEmployee || type: core:Persona || bm: tax:DepartingWorkerPersona || props: core:hasExpertiseLevel voc:expertise-level-novice; core:usesChannel voc:channel-conversational-agent
+Client human resources administrator :: A persona representing the human resources contact at a worksite client who needs plan offerings, eligibility rules, deadlines, and employer obligations. || ns: persona || id: ClientHumanResourcesAdministrator || type: core:Persona || alt: Client HR administrator || bm: tax:ClientAdministratorPersona || props: core:hasExpertiseLevel voc:expertise-level-practitioner; core:usesChannel voc:channel-conversational-agent; core:usesChannel voc:channel-client-portal
+Client owner or executive :: A persona representing a business owner or executive at a worksite client who needs plan sponsorship, employer cost, and compliance exposure information. || ns: persona || id: ClientOwnerExecutive || type: core:Persona || alt: Client executive; Business owner || bm: tax:ClientExecutivePersona || props: core:hasExpertiseLevel voc:expertise-level-practitioner; core:usesChannel voc:channel-conversational-agent; core:usesChannel voc:channel-in-person-meeting
+Human resources specialist :: A persona representing internal human resources specialists and advisors who need complete, sourced answers to repeat and edge-case client questions. || ns: persona || id: HumanResourcesSpecialist || type: core:Persona || alt: HR specialist; HR advisor || bm: tax:HumanResourcesAdvisoryPersona || props: core:hasExpertiseLevel voc:expertise-level-expert; core:usesChannel voc:channel-conversational-agent; core:usesChannel voc:channel-internal-search
+Benefits specialist :: A persona representing internal benefits operations staff who need plan rules, carrier terms, and enrollment exceptions. || ns: persona || id: BenefitsSpecialist || type: core:Persona || bm: tax:BenefitsServicePersona || props: core:hasExpertiseLevel voc:expertise-level-expert; core:usesChannel voc:channel-internal-search; core:usesChannel voc:channel-conversational-agent
+Retirement plan specialist :: A persona representing internal retirement plan services staff who need plan document provisions, limits, testing, and distribution rules. || ns: persona || id: RetirementPlanSpecialist || type: core:Persona || alt: 401(k) specialist || bm: tax:BenefitsServicePersona || props: core:hasExpertiseLevel voc:expertise-level-expert; core:usesChannel voc:channel-internal-search; core:usesChannel voc:channel-conversational-agent
+Payroll specialist :: A persona representing internal payroll operations staff who need deduction timing, compensation definitions, and corrections. || ns: persona || id: PayrollSpecialist || type: core:Persona || bm: tax:PayrollServicePersona || props: core:hasExpertiseLevel voc:expertise-level-practitioner; core:usesChannel voc:channel-business-application; core:usesChannel voc:channel-internal-search
+Compliance analyst :: A persona representing internal compliance and audit staff who need to know which norm governs a step and evidence of answers given. || ns: persona || id: ComplianceAnalyst || type: core:Persona || alt: Compliance auditor || bm: tax:CompliancePersona || props: core:hasExpertiseLevel voc:expertise-level-expert; core:usesChannel voc:channel-business-application; core:usesChannel voc:channel-internal-search
+Insights analyst :: A persona representing Enterprise Analytics staff who consume measures of question trends, answer quality, and gaps by persona and domain. || ns: persona || id: InsightsAnalyst || type: core:Persona || alt: Analytics consumer || bm: tax:AnalyticsPersona || props: core:hasExpertiseLevel voc:expertise-level-practitioner; core:usesChannel voc:channel-dashboard; core:usesChannel voc:channel-query-endpoint
+Expertise level :: A controlled value set for a persona's familiarity with a domain. || prefix: expertise-level
+  Novice :: An expertise level for users new to the domain who need plain explanations and next steps.
+  Practitioner :: An expertise level for users who work in the domain regularly and need precise, procedural answers.
+  Expert :: An expertise level for specialists who need complete, sourced answers including edge cases.
+Communication tone :: A controlled value set for the tone of answers addressed to a persona. || prefix: tone
+  Reassuring :: A communication tone that is warm, plain, and supportive. || alt: Empathetic
+  Concise :: A communication tone that is brief and direct.
+  Procedural :: A communication tone that gives ordered steps and deadlines.
+  Formal :: A communication tone suited to executives and official correspondence.
+Reading level :: A controlled value set for the vocabulary and sentence complexity of answers. || prefix: reading-level
+  Plain language :: A reading level using everyday words and short sentences.
+  General business :: A reading level using common business terms.
+  Technical :: A reading level that allows domain and technical terms. || alt: Specialist

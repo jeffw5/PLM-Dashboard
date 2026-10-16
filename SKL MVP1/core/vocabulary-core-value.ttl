@@ -1,0 +1,122 @@
+# Vocabulary: Value vocabulary
+# File: vocabulary-core-value.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+voc:value-vocabulary a skos:ConceptScheme ;
+    dcterms:title "Value vocabulary"@en ;
+    skos:prefLabel "Value vocabulary"@en ;
+    dcterms:description "Controlled values for value realization status, time horizon, and certainty."@en ;
+    dcterms:subject core:Value ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept voc:value-realization-status ,
+        voc:value-horizon ,
+        voc:value-certainty .
+
+voc:value-realization-status a skos:Concept ;
+    skos:prefLabel "Value realization status"@en ;
+    skos:definition "A controlled value set for progress in realizing an expected value."@en ;
+    skos:topConceptOf voc:value-vocabulary ;
+    skos:narrower voc:value-realization-identified , voc:value-realization-committed , voc:value-realization-in-realization , voc:value-realization-realized , voc:value-realization-not-realized ;
+    skos:inScheme voc:value-vocabulary .
+
+voc:value-realization-identified a skos:Concept ;
+    skos:prefLabel "Identified"@en ;
+    skos:definition "A value realization status for a value described but not yet committed."@en ;
+    skos:broader voc:value-realization-status ;
+    skos:inScheme voc:value-vocabulary .
+
+voc:value-realization-committed a skos:Concept ;
+    skos:prefLabel "Committed"@en ;
+    skos:altLabel "Planned"@en ;
+    skos:definition "A value realization status for a value approved with an owner and target."@en ;
+    skos:broader voc:value-realization-status ;
+    skos:inScheme voc:value-vocabulary .
+
+voc:value-realization-in-realization a skos:Concept ;
+    skos:prefLabel "In realization"@en ;
+    skos:altLabel "In progress"@en ;
+    skos:definition "A value realization status for a value whose enabling work is under way."@en ;
+    skos:broader voc:value-realization-status ;
+    skos:inScheme voc:value-vocabulary .
+
+voc:value-realization-realized a skos:Concept ;
+    skos:prefLabel "Realized"@en ;
+    skos:altLabel "Achieved"@en ;
+    skos:definition "A value realization status for a value confirmed by measurement."@en ;
+    skos:broader voc:value-realization-status ;
+    skos:inScheme voc:value-vocabulary .
+
+voc:value-realization-not-realized a skos:Concept ;
+    skos:prefLabel "Not realized"@en ;
+    skos:altLabel "Missed"@en ;
+    skos:definition "A value realization status for a value that was not achieved."@en ;
+    skos:broader voc:value-realization-status ;
+    skos:inScheme voc:value-vocabulary .
+
+voc:value-horizon a skos:Concept ;
+    skos:prefLabel "Value horizon"@en ;
+    skos:definition "A controlled value set for when a value is expected to occur."@en ;
+    skos:topConceptOf voc:value-vocabulary ;
+    skos:narrower voc:value-horizon-short-term , voc:value-horizon-medium-term , voc:value-horizon-long-term ;
+    skos:inScheme voc:value-vocabulary .
+
+voc:value-horizon-short-term a skos:Concept ;
+    skos:prefLabel "Short term"@en ;
+    skos:altLabel "Near term"@en ;
+    skos:definition "A value horizon of within one year."@en ;
+    skos:broader voc:value-horizon ;
+    skos:inScheme voc:value-vocabulary .
+
+voc:value-horizon-medium-term a skos:Concept ;
+    skos:prefLabel "Medium term"@en ;
+    skos:definition "A value horizon of one to three years."@en ;
+    skos:broader voc:value-horizon ;
+    skos:inScheme voc:value-vocabulary .
+
+voc:value-horizon-long-term a skos:Concept ;
+    skos:prefLabel "Long term"@en ;
+    skos:altLabel "Long range"@en ;
+    skos:definition "A value horizon of more than three years, including generational effects."@en ;
+    skos:broader voc:value-horizon ;
+    skos:inScheme voc:value-vocabulary .
+
+voc:value-certainty a skos:Concept ;
+    skos:prefLabel "Value certainty"@en ;
+    skos:definition "A controlled value set for how well a value amount is supported."@en ;
+    skos:topConceptOf voc:value-vocabulary ;
+    skos:narrower voc:value-certainty-estimated , voc:value-certainty-measured , voc:value-certainty-verified ;
+    skos:inScheme voc:value-vocabulary .
+
+voc:value-certainty-estimated a skos:Concept ;
+    skos:prefLabel "Estimated"@en ;
+    skos:altLabel "Projected"@en ;
+    skos:definition "A value certainty for amounts based on assumptions."@en ;
+    skos:broader voc:value-certainty ;
+    skos:inScheme voc:value-vocabulary .
+
+voc:value-certainty-measured a skos:Concept ;
+    skos:prefLabel "Measured"@en ;
+    skos:definition "A value certainty for amounts based on observed data."@en ;
+    skos:broader voc:value-certainty ;
+    skos:inScheme voc:value-vocabulary .
+
+voc:value-certainty-verified a skos:Concept ;
+    skos:prefLabel "Verified"@en ;
+    skos:altLabel "Audited"@en ;
+    skos:definition "A value certainty for measured amounts independently confirmed."@en ;
+    skos:broader voc:value-certainty ;
+    skos:inScheme voc:value-vocabulary .

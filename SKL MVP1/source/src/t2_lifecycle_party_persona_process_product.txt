@@ -1,0 +1,161 @@
+=== taxonomy lifecycle
+title: Lifecycle taxonomy
+subject: Lifecycle
+description: Classification of the kinds of lifecycle, the ordered sets of stages through which a thing passes from creation to retirement.
+scope: Covers kinds of lifecycle. The stages and status values of specific lifecycles, including the knowledge artifact status and the six-stage and ten-stage governance lifecycles, are in the lifecycle vocabulary.
+standard: Semantic Governance v1.8 Sections 2.4, 3.3, and 3.4; ISO/IEC/IEEE 15288 for system life cycle stages.
+---
+Artifact lifecycle :: A lifecycle of an information or software asset from creation to retirement. || relm: tax:InformationAsset
+  Knowledge artifact lifecycle :: An artifact lifecycle of a vocabulary, taxonomy, ontology, mapping, shape, or rule from ideation to retirement. || alt: Semantic knowledge lifecycle; SKL || scope: Stages are in the lifecycle vocabulary; statuses run Draft, Candidate, Released, Deprecated, Retired. || relm: tax:KnowledgeArtifact
+  Document lifecycle :: An artifact lifecycle of a document from drafting through review, publication, revision, and disposal. || alt: Content lifecycle
+  Record lifecycle :: An artifact lifecycle of a record from capture through retention to disposition. || alt: Records retention lifecycle
+  Data lifecycle :: An artifact lifecycle of data from creation or acquisition through use, archiving, and deletion. || alt: Information lifecycle
+  Software release lifecycle :: An artifact lifecycle of a software or knowledge release from build through test, stage, and production promotion to retirement. || alt: Release lifecycle
+  Model lifecycle :: An artifact lifecycle of a machine learning model from design and training through validation, deployment, monitoring, and retirement. || alt: Artificial intelligence system lifecycle; AI lifecycle
+Party lifecycle :: A lifecycle of a party's relationship with the organization. || alt: Relationship lifecycle
+  Employment lifecycle :: A party lifecycle of a worker from recruitment and hire through employment changes to separation. || alt: Hire to retire; Employee lifecycle; Worker lifecycle
+  Client lifecycle :: A party lifecycle of a client from prospect through onboarding, service, renewal, and exit. || alt: Customer lifecycle; Prospect to client
+  Supplier lifecycle :: A party lifecycle of a supplier from qualification and contracting through performance management to exit. || alt: Vendor lifecycle
+Offering lifecycle :: A lifecycle of something offered to clients from concept to withdrawal.
+  Product lifecycle :: An offering lifecycle of a product from concept, design, and launch through growth, maturity, and discontinuation. || alt: Product life cycle
+  Service lifecycle :: An offering lifecycle of a service from strategy and design through transition, operation, and retirement. || alt: Service life cycle
+Asset lifecycle :: A lifecycle of a physical or financial asset from planning and acquisition through operation and maintenance to disposal. || alt: Asset life cycle; Plan to dispose
+Agreement lifecycle :: A lifecycle of an agreement from drafting and negotiation through execution, performance, renewal, and termination. || alt: Contract lifecycle
+Work item lifecycle :: A lifecycle of a unit of tracked work from creation to closure. || alt: Ticket lifecycle
+  Requirement lifecycle :: A work item lifecycle of a requirement from elicitation through approval, implementation, and verification.
+  Issue lifecycle :: A work item lifecycle of an issue from detection through triage and resolution to closure. || alt: Incident lifecycle; Defect lifecycle
+  Change lifecycle :: A work item lifecycle of a change from request through assessment, approval, implementation, and review. || alt: Change request lifecycle
+  Decision lifecycle :: A work item lifecycle of a decision from framing through analysis and choice to communication and review.
+Governance lifecycle :: A lifecycle of governed oversight that a policy, control, or governed artifact passes through from definition to retirement. || alt: Oversight lifecycle || scope: The ten-stage knowledge governance lifecycle in Section 3.4 is in the lifecycle vocabulary.
+  Policy lifecycle :: A governance lifecycle of a policy from drafting and approval through publication, attestation, review, and retirement. || alt: Policy management lifecycle
+  Control lifecycle :: A governance lifecycle of a control from design through implementation, testing, operation, and remediation.
+
+=== taxonomy party
+title: Party taxonomy
+subject: Party
+description: Classification of the persons, organizations, groups, and automated agents that can take part in process steps, hold roles, and enter agreements.
+scope: Classifies what a party is, not the roles it plays. Employee, client, and co-employer are roles in the role taxonomy; persona categories are in the persona taxonomy.
+standard: BFO object and object aggregate (ISO/IEC 21838-2); W3C Organization Ontology; PROV-O agent.
+---
+Person :: A party that is an individual human being. || alt: Individual; Natural person || scope: A person bears roles such as employee or client administrator; those are in the role taxonomy. Personal attributes are confidential and governed by named-graph access.
+Organization :: A party that is a group of people organized for a purpose and able to act as a unit. || alt: Entity || hidden: Organisation
+  Legal entity :: An organization that has legal capacity to enter contracts, own assets, and bear obligations. || alt: Company; Business entity
+    Corporation :: A legal entity that is incorporated under law with separate legal existence from its owners. || alt: Incorporated company
+    Limited liability company :: A legal entity whose owners' liability is limited to their investment and that may be taxed as a partnership or corporation. || alt: LLC
+    Partnership :: A legal entity formed by two or more owners who share profits and liabilities under a partnership agreement. || alt: Limited partnership; General partnership
+    Sole proprietorship :: A legal entity owned and run by one person with no legal distinction between owner and business. || alt: Sole trader
+    Nonprofit organization :: A legal entity organized for a purpose other than generating profit for owners. || alt: Not-for-profit organization; Charity
+  Government body :: An organization that exercises public authority under law. || alt: Government organization; Public authority
+    Legislative body :: A government body that enacts laws. || alt: Legislature; Congress
+    Regulatory agency :: A government body that issues and enforces regulations and guidance. || alt: Regulator; Agency || ex: Department of Labor; Internal Revenue Service.
+    Court :: A government body that adjudicates disputes and interprets law. || alt: Tribunal
+  Organizational unit :: An organization that is a subdivision of a larger organization with its own responsibilities. || alt: Org unit; Business unit
+    Division :: An organizational unit that groups related departments under shared leadership. || alt: Line of business
+    Department :: An organizational unit responsible for a defined function. || alt: Function || ex: Enterprise Analytics; Benefits Operations.
+    Team :: An organizational unit of people who work together toward shared objectives. || alt: Squad; Working group
+    Committee :: An organizational unit of members appointed to deliberate or decide on a defined matter. || alt: Board; Council; Steering committee || relm: tax:GovernanceBody
+Group :: A party that is a collection of persons or organizations treated together without forming a single organization. || alt: Collection of parties
+  Household :: A group of persons who share a residence or are linked as a family unit for benefits or tax purposes. || alt: Family unit
+  Cohort :: A group of persons sharing a characteristic or event within a period, used for analysis or communication. || alt: Segment
+  Membership group :: A group of parties that have joined an association or program. || alt: Association membership
+Automated agent :: A party that is a software system acting with delegated authority to perform or support process steps. || alt: Software agent; Digital agent || scope: Covers acting agents. The deployed code is also a software asset.
+  Artificial intelligence agent :: An automated agent that uses a language or machine learning model to interpret requests and take actions or produce answers. || alt: AI agent; Assistant; Conversational agent || ex: HR 360 agent.
+  System account :: An automated agent that is a non-human identity under which a service or integration runs. || alt: Service account; Bot account
+  Robotic process automation agent :: An automated agent that executes scripted interactions with user interfaces or systems. || alt: RPA bot; Bot
+
+=== taxonomy persona
+title: Persona taxonomy
+subject: Persona
+description: Classification of personas, the governed descriptions of user groups who share goals, vocabulary, and information needs, used to tailor labels, retrieval, tone, and prompts.
+scope: A persona describes a typical user; it is not a person and not a security role and never grants access. Persona individuals are in the persona vocabulary and link here with skos:broadMatch. Personas never encode protected characteristics.
+standard: Semantic Governance v1.8 Section 3.8.
+---
+Workforce persona :: A persona representing workers who use services for their own employment, pay, and benefits. || alt: Employee persona; Worker persona
+  Active worker persona :: A workforce persona representing workers in ongoing employment. || alt: Current employee persona
+  Joining worker persona :: A workforce persona representing workers who are newly hired or in their first enrollment window. || alt: New hire persona
+  Life change worker persona :: A workforce persona representing workers whose personal circumstances have changed and who need to adjust elections. || alt: Life event persona
+  Departing worker persona :: A workforce persona representing workers leaving employment or reducing hours. || alt: Separating employee persona
+Client persona :: A persona representing people at a client organization who administer or sponsor services for their workforce. || alt: Customer persona; Employer persona
+  Client administrator persona :: A client persona representing staff who administer human resources, payroll, or benefits at a client. || alt: Client HR administrator persona
+  Client executive persona :: A client persona representing owners and executives who make sponsorship and spending decisions at a client. || alt: Business owner persona
+Prospect persona :: A persona representing people at organizations evaluating whether to become clients. || alt: Buyer persona
+Service delivery persona :: A persona representing internal staff who answer questions and deliver services to clients and workers. || alt: Internal specialist persona; Advisor persona
+  Human resources advisory persona :: A service delivery persona representing internal advisors and specialists answering human resources questions. || alt: HR specialist persona
+  Benefits service persona :: A service delivery persona representing internal staff who operate benefits and retirement plans. || alt: Benefits specialist persona; Retirement specialist persona
+  Payroll service persona :: A service delivery persona representing internal staff who operate payroll and deductions.
+  Sales and service management persona :: A service delivery persona representing internal staff who manage client relationships and renewals. || alt: Account manager persona; Sales advisor persona
+Oversight persona :: A persona representing internal staff who check that work and answers comply with law, policy, and controls. || alt: Assurance persona
+  Compliance persona :: An oversight persona representing staff who determine which norms govern a step and gather evidence. || alt: Compliance analyst persona; Compliance auditor persona
+  Audit persona :: An oversight persona representing internal or external auditors who examine records and controls. || alt: Auditor persona
+Analytics persona :: A persona representing staff who analyze measures, trends, and quality of services and answers. || alt: Insights persona; Data analyst persona
+Technology persona :: A persona representing staff who build, integrate, or operate systems that use governed knowledge. || alt: Technical persona
+  Software developer persona :: A technology persona representing engineers who build applications and services that consume knowledge services. || alt: Developer persona
+  Knowledge practitioner persona :: A technology persona representing knowledge engineers and data stewards who search and maintain governed knowledge. || alt: Knowledge engineer persona; Data steward persona || scope: Design-time responsibilities are roles; this persona only tailors presentation for these users.
+
+=== taxonomy process
+title: Process taxonomy
+subject: Process
+description: Classification of processes and process steps, the occurrents that unfold over time and to which every other fact is anchored in the unifying ontology.
+scope: The process step is the first-class anchor of the unifying ontology; performedBy, consumes, produces, triggers, governedBy, measuredBy, and precedes attach to it. Process status and automation values are in the process vocabulary.
+standard: BFO process (ISO/IEC 21838-2); OBO Relations Ontology has input, has output, has active participant; APQC Process Classification Framework categories; BPMN for step notation.
+---
+Management process :: A process that sets direction, allocates resources, and oversees performance of the organization. || alt: Governing process
+  Strategy and planning process :: A management process that defines objectives, plans, and budgets. || alt: Strategic planning; Planning process
+  Performance management process :: A management process that sets targets, measures results, and drives improvement. || alt: Performance review process
+  Risk and compliance management process :: A management process that identifies, assesses, treats, and monitors risks and obligations. || alt: Governance, risk, and compliance process; GRC process
+  Enterprise architecture process :: A management process that defines and governs the structure of business, information, and technology. || alt: Architecture governance process
+Operational process :: A process that directly creates or delivers value to clients. || alt: Core process; Value chain process; Primary process
+  Offering development process :: An operational process that designs, builds, and launches products and services. || alt: Product development process
+  Marketing and sales process :: An operational process that generates demand and wins clients. || alt: Lead to client; Selling process
+  Client onboarding process :: An operational process that sets up a new client and its workforce for service. || alt: Implementation process
+  Service delivery process :: An operational process that fulfils services for clients and their workers. || alt: Fulfilment process; Order to cash
+  Client support process :: An operational process that answers inquiries and resolves requests from clients and workers. || alt: Customer service process; Case management process
+Support process :: A process that enables management and operational processes. || alt: Enabling process; Supporting process
+  Human capital management process :: A support process that recruits, pays, develops, and retains the workforce. || alt: Human resources process; Hire to retire
+  Financial management process :: A support process that records, reports, plans, and controls money. || alt: Record to report; Finance process
+  Procurement process :: A support process that sources and buys goods and services. || alt: Procure to pay; Purchasing process
+  Information technology management process :: A support process that plans, builds, and runs technology services. || alt: IT management process
+  Data and knowledge management process :: A support process that acquires, defines, governs, and publishes data and knowledge. || alt: Knowledge engineering process; Data management process
+  Legal process :: A support process that drafts agreements, advises on law, and manages disputes. || alt: Legal affairs process
+Process step :: A process that is a bounded part of a larger process, performed by a party or role, consuming and producing assets. || alt: Activity; Task; Step || scope: In the unifying ontology every fact is attached to the step in which it is created, used, or governed. Kinds below follow BPMN task types. || ex: Validate timesheet; calculate gross pay; approve payroll run.
+  Manual step :: A process step performed by a person without system automation. || alt: Manual task
+  User step :: A process step performed by a person with the help of a software application. || alt: User task
+  Automated step :: A process step performed entirely by software without human intervention. || alt: Service task; System task
+  Decision step :: A process step that selects an outcome or path by applying a decision model or judgement. || alt: Business rule task; Gateway decision || relm: tax:OperationalDecision
+  Approval step :: A process step in which an authorized party accepts or rejects an item. || alt: Approval task; Sign-off step
+  Validation step :: A process step that checks data or work against constraints and rules. || alt: Verification step; Check
+  Calculation step :: A process step that computes a value from inputs using a governed calculation. || alt: Computation step || relm: tax:Calculation
+  Communication step :: A process step that sends or receives information to or from a party. || alt: Send task; Receive task; Notification step
+  Wait step :: A process step that pauses until a time, event, or condition occurs. || alt: Timer step; Hold
+  Subprocess step :: A process step that invokes another process as a unit. || alt: Call activity; Subprocess
+
+=== taxonomy product
+title: Product taxonomy
+subject: Product
+description: Classification of offerings that the organization or its partners make available to clients and their workers.
+scope: Covers kinds of offering. Product status and offering model values are in the product vocabulary. Packages are related to their components with hasComponent, not skos:narrower.
+standard: GS1 Global Product Classification and United Nations Standard Products and Services Code concepts, generalized.
+---
+Good :: A product that is a tangible or digital item whose ownership or use transfers to the buyer. || alt: Goods; Merchandise
+  Physical good :: A good that has material form and is shipped or delivered. || alt: Hardware product
+  Digital good :: A good delivered and used in electronic form. || alt: Digital product
+    Software product :: A digital good that is software licensed or subscribed to by clients. || alt: Software as a service; SaaS; Application product
+    Digital content :: A digital good that is media or information content. || alt: Content product; E-learning course
+Service offering :: A product that is the commitment to perform activities or provide outcomes for a client. || alt: Service product; Packaged service || relm: tax:BusinessService
+  Outsourced service offering :: A service offering in which the provider takes over a business function for the client. || alt: Managed service offering; Co-employment offering; Professional employer organization offering; PEO offering
+  Advisory service offering :: A service offering that provides expert guidance and recommendations. || alt: Consulting offering
+  Technology service offering :: A service offering that provides access to software, platforms, or infrastructure operated by the provider. || alt: Platform offering
+  Administration service offering :: A service offering that performs recurring administrative transactions for the client. || alt: Administrative services offering
+Bundled offering :: A product that combines several products or services sold as one package. || alt: Bundle; Package; Service bundle; Suite
+Financial product :: A product that is a contract providing financial protection, savings, credit, or investment. || alt: Financial services product
+  Insurance product :: A financial product that pays benefits when a covered loss or event occurs, in exchange for premiums. || alt: Insurance plan; Coverage
+    Health insurance product :: An insurance product that covers medical, dental, vision, or prescription costs. || alt: Health plan; Medical plan
+    Life insurance product :: An insurance product that pays a benefit on the death of the insured. || alt: Life plan
+    Disability insurance product :: An insurance product that replaces income when the insured cannot work due to disability. || alt: Disability plan
+    Property and casualty insurance product :: An insurance product that covers damage to property or liability to others. || alt: Workers compensation insurance; Liability insurance
+  Retirement savings product :: A financial product that accumulates savings for retirement with tax advantages. || alt: Retirement plan; Defined contribution plan
+  Spending account product :: A financial product that sets aside funds for qualified expenses. || alt: Flexible spending account; Health savings account
+  Credit product :: A financial product that lends money or extends credit. || alt: Loan
+Information product :: A product whose value lies in information delivered to the buyer. || alt: Data and insight product
+  Data product :: An information product that is a curated, documented, and governed dataset offered for reuse by consumers. || alt: Data as a product || scope: Described with the Object Management Group Data Product Ontology and Data Catalog Vocabulary.
+  Report product :: An information product delivered as a recurring report or dashboard. || alt: Analytics product; Benchmark report

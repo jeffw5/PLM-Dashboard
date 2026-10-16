@@ -1,0 +1,249 @@
+# Taxonomy: Time taxonomy
+# File: taxonomy-core-time.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix tax: <https://www.insperity.com/taxonomy/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+tax:TimeTaxonomy a skos:ConceptScheme ;
+    dcterms:title "Time taxonomy"@en ;
+    skos:prefLabel "Time taxonomy"@en ;
+    dcterms:description "Classification of temporal entities, the instants, intervals, durations, and schedules used to date, sequence, and bound facts, rules, and process steps."@en ;
+    dcterms:subject core:TemporalEntity ;
+    skos:scopeNote "Time units, frequencies, day types, and time zones are in the time vocabulary. Domain periods such as pay period or plan year specialize the concepts here."@en ;
+    dcterms:source "BFO temporal region (ISO/IEC 21838-2); W3C OWL-Time; ISO 8601 date and time representation."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept tax:Instant ,
+        tax:Interval ,
+        tax:Duration ,
+        tax:Schedule .
+
+tax:Instant a skos:Concept ;
+    skos:prefLabel "Instant"@en ;
+    skos:altLabel "Point in time"@en , "Time instant"@en ;
+    skos:definition "A temporal entity that is a single point on a time line with no duration."@en ;
+    skos:topConceptOf tax:TimeTaxonomy ;
+    skos:narrower tax:CalendarDate , tax:DateAndTime , tax:Deadline , tax:EffectiveDate , tax:EndDate ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:CalendarDate a skos:Concept ;
+    skos:prefLabel "Calendar date"@en ;
+    skos:altLabel "Date"@en ;
+    skos:definition "An instant identified at the precision of a day."@en ;
+    skos:broader tax:Instant ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:DateAndTime a skos:Concept ;
+    skos:prefLabel "Date and time"@en ;
+    skos:altLabel "Timestamp"@en , "Date time"@en ;
+    skos:definition "An instant identified to the second or finer, with a time zone."@en ;
+    skos:broader tax:Instant ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:Deadline a skos:Concept ;
+    skos:prefLabel "Deadline"@en ;
+    skos:altLabel "Due date"@en , "Cut-off"@en ;
+    skos:definition "An instant by which an action must be completed."@en ;
+    skos:broader tax:Instant ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:EffectiveDate a skos:Concept ;
+    skos:prefLabel "Effective date"@en ;
+    skos:altLabel "Start date"@en , "Effective from"@en ;
+    skos:definition "An instant from which a rule, agreement, election, or value applies."@en ;
+    skos:broader tax:Instant ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:EndDate a skos:Concept ;
+    skos:prefLabel "End date"@en ;
+    skos:altLabel "Expiration date"@en , "Effective to"@en , "Termination date"@en ;
+    skos:definition "An instant after which a rule, agreement, election, or value no longer applies."@en ;
+    skos:broader tax:Instant ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:Interval a skos:Concept ;
+    skos:prefLabel "Interval"@en ;
+    skos:altLabel "Time interval"@en , "Period"@en ;
+    skos:definition "A temporal entity that is a stretch of time with a beginning and an end."@en ;
+    skos:topConceptOf tax:TimeTaxonomy ;
+    skos:narrower tax:CalendarPeriod , tax:FiscalPeriod , tax:BusinessPeriod , tax:ValidityPeriod , tax:TimeWindow , tax:ReportingPeriod ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:CalendarPeriod a skos:Concept ;
+    skos:prefLabel "Calendar period"@en ;
+    skos:altLabel "Calendar interval"@en ;
+    skos:definition "An interval aligned to the civil calendar."@en ;
+    skos:broader tax:Interval ;
+    skos:narrower tax:CalendarDay , tax:CalendarWeek , tax:CalendarMonth , tax:CalendarQuarter , tax:CalendarYear ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:CalendarDay a skos:Concept ;
+    skos:prefLabel "Calendar day"@en ;
+    skos:altLabel "Day"@en ;
+    skos:definition "A calendar period of one day from midnight to midnight in a time zone."@en ;
+    skos:broader tax:CalendarPeriod ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:CalendarWeek a skos:Concept ;
+    skos:prefLabel "Calendar week"@en ;
+    skos:altLabel "Week"@en ;
+    skos:definition "A calendar period of seven consecutive days."@en ;
+    skos:broader tax:CalendarPeriod ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:CalendarMonth a skos:Concept ;
+    skos:prefLabel "Calendar month"@en ;
+    skos:altLabel "Month"@en ;
+    skos:definition "A calendar period corresponding to one month of the civil calendar."@en ;
+    skos:broader tax:CalendarPeriod ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:CalendarQuarter a skos:Concept ;
+    skos:prefLabel "Calendar quarter"@en ;
+    skos:altLabel "Quarter"@en ;
+    skos:definition "A calendar period of three consecutive months beginning in January, April, July, or October."@en ;
+    skos:broader tax:CalendarPeriod ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:CalendarYear a skos:Concept ;
+    skos:prefLabel "Calendar year"@en ;
+    skos:altLabel "Year"@en ;
+    skos:definition "A calendar period from the first of January to the thirty-first of December."@en ;
+    skos:broader tax:CalendarPeriod ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:FiscalPeriod a skos:Concept ;
+    skos:prefLabel "Fiscal period"@en ;
+    skos:altLabel "Accounting period"@en ;
+    skos:definition "An interval used for financial reporting that may differ from the calendar."@en ;
+    skos:broader tax:Interval ;
+    skos:narrower tax:FiscalMonth , tax:FiscalQuarter , tax:FiscalYear ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:FiscalMonth a skos:Concept ;
+    skos:prefLabel "Fiscal month"@en ;
+    skos:altLabel "Accounting month"@en ;
+    skos:definition "A fiscal period that is one month of the fiscal calendar."@en ;
+    skos:broader tax:FiscalPeriod ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:FiscalQuarter a skos:Concept ;
+    skos:prefLabel "Fiscal quarter"@en ;
+    skos:altLabel "Financial quarter"@en ;
+    skos:definition "A fiscal period that is one quarter of the fiscal year."@en ;
+    skos:broader tax:FiscalPeriod ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:FiscalYear a skos:Concept ;
+    skos:prefLabel "Fiscal year"@en ;
+    skos:altLabel "Financial year"@en ;
+    skos:definition "A fiscal period of twelve months used for financial reporting and budgeting."@en ;
+    skos:broader tax:FiscalPeriod ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:BusinessPeriod a skos:Concept ;
+    skos:prefLabel "Business period"@en ;
+    skos:altLabel "Cycle period"@en ;
+    skos:definition "An interval defined by a business cycle such as a pay, plan, coverage, or reporting cycle."@en ;
+    skos:scopeNote "Specialized in domain ontologies as pay period, plan year, coverage period, and so on."@en ;
+    skos:broader tax:Interval ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:ValidityPeriod a skos:Concept ;
+    skos:prefLabel "Validity period"@en ;
+    skos:altLabel "Effective period"@en , "Period of applicability"@en ;
+    skos:definition "An interval during which a rule, agreement, value, or version is in force."@en ;
+    skos:scopeNote "Bounded by an effective date and an end date."@en ;
+    skos:broader tax:Interval ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:TimeWindow a skos:Concept ;
+    skos:prefLabel "Time window"@en ;
+    skos:altLabel "Window"@en , "Election window"@en , "Open period"@en ;
+    skos:definition "An interval during which an action is permitted or must occur."@en ;
+    skos:broader tax:Interval ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:ReportingPeriod a skos:Concept ;
+    skos:prefLabel "Reporting period"@en ;
+    skos:altLabel "Measurement period"@en ;
+    skos:definition "An interval that measures and observations are reported for."@en ;
+    skos:broader tax:Interval ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:Duration a skos:Concept ;
+    skos:prefLabel "Duration"@en ;
+    skos:altLabel "Length of time"@en , "Time span"@en ;
+    skos:definition "A temporal entity that is an amount of time without a fixed position on the time line."@en ;
+    skos:example "Ninety days; forty hours."@en ;
+    skos:topConceptOf tax:TimeTaxonomy ;
+    skos:narrower tax:WaitingPeriod , tax:NoticePeriod , tax:RetentionPeriod , tax:ServiceLevelDuration ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:WaitingPeriod a skos:Concept ;
+    skos:prefLabel "Waiting period"@en ;
+    skos:altLabel "Probationary period"@en ;
+    skos:definition "A duration that must elapse before an entitlement begins."@en ;
+    skos:broader tax:Duration ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:NoticePeriod a skos:Concept ;
+    skos:prefLabel "Notice period"@en ;
+    skos:definition "A duration of advance notice required before an action takes effect."@en ;
+    skos:broader tax:Duration ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:RetentionPeriod a skos:Concept ;
+    skos:prefLabel "Retention period"@en ;
+    skos:altLabel "Records retention period"@en ;
+    skos:definition "A duration for which a record must be kept."@en ;
+    skos:broader tax:Duration ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:ServiceLevelDuration a skos:Concept ;
+    skos:prefLabel "Service level duration"@en ;
+    skos:altLabel "Response time target"@en , "Resolution time target"@en ;
+    skos:definition "A duration committed for responding to or resolving a request."@en ;
+    skos:broader tax:Duration ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:Schedule a skos:Concept ;
+    skos:prefLabel "Schedule"@en ;
+    skos:altLabel "Timetable"@en ;
+    skos:definition "A temporal entity that specifies when recurring or planned occurrences happen."@en ;
+    skos:topConceptOf tax:TimeTaxonomy ;
+    skos:narrower tax:RecurringSchedule , tax:OneTimeSchedule , tax:BusinessCalendar ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:RecurringSchedule a skos:Concept ;
+    skos:prefLabel "Recurring schedule"@en ;
+    skos:altLabel "Recurrence"@en , "Recurring pattern"@en ;
+    skos:definition "A schedule that repeats at a defined frequency."@en ;
+    skos:broader tax:Schedule ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:OneTimeSchedule a skos:Concept ;
+    skos:prefLabel "One-time schedule"@en ;
+    skos:altLabel "Single occurrence"@en ;
+    skos:definition "A schedule for a single planned occurrence."@en ;
+    skos:broader tax:Schedule ;
+    skos:inScheme tax:TimeTaxonomy .
+
+tax:BusinessCalendar a skos:Concept ;
+    skos:prefLabel "Business calendar"@en ;
+    skos:altLabel "Working calendar"@en , "Holiday calendar"@en ;
+    skos:definition "A schedule that defines working days, holidays, and cut-off times."@en ;
+    skos:broader tax:Schedule ;
+    skos:inScheme tax:TimeTaxonomy .

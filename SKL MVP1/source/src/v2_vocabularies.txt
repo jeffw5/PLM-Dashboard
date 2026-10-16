@@ -1,0 +1,223 @@
+=== vocabulary process
+title: Process vocabulary
+subject: Process
+description: Controlled values that describe the execution status and automation level of processes and process steps.
+---
+Process execution status :: A controlled value set for the state of a process or process step instance. || prefix: process-status
+  Not started :: A process execution status for an instance created but not begun. || alt: Pending; Queued
+  In progress :: A process execution status for an instance being carried out. || alt: Running; Active
+  Suspended :: A process execution status for an instance paused awaiting an event or decision. || alt: Waiting; On hold
+  Completed :: A process execution status for an instance that ended along its expected path. || alt: Done; Succeeded
+  Failed :: A process execution status for an instance that ended without completing. || alt: Errored
+  Cancelled :: A process execution status for an instance stopped deliberately before completion. || alt: Aborted; Withdrawn
+Automation level :: A controlled value set for how much of a process step is performed by software. || prefix: automation
+  Manual :: An automation level in which a person performs the step without system support.
+  System assisted :: An automation level in which a person performs the step using an application. || alt: Semi-automated
+  Agent assisted :: An automation level in which an artificial intelligence agent drafts or recommends and a person confirms. || alt: Copilot
+  Fully automated :: An automation level in which software performs the step without human intervention. || alt: Straight-through processing; Touchless
+
+=== vocabulary product
+title: Product vocabulary
+subject: Product
+description: Controlled values that describe the availability status and commercial model of products.
+---
+Product availability status :: A controlled value set for whether a product can be sold. || prefix: product-status
+  In development :: A product availability status for products being designed and not yet sold. || alt: Pipeline
+  Pilot :: A product availability status for products offered to a limited set of clients for evaluation. || alt: Beta; Limited availability
+  Generally available :: A product availability status for products sold to all eligible clients. || alt: Available; Launched
+  Closed to new sales :: A product availability status for products still serviced but no longer sold. || alt: Grandfathered
+  Discontinued :: A product availability status for products no longer sold or serviced. || alt: Withdrawn; End of life
+Offering model :: A controlled value set for how a product is priced and sold. || prefix: offering-model
+  One-time purchase :: An offering model in which the client pays once for ownership or perpetual use. || alt: Perpetual license
+  Subscription :: An offering model in which the client pays a recurring fee for continued access. || alt: Recurring
+  Per employee per month :: An offering model in which the fee is charged for each covered worker each month. || alt: PEPM; Per worker per month
+  Percentage of payroll :: An offering model in which the fee is a percentage of the client's gross payroll. || alt: Payroll-based fee
+  Usage-based :: An offering model in which the fee depends on measured consumption. || alt: Pay as you go; Metered
+  Premium-based :: An offering model in which the client pays an insurance premium for coverage. || alt: Premium
+
+=== vocabulary requirement
+title: Requirement vocabulary
+subject: Requirement
+description: Controlled values that describe the priority, status, and verification method of requirements.
+standard: ISO/IEC/IEEE 29148; INCOSE verification methods; MoSCoW prioritization.
+---
+Requirement priority :: A controlled value set for the relative importance of a requirement in a release. || prefix: requirement-priority
+  Must have :: A requirement priority for requirements without which the release fails. || alt: Must; Mandatory
+  Should have :: A requirement priority for important requirements that can be deferred with a workaround. || alt: Should
+  Could have :: A requirement priority for desirable requirements included if capacity allows. || alt: Could; Nice to have
+  Will not have this time :: A requirement priority for requirements explicitly out of scope for the release. || alt: Won't have; Out of scope
+Requirement status :: A controlled value set for where a requirement stands in its lifecycle. || prefix: requirement-status
+  Proposed :: A requirement status for a requirement captured but not yet reviewed. || alt: Draft requirement
+  Approved :: A requirement status for a requirement accepted for implementation. || alt: Baselined
+  Implemented :: A requirement status for a requirement built and awaiting verification.
+  Verified :: A requirement status for a requirement shown to be met by its verification method. || alt: Passed
+  Deferred :: A requirement status for an approved requirement moved to a later release. || alt: Postponed
+  Rejected :: A requirement status for a requirement not accepted. || alt: Declined
+Verification method :: A controlled value set for how a requirement is shown to be met. || prefix: verification-method
+  Inspection :: A verification method that examines an artifact against the requirement without executing it. || alt: Review
+  Analysis :: A verification method that uses models, calculations, or reasoning to show the requirement is met.
+  Demonstration :: A verification method that shows the function operating without detailed measurement.
+  Test :: A verification method that executes the item under controlled conditions and measures results. || alt: Competency question test
+
+=== vocabulary role
+title: Role vocabulary
+subject: Role
+description: Controlled values that describe how a role is assigned and the decision authority it carries.
+---
+Role assignment type :: A controlled value set for the basis on which a party holds a role. || prefix: role-assignment
+  Primary :: A role assignment type for the party normally holding the role. || alt: Principal holder
+  Backup :: A role assignment type for a party who holds the role when the primary is unavailable. || alt: Alternate; Secondary
+  Delegate :: A role assignment type for a party to whom authority is delegated for a defined scope and period. || alt: Delegated authority
+  Acting :: A role assignment type for a party temporarily filling a vacant role. || alt: Interim
+Decision authority level :: A controlled value set for the authority a role carries in a decision. || prefix: authority
+  Informs :: A decision authority level for roles that provide information to a decision. || alt: Contributes
+  Recommends :: A decision authority level for roles that propose an outcome for others to decide.
+  Approves :: A decision authority level for roles that accept or reject a proposed outcome. || alt: Approval authority
+  Decides :: A decision authority level for roles with final authority over the outcome. || alt: Final authority
+
+=== vocabulary rule
+title: Rule vocabulary
+subject: Rule
+description: Controlled values that describe the strength, authoring format, and runtime of rules in the single source of truth.
+standard: Semantic Governance v1.8 Section 3.5; IETF RFC 2119 requirement keywords.
+---
+Rule strength :: A controlled value set for how binding a rule is. || prefix: rule-strength
+  Mandatory :: A rule strength for rules that must always be followed. || alt: Must; Required; Shall
+  Recommended :: A rule strength for rules that should be followed unless there is a documented reason. || alt: Should
+  Optional :: A rule strength for rules that may be followed at the party's discretion. || alt: May
+Rule authoring format :: A controlled value set for the declarative form in which a rule is authored once. || prefix: rule-format
+  Decision table :: A rule authoring format using Decision Model and Notation tables edited as grids. || alt: DMN table
+  Shapes Constraint Language shape :: A rule authoring format using W3C shapes for graph data constraints. || alt: SHACL shape
+  JavaScript Object Notation schema :: A rule authoring format using JSON Schema for message and API constraints. || alt: JSON Schema
+  Formula specification :: A rule authoring format using a declarative formula with test vectors. || alt: Calculation specification
+  Governed code :: A rule authoring format using code that references single source of truth terms and versions. || alt: Logic code
+Rule runtime :: A controlled value set for where a generated rule executes. || prefix: rule-runtime
+  Graph store :: A rule runtime in which the rule runs as validation in the graph database.
+  Rules engine :: A rule runtime in which the rule runs behind the Decision API. || alt: Decision engine
+  Microservice :: A rule runtime in which the rule runs as generated code in a service.
+  Interface validation :: A rule runtime in which the rule runs when an application programming interface receives a request. || alt: API validation
+
+=== vocabulary measure
+title: Measure vocabulary
+subject: Measure
+description: Controlled values for units of measure, aggregation functions, and polarity of measures.
+standard: W3C Data Cube Vocabulary; ISO 4217 currency codes; Unified Code for Units of Measure concepts.
+datatype: currency-code | Currency code | A datatype for three-letter currency codes defined by ISO 4217.
+---
+Unit of measure :: A controlled value set for the units in which measure values are expressed. || prefix: unit
+  Count :: A unit of measure for a number of discrete items. || alt: Number; Each
+  Percentage :: A unit of measure for a proportion expressed per hundred. || alt: Percent
+  Ratio :: A unit of measure for a proportion expressed as a decimal fraction. || alt: Proportion
+  United States dollar :: A unit of measure for amounts of money in United States currency. || alt: USD; Dollar || notation: USD || ndt: currency-code
+  Hour :: A unit of measure for time equal to sixty minutes. || alt: Hours
+  Day :: A unit of measure for time equal to twenty-four hours. || alt: Days
+  Score :: A unit of measure for a value on a defined scale with no physical unit. || alt: Points; Index
+  Full-time equivalent :: A unit of measure for workforce capacity equal to one full-time worker. || alt: FTE
+Aggregation function :: A controlled value set for how many values are combined into one. || prefix: aggregation
+  Sum :: An aggregation function that adds values. || alt: Total
+  Count of values :: An aggregation function that counts values. || alt: Count function
+  Distinct count :: An aggregation function that counts unique values. || alt: Count distinct
+  Average :: An aggregation function that divides the sum by the count. || alt: Mean
+  Median :: An aggregation function that returns the middle value.
+  Minimum :: An aggregation function that returns the smallest value. || alt: Min
+  Maximum :: An aggregation function that returns the largest value. || alt: Max
+  Latest value :: An aggregation function that returns the most recent value. || alt: Last value; Point in time value
+Measure polarity :: A controlled value set for which direction of change is favorable. || prefix: polarity
+  Higher is better :: A measure polarity in which increases are favorable. || alt: Positive polarity
+  Lower is better :: A measure polarity in which decreases are favorable. || alt: Negative polarity
+  Closer to target is better :: A measure polarity in which values nearest the target are favorable. || alt: On target
+
+=== vocabulary logic
+title: Logic vocabulary
+subject: Logic
+description: Controlled values for logical operators, comparison operators, and truth values used in rules, conditions, and queries.
+---
+Logical operator :: A controlled value set for operators that combine conditions. || prefix: logical-operator
+  Conjunction :: A logical operator that is true when all operands are true. || alt: AND; And
+  Disjunction :: A logical operator that is true when at least one operand is true. || alt: OR; Or
+  Negation :: A logical operator that reverses the truth of its operand. || alt: NOT; Not
+  Exclusive disjunction :: A logical operator that is true when exactly one of two operands is true. || alt: XOR; Exclusive or
+  Implication :: A logical operator that is false only when its antecedent is true and its consequent false. || alt: If then; Implies
+Comparison operator :: A controlled value set for operators that compare two values. || prefix: comparison
+  Equal to :: A comparison operator that is true when values are the same. || alt: Equals
+  Not equal to :: A comparison operator that is true when values differ.
+  Greater than :: A comparison operator that is true when the first value exceeds the second.
+  Greater than or equal to :: A comparison operator that is true when the first value is not less than the second. || alt: At least
+  Less than :: A comparison operator that is true when the first value is below the second.
+  Less than or equal to :: A comparison operator that is true when the first value does not exceed the second. || alt: At most
+  Between :: A comparison operator that is true when a value lies within an inclusive range. || alt: In range
+  In set :: A comparison operator that is true when a value is a member of a list. || alt: One of; In list
+Truth value :: A controlled value set for the result of evaluating a condition. || prefix: truth-value
+  True :: A truth value for a condition that holds.
+  False :: A truth value for a condition that does not hold.
+  Unknown :: A truth value for a condition that cannot be evaluated from the available facts. || alt: Undetermined || scope: Needed because the graph follows open-world semantics.
+
+=== vocabulary decision
+title: Decision vocabulary
+subject: Decision
+description: Controlled values for decision automation level, outcome, confidence, and decision table hit policy.
+standard: Object Management Group Decision Model and Notation; ISO/IEC 42001 human oversight.
+datatype: hit-policy-code | Hit policy code | A datatype for the single-letter hit policy codes defined by Decision Model and Notation.
+---
+Decision automation level :: A controlled value set for the extent of human involvement in a decision. || prefix: decision-automation
+  Human decided :: A decision automation level in which a person makes the decision with or without information from systems. || alt: Manual decision
+  Human in the loop :: A decision automation level in which software recommends and a person must approve before the decision takes effect. || alt: Human approval required
+  Human on the loop :: A decision automation level in which software decides and a person monitors and can override. || alt: Human oversight
+  Fully automated decision :: A decision automation level in which software decides without human review. || alt: Straight-through decision
+Decision outcome :: A controlled value set for the result of an approval or eligibility decision. || prefix: decision-outcome
+  Approved :: A decision outcome accepting the request in full. || alt: Eligible; Granted
+  Partially approved :: A decision outcome accepting part of the request.
+  Denied :: A decision outcome rejecting the request. || alt: Ineligible; Rejected
+  Deferred :: A decision outcome postponing the decision pending information or time. || alt: Pending information
+  Referred :: A decision outcome passing the decision to another party or level. || alt: Escalated
+Decision confidence :: A controlled value set for how confident the decision maker or model is in the outcome. || prefix: confidence
+  High confidence :: A decision confidence in which the outcome is well supported by governed facts.
+  Medium confidence :: A decision confidence in which the outcome is supported with some gaps.
+  Low confidence :: A decision confidence in which the outcome is weakly supported and should be reviewed. || scope: Low-confidence answers and mappings are routed to human review.
+Hit policy :: A controlled value set for how a decision table resolves multiple matching rules. || prefix: hit-policy
+  Unique :: A hit policy in which at most one rule may match. || notation: U || ndt: hit-policy-code
+  First :: A hit policy in which the first matching rule in order is used. || notation: F || ndt: hit-policy-code
+  Priority :: A hit policy in which the matching rule with the highest output priority is used. || notation: P || ndt: hit-policy-code
+  Any :: A hit policy in which several rules may match if they give the same output. || notation: A || ndt: hit-policy-code
+  Collect :: A hit policy in which all matching outputs are returned or aggregated. || notation: C || ndt: hit-policy-code
+  Rule order :: A hit policy in which all matching outputs are returned in rule order. || notation: R || ndt: hit-policy-code
+  Output order :: A hit policy in which all matching outputs are returned in output priority order. || notation: O || ndt: hit-policy-code
+
+=== vocabulary time
+title: Time vocabulary
+subject: TemporalEntity
+description: Controlled values for time units, frequencies, day types, and the United States time zones.
+standard: W3C OWL-Time; ISO 8601; IANA Time Zone Database identifiers.
+datatype: time-zone-identifier | Time zone identifier | A datatype for time zone identifiers from the Internet Assigned Numbers Authority Time Zone Database.
+---
+Time unit :: A controlled value set for units in which durations are expressed. || prefix: time-unit
+  Second :: A time unit equal to the base unit of time in the International System of Units.
+  Minute :: A time unit equal to sixty seconds.
+  Hour :: A time unit equal to sixty minutes.
+  Day :: A time unit equal to twenty-four hours.
+  Week :: A time unit equal to seven days.
+  Month :: A time unit equal to one calendar month.
+  Quarter :: A time unit equal to three calendar months.
+  Year :: A time unit equal to twelve calendar months.
+Frequency :: A controlled value set for how often a recurring event or process occurs. || prefix: frequency
+  Daily :: A frequency of once each day.
+  Weekly :: A frequency of once each week.
+  Biweekly :: A frequency of once every two weeks, giving twenty-six occurrences a year. || alt: Every two weeks; Fortnightly
+  Semimonthly :: A frequency of twice each month, giving twenty-four occurrences a year. || alt: Twice monthly
+  Monthly :: A frequency of once each month.
+  Quarterly :: A frequency of once each quarter.
+  Semiannually :: A frequency of twice each year. || alt: Semiannual; Twice yearly
+  Annually :: A frequency of once each year. || alt: Annual; Yearly
+  On demand :: A frequency in which occurrences happen when requested rather than on a schedule. || alt: Ad hoc; Event driven
+Day type :: A controlled value set for how days are counted in deadlines and durations. || prefix: day-type
+  Calendar day :: A day type that counts every day. || alt: Calendar days
+  Business day :: A day type that counts weekdays excluding observed holidays. || alt: Working day; Banking day
+  Holiday :: A day type for days on which the business calendar closes.
+United States time zone :: A controlled value set for the time zones used to resolve local dates and deadlines. || prefix: time-zone || ndt: time-zone-identifier
+  Eastern time :: A United States time zone observed in the eastern states. || notation: America/New_York
+  Central time :: A United States time zone observed in the central states. || notation: America/Chicago
+  Mountain time :: A United States time zone observed in the mountain states. || notation: America/Denver
+  Mountain standard time without daylight saving :: A United States time zone observed in most of Arizona with no daylight saving time. || notation: America/Phoenix || alt: Arizona time
+  Pacific time :: A United States time zone observed in the Pacific states. || notation: America/Los_Angeles
+  Alaska time :: A United States time zone observed in most of Alaska. || notation: America/Anchorage
+  Hawaii-Aleutian time :: A United States time zone observed in Hawaii with no daylight saving time. || notation: Pacific/Honolulu

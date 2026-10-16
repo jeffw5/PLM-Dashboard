@@ -1,0 +1,247 @@
+# Vocabulary: Issue vocabulary
+# File: vocabulary-core-issue.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+voc:issue-vocabulary a skos:ConceptScheme ;
+    dcterms:title "Issue vocabulary"@en ;
+    skos:prefLabel "Issue vocabulary"@en ;
+    dcterms:description "Controlled values that describe the severity, priority, status, resolution, and root cause of issues."@en ;
+    dcterms:subject core:Issue ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept voc:issue-severity ,
+        voc:issue-priority ,
+        voc:issue-status ,
+        voc:resolution-type ,
+        voc:root-cause-category .
+
+voc:issue-severity a skos:Concept ;
+    skos:prefLabel "Issue severity"@en ;
+    skos:definition "A controlled value set for the magnitude of an issue's impact."@en ;
+    skos:topConceptOf voc:issue-vocabulary ;
+    skos:narrower voc:severity-critical , voc:severity-high , voc:severity-medium , voc:severity-low ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:severity-critical a skos:Concept ;
+    skos:prefLabel "Critical severity"@en ;
+    skos:altLabel "Severity 1"@en , "Sev 1"@en ;
+    skos:definition "An issue severity for issues that stop an essential service or cause serious harm or legal exposure."@en ;
+    skos:broader voc:issue-severity ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:severity-high a skos:Concept ;
+    skos:prefLabel "High severity"@en ;
+    skos:altLabel "Severity 2"@en , "Major"@en ;
+    skos:definition "An issue severity for issues that seriously degrade a service or affect many users."@en ;
+    skos:broader voc:issue-severity ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:severity-medium a skos:Concept ;
+    skos:prefLabel "Medium severity"@en ;
+    skos:altLabel "Severity 3"@en , "Moderate"@en ;
+    skos:definition "An issue severity for issues with limited impact and an available workaround."@en ;
+    skos:broader voc:issue-severity ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:severity-low a skos:Concept ;
+    skos:prefLabel "Low severity"@en ;
+    skos:altLabel "Severity 4"@en , "Minor"@en ;
+    skos:definition "An issue severity for issues with minor or cosmetic impact."@en ;
+    skos:broader voc:issue-severity ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:issue-priority a skos:Concept ;
+    skos:prefLabel "Issue priority"@en ;
+    skos:definition "A controlled value set for the order in which issues are worked."@en ;
+    skos:topConceptOf voc:issue-vocabulary ;
+    skos:narrower voc:priority-urgent , voc:priority-high , voc:priority-normal , voc:priority-low ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:priority-urgent a skos:Concept ;
+    skos:prefLabel "Urgent priority"@en ;
+    skos:altLabel "Priority 1"@en , "P1"@en ;
+    skos:definition "An issue priority for issues to be worked immediately."@en ;
+    skos:broader voc:issue-priority ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:priority-high a skos:Concept ;
+    skos:prefLabel "High priority"@en ;
+    skos:altLabel "Priority 2"@en , "P2"@en ;
+    skos:definition "An issue priority for issues to be worked before normal work."@en ;
+    skos:broader voc:issue-priority ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:priority-normal a skos:Concept ;
+    skos:prefLabel "Normal priority"@en ;
+    skos:altLabel "Priority 3"@en , "P3"@en , "Medium"@en ;
+    skos:definition "An issue priority for issues worked in standard order."@en ;
+    skos:broader voc:issue-priority ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:priority-low a skos:Concept ;
+    skos:prefLabel "Low priority"@en ;
+    skos:altLabel "Priority 4"@en , "P4"@en ;
+    skos:definition "An issue priority for issues worked when capacity allows."@en ;
+    skos:broader voc:issue-priority ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:issue-status a skos:Concept ;
+    skos:prefLabel "Issue status"@en ;
+    skos:definition "A controlled value set for where an issue stands in its lifecycle."@en ;
+    skos:topConceptOf voc:issue-vocabulary ;
+    skos:narrower voc:issue-status-open , voc:issue-status-triaged , voc:issue-status-in-progress , voc:issue-status-on-hold , voc:issue-status-resolved , voc:issue-status-closed , voc:issue-status-reopened ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:issue-status-open a skos:Concept ;
+    skos:prefLabel "Open"@en ;
+    skos:altLabel "New"@en ;
+    skos:definition "An issue status for a reported issue not yet assessed."@en ;
+    skos:broader voc:issue-status ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:issue-status-triaged a skos:Concept ;
+    skos:prefLabel "Triaged"@en ;
+    skos:altLabel "Assigned"@en , "Acknowledged"@en ;
+    skos:definition "An issue status for an issue assessed and assigned."@en ;
+    skos:broader voc:issue-status ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:issue-status-in-progress a skos:Concept ;
+    skos:prefLabel "In progress"@en ;
+    skos:altLabel "Active"@en ;
+    skos:definition "An issue status for an issue being worked on."@en ;
+    skos:broader voc:issue-status ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:issue-status-on-hold a skos:Concept ;
+    skos:prefLabel "On hold"@en ;
+    skos:altLabel "Pending"@en , "Waiting"@en ;
+    skos:definition "An issue status for an issue paused while waiting on a party or event."@en ;
+    skos:broader voc:issue-status ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:issue-status-resolved a skos:Concept ;
+    skos:prefLabel "Resolved"@en ;
+    skos:definition "An issue status for an issue whose fix or workaround is in place pending confirmation."@en ;
+    skos:broader voc:issue-status ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:issue-status-closed a skos:Concept ;
+    skos:prefLabel "Closed"@en ;
+    skos:definition "An issue status for an issue confirmed resolved or otherwise ended."@en ;
+    skos:broader voc:issue-status ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:issue-status-reopened a skos:Concept ;
+    skos:prefLabel "Reopened"@en ;
+    skos:definition "An issue status for a closed issue that has recurred or was not fixed."@en ;
+    skos:broader voc:issue-status ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:resolution-type a skos:Concept ;
+    skos:prefLabel "Resolution type"@en ;
+    skos:definition "A controlled value set for how an issue ended."@en ;
+    skos:topConceptOf voc:issue-vocabulary ;
+    skos:narrower voc:resolution-fixed , voc:resolution-workaround-provided , voc:resolution-duplicate , voc:resolution-not-reproducible , voc:resolution-working-as-designed , voc:resolution-will-not-fix ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:resolution-fixed a skos:Concept ;
+    skos:prefLabel "Fixed"@en ;
+    skos:altLabel "Corrected"@en ;
+    skos:definition "A resolution type in which the cause was corrected."@en ;
+    skos:broader voc:resolution-type ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:resolution-workaround-provided a skos:Concept ;
+    skos:prefLabel "Workaround provided"@en ;
+    skos:altLabel "Workaround"@en ;
+    skos:definition "A resolution type in which the effect was avoided without removing the cause."@en ;
+    skos:broader voc:resolution-type ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:resolution-duplicate a skos:Concept ;
+    skos:prefLabel "Duplicate"@en ;
+    skos:definition "A resolution type in which the issue was already reported."@en ;
+    skos:broader voc:resolution-type ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:resolution-not-reproducible a skos:Concept ;
+    skos:prefLabel "Not reproducible"@en ;
+    skos:altLabel "Cannot reproduce"@en ;
+    skos:definition "A resolution type in which the issue could not be observed again."@en ;
+    skos:broader voc:resolution-type ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:resolution-working-as-designed a skos:Concept ;
+    skos:prefLabel "Working as designed"@en ;
+    skos:altLabel "By design"@en ;
+    skos:definition "A resolution type in which the behavior was found to be intended."@en ;
+    skos:broader voc:resolution-type ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:resolution-will-not-fix a skos:Concept ;
+    skos:prefLabel "Will not fix"@en ;
+    skos:altLabel "Won't fix"@en , "Accepted risk"@en ;
+    skos:definition "A resolution type in which a decision was made not to correct the issue."@en ;
+    skos:broader voc:resolution-type ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:root-cause-category a skos:Concept ;
+    skos:prefLabel "Root cause category"@en ;
+    skos:definition "A controlled value set for the kind of underlying cause of an issue."@en ;
+    skos:topConceptOf voc:issue-vocabulary ;
+    skos:narrower voc:root-cause-people , voc:root-cause-process , voc:root-cause-technology , voc:root-cause-data , voc:root-cause-knowledge , voc:root-cause-external ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:root-cause-people a skos:Concept ;
+    skos:prefLabel "People"@en ;
+    skos:altLabel "Human error"@en ;
+    skos:definition "A root cause category for causes in skills, staffing, or human error."@en ;
+    skos:broader voc:root-cause-category ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:root-cause-process a skos:Concept ;
+    skos:prefLabel "Process"@en ;
+    skos:definition "A root cause category for causes in process design or execution."@en ;
+    skos:broader voc:root-cause-category ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:root-cause-technology a skos:Concept ;
+    skos:prefLabel "Technology"@en ;
+    skos:altLabel "System"@en ;
+    skos:definition "A root cause category for causes in software, hardware, or infrastructure."@en ;
+    skos:broader voc:root-cause-category ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:root-cause-data a skos:Concept ;
+    skos:prefLabel "Data"@en ;
+    skos:definition "A root cause category for causes in data quality or availability."@en ;
+    skos:broader voc:root-cause-category ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:root-cause-knowledge a skos:Concept ;
+    skos:prefLabel "Knowledge"@en ;
+    skos:altLabel "Semantic"@en ;
+    skos:definition "A root cause category for causes in definitions, mappings, rules, or other governed knowledge."@en ;
+    skos:broader voc:root-cause-category ;
+    skos:inScheme voc:issue-vocabulary .
+
+voc:root-cause-external a skos:Concept ;
+    skos:prefLabel "External"@en ;
+    skos:altLabel "Third party"@en ;
+    skos:definition "A root cause category for causes outside the organization's control."@en ;
+    skos:broader voc:root-cause-category ;
+    skos:inScheme voc:issue-vocabulary .

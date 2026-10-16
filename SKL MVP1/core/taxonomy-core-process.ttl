@@ -1,0 +1,242 @@
+# Taxonomy: Process taxonomy
+# File: taxonomy-core-process.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix tax: <https://www.insperity.com/taxonomy/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+tax:ProcessTaxonomy a skos:ConceptScheme ;
+    dcterms:title "Process taxonomy"@en ;
+    skos:prefLabel "Process taxonomy"@en ;
+    dcterms:description "Classification of processes and process steps, the occurrents that unfold over time and to which every other fact is anchored in the unifying ontology."@en ;
+    dcterms:subject core:Process ;
+    skos:scopeNote "The process step is the first-class anchor of the unifying ontology; performedBy, consumes, produces, triggers, governedBy, measuredBy, and precedes attach to it. Process status and automation values are in the process vocabulary."@en ;
+    dcterms:source "BFO process (ISO/IEC 21838-2); OBO Relations Ontology has input, has output, has active participant; APQC Process Classification Framework categories; BPMN for step notation."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept tax:ManagementProcess ,
+        tax:OperationalProcess ,
+        tax:SupportProcess ,
+        tax:ProcessStep .
+
+tax:ManagementProcess a skos:Concept ;
+    skos:prefLabel "Management process"@en ;
+    skos:altLabel "Governing process"@en ;
+    skos:definition "A process that sets direction, allocates resources, and oversees performance of the organization."@en ;
+    skos:topConceptOf tax:ProcessTaxonomy ;
+    skos:narrower tax:StrategyAndPlanningProcess , tax:PerformanceManagementProcess , tax:RiskAndComplianceManagementProcess , tax:EnterpriseArchitectureProcess ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:StrategyAndPlanningProcess a skos:Concept ;
+    skos:prefLabel "Strategy and planning process"@en ;
+    skos:altLabel "Strategic planning"@en , "Planning process"@en ;
+    skos:definition "A management process that defines objectives, plans, and budgets."@en ;
+    skos:broader tax:ManagementProcess ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:PerformanceManagementProcess a skos:Concept ;
+    skos:prefLabel "Performance management process"@en ;
+    skos:altLabel "Performance review process"@en ;
+    skos:definition "A management process that sets targets, measures results, and drives improvement."@en ;
+    skos:broader tax:ManagementProcess ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:RiskAndComplianceManagementProcess a skos:Concept ;
+    skos:prefLabel "Risk and compliance management process"@en ;
+    skos:altLabel "Governance, risk, and compliance process"@en , "GRC process"@en ;
+    skos:definition "A management process that identifies, assesses, treats, and monitors risks and obligations."@en ;
+    skos:broader tax:ManagementProcess ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:EnterpriseArchitectureProcess a skos:Concept ;
+    skos:prefLabel "Enterprise architecture process"@en ;
+    skos:altLabel "Architecture governance process"@en ;
+    skos:definition "A management process that defines and governs the structure of business, information, and technology."@en ;
+    skos:broader tax:ManagementProcess ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:OperationalProcess a skos:Concept ;
+    skos:prefLabel "Operational process"@en ;
+    skos:altLabel "Core process"@en , "Value chain process"@en , "Primary process"@en ;
+    skos:definition "A process that directly creates or delivers value to clients."@en ;
+    skos:topConceptOf tax:ProcessTaxonomy ;
+    skos:narrower tax:OfferingDevelopmentProcess , tax:MarketingAndSalesProcess , tax:ClientOnboardingProcess , tax:ServiceDeliveryProcess , tax:ClientSupportProcess ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:OfferingDevelopmentProcess a skos:Concept ;
+    skos:prefLabel "Offering development process"@en ;
+    skos:altLabel "Product development process"@en ;
+    skos:definition "An operational process that designs, builds, and launches products and services."@en ;
+    skos:broader tax:OperationalProcess ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:MarketingAndSalesProcess a skos:Concept ;
+    skos:prefLabel "Marketing and sales process"@en ;
+    skos:altLabel "Lead to client"@en , "Selling process"@en ;
+    skos:definition "An operational process that generates demand and wins clients."@en ;
+    skos:broader tax:OperationalProcess ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:ClientOnboardingProcess a skos:Concept ;
+    skos:prefLabel "Client onboarding process"@en ;
+    skos:altLabel "Implementation process"@en ;
+    skos:definition "An operational process that sets up a new client and its workforce for service."@en ;
+    skos:broader tax:OperationalProcess ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:ServiceDeliveryProcess a skos:Concept ;
+    skos:prefLabel "Service delivery process"@en ;
+    skos:altLabel "Fulfilment process"@en , "Order to cash"@en ;
+    skos:definition "An operational process that fulfils services for clients and their workers."@en ;
+    skos:broader tax:OperationalProcess ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:ClientSupportProcess a skos:Concept ;
+    skos:prefLabel "Client support process"@en ;
+    skos:altLabel "Customer service process"@en , "Case management process"@en ;
+    skos:definition "An operational process that answers inquiries and resolves requests from clients and workers."@en ;
+    skos:broader tax:OperationalProcess ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:SupportProcess a skos:Concept ;
+    skos:prefLabel "Support process"@en ;
+    skos:altLabel "Enabling process"@en , "Supporting process"@en ;
+    skos:definition "A process that enables management and operational processes."@en ;
+    skos:topConceptOf tax:ProcessTaxonomy ;
+    skos:narrower tax:HumanCapitalManagementProcess , tax:FinancialManagementProcess , tax:ProcurementProcess , tax:InformationTechnologyManagementProcess , tax:DataAndKnowledgeManagementProcess , tax:LegalProcess ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:HumanCapitalManagementProcess a skos:Concept ;
+    skos:prefLabel "Human capital management process"@en ;
+    skos:altLabel "Human resources process"@en , "Hire to retire"@en ;
+    skos:definition "A support process that recruits, pays, develops, and retains the workforce."@en ;
+    skos:broader tax:SupportProcess ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:FinancialManagementProcess a skos:Concept ;
+    skos:prefLabel "Financial management process"@en ;
+    skos:altLabel "Record to report"@en , "Finance process"@en ;
+    skos:definition "A support process that records, reports, plans, and controls money."@en ;
+    skos:broader tax:SupportProcess ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:ProcurementProcess a skos:Concept ;
+    skos:prefLabel "Procurement process"@en ;
+    skos:altLabel "Procure to pay"@en , "Purchasing process"@en ;
+    skos:definition "A support process that sources and buys goods and services."@en ;
+    skos:broader tax:SupportProcess ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:InformationTechnologyManagementProcess a skos:Concept ;
+    skos:prefLabel "Information technology management process"@en ;
+    skos:altLabel "IT management process"@en ;
+    skos:definition "A support process that plans, builds, and runs technology services."@en ;
+    skos:broader tax:SupportProcess ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:DataAndKnowledgeManagementProcess a skos:Concept ;
+    skos:prefLabel "Data and knowledge management process"@en ;
+    skos:altLabel "Knowledge engineering process"@en , "Data management process"@en ;
+    skos:definition "A support process that acquires, defines, governs, and publishes data and knowledge."@en ;
+    skos:broader tax:SupportProcess ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:LegalProcess a skos:Concept ;
+    skos:prefLabel "Legal process"@en ;
+    skos:altLabel "Legal affairs process"@en ;
+    skos:definition "A support process that drafts agreements, advises on law, and manages disputes."@en ;
+    skos:broader tax:SupportProcess ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:ProcessStep a skos:Concept ;
+    skos:prefLabel "Process step"@en ;
+    skos:altLabel "Activity"@en , "Task"@en , "Step"@en ;
+    skos:definition "A process that is a bounded part of a larger process, performed by a party or role, consuming and producing assets."@en ;
+    skos:scopeNote "In the unifying ontology every fact is attached to the step in which it is created, used, or governed. Kinds below follow BPMN task types."@en ;
+    skos:example "Validate timesheet; calculate gross pay; approve payroll run."@en ;
+    skos:topConceptOf tax:ProcessTaxonomy ;
+    skos:narrower tax:ManualStep , tax:UserStep , tax:AutomatedStep , tax:DecisionStep , tax:ApprovalStep , tax:ValidationStep , tax:CalculationStep , tax:CommunicationStep , tax:WaitStep , tax:SubprocessStep ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:ManualStep a skos:Concept ;
+    skos:prefLabel "Manual step"@en ;
+    skos:altLabel "Manual task"@en ;
+    skos:definition "A process step performed by a person without system automation."@en ;
+    skos:broader tax:ProcessStep ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:UserStep a skos:Concept ;
+    skos:prefLabel "User step"@en ;
+    skos:altLabel "User task"@en ;
+    skos:definition "A process step performed by a person with the help of a software application."@en ;
+    skos:broader tax:ProcessStep ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:AutomatedStep a skos:Concept ;
+    skos:prefLabel "Automated step"@en ;
+    skos:altLabel "Service task"@en , "System task"@en ;
+    skos:definition "A process step performed entirely by software without human intervention."@en ;
+    skos:broader tax:ProcessStep ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:DecisionStep a skos:Concept ;
+    skos:prefLabel "Decision step"@en ;
+    skos:altLabel "Business rule task"@en , "Gateway decision"@en ;
+    skos:definition "A process step that selects an outcome or path by applying a decision model or judgement."@en ;
+    skos:broader tax:ProcessStep ;
+    skos:relatedMatch tax:OperationalDecision ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:ApprovalStep a skos:Concept ;
+    skos:prefLabel "Approval step"@en ;
+    skos:altLabel "Approval task"@en , "Sign-off step"@en ;
+    skos:definition "A process step in which an authorized party accepts or rejects an item."@en ;
+    skos:broader tax:ProcessStep ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:ValidationStep a skos:Concept ;
+    skos:prefLabel "Validation step"@en ;
+    skos:altLabel "Verification step"@en , "Check"@en ;
+    skos:definition "A process step that checks data or work against constraints and rules."@en ;
+    skos:broader tax:ProcessStep ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:CalculationStep a skos:Concept ;
+    skos:prefLabel "Calculation step"@en ;
+    skos:altLabel "Computation step"@en ;
+    skos:definition "A process step that computes a value from inputs using a governed calculation."@en ;
+    skos:broader tax:ProcessStep ;
+    skos:relatedMatch tax:Calculation ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:CommunicationStep a skos:Concept ;
+    skos:prefLabel "Communication step"@en ;
+    skos:altLabel "Send task"@en , "Receive task"@en , "Notification step"@en ;
+    skos:definition "A process step that sends or receives information to or from a party."@en ;
+    skos:broader tax:ProcessStep ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:WaitStep a skos:Concept ;
+    skos:prefLabel "Wait step"@en ;
+    skos:altLabel "Timer step"@en , "Hold"@en ;
+    skos:definition "A process step that pauses until a time, event, or condition occurs."@en ;
+    skos:broader tax:ProcessStep ;
+    skos:inScheme tax:ProcessTaxonomy .
+
+tax:SubprocessStep a skos:Concept ;
+    skos:prefLabel "Subprocess step"@en ;
+    skos:altLabel "Call activity"@en , "Subprocess"@en ;
+    skos:definition "A process step that invokes another process as a unit."@en ;
+    skos:broader tax:ProcessStep ;
+    skos:inScheme tax:ProcessTaxonomy .

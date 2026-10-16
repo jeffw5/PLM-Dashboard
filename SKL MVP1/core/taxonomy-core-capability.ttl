@@ -1,0 +1,228 @@
+# Taxonomy: Capability taxonomy
+# File: taxonomy-core-capability.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix tax: <https://www.insperity.com/taxonomy/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+tax:CapabilityTaxonomy a skos:ConceptScheme ;
+    dcterms:title "Capability taxonomy"@en ;
+    skos:prefLabel "Capability taxonomy"@en ;
+    dcterms:description "Classification of business capabilities, the abilities an organization has or needs to achieve outcomes, independent of how they are organized or implemented."@en ;
+    dcterms:subject core:Capability ;
+    skos:scopeNote "Capabilities are stable and implementation-neutral; processes realize them and services expose them. Maturity and strategic importance values are in the capability vocabulary."@en ;
+    dcterms:source "BFO disposition and function (ISO/IEC 21838-2); The Open Group TOGAF and Business Architecture Guild capability mapping."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept tax:StrategicCapability ,
+        tax:CustomerFacingCapability ,
+        tax:SupportingCapability ,
+        tax:InformationAndKnowledgeCapability .
+
+tax:StrategicCapability a skos:Concept ;
+    skos:prefLabel "Strategic capability"@en ;
+    skos:altLabel "Direction-setting capability"@en ;
+    skos:definition "A capability for setting direction and shaping the organization."@en ;
+    skos:topConceptOf tax:CapabilityTaxonomy ;
+    skos:narrower tax:StrategyManagement , tax:PortfolioManagement , tax:EnterpriseArchitectureManagement , tax:InnovationManagement , tax:PerformanceManagement ;
+    skos:inScheme tax:CapabilityTaxonomy .
+
+tax:StrategyManagement a skos:Concept ;
+    skos:prefLabel "Strategy management"@en ;
+    skos:altLabel "Strategic planning capability"@en ;
+    skos:definition "A strategic capability to define, communicate, and adjust strategy and objectives."@en ;
+    skos:broader tax:StrategicCapability ;
+    skos:inScheme tax:CapabilityTaxonomy .
+
+tax:PortfolioManagement a skos:Concept ;
+    skos:prefLabel "Portfolio management"@en ;
+    skos:altLabel "Investment management"@en ;
+    skos:definition "A strategic capability to select and balance investments in initiatives and offerings."@en ;
+    skos:broader tax:StrategicCapability ;
+    skos:inScheme tax:CapabilityTaxonomy .
+
+tax:EnterpriseArchitectureManagement a skos:Concept ;
+    skos:prefLabel "Enterprise architecture management"@en ;
+    skos:altLabel "Architecture management"@en ;
+    skos:definition "A strategic capability to design and govern the structure of business, information, and technology."@en ;
+    skos:broader tax:StrategicCapability ;
+    skos:inScheme tax:CapabilityTaxonomy .
+
+tax:InnovationManagement a skos:Concept ;
+    skos:prefLabel "Innovation management"@en ;
+    skos:definition "A strategic capability to generate, test, and scale new ideas."@en ;
+    skos:broader tax:StrategicCapability ;
+    skos:inScheme tax:CapabilityTaxonomy .
+
+tax:PerformanceManagement a skos:Concept ;
+    skos:prefLabel "Performance management"@en ;
+    skos:altLabel "Enterprise performance management"@en ;
+    skos:definition "A strategic capability to set targets, measure results, and drive improvement."@en ;
+    skos:broader tax:StrategicCapability ;
+    skos:inScheme tax:CapabilityTaxonomy .
+
+tax:CustomerFacingCapability a skos:Concept ;
+    skos:prefLabel "Customer-facing capability"@en ;
+    skos:altLabel "Core capability"@en , "Value delivery capability"@en ;
+    skos:definition "A capability for creating and delivering value to clients and their workers."@en ;
+    skos:topConceptOf tax:CapabilityTaxonomy ;
+    skos:narrower tax:ClientRelationshipManagement , tax:MarketingManagement , tax:SalesManagement , tax:OfferingManagement , tax:ServiceDeliveryManagement , tax:ClientSupportManagement ;
+    skos:inScheme tax:CapabilityTaxonomy .
+
+tax:ClientRelationshipManagement a skos:Concept ;
+    skos:prefLabel "Client relationship management"@en ;
+    skos:altLabel "Customer management"@en , "Account management"@en ;
+    skos:definition "A customer-facing capability to acquire, understand, serve, and retain clients."@en ;
+    skos:broader tax:CustomerFacingCapability ;
+    skos:inScheme tax:CapabilityTaxonomy .
+
+tax:MarketingManagement a skos:Concept ;
+    skos:prefLabel "Marketing management"@en ;
+    skos:definition "A customer-facing capability to generate awareness and demand."@en ;
+    skos:broader tax:CustomerFacingCapability ;
+    skos:inScheme tax:CapabilityTaxonomy .
+
+tax:SalesManagement a skos:Concept ;
+    skos:prefLabel "Sales management"@en ;
+    skos:altLabel "Selling"@en ;
+    skos:definition "A customer-facing capability to pursue and win new and renewed business."@en ;
+    skos:broader tax:CustomerFacingCapability ;
+    skos:inScheme tax:CapabilityTaxonomy .
+
+tax:OfferingManagement a skos:Concept ;
+    skos:prefLabel "Offering management"@en ;
+    skos:altLabel "Product management"@en ;
+    skos:definition "A customer-facing capability to define, price, and evolve products and services."@en ;
+    skos:broader tax:CustomerFacingCapability ;
+    skos:inScheme tax:CapabilityTaxonomy .
+
+tax:ServiceDeliveryManagement a skos:Concept ;
+    skos:prefLabel "Service delivery management"@en ;
+    skos:altLabel "Service management"@en ;
+    skos:definition "A customer-facing capability to fulfil services to agreed levels."@en ;
+    skos:broader tax:CustomerFacingCapability ;
+    skos:inScheme tax:CapabilityTaxonomy .
+
+tax:ClientSupportManagement a skos:Concept ;
+    skos:prefLabel "Client support management"@en ;
+    skos:altLabel "Customer service management"@en ;
+    skos:definition "A customer-facing capability to answer inquiries and resolve requests."@en ;
+    skos:broader tax:CustomerFacingCapability ;
+    skos:inScheme tax:CapabilityTaxonomy .
+
+tax:SupportingCapability a skos:Concept ;
+    skos:prefLabel "Supporting capability"@en ;
+    skos:altLabel "Enabling capability"@en ;
+    skos:definition "A capability that enables strategic and customer-facing capabilities."@en ;
+    skos:topConceptOf tax:CapabilityTaxonomy ;
+    skos:narrower tax:WorkforceManagement , tax:FinancialManagement , tax:ProcurementManagement , tax:LegalManagement , tax:RiskAndComplianceManagement , tax:TechnologyManagement , tax:FacilitiesManagement ;
+    skos:inScheme tax:CapabilityTaxonomy .
+
+tax:WorkforceManagement a skos:Concept ;
+    skos:prefLabel "Workforce management"@en ;
+    skos:altLabel "Human capital management"@en ;
+    skos:definition "A supporting capability to attract, pay, develop, and retain people."@en ;
+    skos:broader tax:SupportingCapability ;
+    skos:inScheme tax:CapabilityTaxonomy .
+
+tax:FinancialManagement a skos:Concept ;
+    skos:prefLabel "Financial management"@en ;
+    skos:altLabel "Finance management"@en ;
+    skos:definition "A supporting capability to plan, record, report, and control money."@en ;
+    skos:broader tax:SupportingCapability ;
+    skos:inScheme tax:CapabilityTaxonomy .
+
+tax:ProcurementManagement a skos:Concept ;
+    skos:prefLabel "Procurement management"@en ;
+    skos:altLabel "Supplier management"@en ;
+    skos:definition "A supporting capability to source and manage suppliers."@en ;
+    skos:broader tax:SupportingCapability ;
+    skos:inScheme tax:CapabilityTaxonomy .
+
+tax:LegalManagement a skos:Concept ;
+    skos:prefLabel "Legal management"@en ;
+    skos:altLabel "Legal affairs management"@en ;
+    skos:definition "A supporting capability to manage agreements, legal advice, and disputes."@en ;
+    skos:broader tax:SupportingCapability ;
+    skos:inScheme tax:CapabilityTaxonomy .
+
+tax:RiskAndComplianceManagement a skos:Concept ;
+    skos:prefLabel "Risk and compliance management"@en ;
+    skos:altLabel "Governance, risk, and compliance"@en , "GRC"@en ;
+    skos:definition "A supporting capability to identify and treat risks and meet obligations."@en ;
+    skos:broader tax:SupportingCapability ;
+    skos:inScheme tax:CapabilityTaxonomy .
+
+tax:TechnologyManagement a skos:Concept ;
+    skos:prefLabel "Technology management"@en ;
+    skos:altLabel "Information technology management"@en ;
+    skos:definition "A supporting capability to plan, build, run, and secure technology."@en ;
+    skos:broader tax:SupportingCapability ;
+    skos:inScheme tax:CapabilityTaxonomy .
+
+tax:FacilitiesManagement a skos:Concept ;
+    skos:prefLabel "Facilities management"@en ;
+    skos:definition "A supporting capability to provide and maintain workplaces."@en ;
+    skos:broader tax:SupportingCapability ;
+    skos:inScheme tax:CapabilityTaxonomy .
+
+tax:InformationAndKnowledgeCapability a skos:Concept ;
+    skos:prefLabel "Information and knowledge capability"@en ;
+    skos:altLabel "Data and artificial intelligence capability"@en ;
+    skos:definition "A capability for managing and using data, knowledge, and artificial intelligence."@en ;
+    skos:topConceptOf tax:CapabilityTaxonomy ;
+    skos:narrower tax:DataManagement , tax:KnowledgeManagement , tax:SemanticManagement , tax:AnalyticsManagement , tax:ArtificialIntelligenceManagement , tax:ContentManagement ;
+    skos:inScheme tax:CapabilityTaxonomy .
+
+tax:DataManagement a skos:Concept ;
+    skos:prefLabel "Data management"@en ;
+    skos:altLabel "Data governance capability"@en ;
+    skos:definition "An information and knowledge capability to acquire, define, store, and govern data."@en ;
+    skos:broader tax:InformationAndKnowledgeCapability ;
+    skos:inScheme tax:CapabilityTaxonomy .
+
+tax:KnowledgeManagement a skos:Concept ;
+    skos:prefLabel "Knowledge management"@en ;
+    skos:altLabel "Knowledge engineering capability"@en ;
+    skos:definition "An information and knowledge capability to capture, organize, and share knowledge."@en ;
+    skos:broader tax:InformationAndKnowledgeCapability ;
+    skos:inScheme tax:CapabilityTaxonomy .
+
+tax:SemanticManagement a skos:Concept ;
+    skos:prefLabel "Semantic management"@en ;
+    skos:altLabel "Semantic governance capability"@en , "Ontology management"@en ;
+    skos:definition "An information and knowledge capability to define and govern shared meaning through vocabularies, taxonomies, and ontologies."@en ;
+    skos:broader tax:InformationAndKnowledgeCapability ;
+    skos:inScheme tax:CapabilityTaxonomy .
+
+tax:AnalyticsManagement a skos:Concept ;
+    skos:prefLabel "Analytics management"@en ;
+    skos:altLabel "Analytics"@en , "Business intelligence"@en , "BI"@en ;
+    skos:definition "An information and knowledge capability to analyze data and report insights."@en ;
+    skos:broader tax:InformationAndKnowledgeCapability ;
+    skos:inScheme tax:CapabilityTaxonomy .
+
+tax:ArtificialIntelligenceManagement a skos:Concept ;
+    skos:prefLabel "Artificial intelligence management"@en ;
+    skos:altLabel "AI management"@en , "AI governance capability"@en ;
+    skos:definition "An information and knowledge capability to develop, deploy, monitor, and govern artificial intelligence systems responsibly."@en ;
+    skos:broader tax:InformationAndKnowledgeCapability ;
+    skos:inScheme tax:CapabilityTaxonomy .
+
+tax:ContentManagement a skos:Concept ;
+    skos:prefLabel "Content management"@en ;
+    skos:altLabel "Document management"@en , "Records management"@en ;
+    skos:definition "An information and knowledge capability to create, publish, and retain documents and content."@en ;
+    skos:broader tax:InformationAndKnowledgeCapability ;
+    skos:inScheme tax:CapabilityTaxonomy .

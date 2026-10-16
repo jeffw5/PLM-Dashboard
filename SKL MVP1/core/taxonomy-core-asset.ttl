@@ -1,0 +1,410 @@
+# Taxonomy: Asset taxonomy
+# File: taxonomy-core-asset.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix tax: <https://www.insperity.com/taxonomy/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+tax:AssetTaxonomy a skos:ConceptScheme ;
+    dcterms:title "Asset taxonomy"@en ;
+    skos:prefLabel "Asset taxonomy"@en ;
+    dcterms:description "Classification of the things of value that process steps consume, produce, use, or maintain, from buildings and equipment to documents, records, datasets, and software."@en ;
+    dcterms:subject core:Asset ;
+    skos:scopeNote "Covers kinds of asset only. Asset status, ownership, and criticality values are in the asset vocabulary. Products offered to clients are in the product taxonomy; parties are in the party taxonomy."@en ;
+    dcterms:source "BFO material entity and generically dependent continuant (ISO/IEC 21838-2); Information Artifact Ontology; Data Catalog Vocabulary for digital asset descriptions."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept tax:PhysicalAsset ,
+        tax:InformationAsset ,
+        tax:SoftwareAsset ,
+        tax:FinancialAsset ,
+        tax:IntangibleAsset .
+
+tax:PhysicalAsset a skos:Concept ;
+    skos:prefLabel "Physical asset"@en ;
+    skos:altLabel "Tangible asset"@en , "Material asset"@en ;
+    skos:definition "An asset that has material existence and can be located, handled, or occupied."@en ;
+    skos:scopeNote "Aligned to the BFO material entity category."@en ;
+    skos:example "A worksite building; a laptop."@en ;
+    skos:topConceptOf tax:AssetTaxonomy ;
+    skos:narrower tax:Facility , tax:Equipment , tax:Vehicle , tax:Inventory ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:Facility a skos:Concept ;
+    skos:prefLabel "Facility"@en ;
+    skos:altLabel "Premises"@en , "Building"@en ;
+    skos:definition "A physical asset that is a building, room, or fixed installation used to house people, equipment, or operations."@en ;
+    skos:example "Headquarters building; regional service center."@en ;
+    skos:broader tax:PhysicalAsset ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:Equipment a skos:Concept ;
+    skos:prefLabel "Equipment"@en ;
+    skos:altLabel "Tool"@en ;
+    skos:definition "A physical asset that is a durable device or apparatus used to perform work."@en ;
+    skos:broader tax:PhysicalAsset ;
+    skos:narrower tax:ComputingEquipment , tax:CommunicationEquipment , tax:OperationalEquipment ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:ComputingEquipment a skos:Concept ;
+    skos:prefLabel "Computing equipment"@en ;
+    skos:altLabel "Hardware"@en , "Computing device"@en ;
+    skos:definition "An equipment that processes, stores, or displays digital information."@en ;
+    skos:example "Laptop; server; tablet."@en ;
+    skos:broader tax:Equipment ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:CommunicationEquipment a skos:Concept ;
+    skos:prefLabel "Communication equipment"@en ;
+    skos:definition "An equipment that transmits or receives voice or data."@en ;
+    skos:example "Telephone handset; network router."@en ;
+    skos:broader tax:Equipment ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:OperationalEquipment a skos:Concept ;
+    skos:prefLabel "Operational equipment"@en ;
+    skos:altLabel "Machinery"@en ;
+    skos:definition "An equipment that is used directly in producing goods or delivering physical services."@en ;
+    skos:broader tax:Equipment ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:Vehicle a skos:Concept ;
+    skos:prefLabel "Vehicle"@en ;
+    skos:altLabel "Fleet asset"@en ;
+    skos:definition "A physical asset that is a means of transporting people or goods."@en ;
+    skos:broader tax:PhysicalAsset ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:Inventory a skos:Concept ;
+    skos:prefLabel "Inventory"@en ;
+    skos:altLabel "Stock"@en , "Supplies"@en ;
+    skos:definition "A physical asset that is a stock of materials or goods held for use, sale, or distribution."@en ;
+    skos:broader tax:PhysicalAsset ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:InformationAsset a skos:Concept ;
+    skos:prefLabel "Information asset"@en ;
+    skos:altLabel "Information artifact"@en , "Information entity"@en ;
+    skos:definition "An asset that consists of information that can be copied across physical or digital carriers without losing its identity."@en ;
+    skos:scopeNote "Aligned to the BFO generically dependent continuant category and the Information Artifact Ontology. Software is classified separately as a software asset."@en ;
+    skos:example "A pay statement; a timesheet; a policy document."@en ;
+    skos:topConceptOf tax:AssetTaxonomy ;
+    skos:narrower tax:Document , tax:Record , tax:Dataset , tax:Identifier , tax:KnowledgeArtifact ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:Document a skos:Concept ;
+    skos:prefLabel "Document"@en ;
+    skos:definition "An information asset that is a bounded, human-readable unit of content with a title and author."@en ;
+    skos:example "Plan document; enrollment guide."@en ;
+    skos:broader tax:InformationAsset ;
+    skos:narrower tax:AgreementDocument , tax:PolicyDocument , tax:Form , tax:Notice , tax:Report , tax:KnowledgeArticle ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:AgreementDocument a skos:Concept ;
+    skos:prefLabel "Agreement document"@en ;
+    skos:altLabel "Contract document"@en , "Contract"@en ;
+    skos:definition "A document that records the terms agreed between two or more parties."@en ;
+    skos:broader tax:Document ;
+    skos:relatedMatch tax:ContractualInstrument ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:PolicyDocument a skos:Concept ;
+    skos:prefLabel "Policy document"@en ;
+    skos:definition "A document that states a policy, standard, or procedure in human-readable form."@en ;
+    skos:broader tax:Document ;
+    skos:relatedMatch tax:OrganizationalPolicy ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:Form a skos:Concept ;
+    skos:prefLabel "Form"@en ;
+    skos:definition "A document that has structured fields for collecting information from a person or system."@en ;
+    skos:example "Enrollment form; tax withholding form."@en ;
+    skos:broader tax:Document ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:Notice a skos:Concept ;
+    skos:prefLabel "Notice"@en ;
+    skos:altLabel "Notification letter"@en ;
+    skos:definition "A document that formally informs a party of a fact, right, obligation, or change."@en ;
+    skos:example "Benefits continuation notice."@en ;
+    skos:broader tax:Document ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:Report a skos:Concept ;
+    skos:prefLabel "Report"@en ;
+    skos:definition "A document that presents organized facts, analysis, or measures for a stated purpose and period."@en ;
+    skos:broader tax:Document ;
+    skos:relatedMatch tax:Observation ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:KnowledgeArticle a skos:Concept ;
+    skos:prefLabel "Knowledge article"@en ;
+    skos:altLabel "Frequently asked question"@en , "FAQ"@en , "Help article"@en ;
+    skos:definition "A document that answers a specific question or explains a topic for reuse in support and self-service."@en ;
+    skos:broader tax:Document ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:Record a skos:Concept ;
+    skos:prefLabel "Record"@en ;
+    skos:altLabel "Business record"@en ;
+    skos:definition "An information asset that is evidence of an activity, transaction, or state, kept for reference or compliance."@en ;
+    skos:scopeNote "Records are subject to retention policies."@en ;
+    skos:broader tax:InformationAsset ;
+    skos:narrower tax:TransactionRecord , tax:PartyRecord , tax:AuditRecord , tax:ChangeRecord ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:TransactionRecord a skos:Concept ;
+    skos:prefLabel "Transaction record"@en ;
+    skos:definition "A record that captures the details of a single business transaction."@en ;
+    skos:example "Payment record; payroll register entry."@en ;
+    skos:broader tax:Record ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:PartyRecord a skos:Concept ;
+    skos:prefLabel "Party record"@en ;
+    skos:altLabel "Master record"@en , "Personnel record"@en , "Client record"@en ;
+    skos:definition "A record that holds identifying and descriptive information about a party."@en ;
+    skos:broader tax:Record ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:AuditRecord a skos:Concept ;
+    skos:prefLabel "Audit record"@en ;
+    skos:altLabel "Audit log entry"@en , "Audit trail entry"@en ;
+    skos:definition "A record that documents who performed an action, when, and with what result, for later review."@en ;
+    skos:broader tax:Record ;
+    skos:relatedMatch tax:AuditTrail ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:ChangeRecord a skos:Concept ;
+    skos:prefLabel "Change record"@en ;
+    skos:definition "A record that documents an approved change to a knowledge artifact, its reason, and its approver."@en ;
+    skos:broader tax:Record ;
+    skos:relatedMatch tax:ChangeControl ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:Dataset a skos:Concept ;
+    skos:prefLabel "Dataset"@en ;
+    skos:altLabel "Data set"@en , "Data asset"@en ;
+    skos:definition "An information asset that is a collection of related data published or curated as a unit."@en ;
+    skos:broader tax:InformationAsset ;
+    skos:relatedMatch tax:DataProduct ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:Identifier a skos:Concept ;
+    skos:prefLabel "Identifier"@en ;
+    skos:definition "An information asset that is a symbol or code assigned to uniquely designate an entity within a context."@en ;
+    skos:example "Employee number; client number."@en ;
+    skos:broader tax:InformationAsset ;
+    skos:relatedMatch voc:party-identifier-type ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:KnowledgeArtifact a skos:Concept ;
+    skos:prefLabel "Knowledge artifact"@en ;
+    skos:altLabel "Semantic asset"@en , "Knowledge asset"@en ;
+    skos:definition "An information asset that encodes governed meaning, structure, or logic for use by people, applications, and artificial intelligence agents."@en ;
+    skos:broader tax:InformationAsset ;
+    skos:narrower tax:Ontology , tax:Vocabulary , tax:Taxonomy , tax:MappingSpecification , tax:ValidationShape , tax:RuleSpecification , tax:PromptTemplate ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:Ontology a skos:Concept ;
+    skos:prefLabel "Ontology"@en ;
+    skos:definition "A knowledge artifact that formally defines classes, relations, and axioms for a domain using a logic-based language."@en ;
+    skos:example "Core ontology; payroll ontology."@en ;
+    skos:broader tax:KnowledgeArtifact ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:Vocabulary a skos:Concept ;
+    skos:prefLabel "Vocabulary"@en ;
+    skos:altLabel "Controlled vocabulary"@en ;
+    skos:definition "A knowledge artifact that defines the preferred, alternate, and hidden labels and definitions of a set of terms."@en ;
+    skos:broader tax:KnowledgeArtifact ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:Taxonomy a skos:Concept ;
+    skos:prefLabel "Taxonomy"@en ;
+    skos:altLabel "Classification scheme"@en , "Concept scheme"@en ;
+    skos:definition "A knowledge artifact that arranges concepts into a classification hierarchy."@en ;
+    skos:broader tax:KnowledgeArtifact ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:MappingSpecification a skos:Concept ;
+    skos:prefLabel "Mapping specification"@en ;
+    skos:altLabel "Mapping"@en , "Crosswalk"@en ;
+    skos:definition "A knowledge artifact that defines how elements of a source schema or vocabulary correspond to ontology terms."@en ;
+    skos:broader tax:KnowledgeArtifact ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:ValidationShape a skos:Concept ;
+    skos:prefLabel "Validation shape"@en ;
+    skos:altLabel "Shape"@en , "Shapes Constraint Language shape"@en , "SHACL shape"@en ;
+    skos:definition "A knowledge artifact that defines the constraints data must satisfy, expressed in a shapes language."@en ;
+    skos:broader tax:KnowledgeArtifact ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:RuleSpecification a skos:Concept ;
+    skos:prefLabel "Rule specification"@en ;
+    skos:definition "A knowledge artifact that declaratively defines a business rule, constraint, logic component, or calculation in the single source of truth."@en ;
+    skos:broader tax:KnowledgeArtifact ;
+    skos:relatedMatch tax:BusinessRule ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:PromptTemplate a skos:Concept ;
+    skos:prefLabel "Prompt template"@en ;
+    skos:definition "A knowledge artifact that defines the versioned instructions, tone, and answer format given to a language model for a persona or task."@en ;
+    skos:broader tax:KnowledgeArtifact ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:SoftwareAsset a skos:Concept ;
+    skos:prefLabel "Software asset"@en ;
+    skos:altLabel "Software"@en , "Digital system"@en ;
+    skos:definition "An asset that is a set of executable instructions or a trained model that performs computation."@en ;
+    skos:scopeNote "The deployed software is an asset; an artificial intelligence agent acting in a process is classified as an automated agent in the party taxonomy."@en ;
+    skos:topConceptOf tax:AssetTaxonomy ;
+    skos:narrower tax:Application , tax:SoftwareComponent , tax:ApplicationProgrammingInterface , tax:MachineLearningModel , tax:DataStore ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:Application a skos:Concept ;
+    skos:prefLabel "Application"@en ;
+    skos:altLabel "Software application"@en , "System of record"@en ;
+    skos:definition "A software asset that provides functions to users through an interface."@en ;
+    skos:example "Payroll application; client portal."@en ;
+    skos:broader tax:SoftwareAsset ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:SoftwareComponent a skos:Concept ;
+    skos:prefLabel "Software component"@en ;
+    skos:altLabel "Microservice"@en , "Library"@en ;
+    skos:definition "A software asset that is a deployable unit of code providing a defined function to other software."@en ;
+    skos:broader tax:SoftwareAsset ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:ApplicationProgrammingInterface a skos:Concept ;
+    skos:prefLabel "Application programming interface"@en ;
+    skos:altLabel "API"@en , "Interface"@en ;
+    skos:definition "A software asset that is a defined contract through which software components call one another."@en ;
+    skos:broader tax:SoftwareAsset ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:MachineLearningModel a skos:Concept ;
+    skos:prefLabel "Machine learning model"@en ;
+    skos:altLabel "Model"@en , "Language model"@en , "Large language model"@en , "LLM"@en ;
+    skos:definition "A software asset that is a trained statistical model producing predictions or generated content from inputs."@en ;
+    skos:broader tax:SoftwareAsset ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:DataStore a skos:Concept ;
+    skos:prefLabel "Data store"@en ;
+    skos:altLabel "Database"@en , "Repository"@en ;
+    skos:definition "A software asset that persists and serves data."@en ;
+    skos:broader tax:SoftwareAsset ;
+    skos:narrower tax:GraphStore , tax:RelationalDatabase , tax:VectorStore , tax:DocumentStore ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:GraphStore a skos:Concept ;
+    skos:prefLabel "Graph store"@en ;
+    skos:altLabel "Triple store"@en , "Knowledge graph store"@en ;
+    skos:definition "A data store that stores and queries data as a graph of nodes and edges."@en ;
+    skos:broader tax:DataStore ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:RelationalDatabase a skos:Concept ;
+    skos:prefLabel "Relational database"@en ;
+    skos:definition "A data store that stores data in tables related by keys and queried with a structured query language."@en ;
+    skos:broader tax:DataStore ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:VectorStore a skos:Concept ;
+    skos:prefLabel "Vector store"@en ;
+    skos:altLabel "Vector database"@en ;
+    skos:definition "A data store that stores embeddings and supports similarity search."@en ;
+    skos:broader tax:DataStore ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:DocumentStore a skos:Concept ;
+    skos:prefLabel "Document store"@en ;
+    skos:definition "A data store that stores semi-structured documents."@en ;
+    skos:broader tax:DataStore ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:FinancialAsset a skos:Concept ;
+    skos:prefLabel "Financial asset"@en ;
+    skos:definition "An asset that is a monetary claim or contractual right to receive cash or another financial asset."@en ;
+    skos:example "Cash; accounts receivable."@en ;
+    skos:topConceptOf tax:AssetTaxonomy ;
+    skos:narrower tax:CashAndCashEquivalent , tax:Receivable , tax:Investment , tax:PrepaidAmount ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:CashAndCashEquivalent a skos:Concept ;
+    skos:prefLabel "Cash and cash equivalent"@en ;
+    skos:altLabel "Cash"@en ;
+    skos:definition "A financial asset that is currency or a highly liquid investment readily convertible to a known amount of cash."@en ;
+    skos:broader tax:FinancialAsset ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:Receivable a skos:Concept ;
+    skos:prefLabel "Receivable"@en ;
+    skos:altLabel "Accounts receivable"@en ;
+    skos:definition "A financial asset that is an amount owed to the organization by another party."@en ;
+    skos:broader tax:FinancialAsset ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:Investment a skos:Concept ;
+    skos:prefLabel "Investment"@en ;
+    skos:altLabel "Investment holding"@en ;
+    skos:definition "A financial asset that is held to generate income or appreciation."@en ;
+    skos:broader tax:FinancialAsset ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:PrepaidAmount a skos:Concept ;
+    skos:prefLabel "Prepaid amount"@en ;
+    skos:altLabel "Prepaid expense"@en ;
+    skos:definition "A financial asset that is a payment made in advance for goods or services not yet received."@en ;
+    skos:broader tax:FinancialAsset ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:IntangibleAsset a skos:Concept ;
+    skos:prefLabel "Intangible asset"@en ;
+    skos:altLabel "Non-physical asset"@en ;
+    skos:definition "An asset that has no physical substance but provides future value through rights, knowledge, or reputation."@en ;
+    skos:topConceptOf tax:AssetTaxonomy ;
+    skos:narrower tax:IntellectualProperty , tax:LicenseRight , tax:Brand , tax:RelationshipAsset ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:IntellectualProperty a skos:Concept ;
+    skos:prefLabel "Intellectual property"@en ;
+    skos:definition "An intangible asset that is a legally protected creation of the mind."@en ;
+    skos:example "Trademark; patent; copyright."@en ;
+    skos:broader tax:IntangibleAsset ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:LicenseRight a skos:Concept ;
+    skos:prefLabel "License right"@en ;
+    skos:altLabel "License"@en , "Software license"@en ;
+    skos:definition "An intangible asset that is a granted permission to use property owned by another party under stated terms."@en ;
+    skos:broader tax:IntangibleAsset ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:Brand a skos:Concept ;
+    skos:prefLabel "Brand"@en ;
+    skos:altLabel "Trademark identity"@en ;
+    skos:definition "An intangible asset that is the name, identity, and reputation by which an organization or offering is recognized."@en ;
+    skos:broader tax:IntangibleAsset ;
+    skos:inScheme tax:AssetTaxonomy .
+
+tax:RelationshipAsset a skos:Concept ;
+    skos:prefLabel "Relationship asset"@en ;
+    skos:altLabel "Client relationships"@en , "Customer relationships"@en ;
+    skos:definition "An intangible asset that is the established, valuable connection between the organization and a group of parties."@en ;
+    skos:broader tax:IntangibleAsset ;
+    skos:inScheme tax:AssetTaxonomy .

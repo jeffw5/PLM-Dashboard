@@ -1,0 +1,187 @@
+# Vocabulary: Measure vocabulary
+# File: vocabulary-core-measure.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+voc:measure-vocabulary a skos:ConceptScheme ;
+    dcterms:title "Measure vocabulary"@en ;
+    skos:prefLabel "Measure vocabulary"@en ;
+    dcterms:description "Controlled values for units of measure, aggregation functions, and polarity of measures."@en ;
+    dcterms:subject core:Measure ;
+    dcterms:source "W3C Data Cube Vocabulary; ISO 4217 currency codes; Unified Code for Units of Measure concepts."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept voc:unit-of-measure ,
+        voc:aggregation-function ,
+        voc:measure-polarity .
+
+voc:currency-code a rdfs:Datatype ;
+    rdfs:label "Currency code"@en ;
+    skos:definition "A datatype for three-letter currency codes defined by ISO 4217."@en ;
+    rdfs:isDefinedBy voc:measure-vocabulary .
+
+voc:unit-of-measure a skos:Concept ;
+    skos:prefLabel "Unit of measure"@en ;
+    skos:definition "A controlled value set for the units in which measure values are expressed."@en ;
+    skos:topConceptOf voc:measure-vocabulary ;
+    skos:narrower voc:unit-count , voc:unit-percentage , voc:unit-ratio , voc:unit-united-states-dollar , voc:unit-hour , voc:unit-day , voc:unit-score , voc:unit-full-time-equivalent ;
+    skos:inScheme voc:measure-vocabulary .
+
+voc:unit-count a skos:Concept ;
+    skos:prefLabel "Count"@en ;
+    skos:altLabel "Number"@en , "Each"@en ;
+    skos:definition "A unit of measure for a number of discrete items."@en ;
+    skos:broader voc:unit-of-measure ;
+    skos:inScheme voc:measure-vocabulary .
+
+voc:unit-percentage a skos:Concept ;
+    skos:prefLabel "Percentage"@en ;
+    skos:altLabel "Percent"@en ;
+    skos:definition "A unit of measure for a proportion expressed per hundred."@en ;
+    skos:broader voc:unit-of-measure ;
+    skos:inScheme voc:measure-vocabulary .
+
+voc:unit-ratio a skos:Concept ;
+    skos:prefLabel "Ratio"@en ;
+    skos:altLabel "Proportion"@en ;
+    skos:definition "A unit of measure for a proportion expressed as a decimal fraction."@en ;
+    skos:broader voc:unit-of-measure ;
+    skos:inScheme voc:measure-vocabulary .
+
+voc:unit-united-states-dollar a skos:Concept ;
+    skos:prefLabel "United States dollar"@en ;
+    skos:altLabel "USD"@en , "Dollar"@en ;
+    skos:notation "USD"^^voc:currency-code ;
+    skos:definition "A unit of measure for amounts of money in United States currency."@en ;
+    skos:broader voc:unit-of-measure ;
+    skos:inScheme voc:measure-vocabulary .
+
+voc:unit-hour a skos:Concept ;
+    skos:prefLabel "Hour"@en ;
+    skos:altLabel "Hours"@en ;
+    skos:definition "A unit of measure for time equal to sixty minutes."@en ;
+    skos:broader voc:unit-of-measure ;
+    skos:inScheme voc:measure-vocabulary .
+
+voc:unit-day a skos:Concept ;
+    skos:prefLabel "Day"@en ;
+    skos:altLabel "Days"@en ;
+    skos:definition "A unit of measure for time equal to twenty-four hours."@en ;
+    skos:broader voc:unit-of-measure ;
+    skos:inScheme voc:measure-vocabulary .
+
+voc:unit-score a skos:Concept ;
+    skos:prefLabel "Score"@en ;
+    skos:altLabel "Points"@en , "Index"@en ;
+    skos:definition "A unit of measure for a value on a defined scale with no physical unit."@en ;
+    skos:broader voc:unit-of-measure ;
+    skos:inScheme voc:measure-vocabulary .
+
+voc:unit-full-time-equivalent a skos:Concept ;
+    skos:prefLabel "Full-time equivalent"@en ;
+    skos:altLabel "FTE"@en ;
+    skos:definition "A unit of measure for workforce capacity equal to one full-time worker."@en ;
+    skos:broader voc:unit-of-measure ;
+    skos:inScheme voc:measure-vocabulary .
+
+voc:aggregation-function a skos:Concept ;
+    skos:prefLabel "Aggregation function"@en ;
+    skos:definition "A controlled value set for how many values are combined into one."@en ;
+    skos:topConceptOf voc:measure-vocabulary ;
+    skos:narrower voc:aggregation-sum , voc:aggregation-count-of-values , voc:aggregation-distinct-count , voc:aggregation-average , voc:aggregation-median , voc:aggregation-minimum , voc:aggregation-maximum , voc:aggregation-latest-value ;
+    skos:inScheme voc:measure-vocabulary .
+
+voc:aggregation-sum a skos:Concept ;
+    skos:prefLabel "Sum"@en ;
+    skos:altLabel "Total"@en ;
+    skos:definition "An aggregation function that adds values."@en ;
+    skos:broader voc:aggregation-function ;
+    skos:inScheme voc:measure-vocabulary .
+
+voc:aggregation-count-of-values a skos:Concept ;
+    skos:prefLabel "Count of values"@en ;
+    skos:altLabel "Count function"@en ;
+    skos:definition "An aggregation function that counts values."@en ;
+    skos:broader voc:aggregation-function ;
+    skos:inScheme voc:measure-vocabulary .
+
+voc:aggregation-distinct-count a skos:Concept ;
+    skos:prefLabel "Distinct count"@en ;
+    skos:altLabel "Count distinct"@en ;
+    skos:definition "An aggregation function that counts unique values."@en ;
+    skos:broader voc:aggregation-function ;
+    skos:inScheme voc:measure-vocabulary .
+
+voc:aggregation-average a skos:Concept ;
+    skos:prefLabel "Average"@en ;
+    skos:altLabel "Mean"@en ;
+    skos:definition "An aggregation function that divides the sum by the count."@en ;
+    skos:broader voc:aggregation-function ;
+    skos:inScheme voc:measure-vocabulary .
+
+voc:aggregation-median a skos:Concept ;
+    skos:prefLabel "Median"@en ;
+    skos:definition "An aggregation function that returns the middle value."@en ;
+    skos:broader voc:aggregation-function ;
+    skos:inScheme voc:measure-vocabulary .
+
+voc:aggregation-minimum a skos:Concept ;
+    skos:prefLabel "Minimum"@en ;
+    skos:altLabel "Min"@en ;
+    skos:definition "An aggregation function that returns the smallest value."@en ;
+    skos:broader voc:aggregation-function ;
+    skos:inScheme voc:measure-vocabulary .
+
+voc:aggregation-maximum a skos:Concept ;
+    skos:prefLabel "Maximum"@en ;
+    skos:altLabel "Max"@en ;
+    skos:definition "An aggregation function that returns the largest value."@en ;
+    skos:broader voc:aggregation-function ;
+    skos:inScheme voc:measure-vocabulary .
+
+voc:aggregation-latest-value a skos:Concept ;
+    skos:prefLabel "Latest value"@en ;
+    skos:altLabel "Last value"@en , "Point in time value"@en ;
+    skos:definition "An aggregation function that returns the most recent value."@en ;
+    skos:broader voc:aggregation-function ;
+    skos:inScheme voc:measure-vocabulary .
+
+voc:measure-polarity a skos:Concept ;
+    skos:prefLabel "Measure polarity"@en ;
+    skos:definition "A controlled value set for which direction of change is favorable."@en ;
+    skos:topConceptOf voc:measure-vocabulary ;
+    skos:narrower voc:polarity-higher-is-better , voc:polarity-lower-is-better , voc:polarity-closer-to-target-is-better ;
+    skos:inScheme voc:measure-vocabulary .
+
+voc:polarity-higher-is-better a skos:Concept ;
+    skos:prefLabel "Higher is better"@en ;
+    skos:altLabel "Positive polarity"@en ;
+    skos:definition "A measure polarity in which increases are favorable."@en ;
+    skos:broader voc:measure-polarity ;
+    skos:inScheme voc:measure-vocabulary .
+
+voc:polarity-lower-is-better a skos:Concept ;
+    skos:prefLabel "Lower is better"@en ;
+    skos:altLabel "Negative polarity"@en ;
+    skos:definition "A measure polarity in which decreases are favorable."@en ;
+    skos:broader voc:measure-polarity ;
+    skos:inScheme voc:measure-vocabulary .
+
+voc:polarity-closer-to-target-is-better a skos:Concept ;
+    skos:prefLabel "Closer to target is better"@en ;
+    skos:altLabel "On target"@en ;
+    skos:definition "A measure polarity in which values nearest the target are favorable."@en ;
+    skos:broader voc:measure-polarity ;
+    skos:inScheme voc:measure-vocabulary .

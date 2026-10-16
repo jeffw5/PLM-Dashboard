@@ -1,0 +1,180 @@
+# Vocabulary: Service vocabulary
+# File: vocabulary-core-service.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+voc:service-vocabulary a skos:ConceptScheme ;
+    dcterms:title "Service vocabulary"@en ;
+    skos:prefLabel "Service vocabulary"@en ;
+    dcterms:description "Controlled values for service operating status, delivery channels, and delivery models."@en ;
+    dcterms:subject core:Service ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept voc:service-operating-status ,
+        voc:service-channel ,
+        voc:service-delivery-model .
+
+voc:service-operating-status a skos:Concept ;
+    skos:prefLabel "Service operating status"@en ;
+    skos:definition "A controlled value set for the current health of a service."@en ;
+    skos:topConceptOf voc:service-vocabulary ;
+    skos:narrower voc:service-status-operational , voc:service-status-degraded , voc:service-status-unavailable , voc:service-status-under-maintenance ;
+    skos:inScheme voc:service-vocabulary .
+
+voc:service-status-operational a skos:Concept ;
+    skos:prefLabel "Operational"@en ;
+    skos:altLabel "Available"@en , "Healthy"@en ;
+    skos:definition "A service operating status in which the service meets its service levels."@en ;
+    skos:broader voc:service-operating-status ;
+    skos:inScheme voc:service-vocabulary .
+
+voc:service-status-degraded a skos:Concept ;
+    skos:prefLabel "Degraded"@en ;
+    skos:altLabel "Impaired"@en ;
+    skos:definition "A service operating status in which the service is available but below its service levels."@en ;
+    skos:broader voc:service-operating-status ;
+    skos:inScheme voc:service-vocabulary .
+
+voc:service-status-unavailable a skos:Concept ;
+    skos:prefLabel "Unavailable"@en ;
+    skos:altLabel "Down"@en , "Outage"@en ;
+    skos:definition "A service operating status in which the service cannot be used."@en ;
+    skos:broader voc:service-operating-status ;
+    skos:inScheme voc:service-vocabulary .
+
+voc:service-status-under-maintenance a skos:Concept ;
+    skos:prefLabel "Under maintenance"@en ;
+    skos:altLabel "Planned maintenance"@en ;
+    skos:definition "A service operating status in which the service is intentionally unavailable for planned work."@en ;
+    skos:broader voc:service-operating-status ;
+    skos:inScheme voc:service-vocabulary .
+
+voc:service-channel a skos:Concept ;
+    skos:prefLabel "Service channel"@en ;
+    skos:definition "A controlled value set for the means through which a service is delivered or accessed."@en ;
+    skos:topConceptOf voc:service-vocabulary ;
+    skos:narrower voc:channel-conversational-agent , voc:channel-employee-portal , voc:channel-client-portal , voc:channel-internal-search , voc:channel-business-application , voc:channel-dashboard , voc:channel-query-endpoint , voc:channel-programmatic-interface , voc:channel-email , voc:channel-telephone , voc:channel-in-person-meeting , voc:channel-mobile-application ;
+    skos:inScheme voc:service-vocabulary .
+
+voc:channel-conversational-agent a skos:Concept ;
+    skos:prefLabel "Conversational agent"@en ;
+    skos:altLabel "Chat assistant"@en , "HR 360 agent"@en , "Virtual assistant"@en ;
+    skos:definition "A service channel in which users ask questions in natural language to an artificial intelligence agent."@en ;
+    skos:broader voc:service-channel ;
+    skos:inScheme voc:service-vocabulary .
+
+voc:channel-employee-portal a skos:Concept ;
+    skos:prefLabel "Employee portal"@en ;
+    skos:altLabel "Employee self-service"@en ;
+    skos:definition "A service channel that is an authenticated web application for workers."@en ;
+    skos:broader voc:service-channel ;
+    skos:inScheme voc:service-vocabulary .
+
+voc:channel-client-portal a skos:Concept ;
+    skos:prefLabel "Client portal"@en ;
+    skos:altLabel "Client self-service"@en ;
+    skos:definition "A service channel that is an authenticated web application for client administrators."@en ;
+    skos:broader voc:service-channel ;
+    skos:inScheme voc:service-vocabulary .
+
+voc:channel-internal-search a skos:Concept ;
+    skos:prefLabel "Internal search"@en ;
+    skos:altLabel "Enterprise search"@en ;
+    skos:definition "A service channel that is the organization's enterprise search for staff."@en ;
+    skos:broader voc:service-channel ;
+    skos:inScheme voc:service-vocabulary .
+
+voc:channel-business-application a skos:Concept ;
+    skos:prefLabel "Business application"@en ;
+    skos:altLabel "Line of business application"@en , "Operations Workbench"@en , "Payroll application"@en ;
+    skos:definition "A service channel that is an operational system used by staff to do their work."@en ;
+    skos:broader voc:service-channel ;
+    skos:inScheme voc:service-vocabulary .
+
+voc:channel-dashboard a skos:Concept ;
+    skos:prefLabel "Dashboard"@en ;
+    skos:altLabel "Report portal"@en ;
+    skos:definition "A service channel that presents measures visually for monitoring and analysis."@en ;
+    skos:broader voc:service-channel ;
+    skos:inScheme voc:service-vocabulary .
+
+voc:channel-query-endpoint a skos:Concept ;
+    skos:prefLabel "Query endpoint"@en ;
+    skos:altLabel "SPARQL endpoint"@en , "Graph endpoint"@en ;
+    skos:definition "A service channel through which systems or analysts query the knowledge graph directly."@en ;
+    skos:broader voc:service-channel ;
+    skos:inScheme voc:service-vocabulary .
+
+voc:channel-programmatic-interface a skos:Concept ;
+    skos:prefLabel "Programmatic interface"@en ;
+    skos:altLabel "Application programming interface"@en , "API"@en ;
+    skos:definition "A service channel through which software calls the service."@en ;
+    skos:broader voc:service-channel ;
+    skos:inScheme voc:service-vocabulary .
+
+voc:channel-email a skos:Concept ;
+    skos:prefLabel "Email"@en ;
+    skos:definition "A service channel using electronic mail."@en ;
+    skos:broader voc:service-channel ;
+    skos:inScheme voc:service-vocabulary .
+
+voc:channel-telephone a skos:Concept ;
+    skos:prefLabel "Telephone"@en ;
+    skos:altLabel "Phone"@en , "Call center"@en ;
+    skos:definition "A service channel using voice calls."@en ;
+    skos:broader voc:service-channel ;
+    skos:inScheme voc:service-vocabulary .
+
+voc:channel-in-person-meeting a skos:Concept ;
+    skos:prefLabel "In-person meeting"@en ;
+    skos:altLabel "Advisor meeting"@en , "Video meeting"@en ;
+    skos:definition "A service channel in which staff meet users face to face or by video."@en ;
+    skos:broader voc:service-channel ;
+    skos:inScheme voc:service-vocabulary .
+
+voc:channel-mobile-application a skos:Concept ;
+    skos:prefLabel "Mobile application"@en ;
+    skos:altLabel "Mobile app"@en ;
+    skos:definition "A service channel that is an application on a phone or tablet."@en ;
+    skos:broader voc:service-channel ;
+    skos:inScheme voc:service-vocabulary .
+
+voc:service-delivery-model a skos:Concept ;
+    skos:prefLabel "Service delivery model"@en ;
+    skos:definition "A controlled value set for how much of a service the user performs."@en ;
+    skos:topConceptOf voc:service-vocabulary ;
+    skos:narrower voc:delivery-model-self-service , voc:delivery-model-assisted-service , voc:delivery-model-full-service ;
+    skos:inScheme voc:service-vocabulary .
+
+voc:delivery-model-self-service a skos:Concept ;
+    skos:prefLabel "Self-service"@en ;
+    skos:altLabel "Do it yourself"@en ;
+    skos:definition "A service delivery model in which users complete the service themselves with tools provided."@en ;
+    skos:broader voc:service-delivery-model ;
+    skos:inScheme voc:service-vocabulary .
+
+voc:delivery-model-assisted-service a skos:Concept ;
+    skos:prefLabel "Assisted service"@en ;
+    skos:altLabel "Guided service"@en ;
+    skos:definition "A service delivery model in which staff or agents help users complete the service."@en ;
+    skos:broader voc:service-delivery-model ;
+    skos:inScheme voc:service-vocabulary .
+
+voc:delivery-model-full-service a skos:Concept ;
+    skos:prefLabel "Full service"@en ;
+    skos:altLabel "Managed service"@en , "Done for you"@en ;
+    skos:definition "A service delivery model in which the provider performs the service on the user's behalf."@en ;
+    skos:broader voc:service-delivery-model ;
+    skos:inScheme voc:service-vocabulary .

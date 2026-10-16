@@ -1,0 +1,131 @@
+# Vocabulary: Rule vocabulary
+# File: vocabulary-core-rule.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+voc:rule-vocabulary a skos:ConceptScheme ;
+    dcterms:title "Rule vocabulary"@en ;
+    skos:prefLabel "Rule vocabulary"@en ;
+    dcterms:description "Controlled values that describe the strength, authoring format, and runtime of rules in the single source of truth."@en ;
+    dcterms:subject core:Rule ;
+    dcterms:source "Semantic Governance v1.8 Section 3.5; IETF RFC 2119 requirement keywords."@en ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept voc:rule-strength ,
+        voc:rule-authoring-format ,
+        voc:rule-runtime .
+
+voc:rule-strength a skos:Concept ;
+    skos:prefLabel "Rule strength"@en ;
+    skos:definition "A controlled value set for how binding a rule is."@en ;
+    skos:topConceptOf voc:rule-vocabulary ;
+    skos:narrower voc:rule-strength-mandatory , voc:rule-strength-recommended , voc:rule-strength-optional ;
+    skos:inScheme voc:rule-vocabulary .
+
+voc:rule-strength-mandatory a skos:Concept ;
+    skos:prefLabel "Mandatory"@en ;
+    skos:altLabel "Must"@en , "Required"@en , "Shall"@en ;
+    skos:definition "A rule strength for rules that must always be followed."@en ;
+    skos:broader voc:rule-strength ;
+    skos:inScheme voc:rule-vocabulary .
+
+voc:rule-strength-recommended a skos:Concept ;
+    skos:prefLabel "Recommended"@en ;
+    skos:altLabel "Should"@en ;
+    skos:definition "A rule strength for rules that should be followed unless there is a documented reason."@en ;
+    skos:broader voc:rule-strength ;
+    skos:inScheme voc:rule-vocabulary .
+
+voc:rule-strength-optional a skos:Concept ;
+    skos:prefLabel "Optional"@en ;
+    skos:altLabel "May"@en ;
+    skos:definition "A rule strength for rules that may be followed at the party's discretion."@en ;
+    skos:broader voc:rule-strength ;
+    skos:inScheme voc:rule-vocabulary .
+
+voc:rule-authoring-format a skos:Concept ;
+    skos:prefLabel "Rule authoring format"@en ;
+    skos:definition "A controlled value set for the declarative form in which a rule is authored once."@en ;
+    skos:topConceptOf voc:rule-vocabulary ;
+    skos:narrower voc:rule-format-decision-table , voc:rule-format-shapes-constraint-language-shape , voc:rule-format-javascript-object-notation-schema , voc:rule-format-formula-specification , voc:rule-format-governed-code ;
+    skos:inScheme voc:rule-vocabulary .
+
+voc:rule-format-decision-table a skos:Concept ;
+    skos:prefLabel "Decision table"@en ;
+    skos:altLabel "DMN table"@en ;
+    skos:definition "A rule authoring format using Decision Model and Notation tables edited as grids."@en ;
+    skos:broader voc:rule-authoring-format ;
+    skos:inScheme voc:rule-vocabulary .
+
+voc:rule-format-shapes-constraint-language-shape a skos:Concept ;
+    skos:prefLabel "Shapes Constraint Language shape"@en ;
+    skos:altLabel "SHACL shape"@en ;
+    skos:definition "A rule authoring format using W3C shapes for graph data constraints."@en ;
+    skos:broader voc:rule-authoring-format ;
+    skos:inScheme voc:rule-vocabulary .
+
+voc:rule-format-javascript-object-notation-schema a skos:Concept ;
+    skos:prefLabel "JavaScript Object Notation schema"@en ;
+    skos:altLabel "JSON Schema"@en ;
+    skos:definition "A rule authoring format using JSON Schema for message and API constraints."@en ;
+    skos:broader voc:rule-authoring-format ;
+    skos:inScheme voc:rule-vocabulary .
+
+voc:rule-format-formula-specification a skos:Concept ;
+    skos:prefLabel "Formula specification"@en ;
+    skos:altLabel "Calculation specification"@en ;
+    skos:definition "A rule authoring format using a declarative formula with test vectors."@en ;
+    skos:broader voc:rule-authoring-format ;
+    skos:inScheme voc:rule-vocabulary .
+
+voc:rule-format-governed-code a skos:Concept ;
+    skos:prefLabel "Governed code"@en ;
+    skos:altLabel "Logic code"@en ;
+    skos:definition "A rule authoring format using code that references single source of truth terms and versions."@en ;
+    skos:broader voc:rule-authoring-format ;
+    skos:inScheme voc:rule-vocabulary .
+
+voc:rule-runtime a skos:Concept ;
+    skos:prefLabel "Rule runtime"@en ;
+    skos:definition "A controlled value set for where a generated rule executes."@en ;
+    skos:topConceptOf voc:rule-vocabulary ;
+    skos:narrower voc:rule-runtime-graph-store , voc:rule-runtime-rules-engine , voc:rule-runtime-microservice , voc:rule-runtime-interface-validation ;
+    skos:inScheme voc:rule-vocabulary .
+
+voc:rule-runtime-graph-store a skos:Concept ;
+    skos:prefLabel "Graph store"@en ;
+    skos:definition "A rule runtime in which the rule runs as validation in the graph database."@en ;
+    skos:broader voc:rule-runtime ;
+    skos:inScheme voc:rule-vocabulary .
+
+voc:rule-runtime-rules-engine a skos:Concept ;
+    skos:prefLabel "Rules engine"@en ;
+    skos:altLabel "Decision engine"@en ;
+    skos:definition "A rule runtime in which the rule runs behind the Decision API."@en ;
+    skos:broader voc:rule-runtime ;
+    skos:inScheme voc:rule-vocabulary .
+
+voc:rule-runtime-microservice a skos:Concept ;
+    skos:prefLabel "Microservice"@en ;
+    skos:definition "A rule runtime in which the rule runs as generated code in a service."@en ;
+    skos:broader voc:rule-runtime ;
+    skos:inScheme voc:rule-vocabulary .
+
+voc:rule-runtime-interface-validation a skos:Concept ;
+    skos:prefLabel "Interface validation"@en ;
+    skos:altLabel "API validation"@en ;
+    skos:definition "A rule runtime in which the rule runs when an application programming interface receives a request."@en ;
+    skos:broader voc:rule-runtime ;
+    skos:inScheme voc:rule-vocabulary .

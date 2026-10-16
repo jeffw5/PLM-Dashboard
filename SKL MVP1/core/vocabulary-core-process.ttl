@@ -1,0 +1,109 @@
+# Vocabulary: Process vocabulary
+# File: vocabulary-core-process.ttl   Version 0.1.0   Status: Draft
+# Conforms to Semantic Governance v1.8 (Sections 3.2, 3.7, 3.8, 3.9; Appendix E Step 3).
+# One skos:ConceptScheme per file; load through RDF Studio's taxonomy import.
+
+@prefix core: <https://www.insperity.com/ontology/core/> .
+@prefix voc: <https://www.insperity.com/vocabulary/core/> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+voc:process-vocabulary a skos:ConceptScheme ;
+    dcterms:title "Process vocabulary"@en ;
+    skos:prefLabel "Process vocabulary"@en ;
+    dcterms:description "Controlled values that describe the execution status and automation level of processes and process steps."@en ;
+    dcterms:subject core:Process ;
+    dcterms:publisher "Architecture"@en ;
+    dcterms:creator "Knowledge Engineering"@en ;
+    dcterms:created "2026-10-14"^^xsd:date ;
+    dcterms:modified "2026-10-14"^^xsd:date ;
+    owl:versionInfo "0.1.0" ;
+    core:hasLifecycleStatus voc:lifecycle-status-draft ;
+    skos:hasTopConcept voc:process-execution-status ,
+        voc:automation-level .
+
+voc:process-execution-status a skos:Concept ;
+    skos:prefLabel "Process execution status"@en ;
+    skos:definition "A controlled value set for the state of a process or process step instance."@en ;
+    skos:topConceptOf voc:process-vocabulary ;
+    skos:narrower voc:process-status-not-started , voc:process-status-in-progress , voc:process-status-suspended , voc:process-status-completed , voc:process-status-failed , voc:process-status-cancelled ;
+    skos:inScheme voc:process-vocabulary .
+
+voc:process-status-not-started a skos:Concept ;
+    skos:prefLabel "Not started"@en ;
+    skos:altLabel "Pending"@en , "Queued"@en ;
+    skos:definition "A process execution status for an instance created but not begun."@en ;
+    skos:broader voc:process-execution-status ;
+    skos:inScheme voc:process-vocabulary .
+
+voc:process-status-in-progress a skos:Concept ;
+    skos:prefLabel "In progress"@en ;
+    skos:altLabel "Running"@en , "Active"@en ;
+    skos:definition "A process execution status for an instance being carried out."@en ;
+    skos:broader voc:process-execution-status ;
+    skos:inScheme voc:process-vocabulary .
+
+voc:process-status-suspended a skos:Concept ;
+    skos:prefLabel "Suspended"@en ;
+    skos:altLabel "Waiting"@en , "On hold"@en ;
+    skos:definition "A process execution status for an instance paused awaiting an event or decision."@en ;
+    skos:broader voc:process-execution-status ;
+    skos:inScheme voc:process-vocabulary .
+
+voc:process-status-completed a skos:Concept ;
+    skos:prefLabel "Completed"@en ;
+    skos:altLabel "Done"@en , "Succeeded"@en ;
+    skos:definition "A process execution status for an instance that ended along its expected path."@en ;
+    skos:broader voc:process-execution-status ;
+    skos:inScheme voc:process-vocabulary .
+
+voc:process-status-failed a skos:Concept ;
+    skos:prefLabel "Failed"@en ;
+    skos:altLabel "Errored"@en ;
+    skos:definition "A process execution status for an instance that ended without completing."@en ;
+    skos:broader voc:process-execution-status ;
+    skos:inScheme voc:process-vocabulary .
+
+voc:process-status-cancelled a skos:Concept ;
+    skos:prefLabel "Cancelled"@en ;
+    skos:altLabel "Aborted"@en , "Withdrawn"@en ;
+    skos:definition "A process execution status for an instance stopped deliberately before completion."@en ;
+    skos:broader voc:process-execution-status ;
+    skos:inScheme voc:process-vocabulary .
+
+voc:automation-level a skos:Concept ;
+    skos:prefLabel "Automation level"@en ;
+    skos:definition "A controlled value set for how much of a process step is performed by software."@en ;
+    skos:topConceptOf voc:process-vocabulary ;
+    skos:narrower voc:automation-manual , voc:automation-system-assisted , voc:automation-agent-assisted , voc:automation-fully-automated ;
+    skos:inScheme voc:process-vocabulary .
+
+voc:automation-manual a skos:Concept ;
+    skos:prefLabel "Manual"@en ;
+    skos:definition "An automation level in which a person performs the step without system support."@en ;
+    skos:broader voc:automation-level ;
+    skos:inScheme voc:process-vocabulary .
+
+voc:automation-system-assisted a skos:Concept ;
+    skos:prefLabel "System assisted"@en ;
+    skos:altLabel "Semi-automated"@en ;
+    skos:definition "An automation level in which a person performs the step using an application."@en ;
+    skos:broader voc:automation-level ;
+    skos:inScheme voc:process-vocabulary .
+
+voc:automation-agent-assisted a skos:Concept ;
+    skos:prefLabel "Agent assisted"@en ;
+    skos:altLabel "Copilot"@en ;
+    skos:definition "An automation level in which an artificial intelligence agent drafts or recommends and a person confirms."@en ;
+    skos:broader voc:automation-level ;
+    skos:inScheme voc:process-vocabulary .
+
+voc:automation-fully-automated a skos:Concept ;
+    skos:prefLabel "Fully automated"@en ;
+    skos:altLabel "Straight-through processing"@en , "Touchless"@en ;
+    skos:definition "An automation level in which software performs the step without human intervention."@en ;
+    skos:broader voc:automation-level ;
+    skos:inScheme voc:process-vocabulary .

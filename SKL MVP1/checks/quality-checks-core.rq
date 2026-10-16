@@ -1,0 +1,101 @@
+# Quality checks for the core vocabularies and taxonomies
+# Semantic Governance v1.8, Appendix E Step 5 and Sections 3.2, 3.8, 3.9.
+# RDF Studio's SPARQL panel runs one read-only query at a time (SELECT or CONSTRUCT):
+# copy each query below into the panel. Expected result for every check: no rows.
+
+PREFIX skos:    <http://www.w3.org/2004/02/skos/core#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX owl:     <http://www.w3.org/2002/07/owl#>
+
+# ---------------------------------------------------------------------------
+# Check 1. Concepts without a preferred label
+SELECT ?c WHERE { ?c a skos:Concept . FILTER NOT EXISTS { ?c skos:prefLabel ?l } }
+
+# ---------------------------------------------------------------------------
+# Check 2. Concepts without a definition
+SELECT ?c WHERE { ?c a skos:Concept . FILTER NOT EXISTS { ?c skos:definition ?d } }
+
+# ---------------------------------------------------------------------------
+# Check 3. Possible acronyms in preferred labels
+SELECT ?s ?l WHERE { ?s skos:prefLabel ?l . FILTER regex(str(?l), "\\b[A-Z]{2,}\\b") }
+
+# ---------------------------------------------------------------------------
+# Check 4. Concepts not in a scheme
+SELECT ?c WHERE { ?c a skos:Concept . FILTER NOT EXISTS { ?c skos:inScheme ?s } }
+
+# ---------------------------------------------------------------------------
+# Check 5. Concepts with neither a broader concept nor a top-concept flag (orphans)
+SELECT ?c WHERE {
+  ?c a skos:Concept .
+  FILTER NOT EXISTS { ?c skos:broader ?b }
+  FILTER NOT EXISTS { ?c skos:topConceptOf ?s }
+}
+
+# ---------------------------------------------------------------------------
+# Check 6. More than one English preferred label on a concept
+SELECT ?c (COUNT(?l) AS ?n) WHERE {
+  ?c a skos:Concept ; skos:prefLabel ?l . FILTER(lang(?l) = "en")
+} GROUP BY ?c HAVING (COUNT(?l) > 1)
+
+# ---------------------------------------------------------------------------
+# Check 7. Duplicate preferred labels within one scheme
+SELECT ?scheme ?label (COUNT(?c) AS ?n) WHERE {
+  ?c skos:inScheme ?scheme ; skos:prefLabel ?l .
+  BIND(lcase(str(?l)) AS ?label)
+} GROUP BY ?scheme ?label HAVING (COUNT(?c) > 1)
+
+# ---------------------------------------------------------------------------
+# Check 8. Alternate label that is another concept's preferred label in the same scheme
+SELECT ?c ?alt ?other WHERE {
+  ?c skos:inScheme ?s ; skos:altLabel ?alt .
+  ?other skos:inScheme ?s ; skos:prefLabel ?p .
+  FILTER(?c != ?other && lcase(str(?alt)) = lcase(str(?p)))
+}
+
+# ---------------------------------------------------------------------------
+# Check 9. Labels without a language tag
+SELECT ?s ?p ?l WHERE {
+  VALUES ?p { skos:prefLabel skos:altLabel skos:hiddenLabel skos:definition }
+  ?s ?p ?l . FILTER(lang(?l) = "")
+}
+
+# ---------------------------------------------------------------------------
+# Check 10. hasTopConcept and topConceptOf out of step
+SELECT ?s ?c WHERE {
+  { ?s skos:hasTopConcept ?c . FILTER NOT EXISTS { ?c skos:topConceptOf ?s } }
+  UNION
+  { ?c skos:topConceptOf ?s . FILTER NOT EXISTS { ?s skos:hasTopConcept ?c } }
+}
+
+# ---------------------------------------------------------------------------
+# Check 11. skos:broader that crosses schemes (should be skos:broadMatch)
+SELECT ?c ?b WHERE {
+  ?c skos:broader ?b ; skos:inScheme ?s1 .
+  ?b skos:inScheme ?s2 . FILTER(?s1 != ?s2)
+}
+
+# ---------------------------------------------------------------------------
+# Check 12. Polyhierarchy above the allowed limit (more than two broader concepts)
+SELECT ?c (COUNT(?b) AS ?n) WHERE { ?c skos:broader ?b } GROUP BY ?c HAVING (COUNT(?b) > 2)
+
+# ---------------------------------------------------------------------------
+# Check 13. Schemes missing required metadata (Section 3.9)
+SELECT ?s WHERE {
+  ?s a skos:ConceptScheme .
+  FILTER (NOT EXISTS { ?s dcterms:title ?t } || NOT EXISTS { ?s dcterms:description ?d }
+       || NOT EXISTS { ?s owl:versionInfo ?v } || NOT EXISTS { ?s dcterms:modified ?m }
+       || NOT EXISTS { ?s dcterms:publisher ?p } || NOT EXISTS { ?s skos:hasTopConcept ?c })
+}
+
+# ---------------------------------------------------------------------------
+# Check 14. Identifiers outside the Company base URL
+SELECT DISTINCT ?c WHERE {
+  ?c a skos:Concept .
+  FILTER(!strstarts(str(?c), "https://www.insperity.com/"))
+}
+
+# ---------------------------------------------------------------------------
+# Check 15. Deprecated concepts without a replacement
+SELECT ?c WHERE {
+  ?c owl:deprecated true . FILTER NOT EXISTS { ?c dcterms:isReplacedBy ?r }
+}
