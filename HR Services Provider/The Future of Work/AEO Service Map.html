@@ -1,0 +1,343 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>AEO Service Map</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: masthead → dual-custody split → filterable service catalog (each row tied to its PEO analog) → liability matrix → SLAs → clearance tiers → read-out. Same token system as the PEO Service Map so the two sit together in the Workbench. */
+:root{
+  --bg:#f6f7f8; --surface:#ffffff; --ink:#16222b; --muted:#5b6973; --line:#dde2e6;
+  --accent:#1f5f7a; --accent-soft:#e3eef3; --brass:#9a6b1f;
+  --host:#1f5f7a; --host-bg:#e3eef3; --cli:#8a6510; --cli-bg:#f7eed8; --joint:#5a5fa0; --joint-bg:#e9eaf6;
+  --c-core:#1f7a52; --c-core-bg:#e2f2ea; --c-add:#8a6510; --c-add-bg:#f7eed8; --c-part:#5a5fa0; --c-part-bg:#e9eaf6;
+  --c-new:#a3412b; --c-new-bg:#f8e6e1; --base-bg:#eef4f7;
+  --f-display:"Familjen Grotesk",ui-sans-serif,system-ui,sans-serif;
+  --f-body:"Public Sans",ui-sans-serif,system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10171c; --surface:#172129; --ink:#e4eaee; --muted:#93a1ab; --line:#2a3741;
+  --accent:#6fb3cf; --accent-soft:#1b3340; --brass:#d6a75a;
+  --host:#6fb3cf; --host-bg:#1b3340; --cli:#e2bd6a; --cli-bg:#3a2f15; --joint:#a7abe8; --joint-bg:#272a4a;
+  --c-core:#6fcf9f; --c-core-bg:#16352a; --c-add:#e2bd6a; --c-add-bg:#3a2f15; --c-part:#a7abe8; --c-part-bg:#272a4a;
+  --c-new:#ee9a85; --c-new-bg:#3d221c; --base-bg:#18293a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10171c; --surface:#172129; --ink:#e4eaee; --muted:#93a1ab; --line:#2a3741;
+  --accent:#6fb3cf; --accent-soft:#1b3340; --brass:#d6a75a;
+  --host:#6fb3cf; --host-bg:#1b3340; --cli:#e2bd6a; --cli-bg:#3a2f15; --joint:#a7abe8; --joint-bg:#272a4a;
+  --c-core:#6fcf9f; --c-core-bg:#16352a; --c-add:#e2bd6a; --c-add-bg:#3a2f15; --c-part:#a7abe8; --c-part-bg:#272a4a;
+  --c-new:#ee9a85; --c-new-bg:#3d221c; --base-bg:#18293a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1320px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px;display:flex;flex-direction:column;gap:38px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;letter-spacing:-.01em}
+h1{font-size:clamp(28px,4vw,40px);font-weight:700}
+h2{font-size:22px;font-weight:600}
+h3{font-size:16px;font-weight:600}
+p{margin:0}
+.eyebrow{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--brass)}
+.lede{color:var(--muted);max-width:70ch;margin-top:8px}
+header{display:flex;flex-direction:column;gap:6px;border-bottom:1px solid var(--line);padding-bottom:22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--muted);margin-top:8px}
+.meta b{color:var(--ink);font-weight:600}
+section{display:flex;flex-direction:column;gap:14px}
+.sec-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:10px}
+.note{font-size:13.5px;color:var(--muted);max-width:75ch}
+
+/* custody split */
+.split{display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:stretch}
+.party{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 18px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.party.h{border-top:3px solid var(--host)}
+.party.c{border-top:3px solid var(--cli)}
+.party ul{margin:0;padding-left:18px;font-size:13.5px;display:flex;flex-direction:column;gap:3px}
+.party .was{font:500 11px var(--f-mono);color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.boundary{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 14px;gap:6px;text-align:center}
+.boundary .ln{flex:1;width:0;border-left:2px dashed var(--joint);min-height:12px}
+.boundary span{font:500 10.5px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--joint);writing-mode:vertical-rl;transform:rotate(180deg)}
+@media (max-width:720px){.split{grid-template-columns:1fr}.boundary{flex-direction:row;padding:8px 0}.boundary .ln{width:auto;height:0;border-left:0;border-top:2px dashed var(--joint);min-height:0}.boundary span{writing-mode:horizontal-tb;transform:none}}
+
+/* controls */
+.controls{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:500 13px var(--f-body);border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:5px 11px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.chip:focus-visible,.btn:focus-visible,tr.row:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn{font:500 13px var(--f-body);border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 12px;border-radius:5px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:12.5px;color:var(--muted);align-items:center}
+.legend span.k{display:inline-flex;align-items:center;gap:6px}
+.lbl{font:500 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:2px}
+
+/* table */
+.tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+#catalog{min-width:960px}
+thead th{background:var(--surface);font:600 12.5px var(--f-display);text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:bottom}
+thead th.c{text-align:center}
+tr.dom td{background:var(--bg);font:600 12px var(--f-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:12px 14px 6px;border-bottom:1px solid var(--line)}
+tr.dom td small{font:400 11px var(--f-body);text-transform:none;letter-spacing:0;margin-left:8px}
+tr.row td{border-bottom:1px solid var(--line);padding:8px 8px;vertical-align:middle}
+tr.row td.c{text-align:center}
+tr.row{cursor:pointer}
+tr.row:hover td{background:var(--accent-soft)}
+td.svc{padding-left:14px!important}
+.sid{font-family:var(--f-mono);font-size:11px;color:var(--muted);margin-right:8px;white-space:nowrap}
+.peo{font-size:12.5px;color:var(--muted)}
+.peo code{font:500 11px var(--f-mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:0 4px;margin-right:5px}
+.pill{display:inline-flex;align-items:center;justify-content:center;min-width:62px;padding:2px 7px;border-radius:4px;font:500 11.5px var(--f-mono);letter-spacing:.02em;white-space:nowrap}
+.cu-A{color:var(--host);background:var(--host-bg)}
+.cu-C{color:var(--cli);background:var(--cli-bg)}
+.cu-J{color:var(--joint);background:var(--joint-bg)}
+.b-C{color:var(--c-core);background:var(--c-core-bg)}
+.b-A{color:var(--c-add);background:var(--c-add-bg)}
+.b-P{color:var(--c-part);background:var(--c-part-bg)}
+.new{display:inline-block;margin-left:6px;font:500 10px var(--f-mono);color:var(--c-new);letter-spacing:.04em;text-transform:uppercase}
+.slat{font:500 11px var(--f-mono);color:var(--brass)}
+tr.detail td{background:var(--bg);border-bottom:1px solid var(--line);padding:10px 14px 14px 14px}
+.detail-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:8px 24px;font-size:13.5px}
+.detail-grid p{max-width:72ch}
+.detail-grid dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:3px 10px;font-size:12.5px}
+.detail-grid dt{color:var(--muted)}
+.detail-grid dd{margin:0}
+@media (max-width:720px){.detail-grid{grid-template-columns:1fr}}
+.empty{padding:24px;text-align:center;color:var(--muted)}
+
+/* small tables */
+.st{min-width:640px}
+.st td,.st th{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+.st tr:last-child td{border-bottom:0}
+.st td:first-child{font-weight:500}
+.st td.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* findings */
+.find{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.find article{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 18px;min-width:0}
+.find ul{margin:10px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:8px}
+.find li{max-width:65ch}
+.toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:5px;font-size:13px}
+.copybox{width:100%;height:160px;font:12px var(--f-mono);background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:5px;padding:8px}
+@media (prefers-reduced-motion:no-preference){tr.row td{transition:background .12s}}
+</style>
+
+<div class="wrap">
+<header>
+  <span class="eyebrow">Service design · Agent Employer Organization</span>
+  <h1>AEO Service Map</h1>
+  <p class="lede">A service catalog for a PEO that co-deploys autonomous AI agents the way it co-employs people. Every service is tied to the PEO service it adapts, assigned a custodian under the dual-custody model, and marked as core bundle, add-on or partner. Tap a row for the service definition.</p>
+  <div class="meta"><span>Framework <b>Synthetic Co-Deployment (AEO MSA)</b></span><span>Services <b id="rowcount">–</b></span><span>New with no PEO analog <b id="newcount">–</b></span><span>Analog source <b>PEO Service Map, Oct 23, 2026</b></span></div>
+</header>
+
+<section>
+  <div class="sec-head"><h2>Two custodians, one agent</h2><span class="eyebrow">Dual-custody governance</span></div>
+  <div class="split">
+    <div class="party h">
+      <span class="was">PEO role: administrative employer</span>
+      <h3>AEO · Administrative Host</h3>
+      <ul><li>Agent identity, keys and attestation</li><li>Base model alignment and drift baselines</li><li>Algorithmic compliance certification and audits</li><li>Agent Comp insurance and the indemnity pool</li><li>Circuit breakers and token revocation</li></ul>
+    </div>
+    <div class="boundary" aria-hidden="true"><div class="ln"></div><span>Custody boundary</span><div class="ln"></div></div>
+    <div class="party c">
+      <span class="was">PEO role: worksite employer</span>
+      <h3>Client · Directing Principal</h3>
+      <ul><li>Context injection, workflow prompts and business rules</li><li>Task assignment and domain guardrails</li><li>Approval thresholds and human sign-off</li><li>Day-to-day operational supervision</li><li>Data the agent is allowed to see</li></ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><h2>Service catalog</h2>
+    <div class="controls"><button class="btn" id="copycsv">Copy CSV</button><button class="btn" id="copyttl">Copy SKOS (Turtle)</button></div>
+  </div>
+  <div class="controls">
+    <div class="chips" id="domchips" role="group" aria-label="Filter by domain"></div>
+  </div>
+  <div class="controls">
+    <span class="lbl">Custody</span>
+    <div class="chips" id="cuchips" role="group" aria-label="Filter by custodian"></div>
+  </div>
+  <div class="legend">
+    <span class="k"><span class="pill cu-A">AEO</span> Administrative Host holds it</span>
+    <span class="k"><span class="pill cu-C">Client</span> Directing Principal holds it; AEO supplies tooling</span>
+    <span class="k"><span class="pill cu-J">Joint</span> Split across the boundary</span>
+    <span class="k"><span class="pill b-C">Core</span> In the PAPM bundle</span>
+    <span class="k"><span class="pill b-A">Add-on</span> Extra fee or tier</span>
+    <span class="k"><span class="pill b-P">Partner</span> Carrier or third party</span>
+  </div>
+  <div class="tablebox"><table id="catalog"><thead><tr><th style="padding-left:14px;width:34%">Service</th><th>Adapts PEO service</th><th class="c">Custody</th><th class="c">Bundle</th><th class="c">Bears loss</th><th class="c">SLA</th></tr></thead><tbody></tbody></table></div>
+  <textarea class="copybox" id="copyfallback" hidden aria-label="Export text"></textarea>
+</section>
+
+<section>
+  <div class="sec-head"><h2>Synthetic respondeat superior</h2><span class="eyebrow">Liability allocation</span></div>
+  <p class="note">The allocation schedule (LIA.01) and forensic attribution service (LIA.02) exist to decide which row an incident falls into.</p>
+  <div class="tablebox"><table class="st">
+    <thead><tr><th>Failure mode</th><th>Bears loss</th><th>Remedy</th><th>Services involved</th></tr></thead>
+    <tbody>
+      <tr><td>Drift or hallucination inside stated bounds</td><td><span class="pill cu-A">AEO</span></td><td>Paid under the AEO's primary synthetic E&amp;O policy</td><td class="num">AGC.01 · SAF.02</td></tr>
+      <tr><td>Client prompts an unauthorized or illegal task</td><td><span class="pill cu-C">Client</span></td><td>Client indemnifies the AEO; downstream coverage void</td><td class="num">LIA.03 · OPS.02</td></tr>
+      <tr><td>Agent commits money past a budget cap</td><td><span class="pill cu-J">Joint</span></td><td>AEO if the agent bypassed system guardrails; client if a supervisor approved the limit</td><td class="num">MET.03 · LIA.04 · OPS.01</td></tr>
+      <tr><td>Bias or regulatory non-compliance in the base agent</td><td><span class="pill cu-A">AEO</span></td><td>Covered by the AEO's compliance certification of the base architecture</td><td class="num">CMP.01 · CMP.02</td></tr>
+    </tbody></table></div>
+</section>
+
+<section>
+  <div class="sec-head"><h2>Service levels</h2><span class="eyebrow">From the AEO MSA</span></div>
+  <div class="tablebox"><table class="st">
+    <thead><tr><th>Metric</th><th>Target</th><th>Consequence of breach</th><th>Owning service</th></tr></thead>
+    <tbody>
+      <tr><td>Drift cap</td><td class="num">±1.5% vs. validation baseline</td><td>Rollback to last stable checkpoint; billing credit</td><td class="num">SAF.02</td></tr>
+      <tr><td>Uptime and tool-call latency</td><td class="num">99.95% · &lt;1,200 ms</td><td>Tiered fee rebate</td><td class="num">PLT.01</td></tr>
+      <tr><td>Context isolation</td><td class="num">100% tenant isolation</td><td>Termination right plus security-audit indemnity</td><td class="num">CMP.06</td></tr>
+      <tr><td>Circuit-breaker response</td><td class="num">&lt;250 ms to revoke</td><td>AEO absorbs losses after the interval</td><td class="num">SAF.01</td></tr>
+    </tbody></table></div>
+</section>
+
+<section>
+  <div class="sec-head"><h2>Agent clearance tiers</h2><span class="eyebrow">Ties to the KE classification baseline</span></div>
+  <p class="note">An agent's clearance is the highest sensitivity it may read. It follows the DomainToOperations rule: a process takes the highest level of the data it reads, so an agent's tier is set by its tools and data sources, not by its job title. Regime floors (HIPAA, BIPA, FCRA, I-9, privilege, MNPI) force C4.</p>
+  <div class="tablebox"><table class="st">
+    <thead><tr><th>Tier</th><th>Max sensitivity</th><th>Typical agent</th><th>Human sign-off</th><th>Agent Comp rating</th></tr></thead>
+    <tbody>
+      <tr><td>T0 Reference</td><td class="num">C0–C1</td><td>Policy Q&amp;A grounded in statutes and the handbook</td><td>None</td><td>Base</td></tr>
+      <tr><td>T1 Business</td><td class="num">C2</td><td>Proposal drafting, client-level reporting over aggregates meeting cell size 5</td><td>External sends</td><td>Base</td></tr>
+      <tr><td>T2 Worker data</td><td class="num">C3</td><td>Payroll exception triage, leave-balance answers to the worker</td><td>Any write to a record of pay</td><td>Loaded</td></tr>
+      <tr><td>T3 Regulated</td><td class="num">C4 + regime</td><td>Claims, background-check adjudication support, I-9 review</td><td>Every release outside the custody boundary</td><td>Excess cover required (AGC.06)</td></tr>
+    </tbody></table></div>
+</section>
+
+<section>
+  <div class="sec-head"><h2>Why a PEO can run this</h2><span class="eyebrow">Read-out</span></div>
+  <div class="find">
+    <article><h3>Assets that carry over</h3><ul>
+      <li><b>Co-employment is already a custody split.</b> The client service agreement and its responsibility allocation (pes:ResponsibilityAllocation) are the template for LIA.01.</li>
+      <li><b>Pooled risk.</b> A master health plan and pooled workers' comp are the model for a master Agent Comp policy across many small clients.</li>
+      <li><b>Certification habits.</b> CPEO and ESAC accreditation are the precedent for CMP.01; the AEO certifies the base agent the way the PEO certifies its payroll tax handling.</li>
+      <li><b>Classification already built.</b> The C0–C4 levels, regime floors and the high-water-mark rule give clearance tiers a governed source.</li>
+    </ul></article>
+    <article><h3>Where the PEO has to build new</h3><ul>
+      <li><b>Machine identity and key operations</b> (IDN.01–02) are a security-engineering function no PEO runs today.</li>
+      <li><b>Actuarial data.</b> Carriers price workers' comp on decades of claims. Agent loss history barely exists, so AGC lines start as a partner product.</li>
+      <li><b>Real-time enforcement.</b> A 250 ms circuit breaker is an operations platform, not a service team.</li>
+      <li><b>Six services have no PEO analog</b>; they are flagged <span class="new" style="margin:0">new</span> in the catalog.</li>
+    </ul></article>
+    <article><h3>Validate before using</h3><ul>
+      <li>"Synthetic respondeat superior" is a contract construct. No court has applied vicarious-liability doctrine to an agent this way; counsel should review the allocation schedule.</li>
+      <li>The insurance lines assume a carrier will write them. Confirm appetite before putting them in the core bundle.</li>
+      <li>AI regulations named in CMP.02–03 are examples; effective dates and scope change often and must be checked per jurisdiction.</li>
+      <li>Service IDs are stable and each maps to its PEO analog with skos:closeMatch in the SKOS export.</li>
+    </ul></article>
+  </div>
+</section>
+</div>
+
+<script>
+const DOM={IDN:["Identity & attestation","adapts onboarding and screening"],MET:["Metering & billing","adapts payroll"],AGC:["Agent Comp insurance","adapts workers' comp, EPLI and the master plan"],LIA:["Liability allocation","adapts the co-employment agreement"],CMP:["Algorithmic compliance","adapts compliance monitoring"],SAF:["Safety & circuit breakers","adapts safety and OSHA consulting"],OPS:["Worksite governance","adapts HR advisory"],CAP:["Agent capability","adapts talent"],PLT:["Platform","adapts technology"],MOD:["Delivery models","adapts delivery models"]};
+const PEO={"PAY.01":"Payroll processing","PAY.03":"Time & attendance","PAY.04":"Expense management","PAY.05":"Garnishments & claims admin","BEN.01":"Large-group medical (master plan)","RSK.01":"Workers' comp & claims","RSK.02":"EPLI","RSK.03":"Safety & OSHA consulting","RSK.04":"Compliance monitoring","RSK.05":"Leave of absence administration","RSK.06":"Cyber liability insurance","RSK.07":"Business insurance brokerage","HRA.01":"Dedicated HR specialist","HRA.02":"Handbook & policy development","HRA.03":"Employee relations & termination guidance","HRA.04":"Industry-specific service teams","HRA.05":"Strategic HR & org planning","TAL.01":"Recruiting services","TAL.03":"Background screening","TAL.04":"Onboarding","TAL.05":"Performance management","TAL.06":"Learning & development","TAL.07":"Compensation benchmarking","TAL.08":"Outplacement support","TEC.01":"Proprietary HCM platform","TEC.03":"Employee self-service","TEC.04":"Reporting & analytics","TEC.07":"Marketplace","MOD.01":"Full PEO co-employment","MOD.02":"ASO","MOD.03":"HCM software without co-employment","MOD.04":"International hiring (EOR)"};
+const CU={A:"AEO",C:"Client",J:"Joint"}, BU={C:"Core",A:"Add-on",P:"Partner"};
+/* [id, domain, service, PEO analog ("" = new), custody, bundle, bears loss, SLA, definition, deliverable] */
+const R=[
+ ["IDN.01","IDN","Agent identity issuance","TAL.04","A","C","A","","Issues each agent an immutable machine identity (X.509 / SPIFFE verifiable credential) bound to the client organization before it touches client systems. The agent equivalent of a new-hire packet and employee ID.","Signed agent credential; registry entry"],
+ ["IDN.02","IDN","Key & credential lifecycle","PAY.01","A","C","A","","Rotates, scopes and revokes agent keys and tool credentials on schedule and on events (role change, incident, contract end). Runs continuously, the way employment administration runs every pay cycle.","Rotation log; revocation list"],
+ ["IDN.03","IDN","Capability attestation","TAL.03","A","C","A","","Certifies the model version, benchmarked safety evaluations and deterministic boundary constraints before deployment. Plays the role of background and employment screening.","Attestation certificate per agent version"],
+ ["IDN.04","IDN","Drift baseline certification","","A","C","A","SAF.02","Records the validation baseline the ±1.5% drift cap is measured against. Without it the drift SLA cannot be enforced or disputed.","Frozen evaluation set and scores"],
+ ["IDN.05","IDN","Agent roster & org binding","TEC.03","J","C","A","","Maintains the client's roster of deployed agents: owner, purpose, clearance tier, tools, status. Client keeps purpose and owner current; AEO keeps identity and status current.","Live roster; quarterly roster attestation"],
+ ["IDN.06","IDN","Decommission & memory purge","TAL.08","J","C","J","CMP.06","Retires an agent: revokes keys, purges client memory and context stores, hands back artifacts and issues a certificate of destruction. Client decides when; AEO proves it happened.","Certificate of destruction; handback package"],
+ ["MET.01","MET","Per-agent-per-month billing","PAY.01","A","C","A","","Bills a single PAPM fee that bundles identity, compliance, Agent Comp and platform, the way PEO fees bundle payroll, benefits and comp per worksite employee.","Monthly invoice by agent and tier"],
+ ["MET.02","MET","Token & tool-call metering","PAY.03","A","C","A","","Meters tokens, tool calls and compute per agent. The record of what the agent did and when, used for billing, anomaly detection and fault attribution.","Usage ledger"],
+ ["MET.03","MET","Budget caps & spend ceilings","PAY.04","J","C","J","","Client sets budget caps per agent and task; AEO enforces them in the runtime so an agent cannot exceed them by prompt or loop. Splits liability per the allocation schedule.","Cap configuration; breach alerts"],
+ ["MET.04","MET","Cost allocation & chargeback","TEC.04","C","A","C","","Allocates agent cost to the client's cost centers, projects and agents for internal chargeback.","Chargeback report"],
+ ["MET.05","MET","Treasury action escrow","","J","A","J","","Holds agent-initiated payments and contract commitments in escrow until the required human signature arrives. Closes the gap between an agent deciding to pay and money moving.","Escrow queue; release log"],
+ ["AGC.01","AGC","Autonomous malpractice & E&O","RSK.01","A","P","A","SAF.02","Covers direct financial loss from flawed analysis, bad deployments or inaccurate actions taken inside stated bounds. The workers' comp of the bundle.","Certificate of insurance per client"],
+ ["AGC.02","AGC","Treasury drain & transaction fraud","RSK.06","A","P","A","SAF.01","Reimburses unauthorized spending from prompt exploitation or logic loops, subject to MET.03 caps being configured.","Policy rider"],
+ ["AGC.03","AGC","Defamation & IP infringement shield","RSK.02","A","P","A","","Covers unintentional copyright use, trade-secret leakage and libelous output in client-facing interactions. Sits where EPLI sits in a PEO bundle.","Policy rider"],
+ ["AGC.04","AGC","Pooled master policy","BEN.01","A","C","A","","Pools agent risk across all clients under one master policy, giving small clients cover they could not buy alone. Mirrors the PEO master health plan.","Master policy; pool loss report"],
+ ["AGC.05","AGC","Claims administration","PAY.05","A","C","A","","Takes first notice of loss, gathers replay evidence from LIA.02 and works the claim with the carrier.","Claim file; adjudication record"],
+ ["AGC.06","AGC","Excess cover for regulated agents","RSK.07","A","A","A","","Additional limits for T3 agents that read C4 or regime-tagged data. Brokered, priced by clearance tier.","Excess policy"],
+ ["LIA.01","LIA","Responsibility allocation schedule","MOD.01","J","C","J","","The schedule in the MSA that names who holds each duty across the custody boundary. Generated from this catalog's custody column and versioned with the contract.","Signed schedule"],
+ ["LIA.02","LIA","Forensic replay & fault attribution","HRA.03","A","C","A","","Replays an incident from metering, prompts and tool logs to decide which failure mode applies: in-bounds drift, client override, cap breach or base non-compliance.","Attribution finding"],
+ ["LIA.03","LIA","Client override indemnity","","C","C","C","","Client indemnifies the AEO when it prompts an agent into an unauthorized or illegal task. The AEO's service is detecting and documenting the override.","Override record; indemnity notice"],
+ ["LIA.04","LIA","Tiered commitment liability","PAY.05","J","C","J","","Applies the joint rule for over-cap financial commitments: AEO pays if the runtime let the agent bypass the cap, client pays if its supervisor approved the limit.","Liability determination"],
+ ["CMP.01","CMP","Base-agent compliance certification","RSK.04","A","C","A","","Certifies that the base agent architecture meets anti-bias, lending, fair-trade and consumer-protection rules before release. The AEO guarantees this, not the client.","Compliance certificate"],
+ ["CMP.02","CMP","Bias & disparate-impact audits","RSK.04","A","C","A","","Runs bias audits on agents that influence hiring, pay, credit or eligibility decisions, in the form local rules require (for example NYC Local Law 144 audits).","Annual audit; public summary where required"],
+ ["CMP.03","CMP","AI regulation monitoring","RSK.04","A","C","A","","Tracks AI-specific rules by jurisdiction (state AI acts, EU AI Act risk classes) and pushes required changes into guardrails and disclosures.","Regulatory bulletins; change log"],
+ ["CMP.04","CMP","Audit trail & evidence pack","TEC.04","A","C","A","","Keeps a provenance record (PROV-O) linking every agent output to its inputs, model version and approvals, ready for a regulator or a claim.","Exportable evidence pack"],
+ ["CMP.05","CMP","Clearance assignment","","J","C","J","","Sets each agent's clearance tier from the highest sensitivity of the data its tools read, applying regime floors. Client approves the data scope; AEO computes and enforces the tier.","Clearance record per agent"],
+ ["CMP.06","CMP","Tenant isolation & context hygiene","","A","C","A","CMP.06","Guarantees no client's context, memory or fine-tuning leaks to another tenant. Backs the 100% isolation SLA.","Isolation attestation; pen-test results"],
+ ["SAF.01","SAF","Automated circuit breaker","RSK.03","A","C","A","SAF.01","Revokes an agent's tokens within 250 ms on abnormal tool-call volume, out-of-distribution output entropy or anomalous data egress.","Trip log; reinstatement record"],
+ ["SAF.02","SAF","Drift monitoring & rollback","TAL.05","A","C","A","SAF.02","Measures drift against the certified baseline and rolls back to the last stable checkpoint when it exceeds ±1.5%. The agent's ongoing performance review.","Drift dashboard; rollback events"],
+ ["SAF.03","SAF","Red-team & prompt-injection testing","RSK.03","A","A","A","","Adversarial testing of a client's deployed agents and guardrails, including injection through documents, email and web content.","Findings report"],
+ ["SAF.04","SAF","Agent incident response","HRA.03","J","C","J","","Runs triage, containment, client communication and post-incident review when an agent misbehaves. AEO leads; client owns business decisions.","Incident timeline; post-incident review"],
+ ["SAF.05","SAF","Suspension & reinstatement","RSK.05","J","C","J","","Places an agent on suspension (keys frozen, state preserved) during investigation, model updates or client request, then reinstates it with a fresh attestation.","Suspension record"],
+ ["OPS.01","OPS","Human sign-off thresholds","HRA.05","C","C","C","","Client defines the ceilings that require a cryptographic human signature (for example over $10,000, external contracts, production schema changes). AEO supplies the signing workflow.","Threshold policy; signature log"],
+ ["OPS.02","OPS","Guardrail & context authoring","HRA.02","C","A","C","","Helps the client write domain guardrails, context prompts and business rules. The agent equivalent of handbook and policy development; the client still owns the content.","Guardrail library; review notes"],
+ ["OPS.03","OPS","Supervision console","TEC.01","C","C","C","","Gives client supervisors a view of each agent's work queue, approvals, spend and alerts, and the controls to pause or redirect it.","Console access by role"],
+ ["OPS.04","OPS","Dedicated AgentOps partner","HRA.01","A","C","A","","A named AEO specialist who reviews the client's roster, incidents and thresholds each quarter. The HR specialist role, applied to agents.","Quarterly operating review"],
+ ["OPS.05","OPS","Vertical agent packs","HRA.04","A","A","A","","Industry guardrail sets, evaluation suites and regulatory mappings (healthcare, financial services, manufacturing).","Pack per industry"],
+ ["CAP.01","CAP","Agent catalog & placement","TAL.01","A","A","A","","Curated catalog of certified agents for common roles, placed into the client with identity, attestation and cover already in place.","Placement order"],
+ ["CAP.02","CAP","Skill packs & tuning","TAL.06","J","A","J","","Adds tools, retrieval sources or fine-tuning for a client's work. Each change triggers re-attestation and may change the clearance tier.","Skill pack; re-attestation"],
+ ["CAP.03","CAP","Agent performance benchmarking","TAL.07","A","C","A","","Benchmarks each agent against peers in the pool on accuracy, mean time between hallucinations (MTBH), cost per task and escalation rate.","Benchmark report"],
+ ["CAP.04","CAP","Model upgrade & migration","TAL.05","A","C","A","SAF.02","Moves agents to new model versions with a side-by-side evaluation, a new drift baseline and client approval before cut-over.","Migration plan; new baseline"],
+ ["PLT.01","PLT","Agent runtime & hosting","TEC.01","A","C","A","PLT.01","Hosts agents with the policy gateway, identity checks and metering in the path of every tool call. Backs the uptime and latency SLA.","Runtime; status page"],
+ ["PLT.02","PLT","Policy gateway","","A","C","A","","Enforces clearance, regime floors, budget caps and sign-off thresholds on every request and release. Compiled from the classification baseline.","Gateway decisions log"],
+ ["PLT.03","PLT","Tool & connector marketplace","TEC.07","A","P","A","","Vetted tools and connectors agents may use, each with a declared data scope that feeds clearance assignment.","Approved connector list"],
+ ["MOD.01","MOD","Full AEO co-deployment","MOD.01","J","C","J","","The full dual-custody model: AEO hosts, certifies and insures; client directs.","Master services agreement"],
+ ["MOD.02","MOD","Attest-and-insure only","MOD.02","A","A","J","","Client hosts its own agents; AEO certifies, monitors and insures them without hosting. The ASO of agent services.","Attestation + Agent Comp"],
+ ["MOD.03","MOD","Platform without co-custody","MOD.03","C","A","C","","Runtime and console only; no attestation, compliance guarantee or Agent Comp. Liability stays with the client.","Software subscription"],
+ ["MOD.04","MOD","Cross-border deployment","MOD.04","A","A","A","","Deploys agents for operations outside the U.S. with data residency, local AI rules and local cover. The EOR of agent services.","Country addendum"],
+ ["MOD.05","MOD","Blended workforce agreement","","J","C","J","","One agreement covering co-employed people and co-deployed agents, so a manager who supervises both answers to one allocation schedule and one service team.","Combined CSA and AEO MSA"]
+];
+
+let dom="ALL",cu="ALL",open=new Set();
+const pill=(cls,t)=>`<span class="pill ${cls}">${t}</span>`;
+function chips(){
+  const d=document.getElementById("domchips");
+  d.innerHTML=[["ALL","All domains"],...Object.entries(DOM).map(([k,v])=>[k,v[0]])].map(([k,v])=>`<button class="chip" id="dom-${k}" data-k="${k}" aria-pressed="${k===dom}">${v}</button>`).join("");
+  d.querySelectorAll("button").forEach(b=>b.onclick=()=>{dom=b.dataset.k;chips();render()});
+  const c=document.getElementById("cuchips");
+  c.innerHTML=[["ALL","All"],["A","AEO"],["C","Client"],["J","Joint"]].map(([k,v])=>`<button class="chip" id="cu-${k}" data-k="${k}" aria-pressed="${k===cu}">${v}</button>`).join("");
+  c.querySelectorAll("button").forEach(b=>b.onclick=()=>{cu=b.dataset.k;chips();render()});
+}
+function render(){
+  const tb=document.querySelector("#catalog tbody");let h="",last="";
+  R.forEach(r=>{
+    const [id,d,name,peo,c,b,loss,sla,def,out]=r;
+    if(dom!=="ALL"&&d!==dom)return; if(cu!=="ALL"&&c!==cu)return;
+    if(d!==last){h+=`<tr class="dom"><td colspan="6">${DOM[d][0]}<small>${DOM[d][1]}</small></td></tr>`;last=d}
+    h+=`<tr class="row" tabindex="0" data-id="${id}" aria-expanded="${open.has(id)}"><td class="svc"><span class="sid">${id}</span>${name}${peo?"":'<span class="new">new</span>'}</td><td class="peo">${peo?`<code>${peo}</code>${PEO[peo]}`:"No PEO analog"}</td><td class="c">${pill("cu-"+c,CU[c])}</td><td class="c">${pill("b-"+b,BU[b])}</td><td class="c">${pill("cu-"+loss,CU[loss])}</td><td class="c">${sla?`<span class="slat">${sla}</span>`:'<span class="peo">–</span>'}</td></tr>`;
+    if(open.has(id))h+=`<tr class="detail"><td colspan="6"><div class="detail-grid"><p>${def}</p><dl><dt>Deliverable</dt><dd>${out}</dd><dt>Custody</dt><dd>${CU[c]}</dd><dt>Bears loss</dt><dd>${CU[loss]}</dd>${sla?`<dt>SLA</dt><dd>${sla}</dd>`:""}</dl></div></td></tr>`;
+  });
+  tb.innerHTML=h||`<tr><td class="empty" colspan="6">No services match these filters. Choose All to clear them.</td></tr>`;
+  tb.querySelectorAll("tr.row").forEach(tr=>{
+    const t=()=>{const id=tr.dataset.id;open.has(id)?open.delete(id):open.add(id);render();const el=document.querySelector(`tr.row[data-id="${id}"]`);el&&el.focus()};
+    tr.onclick=t;tr.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();t()}};
+  });
+}
+document.getElementById("rowcount").textContent=R.length;
+document.getElementById("newcount").textContent=R.filter(r=>!r[3]).length;
+
+function toast(m){const t=document.createElement("div");t.className="toast";t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),1800)}
+function copy(text,label){
+  const fb=document.getElementById("copyfallback");
+  const show=()=>{fb.hidden=false;fb.value=text;fb.focus();fb.select();toast("Select all and copy from the box")};
+  try{navigator.clipboard.writeText(text).then(()=>{fb.hidden=true;toast(label+" copied")},show)}catch(e){show()}
+}
+const q=s=>`"${String(s).replace(/"/g,'""')}"`;
+function csv(){
+  const head=["id","domain","service","peo_analog","peo_analog_name","custody","bundle","bears_loss","sla","definition","deliverable"];
+  return [head.map(q).join(","),...R.map(r=>[r[0],DOM[r[1]][0],r[2],r[3],PEO[r[3]]||"",CU[r[4]],BU[r[5]],CU[r[6]],r[7],r[8],r[9]].map(q).join(","))].join("\n");
+}
+function ttl(){
+  const s=x=>x.replace(/\./g,"_"),e=x=>x.replace(/\\/g,"\\\\").replace(/"/g,'\\"');
+  let o=`@prefix skos: <http://www.w3.org/2004/02/skos/core#> .\n@prefix aeo:  <https://enablingvalue.com/ontology/aeo-service-map#> .\n@prefix peo:  <https://example.org/peo-service-map#> .\n\naeo:AEOServiceScheme a skos:ConceptScheme ;\n  skos:prefLabel "AEO Service Map"@en .\n\naeo:CustodyScheme a skos:ConceptScheme ; skos:prefLabel "Custodian"@en .\naeo:Custody_AEO a skos:Concept ; skos:inScheme aeo:CustodyScheme ; skos:prefLabel "AEO (Administrative Host)"@en .\naeo:Custody_Client a skos:Concept ; skos:inScheme aeo:CustodyScheme ; skos:prefLabel "Client (Directing Principal)"@en .\naeo:Custody_Joint a skos:Concept ; skos:inScheme aeo:CustodyScheme ; skos:prefLabel "Joint"@en .\n\n`;
+  const cmap={A:"aeo:Custody_AEO",C:"aeo:Custody_Client",J:"aeo:Custody_Joint"};
+  Object.entries(DOM).forEach(([k,v])=>{o+=`aeo:${k} a skos:Concept ;\n  skos:prefLabel "${e(v[0])}"@en ;\n  skos:topConceptOf aeo:AEOServiceScheme .\n\n`});
+  R.forEach(r=>{o+=`aeo:${s(r[0])} a skos:Concept ;\n  skos:notation "${r[0]}" ;\n  skos:prefLabel "${e(r[2])}"@en ;\n  skos:definition "${e(r[8])}"@en ;\n  skos:broader aeo:${r[1]} ;\n  skos:inScheme aeo:AEOServiceScheme ;\n  skos:related ${cmap[r[4]]}${r[3]?` ;\n  skos:closeMatch peo:${s(r[3])}`:""} .\n\n`});
+  return o;
+}
+document.getElementById("copycsv").onclick=()=>copy(csv(),"CSV");
+document.getElementById("copyttl").onclick=()=>copy(ttl(),"Turtle");
+chips();render();
+</script>
+
+</body></html>

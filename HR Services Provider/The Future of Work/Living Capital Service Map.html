@@ -1,0 +1,355 @@
+<title>Living Capital Service Map</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: masthead → extractive vs regenerative contrast → pioneers → filterable service catalog (PEO base + pioneer + soil layer + readiness) → regeneration scorecard → enterprise lab protocol → corrections to the brief → read-out. Same type system as the PEO and AEO maps; accent shifts to moss for this family member. */
+:root{
+  --bg:#f6f7f5; --surface:#ffffff; --ink:#1a231c; --muted:#5d6a60; --line:#dce2dc;
+  --accent:#3d6a3f; --accent-soft:#e5efe3; --brass:#8f6a22; --base-bg:#eef4ec;
+  --e:#a3552b; --e-bg:#f7e7dd; --k:#2e5f86; --k-bg:#e2edf6; --t:#5a5fa0; --t-bg:#e9eaf6;
+  --r-ok:#2f7a4f; --r-ok-bg:#e2f2ea; --r-build:#8a6510; --r-build-bg:#f7eed8; --r-legal:#a3412b; --r-legal-bg:#f8e6e1;
+  --drain:#a3412b;
+  --f-display:"Familjen Grotesk",ui-sans-serif,system-ui,sans-serif;
+  --f-body:"Public Sans",ui-sans-serif,system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11160f; --surface:#182019; --ink:#e3ebe2; --muted:#94a395; --line:#2b372c;
+  --accent:#8cc58a; --accent-soft:#1d3320; --brass:#d6a75a; --base-bg:#1a2a1b;
+  --e:#eba27c; --e-bg:#3b2519; --k:#83b6df; --k-bg:#1a2c3b; --t:#a7abe8; --t-bg:#272a4a;
+  --r-ok:#6fcf9f; --r-ok-bg:#16352a; --r-build:#e2bd6a; --r-build-bg:#3a2f15; --r-legal:#ee9a85; --r-legal-bg:#3d221c;
+  --drain:#ee9a85; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11160f; --surface:#182019; --ink:#e3ebe2; --muted:#94a395; --line:#2b372c;
+  --accent:#8cc58a; --accent-soft:#1d3320; --brass:#d6a75a; --base-bg:#1a2a1b;
+  --e:#eba27c; --e-bg:#3b2519; --k:#83b6df; --k-bg:#1a2c3b; --t:#a7abe8; --t-bg:#272a4a;
+  --r-ok:#6fcf9f; --r-ok-bg:#16352a; --r-build:#e2bd6a; --r-build-bg:#3a2f15; --r-legal:#ee9a85; --r-legal-bg:#3d221c;
+  --drain:#ee9a85; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1320px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px;display:flex;flex-direction:column;gap:38px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;letter-spacing:-.01em}
+h1{font-size:clamp(28px,4vw,40px);font-weight:700}
+h2{font-size:22px;font-weight:600}
+h3{font-size:16px;font-weight:600}
+p{margin:0}
+.eyebrow{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--brass)}
+.lede{color:var(--muted);max-width:72ch;margin-top:8px}
+header{display:flex;flex-direction:column;gap:6px;border-bottom:1px solid var(--line);padding-bottom:22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--muted);margin-top:8px}
+.meta b{color:var(--ink);font-weight:600}
+section{display:flex;flex-direction:column;gap:14px}
+.sec-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:10px}
+.note{font-size:13.5px;color:var(--muted);max-width:78ch}
+
+/* contrast: reserve over a year */
+.contrast{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.yr{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.yr h3{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.yr h3 small{font:500 11px var(--f-mono);color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+.yr svg{width:100%;height:auto;display:block}
+.yr p{font-size:13.5px;color:var(--muted)}
+.axis{font:500 10px var(--f-mono);fill:var(--muted)}
+
+/* pioneers */
+.st{min-width:720px}
+.tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+.st td,.st th{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+.st th{font:600 12.5px var(--f-display)}
+.st tr:last-child td{border-bottom:0}
+.st td:first-child{font-weight:600;font-family:var(--f-display)}
+.ids{font:500 11px var(--f-mono);color:var(--accent);line-height:1.7}
+.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* controls */
+.controls{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:500 13px var(--f-body);border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:5px 11px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.chip:focus-visible,.btn:focus-visible,tr.row:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn{font:500 13px var(--f-body);border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 12px;border-radius:5px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.lbl{font:500 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);min-width:64px}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:12.5px;color:var(--muted);align-items:center}
+.legend span.k{display:inline-flex;align-items:center;gap:6px}
+
+/* catalog */
+#catalog{min-width:1000px}
+#catalog thead th{background:var(--surface);font:600 12.5px var(--f-display);text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:bottom}
+#catalog thead th.c{text-align:center}
+tr.dom td{background:var(--bg);font:600 12px var(--f-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding:12px 14px 6px;border-bottom:1px solid var(--line)}
+tr.dom td small{font:400 11.5px var(--f-body);text-transform:none;letter-spacing:0;margin-left:8px}
+tr.row td{border-bottom:1px solid var(--line);padding:8px;vertical-align:middle}
+tr.row td.c{text-align:center}
+tr.row{cursor:pointer}
+tr.row:hover td{background:var(--accent-soft)}
+td.svc{padding-left:14px!important}
+.sid{font-family:var(--f-mono);font-size:11px;color:var(--muted);margin-right:8px;white-space:nowrap}
+.sub{font-size:12.5px;color:var(--muted)}
+.sub code{font:500 11px var(--f-mono);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:3px;padding:0 4px;margin-right:5px}
+.pill{display:inline-flex;align-items:center;justify-content:center;min-width:64px;padding:2px 7px;border-radius:4px;font:500 11.5px var(--f-mono);letter-spacing:.02em;white-space:nowrap}
+.s-E{color:var(--e);background:var(--e-bg)} .s-K{color:var(--k);background:var(--k-bg)} .s-T{color:var(--t);background:var(--t-bg)}
+.r-R{color:var(--r-ok);background:var(--r-ok-bg)} .r-B{color:var(--r-build);background:var(--r-build-bg)} .r-L{color:var(--r-legal);background:var(--r-legal-bg)}
+.bund{font:500 11.5px var(--f-mono);color:var(--ink)}
+.new{display:inline-block;margin-left:6px;font:500 10px var(--f-mono);color:var(--brass);letter-spacing:.04em;text-transform:uppercase}
+tr.detail td{background:var(--bg);border-bottom:1px solid var(--line);padding:10px 14px 14px}
+.dg{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:8px 24px;font-size:13.5px}
+.dg p{max-width:72ch}
+.dg dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:3px 10px;font-size:12.5px}
+.dg dt{color:var(--muted)} .dg dd{margin:0}
+.dg .risk{color:var(--r-legal)}
+@media (max-width:720px){.dg{grid-template-columns:1fr}}
+.empty{padding:24px;text-align:center;color:var(--muted)}
+
+/* lab protocol: a real sequence */
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;counter-reset:s}
+.steps li{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px 16px;counter-increment:s;display:flex;flex-direction:column;gap:6px;min-width:0}
+.steps li::before{content:"Step " counter(s);font:500 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.steps li p{font-size:13.5px;color:var(--muted)}
+
+/* corrections + findings */
+.find{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.find article{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px 18px;min-width:0}
+.find ul{margin:10px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:8px}
+.find li{max-width:65ch}
+.corr{border-left:3px solid var(--r-legal)!important}
+.toast{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:5px;font-size:13px}
+.copybox{width:100%;height:160px;font:12px var(--f-mono);background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:5px;padding:8px}
+@media (prefers-reduced-motion:no-preference){tr.row td{transition:background .12s}}
+</style>
+
+<div class="wrap">
+<header>
+  <span class="eyebrow">Service design · Regenerative workforce</span>
+  <h1>Living Capital Service Map</h1>
+  <p class="lede">A service tier for a PEO that measures success by whether people finish each year more capable, resilient and energized than they started it. Each service extends an existing PEO service, borrows a practice from a regenerative pioneer, and names the layer of workforce "soil" it renews. Tap a row for the definition and the launch risk.</p>
+  <div class="meta"><span>Base <b>Insperity HR360 / HRCore</b></span><span>Services <b id="rowcount">–</b></span><span>Ready on today's PEO operations <b id="readycount">–</b></span><span>Need counsel before launch <b id="legalcount">–</b></span></div>
+</header>
+
+<section>
+  <div class="sec-head"><h2>Same year, two workforces</h2><span class="eyebrow">Human reserve, January to December</span></div>
+  <div class="contrast">
+    <div class="yr">
+      <h3>Extractive <small>Utilization 95–100%</small></h3>
+      <svg viewBox="0 0 320 120" role="img" aria-label="Illustration: reserve declines through the year, with replacement hires restarting it">
+        <line x1="20" y1="100" x2="310" y2="100" stroke="var(--line)"/>
+        <path d="M20 30 L95 55 L150 78 L150 34 L230 64 L280 90" fill="none" stroke="var(--drain)" stroke-width="2.5"/>
+        <circle cx="150" cy="34" r="3.5" fill="var(--drain)"/>
+        <text x="156" y="30" class="axis">replacement hire</text>
+        <text x="20" y="114" class="axis">Jan</text><text x="290" y="114" class="axis">Dec</text>
+      </svg>
+      <p>Capacity is drawn down for quarterly output and restored by turnover. Reserves end the year lower; the cost shows up as recruiting, ramp time and claims.</p>
+    </div>
+    <div class="yr">
+      <h3>Regenerative <small>Utilization capped at 80%</small></h3>
+      <svg viewBox="0 0 320 120" role="img" aria-label="Illustration: reserve dips under load and recovers, ending the year higher">
+        <line x1="20" y1="100" x2="310" y2="100" stroke="var(--line)"/>
+        <path d="M20 60 C60 70 80 50 110 52 C140 54 150 66 180 58 C210 50 230 40 260 42 C280 44 295 36 310 32" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+        <circle cx="310" cy="32" r="3.5" fill="var(--accent)"/>
+        <text x="200" y="26" class="axis">higher than January</text>
+        <text x="20" y="114" class="axis">Jan</text><text x="290" y="114" class="axis">Dec</text>
+      </svg>
+      <p>Twenty percent of capacity goes to development, mentoring and recovery. Load still varies, but people come back from peaks and the year ends with more reserve.</p>
+    </div>
+  </div>
+  <p class="note">Illustrations of the pattern, not measured data. The scorecard below defines how a PEO would measure it.</p>
+</section>
+
+<section>
+  <div class="sec-head"><h2>Where the practices come from</h2><span class="eyebrow">Pioneers, as described in the brief</span></div>
+  <div class="tablebox"><table class="st">
+    <thead><tr><th>Organization</th><th>Soil investment</th><th>Regenerative mechanism</th><th>Services it informs</th></tr></thead>
+    <tbody>
+      <tr><td>Barry-Wehmiller</td><td>Truly Human Leadership; life-stage empathy</td><td>Peer-care frameworks in place of traditional ratings; shared unpaid furloughs, CEO down, instead of layoffs</td><td class="ids">POOL.05 POOL.06 CARE.01 CARE.02 CARE.03</td></tr>
+      <tr><td>Patagonia</td><td>Autonomy, outdoor rhythm, sabbaticals</td><td>"Let My People Go Surfing"; on-site childcare; paid environmental activism leave</td><td class="ids">REC.01 REC.02 REC.05 REC.06</td></tr>
+      <tr><td>Mondragon</td><td>Worker ownership; systemic reinvestment</td><td>Surplus flows to education and wage solidarity; talent redeployed across co-ops in recessions</td><td class="ids">POOL.01 POOL.02 POOL.07 OWN.01 OWN.02 OWN.03 OWN.05</td></tr>
+      <tr><td>Buurtzorg</td><td>Self-managing nurse teams</td><td>Small autonomous teams with coaches in place of middle management; low burnout</td><td class="ids">STR.01 STR.05 STR.06</td></tr>
+      <tr><td>W.L. Gore</td><td>Lattice structure; peer sponsorship</td><td>Associates choose sponsors and negotiate commitments instead of reporting lines</td><td class="ids">STR.02 STR.03 STR.04</td></tr>
+    </tbody></table></div>
+  <p class="note">Headcounts and outcomes in the brief (for example Mondragon's workforce size and Buurtzorg's burnout rates) should be checked against current sources before external use.</p>
+</section>
+
+<section>
+  <div class="sec-head"><h2>Service catalog</h2>
+    <div class="controls"><button class="btn" id="copycsv">Copy CSV</button><button class="btn" id="copyttl">Copy SKOS (Turtle)</button></div>
+  </div>
+  <div class="controls"><span class="lbl">Domain</span><div class="chips" id="domchips" role="group" aria-label="Filter by domain"></div></div>
+  <div class="controls"><span class="lbl">Soil layer</span><div class="chips" id="soilchips" role="group" aria-label="Filter by soil layer"></div></div>
+  <div class="controls"><span class="lbl">Readiness</span><div class="chips" id="rdychips" role="group" aria-label="Filter by readiness"></div></div>
+  <div class="legend">
+    <span class="k"><span class="pill s-E">Energy</span> Recovery and physical reserve</span>
+    <span class="k"><span class="pill s-K">Capability</span> Skills, growth, range</span>
+    <span class="k"><span class="pill s-T">Trust</span> Security, agency, shared stake</span>
+    <span class="k"><span class="pill r-R">Ready</span> Packaging of what the PEO runs today</span>
+    <span class="k"><span class="pill r-B">Build</span> New product or data work</span>
+    <span class="k"><span class="pill r-L">Counsel</span> Legal review before launch</span>
+  </div>
+  <div class="tablebox"><table id="catalog"><thead><tr><th style="padding-left:14px;width:32%">Service</th><th>Extends PEO service</th><th>Pioneer</th><th class="c">Soil layer</th><th class="c">Bundle</th><th class="c">Readiness</th></tr></thead><tbody></tbody></table></div>
+  <textarea class="copybox" id="copyfallback" hidden aria-label="Export text"></textarea>
+</section>
+
+<section>
+  <div class="sec-head"><h2>Regeneration scorecard</h2><span class="eyebrow">MEAS.01 · reported per client, per year</span></div>
+  <p class="note">Every measure is a team or client aggregate. Under the KE classification baseline an aggregate drops to C2 only when each cell holds at least 5 people; smaller teams report at client level or not at all. Person-level values stay C3, and anything drawn from health plan data stays C4 under HIPAA.</p>
+  <div class="tablebox"><table class="st">
+    <thead><tr><th>Measure</th><th>What it shows</th><th>Source</th><th>Release level</th><th>Direction</th></tr></thead>
+    <tbody>
+      <tr><td>Net energy score</td><td>Self-reported reserve at year start vs. year end</td><td>Voluntary pulse survey (MEAS.02)</td><td class="num">C2 · cell ≥ 5</td><td class="num">↑</td></tr>
+      <tr><td>Plowed-hours load</td><td>Share of paid hours assigned to production work</td><td>Time and attendance</td><td class="num">C2 team · C3 person</td><td class="num">≤ 80%</td></tr>
+      <tr><td>Development hours</td><td>Protected learning and mentoring hours per person</td><td>Development ledger (CAP.03)</td><td class="num">C2</td><td class="num">↑</td></tr>
+      <tr><td>Time off actually taken</td><td>PTO used as a share of PTO earned</td><td>Payroll leave balances</td><td class="num">C2</td><td class="num">↑</td></tr>
+      <tr><td>Regretted voluntary turnover</td><td>Departures the client wanted to keep, trailing 12 months</td><td>Termination records</td><td class="num">C2</td><td class="num">↓</td></tr>
+      <tr><td>Internal promotion velocity</td><td>Months to first internal move or promotion</td><td>Job history</td><td class="num">C2</td><td class="num">↓</td></tr>
+      <tr><td>Absenteeism</td><td>Unplanned absence days per person</td><td>Time and attendance</td><td class="num">C2</td><td class="num">↓</td></tr>
+      <tr><td>Claims incidence</td><td>Change in claim rates for stress-linked categories</td><td>Plan data, de-identified by the carrier</td><td class="num">C4 source · pooled only</td><td class="num">↓</td></tr>
+      <tr><td>Retained through downturn</td><td>People kept on payroll via work-share, furlough or secondment instead of layoff</td><td>POOL services</td><td class="num">C2</td><td class="num">↑</td></tr>
+    </tbody></table></div>
+</section>
+
+<section>
+  <div class="sec-head"><h2>Enterprise lab protocol</h2><span class="eyebrow">PEO-as-sandbox · LAB services in order</span></div>
+  <ol class="steps">
+    <li><h3>Stand up the entity</h3><p>A new subsidiary co-employed by the PEO, with its own handbook, review cycle and pay design (LAB.01). Check controlled-group effects first.</p></li>
+    <li><h3>Pre-register the test</h3><p>State the hypothesis, the practice under test (pods, four-day week, profit loop), duration of at least 12 months and the scorecard measures that decide it (LAB.02).</p></li>
+    <li><h3>Pick a comparison group</h3><p>A matched cohort of similar SMB clients from the PEO pool, by industry, size and region, reported only as an aggregate (LAB.04).</p></li>
+    <li><h3>Run and report quarterly</h3><p>Scorecard results for the lab against its comparison group, with person-level data kept inside the PEO.</p></li>
+    <li><h3>Decide what scales</h3><p>A scale-back playbook names which policies transfer to the parent, what harmonization costs, and what stays in the lab (LAB.05).</p></li>
+  </ol>
+</section>
+
+<section>
+  <div class="sec-head"><h2>Read-out</h2><span class="eyebrow">What the map says</span></div>
+  <div class="find">
+    <article><h3>Why a PEO is the right host</h3><ul>
+      <li><b>Pooling is the business.</b> Sabbatical funds, parental leave pools and dependent-care subsidies are too expensive for a 40-person firm alone and cheap per head across a large co-employed base.</li>
+      <li><b>The data already flows through it.</b> Time, leave, turnover and promotion data sit in the PEO's systems, so the scorecard is a reporting product, not a new data collection.</li>
+      <li><b>Cross-client redeployment is unique to the model.</b> No single SMB can run a talent exchange. A PEO with thousands of clients can.</li>
+      <li><b>Work-share filing is a quick win.</b> Many states run short-time compensation programs that partially replace wages when hours are cut instead of jobs. A PEO already files unemployment claims.</li>
+    </ul></article>
+    <article class="corr"><h3>Where the brief needs correcting</h3><ul>
+      <li><b>A carve-out does not escape controlled-group rules.</b> A subsidiary stays in the parent's controlled group for benefit nondiscrimination testing and ACA employer status, and its plans are still ERISA plans. What it does escape is the handbook, review cycle and pay design.</li>
+      <li><b>Drop biometric tracking.</b> Biometrics are C4 under Illinois BIPA, and wellness data is limited by ADA and GINA. The scorecard uses voluntary surveys and aggregates instead.</li>
+      <li><b>The 80% cap is on assigned work, not pay.</b> Reserved development and recovery time is still paid working time for non-exempt staff.</li>
+      <li><b>Secondments raise joint-employer and workers' comp questions</b>, and a pooled furlough fund may count as insurance. Both need structuring with counsel.</li>
+    </ul></article>
+    <article><h3>Validate before using</h3><ul>
+      <li>Readiness ratings assume HR360 capabilities from the PEO Service Map; check them against the internal product catalog.</li>
+      <li>Partner examples (Lyra, Modern Health) are illustrative, not commitments.</li>
+      <li>Service IDs are stable; the SKOS export links each one to its PEO base service with skos:closeMatch.</li>
+    </ul></article>
+  </div>
+</section>
+</div>
+
+<script>
+const DOM={REC:["Recovery & renewal benefits","circadian and recovery packaging"],CAP:["Capacity & slack","slack indexing and capacity auditing"],POOL:["Shared talent & redeployment","furlough insurance and secondments"],OWN:["Ownership & reinvestment","profit and stake loops"],STR:["Structure & self-management","pods and lattices"],CARE:["Leadership & care","peer care and life stage"],LAB:["Enterprise lab","PEO-as-sandbox"],MEAS:["Measurement","regeneration scorecard"],MOD:["Delivery models","how the tier is sold"]};
+const PEO={"PAY.03":"Time & attendance","PAY.05":"Garnishments & unemployment claims","BEN.01":"Large-group medical","BEN.02":"401(k) / retirement","BEN.07":"Mental health benefits","RSK.01":"Workers' comp & claims","RSK.04":"Compliance monitoring","RSK.05":"Leave administration","HRA.01":"Dedicated HR specialist","HRA.02":"Handbook & policy","HRA.03":"Employee relations & termination","HRA.05":"Strategic HR & org planning","TAL.01":"Recruiting services","TAL.05":"Performance management","TAL.06":"Learning & development","TAL.07":"Compensation benchmarking","TEC.04":"Reporting & analytics","MOD.01":"Full PEO co-employment","MOD.03":"HCM without co-employment"};
+const SOIL={E:"Energy",K:"Capability",T:"Trust"}, RDY={R:"Ready",B:"Build",L:"Counsel"};
+const PIO={BW:"Barry-Wehmiller",PA:"Patagonia",MO:"Mondragon",BZ:"Buurtzorg",WG:"W.L. Gore","":"–"};
+/* [id, domain, service, PEO base, pioneer, soil, bundle, readiness, definition, launch risk] */
+const R=[
+ ["REC.01","REC","Pooled paid parental leave","BEN.01","PA","E","Core","L","Funds paid parental leave across the client pool so a small employer can offer 12+ weeks without carrying the cost of one leave alone. Coordinates with state paid family leave programs.","May be regulated as insurance depending on structure; must integrate with state PFML programs."],
+ ["REC.02","REC","Disconnected sabbatical program","HRA.02","PA","E","Core","R","Policy template, funding schedule and backfill plan for a paid sabbatical every few years, with system access switched off during it. Backfill can come from POOL.02.","Low. Confirm benefit continuation terms in the plan documents."],
+ ["REC.03","REC","Mental-health coaching","BEN.07","","E","Partner","R","Adds coaching and therapy access through a partner (for example Lyra or Modern Health) on top of the EAP, priced on the pool.","Partner data must stay outside client view; utilization reported only in aggregate."],
+ ["REC.04","REC","Circadian scheduling standards","PAY.03","","E","Add-on","B","Shift-design rules in the scheduling tool: minimum rest between shifts, limits on quick returns and rotating nights, predictable schedules posted ahead.","Some cities and states already mandate predictive scheduling; align with those rules."],
+ ["REC.05","REC","Dependent-care subsidy consortium","BEN.01","PA","E","Partner","B","Pools clients in a metro area to buy reserved childcare and eldercare slots near worksites, standing in for the on-site care a 40-person firm cannot build.","Dependent care FSA limits and tax treatment of employer subsidies."],
+ ["REC.06","REC","Civic & environmental leave","RSK.05","PA","T","Core","R","Paid leave for volunteering, environmental work and civic duty, tracked like any other leave type.","Low. Keep leave reasons neutral; political activity policies need care."],
+ ["REC.07","REC","Recovery-first return to work","RSK.01","BW","E","Core","R","Graduated return after injury, illness or long leave, with adjusted load and a check-in plan, run by the workers' comp and leave teams.","Medical details stay C4 under ADA/FMLA confidentiality; the client sees restrictions only."],
+ ["CAP.01","CAP","Workforce slack index","PAY.03","","E","Core","B","Shows planned versus available hours by team and flags teams running above 80% production load for more than two consecutive periods.","Team-level reporting needs at least 5 people per cell."],
+ ["CAP.02","CAP","80/20 capacity cap","TEC.04","","E","Core","L","Caps assigned production work at 80% of paid hours and reserves 20% for development, mentoring and recovery, enforced in scheduling and project intake.","Reserved time is paid working time for non-exempt staff and counts toward overtime."],
+ ["CAP.03","CAP","Protected development ledger","TAL.06","","K","Core","B","Records the reserved 20% by use (learning, mentoring, recovery, cross-training) so the client can see whether it is spent or quietly reabsorbed.","Low."],
+ ["CAP.04","CAP","Overtime & on-call drain alerts","PAY.03","","E","Core","R","Alerts managers when a person's overtime or on-call load exceeds a client-set threshold for several weeks.","Person-level alerts are C3 and go only to the person's manager and HR."],
+ ["CAP.05","CAP","Time-off utilization nudges","RSK.05","","E","Core","R","Prompts workers and managers when someone has taken no time off in a set period or is near a PTO cap.","Low."],
+ ["CAP.06","CAP","After-hours load analysis","","","E","Add-on","L","Aggregate analysis of after-hours messages and meetings from collaboration metadata to find structural overload.","Workplace monitoring notice laws; message content must never be read."],
+ ["POOL.01","POOL","Cross-client talent exchange","TAL.01","MO","K","Add-on","B","Opt-in registry of skills and availability across clients, so a worker with slack at one firm can be matched to need at another.","Worker consent per listing; profiles are C3."],
+ ["POOL.02","POOL","Fractional secondment brokerage","","MO","K","Add-on","L","Brokers temporary loans of staff between non-competing clients, with the home client keeping the employment relationship.","Joint-employer exposure at the host; workers' comp class codes; confidentiality between clients."],
+ ["POOL.03","POOL","Tenure & benefits continuity","BEN.01","MO","T","Core","L","Keeps a seconded or furloughed worker's tenure, benefits eligibility and plan coverage intact.","Plan eligibility rules (hours thresholds) during reduced or loaned hours."],
+ ["POOL.04","POOL","Downturn furlough fund","","BW","T","Partner","L","A reserve clients pay into in good years that tops up wages during furloughs or reduced hours.","Likely regulated as insurance if pooled; a client-segregated reserve avoids that."],
+ ["POOL.05","POOL","Work-share filing support","PAY.05","BW","T","Core","R","Files state short-time compensation plans so workers on cut hours collect partial unemployment instead of being laid off.","Not every state runs a program; rules differ by state."],
+ ["POOL.06","POOL","Shared-sacrifice furlough design","HRA.05","BW","T","Add-on","R","Designs tiered voluntary or rotating furloughs, leadership first, as the default response to a downturn.","Exempt-status pay rules when salaried staff take partial weeks off."],
+ ["POOL.07","POOL","Redeploy-before-reduction review","HRA.03","MO","T","Core","R","A required step before any layoff: check internal moves, POOL.01 matches and work-share before reductions proceed.","WARN Act timing still applies when reductions go ahead."],
+ ["OWN.01","OWN","Profit-sharing loop","BEN.02","MO","T","Add-on","R","Designs and administers profit sharing in cash or through the retirement plan, tied to the scorecard as well as financial results.","Retirement plan nondiscrimination testing."],
+ ["OWN.02","OWN","Ownership transition advisory","","MO","T","Partner","B","Guides owners toward an ESOP, employee ownership trust or worker cooperative at succession, with partner firms for valuation and legal work.","Securities and ERISA fiduciary rules for ESOPs."],
+ ["OWN.03","OWN","Pay-ratio & wage-solidarity report","TAL.07","MO","T","Add-on","R","Reports the ratio of top to median pay inside the client and pay spread by role band, with a target the client chooses.","C2 for the client; never disclosed across clients."],
+ ["OWN.04","OWN","Open-book management training","TAL.06","","K","Add-on","R","Teaches teams to read the business's financials so a profit-sharing loop is understood, not just received.","Low."],
+ ["OWN.05","OWN","Community reinvestment matching","","MO","T","Add-on","B","Matches a share of client surplus into local education or training funds, mirroring Mondragon's reinvestment into schools.","Charitable contribution rules."],
+ ["STR.01","STR","Self-managing pod design","HRA.05","BZ","K","Add-on","R","Designs small autonomous teams with clear decision rights, roles that rotate and a coach instead of a manager.","Supervisory roles under labor law may still be required for some decisions."],
+ ["STR.02","STR","Commitment registry","TAL.05","WG","K","Add-on","B","Replaces fixed job descriptions with commitments people negotiate and record, visible across the team.","Job descriptions still matter for ADA essential functions; keep a version for that."],
+ ["STR.03","STR","Peer sponsorship program","TAL.05","WG","K","Add-on","R","Each person chooses a sponsor who advocates for their growth and contribution, independent of project leads.","Low."],
+ ["STR.04","STR","Peer contribution input to pay","TAL.07","WG","T","Add-on","L","Collects peer rankings of contribution as one input to pay decisions.","Pay equity laws; peer ratings can carry bias and need auditing."],
+ ["STR.05","STR","Classification check for flat structures","RSK.04","BZ","T","Core","R","When titles and managers disappear, checks that exempt status, overtime eligibility and supervisor duties still hold.","This service is itself the mitigation."],
+ ["STR.06","STR","Team coaching for self-management","HRA.01","BZ","K","Add-on","R","Regional coaches who support pods on conflict, planning and decisions, as Buurtzorg's coaches do.","Low."],
+ ["CARE.01","CARE","Care-based leadership development","TAL.06","BW","T","Add-on","R","Leadership training in listening, recognition and life-stage empathy for owners and team leads.","Low."],
+ ["CARE.02","CARE","Peer-care review","TAL.05","BW","T","Add-on","R","Replaces annual ratings with structured peer conversations about growth and support.","Documentation for performance-based terminations still needed."],
+ ["CARE.03","CARE","Life-stage navigation","HRA.01","BW","E","Core","R","One point of contact for caregiving, bereavement, eldercare, health transitions and retirement planning, routing to benefits and leave.","Health details are C4; the navigator shares only what the worker approves."],
+ ["CARE.04","CARE","Psychological safety pulse","TEC.04","","T","Core","B","Short recurring survey on whether people can raise problems without fear, reported by team.","Anonymity requires cell size ≥ 5."],
+ ["LAB.01","LAB","Sandbox entity co-employment","MOD.01","","T","Add-on","L","Co-employs an enterprise's experimental subsidiary under its own handbook, pay design and review cycle.","Controlled-group aggregation for benefits testing and ACA status still applies."],
+ ["LAB.02","LAB","Experiment pre-registration","","","K","Add-on","B","Records hypothesis, practice under test, duration and deciding measures before the lab starts.","Low."],
+ ["LAB.03","LAB","Four-day week & output-pay kit","HRA.05","","E","Add-on","L","Policy, scheduling and pay templates for a four-day week or output-based pay.","Daily overtime in some states (for example California) and FLSA rules for non-exempt staff."],
+ ["LAB.04","LAB","Matched comparison cohort","TEC.04","","K","Add-on","B","Builds an aggregate comparison group of similar SMB clients from the PEO pool.","Cross-tenant aggregate: no client identifiers; cell size ≥ 5."],
+ ["LAB.05","LAB","Scale-back playbook","","","K","Add-on","B","Decides which lab practices move to the parent and estimates harmonization cost.","Changing parent plans triggers notice requirements."],
+ ["MEAS.01","MEAS","Regeneration scorecard","TEC.04","","K","Core","B","Annual and quarterly report on the measures above, per client and against the pool.","Release rules from the classification baseline apply to every cell."],
+ ["MEAS.02","MEAS","Net energy survey","","","E","Core","B","Voluntary start-of-year and end-of-year survey of energy, capability and outlook.","Voluntary and anonymous; never tied to individual pay."],
+ ["MEAS.03","MEAS","Regenerative employer attestation","","","T","Add-on","B","An annual statement a client can publish, based on its scorecard, for recruiting.","Claims must be supportable to avoid misleading advertising."],
+ ["MOD.01","MOD","Living Capital tier","MOD.01","","T","Core","B","A tier above HR360 that bundles the Core services in this map.","Pricing and plan design."],
+ ["MOD.02","MOD","Regenerative modules à la carte","MOD.03","","K","Add-on","B","Selected services sold to HRCore clients without full co-employment.","Pooled benefits need co-employment."],
+ ["MOD.03","MOD","PEO-as-sandbox for enterprise labs","MOD.01","","K","Add-on","L","The LAB services sold as one engagement to enterprises.","See LAB.01."]
+];
+let dom="ALL",soil="ALL",rdy="ALL",open=new Set();
+const pill=(c,t)=>`<span class="pill ${c}">${t}</span>`;
+function chipset(id,list,cur,set){
+  const el=document.getElementById(id);
+  el.innerHTML=list.map(([k,v])=>`<button class="chip" id="${id}-${k}" data-k="${k}" aria-pressed="${k===cur}">${v}</button>`).join("");
+  el.querySelectorAll("button").forEach(b=>b.onclick=()=>{set(b.dataset.k);chips();render()});
+}
+function chips(){
+  chipset("domchips",[["ALL","All"],...Object.entries(DOM).map(([k,v])=>[k,v[0]])],dom,v=>dom=v);
+  chipset("soilchips",[["ALL","All"],...Object.entries(SOIL)],soil,v=>soil=v);
+  chipset("rdychips",[["ALL","All"],...Object.entries(RDY)],rdy,v=>rdy=v);
+}
+function render(){
+  const tb=document.querySelector("#catalog tbody");let h="",last="";
+  R.forEach(r=>{
+    const [id,d,name,peo,pio,s,bund,rd,def,risk]=r;
+    if(dom!=="ALL"&&d!==dom||soil!=="ALL"&&s!==soil||rdy!=="ALL"&&rd!==rdy)return;
+    if(d!==last){h+=`<tr class="dom"><td colspan="6">${DOM[d][0]}<small>${DOM[d][1]}</small></td></tr>`;last=d}
+    h+=`<tr class="row" tabindex="0" data-id="${id}" aria-expanded="${open.has(id)}"><td class="svc"><span class="sid">${id}</span>${name}${peo?"":'<span class="new">new</span>'}</td><td class="sub">${peo?`<code>${peo}</code>${PEO[peo]}`:"No PEO base"}</td><td class="sub">${PIO[pio]}</td><td class="c">${pill("s-"+s,SOIL[s])}</td><td class="c"><span class="bund">${bund}</span></td><td class="c">${pill("r-"+rd,RDY[rd])}</td></tr>`;
+    if(open.has(id))h+=`<tr class="detail"><td colspan="6"><div class="dg"><p>${def}</p><dl><dt>Launch risk</dt><dd class="${rd==="L"?"risk":""}">${risk}</dd><dt>Soil layer</dt><dd>${SOIL[s]}</dd><dt>Bundle</dt><dd>${bund}</dd></dl></div></td></tr>`;
+  });
+  tb.innerHTML=h||`<tr><td class="empty" colspan="6">No services match these filters. Choose All to clear them.</td></tr>`;
+  tb.querySelectorAll("tr.row").forEach(tr=>{
+    const t=()=>{const id=tr.dataset.id;open.has(id)?open.delete(id):open.add(id);render();const el=document.querySelector(`tr.row[data-id="${id}"]`);el&&el.focus()};
+    tr.onclick=t;tr.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();t()}};
+  });
+}
+document.getElementById("rowcount").textContent=R.length;
+document.getElementById("readycount").textContent=R.filter(r=>r[7]==="R").length;
+document.getElementById("legalcount").textContent=R.filter(r=>r[7]==="L").length;
+
+function toast(m){const t=document.createElement("div");t.className="toast";t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),1800)}
+function copy(text,label){
+  const fb=document.getElementById("copyfallback");
+  const show=()=>{fb.hidden=false;fb.value=text;fb.focus();fb.select();toast("Select all and copy from the box")};
+  try{navigator.clipboard.writeText(text).then(()=>{fb.hidden=true;toast(label+" copied")},show)}catch(e){show()}
+}
+const q=s=>`"${String(s).replace(/"/g,'""')}"`;
+function csv(){
+  const head=["id","domain","service","peo_base","peo_base_name","pioneer","soil_layer","bundle","readiness","definition","launch_risk"];
+  return [head.map(q).join(","),...R.map(r=>[r[0],DOM[r[1]][0],r[2],r[3],PEO[r[3]]||"",PIO[r[4]]==="–"?"":PIO[r[4]],SOIL[r[5]],r[6],RDY[r[7]],r[8],r[9]].map(q).join(","))].join("\n");
+}
+function ttl(){
+  const s=x=>x.replace(/\./g,"_"),e=x=>x.replace(/\\/g,"\\\\").replace(/"/g,'\\"');
+  let o=`@prefix skos: <http://www.w3.org/2004/02/skos/core#> .\n@prefix rgn:  <https://enablingvalue.com/ontology/living-capital-service-map#> .\n@prefix peo:  <https://example.org/peo-service-map#> .\n\nrgn:LivingCapitalScheme a skos:ConceptScheme ;\n  skos:prefLabel "Living Capital Service Map"@en .\n\nrgn:SoilScheme a skos:ConceptScheme ; skos:prefLabel "Soil layer"@en .\n`;
+  Object.entries(SOIL).forEach(([k,v])=>{o+=`rgn:Soil_${v} a skos:Concept ; skos:inScheme rgn:SoilScheme ; skos:prefLabel "${v}"@en .\n`});
+  o+="\n";
+  Object.entries(DOM).forEach(([k,v])=>{o+=`rgn:${k} a skos:Concept ;\n  skos:prefLabel "${e(v[0])}"@en ;\n  skos:topConceptOf rgn:LivingCapitalScheme .\n\n`});
+  R.forEach(r=>{o+=`rgn:${s(r[0])} a skos:Concept ;\n  skos:notation "${r[0]}" ;\n  skos:prefLabel "${e(r[2])}"@en ;\n  skos:definition "${e(r[8])}"@en ;\n  skos:scopeNote "Launch risk: ${e(r[9])}"@en ;\n  skos:broader rgn:${r[1]} ;\n  skos:inScheme rgn:LivingCapitalScheme ;\n  skos:related rgn:Soil_${SOIL[r[5]]}${r[3]?` ;\n  skos:closeMatch peo:${s(r[3])}`:""} .\n\n`});
+  return o;
+}
+document.getElementById("copycsv").onclick=()=>copy(csv(),"CSV");
+document.getElementById("copyttl").onclick=()=>copy(ttl(),"Turtle");
+chips();render();
+</script>
